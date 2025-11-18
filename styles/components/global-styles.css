@@ -1,0 +1,269 @@
+/* ==================================================
+UTILITY CLASSES - Clases utilitarias para uso general
+================================================== */
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.btn {
+  align-items: center;
+  background: var(--theme-color, #3b82f6);
+  border-radius: .5rem;
+  color: var(--color-white);
+  cursor: pointer;
+  display: flex;
+  font-weight: 600;
+  gap: .5rem;
+  padding: .3rem .7rem;
+  transition: all .1s ease;
+
+  &:hover {
+    outline: 2px solid var(--color-white);
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+}
+
+/* ==================================================
+LAYOUT COMPONENTS - Componentes de diseño y separación
+================================================== */
+
+.divider {
+  border: 2px solid var(--theme-color);
+  width: 100%;
+  margin: var(--space-4) 0;
+}
+
+/* ==================================================
+CARD COMPONENT - Componente de tarjeta reusable
+================================================== */
+
+.card {
+  background-color: var(--bg-primary);
+  color: var(--color-black);
+  outline: 2px solid var(--border-color-strong);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-normal) var(--ease-in-out);
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+  color: var(--color-white);
+  background-color: var(--theme-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  outline-color: var(--theme-color);
+}
+
+@media print {
+  .card {
+    border: 2px solid var(--color-black);
+    padding: var(--space-2);
+    box-shadow: none;
+    color: var(--color-black);
+    background-color: var(--color-white);
+    outline: none;
+  }
+}
+
+/* ==================================================
+NOTIFICATION COMPONENT - Componente de notificación temporal
+================================================== */
+
+.copy-notification {
+  background-color: var(--color-success);
+  color: var(--color-white);
+  position: absolute;
+  top: 100%;
+  margin-top: var(--space-1);
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-1) var(--space-2);
+  white-space: nowrap;
+  font-size: var(--text-sm);
+  opacity: 0;
+  transition: opacity var(--transition-normal) var(--ease-in-out);
+  pointer-events: none;
+  z-index: var(--z-index-tooltip);
+  box-shadow: var(--shadow);
+}
+
+.copy-notification.show {
+  opacity: 1;
+}
+
+/* ==================================================
+MODAL COMPONENT - Componente de modal overlay
+================================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-index-modal-backdrop);
+  padding: var(--space-4);
+
+  .modal-content {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--theme-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-8);
+    max-width: var(--size-4xl);
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: var(--shadow-xl);
+
+    .btn {
+      background-color: var(--color-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: var(--space-10);
+      width: var(--space-10);
+      position: absolute;
+      right: var(--space-4);
+      top: var(--space-4);
+
+      &.btn:hover {
+        background-color: var(--color-red-light);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+
+      h3 {
+        font-size: var(--text-4xl);
+        text-align: center;
+        text-wrap: balance;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+        margin-bottom: var(--space-2);
+
+        a {
+          color: var(--theme-color);
+          text-decoration: underline;
+          transition: color var(--transition-normal) var(--ease-in-out);
+
+          &:hover {
+            color: var(--theme-color-light);
+          }
+        }
+      }
+
+      h4 {
+        color: var(--text-secondary);
+        font-size: var(--text-xl);
+        text-align: center;
+        text-wrap: balance;
+        font-weight: var(--font-weight-semibold);
+      }
+    }
+
+    .modal-divider {
+      border: 2px solid var(--theme-color);
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .modal-details {
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+
+      p {
+        line-height: var(--leading-relaxed);
+
+        strong {
+          background-color: var(--theme-color);
+          color: var(--color-white);
+          padding: var(--space-1) var(--space-2);
+          text-transform: uppercase;
+          display: inline-block;
+          width: fit-content;
+          margin-right: var(--space-2);
+          border-radius: var(--border-radius-sm);
+          font-size: var(--text-sm);
+          font-weight: var(--font-weight-semibold);
+        }
+      }
+
+      .tech-list {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        list-style: none;
+
+        li {
+          background-color: var(--theme-color);
+          padding: var(--space-1) var(--space-2);
+          border-radius: var(--border-radius);
+          color: var(--color-white);
+          font-size: var(--text-sm);
+          font-weight: var(--font-weight-medium);
+        }
+      }
+    }
+  }
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+/* ==================================================
+RESPONSIVE DESIGN - Ajustes para diferentes tamaños de pantalla
+================================================== */
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: var(--space-2);
+
+    .modal-content {
+      padding: var(--space-6);
+      max-width: 95vw;
+
+      .modal-header h3 {
+        font-size: var(--text-2xl);
+      }
+
+      .modal-header h4 {
+        font-size: var(--text-lg);
+      }
+    }
+  }
+
+  .card {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay .modal-content {
+    padding: var(--space-4);
+  }
+}
