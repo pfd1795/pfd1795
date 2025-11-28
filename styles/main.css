@@ -1,0 +1,199 @@
+/* ==========================================================================
+MAIN CSS - Estilos principales de layout y estructura global
+========================================================================== */
+
+@import url("./reset.css");
+@import url("./root.css");
+@import url("./components/global-styles.css");
+@import url("./components/navbar.css");
+
+/* ===== BODY CONTAINER - Contenedor principal de la aplicación ===== */
+
+.body_container {
+  background-color: var(--color-white);
+  color: var(--color-black);
+  display: grid;
+  font-size: var(--text-base);
+  letter-spacing: .5px;
+  line-height: var(--leading-relaxed);
+  min-height: 100vh;
+  min-height: 100dvh;
+  transition: all var(--transition-slow) var(--ease-in-out);
+  background-size: 100%;
+  background-attachment: fixed;
+}
+
+.body_container.dark {
+  background-color: var(--color-black);
+  color: var(--color-white);
+}
+
+@media print {
+  .body_container {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    background: none !important;
+  }
+}
+
+/* ===== PAGE LAYOUT - Layout principal del contenido ===== */
+
+.page-layout {
+  padding: var(--space-4);
+  width: 100%;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    width: min(90%, var(--size-6xl));
+    padding: var(--space-6);
+  }
+
+  @media (min-width: 1200px) {
+    width: min(65%, var(--size-7xl));
+    padding: var(--space-8);
+  }
+
+  @media print {
+    padding: 0;
+    width: 100%;
+  }
+}
+
+/* ===== FOOTER - Componente de pie de página ===== */
+
+.footer {
+  background-color: var(--color-black-soft);
+  color: var(--color-white);
+  outline: 4px solid var(--theme-color);
+  padding: var(--space-4);
+  margin-top: var(--space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ===== EMAIL CONTAINER - Contenedor específico para email ===== */
+
+.email-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.footer-email-link {
+  color: var(--theme-color);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color var(--transition-normal) var(--ease-in-out);
+
+  &:hover {
+    color: var(--theme-color-light);
+  }
+}
+
+/* ===== CREDITS TEXT - Texto de créditos y atribuciones ===== */
+
+.credits-text {
+  color: var(--color-gray-400);
+  line-height: var(--leading-relaxed);
+  font-size: var(--text-sm);
+
+  a {
+    color: var(--theme-color);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--color-blue-light);
+    }
+  }
+}
+
+/* ===== FOOTER BOTTOM - Sección inferior del footer ===== */
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.developer-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.developer-label {
+  font-size: var(--text-xs);
+  color: var(--color-gray-400);
+  line-height: var(--leading-tight);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.developer-link {
+  color: var(--color-gray-200);
+  font-size: var(--text-lg);
+  font-style: italic;
+  text-align: center;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all var(--transition-normal) var(--ease-in-out);
+  font-weight: var(--font-weight-semibold);
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--theme-color);
+    transform: translateY(-1px);
+  }
+}
+
+.version-text {
+  font-size: var(--text-xs);
+  color: var(--color-gray-400);
+  text-align: right;
+}
+
+/* ===== RESPONSIVE DESIGN - Ajustes para tablets y desktop ===== */
+
+@media (min-width: 768px) {
+  .footer {
+    padding: var(--space-8) var(--space-16);
+  }
+
+  .credits-text {
+    text-align: center;
+    font-size: var(--text-base);
+  }
+
+  .footer-bottom {
+    align-items: center;
+    margin-top: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer {
+    padding: var(--space-10) var(--space-20);
+  }
+}
+
+/* ===== PRINT STYLES - Optimizaciones para impresión ===== */
+
+@media print {
+  .footer {
+    background: none !important;
+    color: var(--color-black) !important;
+    outline: none !important;
+    margin-top: var(--space-8);
+    padding: var(--space-4) 0
+  }
+
+  .developer-link,
+  .credits-text a {
+    color: var(--color-black) !important;
+    text-decoration: none;
+  }
+}
