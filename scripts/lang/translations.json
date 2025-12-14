@@ -1,0 +1,340 @@
+{
+  "page": {
+    "es": {
+      "web-developer": "Desarrollador Web",
+      "menu": "Menú",
+      "close": "Cerrar",
+      "home": "Inicio",
+      "resume": "Currículum",
+      "settings": "Configuración",
+      "language": "Idioma",
+      "dark-mode": "Modo Oscuro",
+      "dark": "Modo Oscuro",
+      "light": "Modo Claro",
+      "theme-color": "Color del Tema",
+      "creditsText": "Los vectores e iconos son de",
+      "developedBy": "SITIO DESARROLLADO POR"
+    },
+    "en": {
+      "web-developer": "Web Developer",
+      "menu": "Menu",
+      "close": "Close",
+      "home": "Home",
+      "resume": "Resume",
+      "settings": "Settings",
+      "language": "Language",
+      "dark-mode": "Dark Mode",
+      "dark": "Dark Mode",
+      "light": "Light Mode",
+      "theme-color": "Theme Color",
+      "creditsText": "Vectors and icons are from",
+      "developedBy": "SITE DEVELOPED BY"
+    }
+  },
+  "introSection": {
+    "es": {
+      "welcomeMessage": "¡Hola Mundo!",
+      "introText": "Bienvenido a mi sitio web.",
+      "greeting": "Mi nombre es",
+      "name": "Pablo",
+      "role": ", soy programador especializado en desarrollo de paginas web y aplicaiones móvil.",
+      "commitment": "Ofrezco mis servicios en desarrollo de software, aportando ideas y creando soluciones, trabajando en equipo con integridad y respeto,",
+      "end": "compromiso en cada proyecto.",
+      "subtitle": "Este portafolio está construido con las tecnologías fundamentales de la web: HTML, CSS y JavaScript vanilla.",
+      "title": "Proyectos con Diferentes Tecnologías",
+      "viewProject": "Ver Proyecto"
+    },
+    "en": {
+      "welcomeMessage": "Hello World!",
+      "introText": "Welcome to my website.",
+      "greeting": "My name is",
+      "name": "Pablo",
+      "role": ", I am a programmer specialized in web and mobile development.",
+      "commitment": "I offer my services in software development, contributing ideas and creating solutions, working as a team with integrity and respect,",
+      "end": "commitment in each project.",
+      "subtitle": "This portfolio is built with the fundamental web technologies: HTML, CSS and vanilla JavaScript.",
+      "title": "Projects with Different Technologies",
+      "viewProject": "View Project"
+    }
+  },
+  "projects": [
+    {
+      "id": 1,
+      "title": {
+        "es": "Aplicaciones con Next.js",
+        "en": "Applications with Next.js"
+      },
+      "description": {
+        "es": "Colección de aplicaciones web modernas construidas con Next.js, React y Tailwind CSS.",
+        "en": "Collection of modern web applications built with Next.js, React and Tailwind CSS."
+      },
+      "image": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop",
+      "link": "https://proyectos-nextjs.vercel.app/home",
+      "technologies": [
+        "Next.js",
+        "React",
+        "Tailwind CSS",
+        "TypeScript",
+        "Vercel"
+      ]
+    }
+  ],
+  "header": {
+    "es": {
+      "cv": "Currículum Vitae",
+      "profession1": "Programador",
+      "profession2": "Desarrollador Web",
+      "profession3": "Educador",
+      "fullnameTitle": "Nombre",
+      "fullname": "Pablo Díaz",
+      "nationalityTitle": "Nacionalidad",
+      "nationality": "Argentina",
+      "mailTitle": "Correo Electrónico",
+      "mailName": "pfd1795@gmail.com",
+      "linkedinTitle": "LinkedIn",
+      "linkedinName": "pfd-dev",
+      "githubTitle": "GitHub",
+      "githubName": "pfd1795",
+      "downloadTile": "Descargar CV",
+      "webSiteTitle": "Sitio Web",
+      "webSiteName": "pfd1795.github.io/",
+      "greeting1": "¡Hola, soy Pablo!",
+      "greetingResume": "Ofrezco mis servicios para diversos entornos laborales, destacando mis habilidades en el uso de software de gestión, mantenimiento de equipos tecnológicos, atención al público, trabajo en equipo, presentación y respeto.",
+      "experienceTitle": "Experiencia Laboral",
+      "studiesTitle": "Estudios | Cursos",
+      "description": "Descripción del Trabajo",
+      "date": "Duración",
+      "workplace": "Lugar de Trabajo",
+      "technologies": "Tecnologías Utilizadas",
+      "copyNotification": "¡Correo copiado!"
+    },
+    "en": {
+      "cv": "Curriculum Vitae",
+      "profession1": "Programmer",
+      "profession2": "Web Developer",
+      "profession3": "Educator",
+      "fullnameTitle": "Name",
+      "fullname": "Pablo Díaz",
+      "nationalityTitle": "Nationality",
+      "nationality": "Argentinian",
+      "mailTitle": "Email",
+      "mailName": "pfd1795@gmail.com",
+      "linkedinTitle": "LinkedIn",
+      "linkedinName": "pfd-dev",
+      "githubTitle": "GitHub",
+      "githubName": "pfd1795",
+      "downloadTile": "Download CV",
+      "webSiteTitle": "Website",
+      "webSiteName": "pfd1795.github.io/",
+      "greeting1": "Hello, I'm Pablo!",
+      "greetingResume": "I offer my services for various work environments, highlighting my skills in using management software, maintaining technological equipment, customer service, teamwork, presentation, and respect.",
+      "experienceTitle": "Work Experience",
+      "studiesTitle": "Studies | Courses",
+      "description": "Job Description",
+      "date": "Duration",
+      "workplace": "Workplace",
+      "technologies": "Technologies Used",
+      "copyNotification": "Email copied!"
+    }
+  },
+  "workExperience": [
+    {
+      "id": 1,
+      "company": "Neoland",
+      "date": "1 año",
+      "description": "Desempeño la labor de docente en el bootcamp de Desarrollo Web, utilizando las tecnologías más demandadas en la industria. Gracias Neoland por abrirme las puertas a nuevos desafíos, fortalecer mis habilidades pedagógicas y permitirme compartir mis conocimientos con futuros desarrolladores.",
+      "duration": "2025 (1 año)",
+      "employmentType": "Remoto",
+      "link": "https://neoland.es/",
+      "role": "Profesor Bootcamp Desarrollo Web Full Stack",
+      "technologies": [
+        "Algoritmos",
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "Angular",
+        "Node.js",
+        "ExpressJS",
+        "MongoDB",
+        "Git",
+        "GitHub"
+      ]
+    },
+    {
+      "id": 2,
+      "company": "Vortex-IT",
+      "date": "2 años",
+      "description": "Colaboré en el diseño y desarrollo de interfaces de usuario y productos en promoción, adquiriendo experiencia en arquitecturas de proyectos escalables. Implementé funcionalidades de internacionalización, autenticación, manejo de cámaras y escáneres QR, y geolocalización.",
+      "duration": "2021 - 2023 (2 años)",
+      "employmentType": "Remoto",
+      "link": "https://vortex-it.com/",
+      "role": "Desarrollador Frontend Aplicaciones Web y Móviles",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "React Native",
+        "Node.js",
+        "MongoDB",
+        "Postman",
+        "Material UI",
+        "Tailwind CSS",
+        "Figma",
+        "i18n",
+        "GitLab"
+      ]
+    },
+    {
+      "id": 3,
+      "company": "Ministerio de Educación de la Nación Argentina",
+      "date": "1 año 6 meses",
+      "description": "Desarrollo de un sistema web accesible diseñado para gestionar usuarios con diversos roles y necesidades específicas. Durante este tiempo, adquirí mi primera experiencia en el uso de tecnologías orientadas a arquitecturas robustas, documentación y despliegues de aplicaciones.",
+      "duration": "2020 - 2021 (1 año y 6 meses)",
+      "employmentType": "Presencial y remoto",
+      "link": "https://sime.educaciontuc.gov.ar/",
+      "role": "Desarrollador de Páginas Web",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "C#",
+        "ASP.NET",
+        "SQL Server",
+        "Bootstrap",
+        "jQuery",
+        "GitLab"
+      ]
+    },
+    {
+      "id": 4,
+      "company": "Universidad Nacional de Argentina",
+      "date": "4 años",
+      "description": "Colaboré como auxiliar docente en la asignatura de Laboratorio de Programación. Esta materia se enfoca en enseñar los fundamentos de la creación de páginas web accesibles y los principios básicos de la programación. Asistí en la planificación y dictado de clases, corrección de exámenes y proyectos estudiantiles. Este período me permitió fortalecer mis habilidades técnicas y mi capacidad para trabajar en equipo en entornos académicos.",
+      "duration": "2017 - 2021 (4 años)",
+      "employmentType": "Presencial y remoto",
+      "link": "https://www.facet.unt.edu.ar/",
+      "role": "Auxiliar Docente Programación Web",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "PHP",
+        "MySQL",
+        "Bootstrap",
+        "WordPress",
+        "XAMPP",
+        "NVDA",
+        "Trello"
+      ]
+    }
+  ],
+  "educations": [
+    {
+      "id": 1,
+      "title": "Ciberseguridad",
+      "institution": "CISCO Networking Academy",
+      "date": "2023",
+      "type": "Certificación Profesional",
+      "description": "Curso completo sobre fundamentos de ciberseguridad, cubriendo conceptos esenciales de protección de redes, identificación de amenazas, y mejores prácticas para mantener la seguridad de sistemas informáticos. Incluye módulos sobre criptografía, seguridad de endpoints, y respuesta a incidentes.",
+      "skills": [
+        "Seguridad de Redes",
+        "Protección de Datos",
+        "Identificación de Amenazas",
+        "Criptografía Básica",
+        "Análisis de Vulnerabilidades",
+        "Respuesta a Incidentes"
+      ],
+      "certificate": "https://www.netacad.com/courses/cybersecurity"
+    },
+    {
+      "id": 2,
+      "title": "Inglés - Nivel Intermedio Avanzado",
+      "institution": "Centro Universitario de Idiomas",
+      "date": "2022 - 2023",
+      "type": "Curso de Idiomas",
+      "description": "Programa intensivo de inglés enfocado en habilidades comunicativas para entornos profesionales y técnicos. Desarrollo de competencias en lectura de documentación técnica, redacción de informes, y comunicación oral en contextos laborales del sector tecnológico.",
+      "skills": [
+        "Inglés Técnico",
+        "Comunicación Oral",
+        "Redacción Profesional",
+        "Comprensión Lectora",
+        "Presentaciones en Inglés",
+        "Vocabulario IT"
+      ],
+      "certificate": ""
+    },
+    {
+      "id": 3,
+      "title": "Argentina Programa 4.0",
+      "institution": "CESSI Argentina",
+      "date": "2021",
+      "type": "Programa de Formación",
+      "description": "Programa nacional de formación en programación y desarrollo de software. Incluye fundamentos de programación, estructuras de datos, algoritmos, y desarrollo web con tecnologías modernas. Enfoque práctico con proyectos reales y trabajo colaborativo.",
+      "skills": [
+        "Fundamentos de Programación",
+        "Estructuras de Datos",
+        "Algoritmos",
+        "Desarrollo Web",
+        "Trabajo en Equipo",
+        "Metodologías Ágiles"
+      ],
+      "certificate": "https://www.argentina.gob.ar/economia/conocimiento/argentina-programa"
+    },
+    {
+      "id": 4,
+      "title": "Programador Web MERN Stack",
+      "institution": "Rolling Code School",
+      "date": "2020 - 2021",
+      "type": "Bootcamp Intensivo",
+      "description": "Bootcamp intensivo de desarrollo web full stack utilizando el stack MERN (MongoDB, Express, React, Node.js). Desarrollo de aplicaciones web completas desde cero, incluyendo diseño de bases de datos, APIs RESTful, autenticación, y despliegue en producción. Proyectos individuales y grupales con metodologías ágiles.",
+      "skills": [
+        "MongoDB",
+        "Express.js",
+        "React",
+        "Node.js",
+        "JavaScript ES6+",
+        "APIs RESTful",
+        "Autenticación JWT",
+        "Git & GitHub",
+        "Despliegue en Cloud"
+      ],
+      "certificate": "https://rollingcodeschool.com/"
+    },
+    {
+      "id": 5,
+      "title": "Inglés - Nivel Intermedio",
+      "institution": "Universidad Tecnológica Nacional",
+      "date": "2019 - 2020",
+      "type": "Curso Académico",
+      "description": "Curso académico de inglés con enfoque en comprensión de textos técnicos y científicos. Desarrollo de habilidades de lectura y escritura para entornos académicos y profesionales, con énfasis en terminología técnica del área de ingeniería y tecnología.",
+      "skills": [
+        "Comprensión de Textos Técnicos",
+        "Gramática Avanzada",
+        "Escritura Académica",
+        "Vocabulario Técnico",
+        "Conversación Básica"
+      ],
+      "certificate": ""
+    },
+    {
+      "id": 6,
+      "title": "Técnico en Computadoras",
+      "institution": "Universidad Tecnológica Nacional",
+      "date": "2017 - 2019",
+      "type": "Carrera Técnica",
+      "description": "Carrera técnica enfocada en el mantenimiento, reparación y configuración de equipos informáticos. Incluye conocimientos de hardware, sistemas operativos, redes locales, y soporte técnico. Formación práctica en diagnóstico y resolución de problemas, instalación de software, y administración básica de sistemas.",
+      "skills": [
+        "Mantenimiento de Hardware",
+        "Instalación de Sistemas Operativos",
+        "Configuración de Redes",
+        "Soporte Técnico",
+        "Diagnóstico de Problemas",
+        "Ensamblado de PCs",
+        "Administración de Sistemas"
+      ],
+      "certificate": ""
+    }
+  ]
+}

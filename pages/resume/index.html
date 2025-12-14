@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pfd1795 | Resume</title>
+
+  <meta name="description"
+    content="Desarrollador Web Full Stack especializado en React, Next.js, React Native, PHP, SQL y NoSQL. Creación de aplicaciones web y móviles escalables con experiencia en tecnologías modernas." />
+  <meta name="keywords"
+    content="desarrollador web, full stack developer, React, Next.js, React Native, PHP, JavaScript, TypeScript, SQL, NoSQL, MongoDB, programador, desarrollador frontend, desarrollador backend" />
+  <meta name="author" content="Pablo Diaz" />
+
+  <link rel="icon" href="/favicon.png" />
+
+  <link rel="stylesheet" href="../../styles/main.css" />
+  <link rel="stylesheet" href="./styles.css" />
+
+  <script src="./scripts/main.js" defer type="module"></script>
+</head>
+
+<body id="pageResume" class="body-container">
+  <div class="main-layout">
+    <main class="container">
+      <header class="cv-header">
+        <h2 data-lang="cv">Currículum Vitae</h2>
+
+        <div>
+          <h3 data-lang="profession2">Desarrollador Web</h3>
+          <h3 data-lang="profession1">Tecnico computadoras</h3>
+          <h3 data-lang="profession3">Tutor Informatica</h3>
+        </div>
+      </header>
+
+      <section class="intro-section">
+        <div class="intro-content">
+          <p>
+            <span class="capitalize" data-lang="fullnameTitle">Nombre</span>:
+            <strong data-lang="fullname">Pablo Diaz</strong>
+          </p>
+
+          <div class="email-container">
+            <p>
+              <span class="capitalize" data-lang="mailTitle">Mail</span>:
+              <strong class="email-link" title="Copiar correo" data-lang="mailName">
+                pfd1795@gmail.com
+              </strong>
+            </p>
+            <span id="copyNotification" class="copy-notification">¡Correo copiado!</span>
+          </div>
+
+          <p>
+            <span class="capitalize" data-lang="linkedinTitle">linkedin</span>:
+            <a href="https://www.linkedin.com/in/pfd-dev/" class="social-link" target="_blank" title="Link a pfd-dev">
+              <strong data-lang="linkedinName">pfd-dev</strong>
+            </a>
+          </p>
+
+          <p>
+            <span class="capitalize" data-lang="githubTitle">GitHub</span>:
+            <a href="https://github.com/pfd1795" class="social-link" target="_blank" title="Link a pfd1795">
+              <strong data-lang="githubName">pfd1795</strong>
+            </a>
+          </p>
+
+          <!-- <p>
+            <span class="capitalize" data-lang="downloadTile">Descarga CV</span>:
+            <a href="../assets/files/PabloDiazCV.pdf" class="social-link" download="" title="Descargar PDF">
+              <strong data-lang="githubName">CV PDF</strong>
+            </a>
+          </p> -->
+
+          <p style="display: none;" class="print-only">
+            <span class="capitalize" data-lang="webSiteTitle">Web</span>:
+            <a href="https://pfd1795.github.io/pfd1795/home" class="social-link" target="_blank">
+              <strong><span data-lang="webSiteName">pfd1795.github.io/</span><span
+                  data-lang="githubName">pfd1795</span></strong>
+            </a>
+          </p>
+
+
+        </div>
+
+        <div class="greeting">
+          <p class="greeting-title" data-lang="greeting1">¡Hola, soy Pablo!</p>
+          <p class="greeting-text" data-lang="greetingResume">
+            Ofrezco mis servicios para diversos entornos laborales, destacando mis habilidades en el uso de
+            distintos softwares de gestión, mantenimiento de equipos tecnológicos, atención al público,
+            trabajo
+            en equipo, presentación y respeto.
+          </p>
+        </div>
+      </section>
+
+      <section class="layout-container">
+        <header>
+          <h3 class="layout-header" data-lang="experienceTitle">Experiencia Laboral</h3>
+        </header>
+
+        <div class="grid-container" id="workExperienceContainer"></div>
+      </section>
+
+      <section class="layout-container">
+        <header>
+          <h3 class="layout-header" data-lang="studiesTitle">Estudios | Cursos</h3>
+        </header>
+
+        <div class="grid-container" id="educationContainer"></div>
+      </section>
+    </main>
+  </div>
+</body>
+
+</html>

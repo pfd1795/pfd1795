@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pfd1795 | Home</title>
+
+  <meta name="description"
+    content="Desarrollador Web Full Stack especializado en React, Next.js, React Native, PHP, SQL y NoSQL. Creación de aplicaciones web y móviles escalables con experiencia en tecnologías modernas." />
+  <meta name="keywords"
+    content="desarrollador web, full stack developer, React, Next.js, React Native, PHP, JavaScript, TypeScript, SQL, NoSQL, MongoDB, programador, desarrollador frontend, desarrollador backend" />
+  <meta name="author" content="Pablo Diaz" />
+
+  <link rel="icon" href="/favicon.png" />
+
+  <link rel="stylesheet" href="../../styles/main.css" />
+  <!-- <link rel="stylesheet" href="/src/styles/styles.css" /> -->
+
+  <script src="../../scripts/main.js" defer type="module"></script>
+</head>
+
+<body id="HomePage" class="body-container">
+  <header class="navbar-header">
+    <a href="/" class="logo-link" title="inicio">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <div>
+      <button class="btn" title="abrir menú">
+        <span data-lang="menu">Configuración</span>
+        <img src="/src/assets/icons/setting.svg" />
+      </button>
+    </div>
+  </header>
+
+  <main class="main-layout">
+    test
+  </main>
+
+  <footer class="footer">
+    <p class="credits-text" data-lang="creditsText">
+      Los vectores y iconos son de
+      <a href="https://github.com/garudatechnologydevelopers/sketch-icons?ref=svgrepo.com" title="GitHub"
+        target="_blank">github/GarudaTechnology</a> y
+      <a href="https://www.svgrepo.com/author/Garuda%20Technology/" target="_blank">svgrepo/GarudaTechnology</a>
+      con la licencia MIT de
+      <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>. Y de
+      <a href="https://fonts.google.com/icons" target="_blank">google/icons</a>
+    </p>
+
+    <hr class="divider">
+
+    <div class="footer-bottom">
+      <div class="developer-info">
+        <p class="developer-label" data-lang="developedBy">
+          SITIO DESARROLLADO POR<br>
+        </p>
+        <a href="https://github.com/pfd1795" target="_blank" class="developer-link">pfd1795</a>
+      </div>
+
+      <p class="version-text">Ver. 0.01</p>
+    </div>
+  </footer>
+
+  <dialog class="modal-dialog">
+    <article class="modal-content">
+      <button class="btn" title="Cerrar ventana (Esc)">&times;</button>
+      <div class="modal-body"></div>
+    </article>
+  </dialog>
+
+  <div class="modal-overlay">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="btn" title="Cerrar ventana (Esc)">&times;</button>
+      <div class="modal-body"></div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Configuración</h2>
+
+      <div>
+        <button class="btn" title="cerrar menú">
+          <span data-lang="close">Cerrar</span>
+          <img src="/src/assets/icons/close.svg" />
+        </button>
+      </div>
+    </header>
+
+    <div class="settings-section">
+      <!-- <section class="settings-language">
+        <label class="theme-label" data-lang="language">Idioma</label>
+        <div>
+          <button class="btn">
+            <span data-lang="language">Idioma</span>
+            <img src="/src/assets/icons/translate.svg" />
+          </button>
+        </div>
+      </section> -->
+
+      <section class="settings-theme-mode">
+        <div class="theme-mode-toggle">
+          <label class="theme-label" data-lang="dark-mode">Modo Oscuro</label>
+
+          <div class="toggle-switch">
+            <div class="toggle-slider">
+              <img src="/src/assets/icons/light_mode.svg" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-theme-color">
+        <label class="theme-label" data-lang="theme-color">Color del tema</label>
+        <div class="color-options">
+          <button class="color-option selected" style="background: #3b82f6;" data-color="blue" data-value="#3b82f6"
+            title="Azul"></button>
+          <button class="color-option" style="background: #10b981;" data-color="green" data-value="#10b981"
+            title="Verde"></button>
+          <button class="color-option" style="background: #f59e0b;" data-color="orange" data-value="#f59e0b"
+            title="Naranja"></button>
+          <button class="color-option" style="background: #ef4444;" data-color="red" data-value="#ef4444"
+            title="Rojo"></button>
+          <button class="color-option" style="background: #8b5cf6;" data-color="purple" data-value="#8b5cf6"
+            title="Morado"></button>
+          <button class="color-option" style="background: #ec4899;" data-color="pink" data-value="#ec4899"
+            title="Rosa"></button>
+        </div>
+      </section>
+    </div>
+  </aside>
+</body>
+
+</html>

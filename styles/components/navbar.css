@@ -1,0 +1,38 @@
+.navbar-header {
+  align-items: center;
+  background-color: var(--color-black-mute);
+  border-bottom: 4px solid var(--theme-color);
+  display: flex;
+  justify-content: space-between;
+  padding: .5em 1em;
+  position: relative;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+
+  .logo-link {
+    color: var(--color-white);
+    letter-spacing: 2px;
+    line-height: 1.2;
+    transition: all .3s ease;
+
+    h1 {
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    h2 {
+      font-style: italic;
+      text-transform: uppercase;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+
+      h1 {
+        color: var(--theme-color);
+      }
+    }
+  }
+}

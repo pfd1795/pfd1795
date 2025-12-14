@@ -1,0 +1,179 @@
+{
+  "header": {
+    "es": {
+      "cv": "Currículum Vitae",
+      "profession1": "Programador",
+      "profession2": "Desarrollador Web",
+      "profession3": "Educador",
+      "fullnameTitle": "Nombre",
+      "fullname": "Pablo Díaz",
+      "nationalityTitle": "Nacionalidad",
+      "nationality": "Argentina",
+      "mailTitle": "Correo Electrónico",
+      "mailName": "pfd1795@gmail.com",
+      "linkedinTitle": "LinkedIn",
+      "linkedinName": "pfd-dev",
+      "githubTitle": "GitHub",
+      "githubName": "pfd1795",
+      "downloadTile": "Descargar CV",
+      "webSiteTitle": "Sitio Web",
+      "webSiteName": "pfd1795.github.io/",
+      "greeting1": "¡Hola, soy Pablo!",
+      "greetingResume": "Ofrezco mis servicios para diversos entornos laborales, destacando mis habilidades en el uso de software de gestión, mantenimiento de equipos tecnológicos, atención al público, trabajo en equipo, presentación y respeto.",
+      "experienceTitle": "Experiencia Laboral",
+      "studiesTitle": "Estudios | Cursos",
+      "description": "Descripción del Trabajo",
+      "date": "Duración",
+      "workplace": "Lugar de Trabajo",
+      "technologies": "Tecnologías Utilizadas",
+      "copyNotification": "¡Correo copiado!"
+    },
+    "en": {
+      "cv": "Curriculum Vitae",
+      "profession1": "Programmer",
+      "profession2": "Web Developer",
+      "profession3": "Educator",
+      "fullnameTitle": "Name",
+      "fullname": "Pablo Díaz",
+      "nationalityTitle": "Nationality",
+      "nationality": "Argentinian",
+      "mailTitle": "Email",
+      "mailName": "pfd1795@gmail.com",
+      "linkedinTitle": "LinkedIn",
+      "linkedinName": "pfd-dev",
+      "githubTitle": "GitHub",
+      "githubName": "pfd1795",
+      "downloadTile": "Download CV",
+      "webSiteTitle": "Website",
+      "webSiteName": "pfd1795.github.io/",
+      "greeting1": "Hello, I'm Pablo!",
+      "greetingResume": "I offer my services for various work environments, highlighting my skills in using management software, maintaining technological equipment, customer service, teamwork, presentation, and respect.",
+      "experienceTitle": "Work Experience",
+      "studiesTitle": "Studies | Courses",
+      "description": "Job Description",
+      "date": "Duration",
+      "workplace": "Workplace",
+      "technologies": "Technologies Used",
+      "copyNotification": "Email copied!"
+    }
+  },
+  "workExperience": [
+    {
+      "id": 1,
+      "company": "Neoland",
+      "date": "1 año",
+      "description": "Desempeño la labor de docente en el bootcamp de Desarrollo Web, utilizando las tecnologías más demandadas en la industria. Gracias Neoland por abrirme las puertas a nuevos desafíos, fortalecer mis habilidades pedagógicas y permitirme compartir mis conocimientos con futuros desarrolladores.",
+      "duration": "2025 (1 año)",
+      "employmentType": "Remoto",
+      "link": "https://neoland.es/",
+      "role": "Profesor Bootcamp Desarrollo Web Full Stack",
+      "technologies": [
+        "Algoritmos",
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "Angular",
+        "Node.js",
+        "ExpressJS",
+        "MongoDB",
+        "Git",
+        "GitHub"
+      ]
+    },
+    {
+      "id": 2,
+      "company": "Vortex-IT",
+      "date": "2 años",
+      "description": "Colaboré en el diseño y desarrollo de interfaces de usuario y productos en promoción, adquiriendo experiencia en arquitecturas de proyectos escalables. Implementé funcionalidades de internacionalización, autenticación, manejo de cámaras y escáneres QR, y geolocalización.",
+      "duration": "2021 - 2023 (2 años)",
+      "employmentType": "Remoto",
+      "link": "https://vortex-it.com/",
+      "role": "Desarrollador Frontend Aplicaciones Web y Móviles",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "React Native",
+        "Node.js",
+        "MongoDB",
+        "Postman",
+        "Material UI",
+        "Tailwind CSS",
+        "Figma",
+        "i18n",
+        "GitLab"
+      ]
+    },
+    {
+      "id": 3,
+      "company": "Ministerio de Educación de la Nación Argentina",
+      "date": "1 año 6 meses",
+      "description": "Desarrollo de un sistema web accesible diseñado para gestionar usuarios con diversos roles y necesidades específicas. Durante este tiempo, adquirí mi primera experiencia en el uso de tecnologías orientadas a arquitecturas robustas, documentación y despliegues de aplicaciones.",
+      "duration": "2020 - 2021 (1 año y 6 meses)",
+      "employmentType": "Presencial y remoto",
+      "link": "https://sime.educaciontuc.gov.ar/",
+      "role": "Desarrollador de Páginas Web",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "C#",
+        "ASP.NET",
+        "SQL Server",
+        "Bootstrap",
+        "jQuery",
+        "GitLab"
+      ]
+    },
+    {
+      "id": 4,
+      "company": "Universidad Nacional de Argentina",
+      "date": "4 años",
+      "description": "Colaboré como auxiliar docente en la asignatura de Laboratorio de Programación. Esta materia se enfoca en enseñar los fundamentos de la creación de páginas web accesibles y los principios básicos de la programación. Asistí en la planificación y dictado de clases, corrección de exámenes y proyectos estudiantiles. Este período me permitió fortalecer mis habilidades técnicas y mi capacidad para trabajar en equipo en entornos académicos.",
+      "duration": "2017 - 2021 (4 años)",
+      "employmentType": "Presencial y remoto",
+      "link": "https://www.facet.unt.edu.ar/",
+      "role": "Auxiliar Docente Programación Web",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "PHP",
+        "MySQL",
+        "Bootstrap",
+        "WordPress",
+        "XAMPP",
+        "NVDA",
+        "Trello"
+      ]
+    }
+  ],
+  "educations": [
+    {
+      "title": "CISCO",
+      "description": "Ciberseguridad"
+    },
+    {
+      "title": "Centro Universitario de Idiomas",
+      "description": "Inglés"
+    },
+    {
+      "title": "CESSI Argentina",
+      "description": "Argentina Programa 4.0"
+    },
+    {
+      "title": "Rolling Code School",
+      "description": "Programador Web MERN Stack"
+    },
+    {
+      "title": "Universidad Tecnológica Nacional",
+      "description": "Inglés"
+    },
+    {
+      "title": "Universidad Tecnológica Nacional",
+      "description": "Técnico en Computadoras"
+    }
+  ]
+}
