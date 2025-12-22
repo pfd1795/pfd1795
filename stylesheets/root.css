@@ -1,0 +1,182 @@
+/* ===== Variables CSS globales y sistema de diseño ===== */
+
+:root {
+  /* ===== Sistema de colores ===== */
+
+  --color-white: #ffffff;
+  --color-light: #dddddd;
+
+  --color-black: #000000;
+  --color-dark: #222222;
+
+  --color-gray: #9a9a9a;
+
+  --color-blue-light: #3b82f6;
+  --color-blue: #2563eb;
+  --color-blue-dark: #1d4ed8;
+
+  --color-green-light: #10b981;
+  --color-green: #059669;
+  --color-green-dark: #047857;
+
+  --color-red-light: #ef4444;
+  --color-red: #dc2626;
+  --color-red-dark: #b91c1c;
+
+  --color-yellow-light: #f59e0b;
+  --color-yellow: #d97706;
+  --color-yellow-dark: #b45309;
+
+  --color-purple-light: #8b5cf6;
+  --color-purple: #7c3aed;
+  --color-purple-dark: #6d28d9;
+
+  --color-pink-light: #ec4899;
+  --color-pink: #db2777;
+  --color-pink-dark: #be185d;
+
+  --color-orange-light: #f97316;
+  --color-orange: #ea580c;
+  --color-orange-dark: #c2410c;
+
+  --color-cyan-light: #06b6d4;
+  --color-cyan: #0891b2;
+  --color-cyan-dark: #0e7490;
+
+  /* ===== Colores semánticos ===== */
+
+  --color-success: var(--color-green);
+
+  --color-warning: var(--color-yellow);
+
+  --color-error: var(--color-red);
+
+  --color-info: var(--color-cyan);
+
+  /* ===== Colores del tema ===== */
+
+  --color-primary: var(--color-blue);
+
+  --theme-color: var(--color-primary);
+
+  /* ===== Sistema de tipografía ===== */
+
+  --text-xs: 0.75rem;
+  /* 12px */
+  --text-sm: 0.875rem;
+  /* 14px */
+  --text-base: 1rem;
+  /* 16px */
+  --text-lg: 1.125rem;
+  /* 18px */
+  --text-xl: 1.25rem;
+  /* 20px */
+  --text-2xl: 1.5rem;
+  /* 24px */
+  --text-3xl: 1.875rem;
+  /* 30px */
+  --text-4xl: 2.25rem;
+  /* 36px */
+  --text-5xl: 3rem;
+  /* 48px */
+
+  /* ===== Pesos de fuente ===== */
+
+  --font-weight-bold: 700;
+
+  /* ===== Alturas de línea ===== */
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* ===== Sistema de espaciado consistente ===== */
+
+  --space-1: 0.25em;
+  /* 4px */
+  --space-2: 0.5em;
+  /* 8px */
+  --space-3: 0.75em;
+  /* 12px */
+  --space-4: 1em;
+  /* 16px */
+  --space-5: 1.25em;
+  /* 20px */
+  --space-6: 1.5em;
+  /* 24px */
+  --space-8: 2em;
+  /* 32px */
+  --space-10: 2.5em;
+  /* 40px */
+  --space-12: 3em;
+  /* 48px */
+  --space-16: 4em;
+  /* 64px */
+  --space-20: 5em;
+  /* 80px */
+  --space-24: 6em;
+  /* 96px */
+
+  /* ===== Tamaños de contenedores y elementos ===== */
+
+  --size-xs: 20em;
+  /* 320px */
+  --size-sm: 24em;
+  /* 384px */
+  --size-md: 28em;
+  /* 448px */
+  --size-lg: 32em;
+  /* 512px */
+  --size-xl: 36em;
+  /* 576px */
+  --size-2xl: 42em;
+  /* 672px */
+  --size-3xl: 48em;
+  /* 768px */
+  --size-4xl: 56em;
+  /* 896px */
+  --size-5xl: 64em;
+  /* 1024px */
+  --size-6xl: 72em;
+  /* 1152px */
+  --size-7xl: 80em;
+  /* 1280px */
+
+  /* ===== Breakpoints para responsive design ===== */
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ===== Bordes, sombras y efectos ===== */
+
+  --border-radius-sm: .25em;
+  /* 4px */
+  --border-radius-md: .5em;
+  /* 8px */
+  --border-radius-lg: .75em;
+  /* 12px */
+  --border-radius-xl: 1em;
+  /* 16px */
+  --border-radius-full: 50%;
+
+  /* ===== Sistema de sombras ===== */
+
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
+  /* ===== Sistema de capas para stacking context ===== */
+
+  --z-index: 1000;
+
+  /* ===== Transiciones y animaciones ===== */
+
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}

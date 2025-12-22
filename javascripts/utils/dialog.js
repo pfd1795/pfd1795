@@ -1,6 +1,6 @@
 export function ModalDialog(content = "contenido...") {
   const dialog = document.querySelector(".modal-dialog");
-  const modalBody = document.querySelector(".modal-body");
+  const modalBody = document.querySelector(".modal-dialog-body");
 
   if (!dialog || !modalBody) return;
 
@@ -13,6 +13,8 @@ export function ModalDialog(content = "contenido...") {
   }
 
   if (!dialog.open) dialog.showModal();
+
+  document.body.style = "overflow-y: hidden;";
 }
 
 export function CloseModalDialog() {
@@ -20,11 +22,13 @@ export function CloseModalDialog() {
   if (!dialog) return;
 
   if (dialog.open) dialog.close();
+
+  document.body.style = "overflow-y: scroll;";
 }
 
 function InitModalDialog() {
   const dialog = document.querySelector(".modal-dialog");
-  const btnClose = document.querySelector(".modal-content .btn");
+  const btnClose = dialog.querySelector(".btn");
 
   btnClose?.addEventListener("click", CloseModalDialog);
 
@@ -38,6 +42,8 @@ function InitModalDialog() {
 
     if (!clickedInside) CloseModalDialog();
   });
+
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { CloseModalDialog(); } });
 }
 
 document.addEventListener("DOMContentLoaded", InitModalDialog);

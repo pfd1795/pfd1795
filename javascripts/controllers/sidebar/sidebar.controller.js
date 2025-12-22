@@ -22,7 +22,7 @@ function closeMenu() {
 }
 
 export default function SidebarController() {
-  document.querySelector(".navbar-header .btn")?.addEventListener("click", openMenu);
+  document.querySelector(".navbar .btn")?.addEventListener("click", openMenu);
 
   document.querySelector(".sidebar-header .btn")?.addEventListener("click", closeMenu);
 

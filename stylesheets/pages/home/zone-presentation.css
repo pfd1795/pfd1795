@@ -1,6 +1,10 @@
-@import url("./components/zone-projects.css");
-@import url("./components/zone-studies-courses.css");
-@import url("./components/zone-work-experience.css");
+.zone-intro {
+  min-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
 
 .intro-section {
   display: flex;
@@ -29,11 +33,12 @@
   .content-container {
     figure {
       background-color: var(--color-white);
-      border-radius: 50%;
+      border-radius: var(--border-radius-full);
+      border: .4em solid var(--theme-color);
       float: right;
       height: 10rem;
       margin: .5rem;
-      outline: 4px solid var(--theme-color);
+      outline: .2em solid var(--color-black);
       overflow: hidden;
       width: 10rem;
 
@@ -46,6 +51,7 @@
 
     .description-text {
       margin-top: 1em;
+
       span {
         margin-left: 1rem;
       }
@@ -89,80 +95,50 @@
   }
 }
 
-.tech-stack-section {
-  display: flex;
-  max-width: 920px;
-  padding: 0 1em;
-  flex-direction: column;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    margin: 5em auto;
-  }
-
-  >div:nth-child(2) {
-    align-items: center;
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 1rem;
-    justify-content: center;
-    padding: 1rem;
-
-    .tech-item {
-      text-align: center;
-      
-      .tech-name {
-        font-size: 1.5rem;
-        font-weight: bold;
-
-        &.html {
-          color: #e34c26;
-        }
-
-        &.css {
-          color: #264de4;
-        }
-
-        &.javascript {
-          color: #f0db4f;
-        }
-      }
+.dark .intro-section {
+  .content-container {
+    figure {
+      border: .4em solid var(--theme-color);
+      outline: .2em solid var(--color-white);
     }
   }
-
-  >div:nth-child(1) {
-   strong {
-    color: var(--theme-color);
-   } 
-  }
-}
-
-.tech-plus {
-  font-size: 1.875rem;
-  font-weight: bold;
 }
 
 .header-contact {
+  background-color: var(--theme-color);
+  border-radius: var(--border-radius-xl);
+  outline: .2em solid var(--color-black);
   display: flex;
   flex-wrap: nowrap;
-  gap: 2rem;
+  gap: var(--space-8);
   justify-content: center;
-  margin-top: 1em;
-  margin-bottom: 3em;
+  padding: 0 var(--space-8);
 
   .social-link {
-    border-radius: .5rem;
-    padding: .3rem;
-    transition: background-color .3s ease;
+    padding: var(--space-2);
+    transition: all var(--transition-normal) var(--ease-in-out);
     cursor: pointer;
+    color: var(--color-white);
 
     &:hover {
-      background-color: var(--theme-color);
+      background-color: var(--color-white);
+      outline: .2em solid var(--color-black);
+      color: var(--theme-color);
     }
   }
 
   .email-container {
     position: relative;
     display: inline-block;
+  }
+}
+
+.dark .header-contact {
+  outline-color: var(--color-white);
+
+  .social-link {
+    &:hover {
+      outline-color: var(--color-white);
+    }
   }
 }

@@ -235,8 +235,6 @@
       "id": 1,
       "title": "Ciberseguridad",
       "institution": "CISCO Networking Academy",
-      "date": "2023",
-      "type": "Certificación Profesional",
       "description": "Curso completo sobre fundamentos de ciberseguridad, cubriendo conceptos esenciales de protección de redes, identificación de amenazas, y mejores prácticas para mantener la seguridad de sistemas informáticos. Incluye módulos sobre criptografía, seguridad de endpoints, y respuesta a incidentes.",
       "skills": [
         "Seguridad de Redes",
@@ -246,14 +244,12 @@
         "Análisis de Vulnerabilidades",
         "Respuesta a Incidentes"
       ],
-      "certificate": "https://www.netacad.com/courses/cybersecurity"
+      "link": "https://www.netacad.com/courses/cybersecurity"
     },
     {
       "id": 2,
       "title": "Inglés - Nivel Intermedio Avanzado",
       "institution": "Centro Universitario de Idiomas",
-      "date": "2022 - 2023",
-      "type": "Curso de Idiomas",
       "description": "Programa intensivo de inglés enfocado en habilidades comunicativas para entornos profesionales y técnicos. Desarrollo de competencias en lectura de documentación técnica, redacción de informes, y comunicación oral en contextos laborales del sector tecnológico.",
       "skills": [
         "Inglés Técnico",
@@ -263,14 +259,12 @@
         "Presentaciones en Inglés",
         "Vocabulario IT"
       ],
-      "certificate": ""
+      "link": ""
     },
     {
       "id": 3,
       "title": "Argentina Programa 4.0",
       "institution": "CESSI Argentina",
-      "date": "2021",
-      "type": "Programa de Formación",
       "description": "Programa nacional de formación en programación y desarrollo de software. Incluye fundamentos de programación, estructuras de datos, algoritmos, y desarrollo web con tecnologías modernas. Enfoque práctico con proyectos reales y trabajo colaborativo.",
       "skills": [
         "Fundamentos de Programación",
@@ -280,14 +274,12 @@
         "Trabajo en Equipo",
         "Metodologías Ágiles"
       ],
-      "certificate": "https://www.argentina.gob.ar/economia/conocimiento/argentina-programa"
+      "link": "https://www.argentina.gob.ar/economia/conocimiento/argentina-programa"
     },
     {
       "id": 4,
       "title": "Programador Web MERN Stack",
       "institution": "Rolling Code School",
-      "date": "2020 - 2021",
-      "type": "Bootcamp Intensivo",
       "description": "Bootcamp intensivo de desarrollo web full stack utilizando el stack MERN (MongoDB, Express, React, Node.js). Desarrollo de aplicaciones web completas desde cero, incluyendo diseño de bases de datos, APIs RESTful, autenticación, y despliegue en producción. Proyectos individuales y grupales con metodologías ágiles.",
       "skills": [
         "MongoDB",
@@ -300,14 +292,12 @@
         "Git & GitHub",
         "Despliegue en Cloud"
       ],
-      "certificate": "https://rollingcodeschool.com/"
+      "link": "https://rollingcodeschool.com/"
     },
     {
       "id": 5,
       "title": "Inglés - Nivel Intermedio",
       "institution": "Universidad Tecnológica Nacional",
-      "date": "2019 - 2020",
-      "type": "Curso Académico",
       "description": "Curso académico de inglés con enfoque en comprensión de textos técnicos y científicos. Desarrollo de habilidades de lectura y escritura para entornos académicos y profesionales, con énfasis en terminología técnica del área de ingeniería y tecnología.",
       "skills": [
         "Comprensión de Textos Técnicos",
@@ -316,14 +306,12 @@
         "Vocabulario Técnico",
         "Conversación Básica"
       ],
-      "certificate": ""
+      "link": ""
     },
     {
       "id": 6,
       "title": "Técnico en Computadoras",
       "institution": "Universidad Tecnológica Nacional",
-      "date": "2017 - 2019",
-      "type": "Carrera Técnica",
       "description": "Carrera técnica enfocada en el mantenimiento, reparación y configuración de equipos informáticos. Incluye conocimientos de hardware, sistemas operativos, redes locales, y soporte técnico. Formación práctica en diagnóstico y resolución de problemas, instalación de software, y administración básica de sistemas.",
       "skills": [
         "Mantenimiento de Hardware",
@@ -334,7 +322,7 @@
         "Ensamblado de PCs",
         "Administración de Sistemas"
       ],
-      "certificate": ""
+      "link": ""
     }
   ]
 }

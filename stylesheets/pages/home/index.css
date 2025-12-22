@@ -1,0 +1,9 @@
+@import url("../../components/index.css");
+
+@import url("../../ui/navbar.css");
+@import url("../../ui/sidebar.css");
+
+@import url("./zone-presentation.css");
+@import url("./zone-work-experience.css");
+@import url("./zone-studies-courses.css");
+@import url("./zone-projects.css");

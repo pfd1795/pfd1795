@@ -10,16 +10,6 @@ He elegido este stack tecnológico para mantener un sitio **ligero, accesible, r
 
 ---
 
-### Contenido del sitio web
-
-El sitio está compuesto por **dos páginas principales**:
-#### Inicio
-Una breve presentación para los visitantes, con enlaces a mis principales canales de contacto.
-#### Currículum
-Un resumen de mi trayectoria en el mundo de la informática y desarrollo web.
-
----
-
 ### Próximas actualizaciones
 
 El proyecto está en constante evolución.

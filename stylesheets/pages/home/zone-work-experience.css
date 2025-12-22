@@ -1,25 +1,25 @@
 .zone-work-experience {
   background-color: var(--theme-color);
+  outline: .2em solid var(--color-black);
+  border-radius: var(--border-radius-xl);
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: var(--space-2);
   min-height: 100vh;
-  padding: 1em;
-  border-radius: .75em;
+  padding: var(--space-4);
 
   @media (min-width: 768px) {
     margin: 0 auto;
     padding: 2em;
-    width: 90%;
   }
 
-  .header .title {
+  .header h2 {
     font-size: 2rem;
     color: var(--color-white);
     font-weight: bold;
     text-align: center;
     text-transform: uppercase;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-2);
   }
 
   .content {
@@ -44,17 +44,22 @@
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: .5em;
     width: 100%;
-    
+
     @media (max-width: 767px) {
       grid-template-columns: 1fr 1fr;
     }
   }
 }
 
+.dark .zone-work-experience {
+  outline-color: var(--color-white);
+}
+
 .works-cover {
   align-items: center;
   background-color: var(--color-white);
-  border-radius: .5em;
+  border-radius: var(--border-radius-xl);
+  outline: .2em solid var(--color-black);
   display: flex;
   justify-content: center;
   min-height: 100%;
@@ -70,10 +75,9 @@
     .works-detail-header {
       h3 {
         color: var(--theme-color);
-        font-size: 1.7rem;
+        font-size: 1.7em;
         font-weight: bold;
-        line-height: 1.4;
-        margin-bottom: .3em;
+        margin-bottom: var(--space-1);
       }
 
       h4 {
@@ -81,17 +85,12 @@
       }
     }
 
-    .works-divider {
-      border: none;
-      outline: 2px solid var(--theme-color);
-      margin: .5em 0;
-    }
-
     .works-detail-body {
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       flex: 1;
-      gap: .5em;
+      gap: var(--space-2);
 
       p {
         line-height: 1.5;
@@ -101,16 +100,16 @@
     .tech-list {
       display: flex;
       flex-wrap: wrap;
-      gap: .5em;
+      gap: var(--space-2);
       list-style: none;
-      margin-top: .5em;
+      margin-top: var(--space-2);
       padding: 0;
 
       li {
-        background-color: var(--color-white-mute);
-        border-radius: 1em;
-        font-size: .9rem;
-        padding: .25em 0.5em;
+        background-color: var(--color-light);
+        border-radius: var(--border-radius-xl);
+        font-size: .9em;
+        padding: var(--space-1) var(--space-2);
       }
     }
   }
@@ -121,9 +120,10 @@
 
     h3 {
       color: var(--theme-color);
-      font-size: 2rem;
+      font-size: 1.7rem;
       font-weight: bold;
-      margin-bottom: .5em;
+      line-height: var(--leading-tight);
+      margin-bottom: var(--space-2);
     }
 
     p {
@@ -133,32 +133,39 @@
   }
 }
 
+.dark .works-cover {
+  outline-color: var(--color-white);
+  background-color: var(--color-dark);
+}
+
+
 .dark .tech-list {
   li {
     color: var(--color-black);
   }
 }
 
-.dark .works-cover {
-  background-color: var(--color-black-mute);
-}
-
 .card-work {
-  background-color: var(--color-white-mute);
-  border-radius: .5em;
+  background-color: var(--color-black);
+  border-radius: var(--border-radius-xl);
+  color: var(--color-white);
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  padding: .5em 1em;
-  transition: all 0.3s ease;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  transition: all var(--ease-in-out) var(--transition-fast);
 
   &:hover {
-    outline: 2px solid var(--color-black);
+    outline: .2em solid var(--color-black);
     transform: translateY(-4px);
   }
 
   &.active {
-    background-color: red;
+    background-color: var(--color-light);
+    color: var(--color-black);
+    outline: .2em solid var(--color-black);
+    transform: translateY(-4px);
   }
 
   header {
@@ -193,5 +200,7 @@
 }
 
 .dark .card-work {
-  background-color: var(--color-black);
+  &:hover {
+    outline-color: var(--color-white);
+  }
 }

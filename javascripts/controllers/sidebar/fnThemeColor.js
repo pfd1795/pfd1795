@@ -3,7 +3,6 @@ const savedColorValue = localStorage.getItem('theme-color-value') || '#3b82f6';
 const colorOptions = document.querySelectorAll('.color-option');
 
 function changeColor(color, colorValue) {
-
   document.documentElement.style.setProperty('--theme-color', colorValue);
 
   colorOptions.forEach(option => {

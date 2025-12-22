@@ -1,18 +1,18 @@
 .zone-studies-courses {
   display: flex;
   flex-direction: column;
+  gap: 2em;
   justify-content: center;
-  gap: 1.5rem;
-  padding: 1em;
   min-height: 100vh;
+  padding: 1em;
 
   @media (min-width: 768px) {
     margin: 0 auto;
-    padding: 2em 0;
+    padding: 0;
     width: 90%;
   }
 
-  .header .title {
+  .header h2 {
     color: var(--text-color-bold);
     font-size: 2em;
     font-weight: bold;
@@ -35,18 +35,21 @@
 
 .card-studies {
   background-color: var(--theme-color);
-  border-radius: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  border-radius: var(--border-radius-lg);
   color: var(--color-white);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1.5rem;
+  padding: var(--space-2) var(--space-4);
   transition: all 0.3s ease;
 
+  @media (min-width: 768px) {
+    
+  }
+
   &:hover {
-    outline: 2px solid var(--color-black);
+    outline: .2em solid var(--color-black);
     transform: translateY(-5px);
   }
 
@@ -59,9 +62,7 @@
 }
 
 .dark .card-studies {
-  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.9);
-
   &:hover {
-    outline-color: var(--color-white);
+    outline: .2em solid var(--color-white);
   }
 }
