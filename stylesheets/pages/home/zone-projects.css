@@ -1,8 +1,7 @@
 .zone-projects {
   @media (min-width: 768px) {
     margin: 0 auto;
-    padding: 2em 0;
-    width: 90%;
+    padding: 2.5em 5em;
   }
 
   .header {
@@ -39,7 +38,7 @@
 
 .project-card {
   background-color: var(--color-dark);
-  border-radius: .5rem;
+  border-radius: var(--radius-md);
   outline: .2em solid var(--theme-color);
   overflow: hidden;
   transition: all .3s ease;
@@ -54,11 +53,13 @@
     overflow: hidden;
     border-bottom: .2em solid var(--theme-color);
 
-    .project-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform var(--transition-normal) var(--ease-in-out);
+    figure {
+      .project-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--transition-normal) var(--ease-in-out);
+      }
     }
   }
 
@@ -88,7 +89,7 @@
 
       .tech-badge {
         background-color: var(--color-white);
-        border-radius: .5rem;
+        border-radius: var(--radius-md);
         border: .2em solid var(--theme-color);
         color: var(--color-black);
         font-size: 0.8rem;
@@ -101,7 +102,7 @@
       align-items: center;
       align-self: flex-end;
       background-color: var(--theme-color);
-      border-radius: .75em;
+      border-radius: var(--radius-md);
       color: var(--color-white);
       cursor: pointer;
       display: inline-flex;

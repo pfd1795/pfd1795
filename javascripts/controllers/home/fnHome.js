@@ -156,7 +156,9 @@ export function GridProjects() {
     projectsGrid.innerHTML = translations.projects.map(project => `
       <article class="project-card">
         <div class="project-image-container">
-          <img src="${project.image}" alt="${project.title[lang]}" class="project-image" loading="lazy" />
+          <figure>
+            <img src="${project.image}" alt="${project.title[lang]}" class="project-image" loading="lazy" />
+          </figure>
           <div class="image-overlay"></div>
         </div>
 

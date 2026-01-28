@@ -1,11 +1,12 @@
 .modal-dialog {
   border-color: var(--theme-color);
-  border-radius: var(--border-radius-xl);
+  border-radius: var(--radius-md);
   max-height: 90vh;
   max-width: var(--size-2xl);
 
   &::backdrop {
-    background-color: rgba(0, 0, 0, .7);
+    backdrop-filter: blur(.2em);
+    background-color: rgba(0, 0, 0, 0.6);
   }
 
   .btn {
@@ -62,7 +63,7 @@
 
     h4 {
       background-color: var(--theme-color);
-      border-radius: var(--border-radius);
+      border-radius: var(--radius-md);
       color: var(--color-white);
       display: inline;
       font-size: var(--text-sm);

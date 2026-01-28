@@ -10,7 +10,7 @@
 /* ===== BODY CONTAINER - Contenedor principal de la aplicación ===== */
 
 .body-container {
-  background-color: var(--color-white);
+  background-color: var(--color-light);
   color: var(--color-black);
   display: grid;
   letter-spacing: .5px;
@@ -19,7 +19,7 @@
   transition: all var(--transition-slow) var(--ease-in-out);
 
   &.dark {
-    background-color: var(--color-black);
+    background-color: var(--color-dark);
     color: var(--color-white);
   }
 }
@@ -40,13 +40,13 @@
 /* ===== FOOTER - pie de página ===== */
 
 .footer {
-  background-color: var(--color-dark);
+  background-color: var(--color-dark-light);
   color: var(--color-white);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   outline: .2em solid var(--theme-color);
-  padding: var(--space-8);
+  padding: 3em 1em;
 
   .credits-text {
     font-size: var(--text-sm);
@@ -113,17 +113,23 @@
 }
 
 .footer .tech-stack-section {
+  align-items: center;
   display: flex;
   flex-direction: column;
   max-width: 920px;
-  /* padding: 0 1em; */
 
   @media (min-width: 768px) {
     flex-direction: row;
     margin: 0 auto;
   }
 
-  >div:nth-child(2) {
+  >p:nth-child(1) {
+    strong {
+      color: var(--theme-color);
+    }
+  }
+
+  section {
     align-items: center;
     display: flex;
     flex-wrap: nowrap;
@@ -132,30 +138,17 @@
     padding: 1rem;
 
     .tech-item {
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      figure {
+        width: 86px;
+      }
 
       .tech-name {
-        font-size: 1.5rem;
         font-weight: bold;
-
-        &.html {
-          color: #e34c26;
-        }
-
-        &.css {
-          color: #264de4;
-        }
-
-        &.javascript {
-          color: #f0db4f;
-        }
       }
-    }
-  }
-
-  >div:nth-child(1) {
-    strong {
-      color: var(--theme-color);
     }
   }
 }

@@ -8,8 +8,7 @@
 
   @media (min-width: 768px) {
     margin: 0 auto;
-    padding: 0;
-    width: 90%;
+    padding: 2.5em 5em;
   }
 
   .header h2 {
@@ -35,7 +34,7 @@
 
 .card-studies {
   background-color: var(--theme-color);
-  border-radius: var(--border-radius-lg);
+  border-radius: var(--radius-md);
   color: var(--color-white);
   cursor: pointer;
   display: flex;

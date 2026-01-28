@@ -26,12 +26,10 @@
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
-    <div>
-      <button class="btn" title="abrir menú">
-        <span data-lang="menu">Configuración</span>
-        <img src="./assets/icons/setting.svg" />
-      </button>
-    </div>
+    <button class="btn" title="abrir menú">
+      <span data-lang="menu">Configuración</span>
+      <img src="./assets/icons/setting.svg" />
+    </button>
   </nav>
 
   <main class="main-layout">
@@ -43,7 +41,7 @@
           <span data-lang="introText">Bienvenidos a mi sitio web.</span>
         </p>
 
-        <div class="content-container">
+        <div class="intro-content">
           <figure>
             <img src="./assets/images/profile.png" alt="Foto de perfil" loading="lazy" />
           </figure>
@@ -124,37 +122,37 @@
 
   <footer class="footer">
     <section class="tech-stack-section">
-      <div>
-        <p data-lang="subtitle">
-          Este portafolio está construido con las tecnologías fundamentales de la web: <strong>HTML</strong>,
-          <strong>CSS</strong> y <strong>JavaScript vanilla</strong>.
-        </p>
+      <p data-lang="subtitle">
+        Este portafolio está construido con las tecnologías fundamentales de la web: <strong>HTML</strong>,
+        <strong>CSS</strong> y <strong>JavaScript vanilla</strong>.
+      </p>
 
-        <p>Aquí expongo mi experiencia profesional, habilidades técnicas y los diversos proyectos que he
-          desarrollado utilizando frameworks y bibliotecas modernas como React, Next.js, Angular y Express.
-        </p>
-      </div>
-
-      <div>
-        <section class="tech-item">
-          <p class="tech-name html">HTML</p>
-          <p>Markup</p>
-        </section>
+      <section>
+        <div class="tech-item">
+          <figure>
+            <img src="./assets/icons/html.svg" alt="HTML">
+          </figure>
+          <p class="tech-name">Maquetación</p>
+        </div>
 
         <span class="tech-plus">+</span>
 
-        <section class="tech-item">
-          <p class="tech-name css">CSS</p>
-          <p>Styles</p>
-        </section>
+        <div class="tech-item">
+          <figure>
+            <img src="./assets/icons/css.svg" alt="CSS">
+          </figure>
+          <p class="tech-name">Diseño</p>
+        </div>
 
         <span class="tech-plus">+</span>
 
-        <section class="tech-item">
-          <p class="tech-name javascript">JavaScript</p>
-          <p>Programming</p>
-        </section>
-      </div>
+        <div class="tech-item">
+          <figure>
+            <img src="./assets/icons/js.svg" alt="JavaScript">
+          </figure>
+          <p class="tech-name">Programación</p>
+        </div>
+      </section>
     </section>
 
     <hr class="divider">

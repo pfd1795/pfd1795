@@ -5,9 +5,11 @@
 
   --color-white: #ffffff;
   --color-light: #dddddd;
-
+  --color-light-dark: #cccccc;
+  
   --color-black: #000000;
   --color-dark: #222222;
+  --color-dark-light: #333333;
 
   --color-gray: #9a9a9a;
 
@@ -152,15 +154,15 @@
 
   /* ===== Bordes, sombras y efectos ===== */
 
-  --border-radius-sm: .25em;
+  --radius-sm: .25em;
   /* 4px */
-  --border-radius-md: .5em;
+  --radius-md: .5em;
   /* 8px */
-  --border-radius-lg: .75em;
+  --radius-lg: .75em;
   /* 12px */
-  --border-radius-xl: 1em;
+  --radius-xl: 1em;
   /* 16px */
-  --border-radius-full: 50%;
+  --radius-full: 50%;
 
   /* ===== Sistema de sombras ===== */
 
@@ -169,6 +171,7 @@
   /* ===== Sistema de capas para stacking context ===== */
 
   --z-index: 1000;
+  --z-index-navbar: 10;
 
   /* ===== Transiciones y animaciones ===== */
 

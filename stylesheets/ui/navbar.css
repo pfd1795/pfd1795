@@ -1,29 +1,28 @@
 .navbar {
   align-items: center;
-  background-color: var(--color-dark);
+  background-color: var(--color-dark-light);
   border-bottom: .2em solid var(--theme-color);
   display: flex;
   justify-content: space-between;
-  padding: .4em 1em;
   position: relative;
   position: sticky;
   top: 0;
   width: 100%;
-  z-index: 1;
+  z-index: var(--z-index-navbar);
 
   .logo-link {
     color: var(--color-white);
-    letter-spacing: 2px;
-    line-height: 1.2;
+    letter-spacing: .2em;
+    line-height: 1.25;
     transition: all var(--transition-fast) var(--ease-in-out);
 
     h1 {
-      font-size: 1.1rem;
+      font-size: 1.5rem;
       font-weight: bold;
     }
 
     h2 {
-      font-size: .8rem;
+      font-size: .75rem;
       font-style: italic;
       text-transform: uppercase;
     }
@@ -35,5 +34,17 @@
         color: var(--theme-color);
       }
     }
+  }
+
+  .btn {
+    width: auto;
+  }
+
+  @media (max-width: 767px) {
+    padding: .75em 1.5em;
+  }
+
+  @media (min-width: 768px) {
+    padding: .75em 5em;
   }
 }

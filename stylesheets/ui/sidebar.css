@@ -19,7 +19,7 @@
 }
 
 .sidebar {
-  background-color: var(--color-black);
+  background-color: var(--color-dark);
   border-left: .2em solid var(--theme-color);
   color: var(--color-white);
   display: flex;
@@ -39,7 +39,7 @@
 
   .sidebar-header {
     align-items: center;
-    background-color: var(--color-dark);
+    background-color: var(--color-dark-light);
     border-bottom: .2em solid var(--theme-color);
     display: flex;
     justify-content: space-between;
@@ -85,7 +85,7 @@
 
         .toggle-switch {
           background-color: var(--color-dark);
-          border-radius: var(--border-radius-xl);
+          border-radius: var(--radius-xl);
           cursor: pointer;
           height: 2em;
           outline: .2em solid var(--color-white);
@@ -121,7 +121,7 @@
 
       .color-option {
         aspect-ratio: 1;
-        border-radius: var(--border-radius-xl);
+        border-radius: var(--radius-xl);
         border: .2em solid transparent;
         cursor: pointer;
         position: relative;

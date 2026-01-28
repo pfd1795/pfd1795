@@ -9,7 +9,7 @@
 .btn {
   align-items: center;
   background-color: var(--theme-color);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--radius-md);
   color: var(--color-white);
   cursor: pointer;
   display: flex;
@@ -33,7 +33,7 @@
 
   .copy-notification {
     background-color: var(--color-success);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow);
     color: var(--color-white);
     font-size: var(--text-sm);
