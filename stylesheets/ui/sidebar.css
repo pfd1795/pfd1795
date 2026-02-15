@@ -75,6 +75,36 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: var(--space-4);
+
+      .language-toggle {
+        align-items: center;
+        background-color: var(--color-dark-light);
+        border: .2em solid var(--color-white);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        display: flex;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        transition: all var(--transition-normal) var(--ease-in-out);
+        width: auto;
+
+        &:hover {
+          background-color: var(--theme-color);
+          border-color: var(--theme-color);
+        }
+
+        .current-lang {
+          font-size: var(--text-sm);
+          font-weight: bold;
+          min-width: 4.5em;
+        }
+
+        img {
+          width: 1.25em;
+          height: 1.25em;
+        }
+      }
     }
 
     .settings-theme-mode {

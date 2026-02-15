@@ -1,10 +1,10 @@
-const savedColor = localStorage.getItem('theme-color') || 'blue';
-const savedColorValue = localStorage.getItem('theme-color-value') || '#3b82f6';
-const colorOptions = document.querySelectorAll('.color-option');
+import { getThemeColor, setThemeColor } from "../../utils/storage.js";
 
 function changeColor(color, colorValue) {
   document.documentElement.style.setProperty('--theme-color', colorValue);
 
+  const colorOptions = document.querySelectorAll('.color-option');
+  
   colorOptions.forEach(option => {
     const htmlOption = option;
     if (htmlOption.dataset.color === color) {
@@ -14,11 +14,13 @@ function changeColor(color, colorValue) {
     }
   });
 
-  localStorage.setItem('theme-color', color);
-  localStorage.setItem('theme-color-value', colorValue);
+  setThemeColor(color, colorValue);
 }
 
 export default function themeColor() {
+  const colorOptions = document.querySelectorAll('.color-option');
+  const savedTheme = getThemeColor();
+
   colorOptions.forEach(option => {
     option.addEventListener('click', () => {
       const htmlOption = option;
@@ -28,5 +30,5 @@ export default function themeColor() {
     });
   });
 
-  changeColor(savedColor, savedColorValue);
+  changeColor(savedTheme.color, savedTheme.value);
 }

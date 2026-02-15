@@ -26,9 +26,9 @@
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
-    <button class="btn" title="abrir menú">
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
       <span data-lang="menu">Configuración</span>
-      <img src="./assets/icons/setting.svg" />
+      <img src="./assets/icons/setting.svg" alt="" />
     </button>
   </nav>
 
@@ -110,7 +110,7 @@
     <section class="zone-projects">
       <header class="header">
         <h2 class="title" data-lang="title">Proyectos con Diferentes Tecnologías</h2>
-        <p data-lang="subtitle">
+        <p data-lang="projectSubtitle">
           He desarrollado diversos proyectos utilizando frameworks y bibliotecas modernas.<br />
           Cada proyecto demuestra diferentes capacidades técnicas.
         </p>
@@ -132,7 +132,7 @@
           <figure>
             <img src="./assets/icons/html.svg" alt="HTML">
           </figure>
-          <p class="tech-name">Maquetación</p>
+          <p class="tech-name" data-lang="htmlLabel">Maquetación</p>
         </div>
 
         <span class="tech-plus">+</span>
@@ -141,7 +141,7 @@
           <figure>
             <img src="./assets/icons/css.svg" alt="CSS">
           </figure>
-          <p class="tech-name">Diseño</p>
+          <p class="tech-name" data-lang="cssLabel">Diseño</p>
         </div>
 
         <span class="tech-plus">+</span>
@@ -150,7 +150,7 @@
           <figure>
             <img src="./assets/icons/js.svg" alt="JavaScript">
           </figure>
-          <p class="tech-name">Programación</p>
+          <p class="tech-name" data-lang="jsLabel">Programación</p>
         </div>
       </section>
     </section>
@@ -182,7 +182,7 @@
 
   <div class="sidebar-overlay"></div>
 
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <header class="sidebar-header">
       <h2 data-lang="menu">Configuración</h2>
 
@@ -195,23 +195,21 @@
     </header>
 
     <div class="settings-section">
-      <!-- <section class="settings-language">
+      <section class="settings-language">
         <label class="theme-label" data-lang="language">Idioma</label>
-        <div>
-          <button class="btn">
-            <span data-lang="language">Idioma</span>
-            <img src="./assets/icons/translate.svg" />
-          </button>
-        </div>
-      </section> -->
+        <button class="btn language-toggle" aria-label="Cambiar idioma">
+          <span class="current-lang">Español</span>
+          <img src="./assets/icons/translate.svg" alt="" />
+        </button>
+      </section>
 
       <section class="settings-theme-mode">
         <div class="theme-mode-toggle">
           <label class="theme-label" data-lang="dark-mode">Modo Oscuro</label>
 
-          <div class="toggle-switch">
+          <div class="toggle-switch" role="switch" aria-checked="false" aria-label="Cambiar modo oscuro/claro">
             <div class="toggle-slider">
-              <img src="./assets/icons/light_mode.svg" />
+              <img src="./assets/icons/light_mode.svg" alt="" />
             </div>
           </div>
         </div>
@@ -221,24 +219,24 @@
         <label class="theme-label" data-lang="theme-color">Color del tema</label>
         <div class="color-options">
           <button class="color-option selected" style="background: #3b82f6;" data-color="blue" data-value="#3b82f6"
-            title="Azul"></button>
+            title="Azul" aria-label="Seleccionar tema azul"></button>
           <button class="color-option" style="background: #10b981;" data-color="green" data-value="#10b981"
-            title="Verde"></button>
+            title="Verde" aria-label="Seleccionar tema verde"></button>
           <button class="color-option" style="background: #f59e0b;" data-color="orange" data-value="#f59e0b"
-            title="Naranja"></button>
+            title="Naranja" aria-label="Seleccionar tema naranja"></button>
           <button class="color-option" style="background: #ef4444;" data-color="red" data-value="#ef4444"
-            title="Rojo"></button>
+            title="Rojo" aria-label="Seleccionar tema rojo"></button>
           <button class="color-option" style="background: #8b5cf6;" data-color="purple" data-value="#8b5cf6"
-            title="Morado"></button>
+            title="Morado" aria-label="Seleccionar tema morado"></button>
           <button class="color-option" style="background: #ec4899;" data-color="pink" data-value="#ec4899"
-            title="Rosa"></button>
+            title="Rosa" aria-label="Seleccionar tema rosa"></button>
         </div>
       </section>
     </div>
   </aside>
 
-  <dialog class="modal-dialog">
-    <button class="btn" title="Cerrar ventana (Esc)">&times;</button>
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
     <div class="modal-dialog-body"></div>
   </dialog>
 </body>

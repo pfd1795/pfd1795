@@ -13,7 +13,10 @@
       "light": "Modo Claro",
       "theme-color": "Color del Tema",
       "creditsText": "Los vectores e iconos son de",
-      "developedBy": "SITIO DESARROLLADO POR"
+      "developedBy": "SITIO DESARROLLADO POR",
+      "htmlLabel": "Maquetación",
+      "cssLabel": "Diseño",
+      "jsLabel": "Programación"
     },
     "en": {
       "web-developer": "Web Developer",
@@ -28,7 +31,10 @@
       "light": "Light Mode",
       "theme-color": "Theme Color",
       "creditsText": "Vectors and icons are from",
-      "developedBy": "SITE DEVELOPED BY"
+      "developedBy": "SITE DEVELOPED BY",
+      "htmlLabel": "Layout",
+      "cssLabel": "Design",
+      "jsLabel": "Programming"
     }
   },
   "introSection": {
@@ -42,7 +48,8 @@
       "end": "compromiso en cada proyecto.",
       "subtitle": "Este portafolio está construido con las tecnologías fundamentales de la web: HTML, CSS y JavaScript vanilla.",
       "title": "Proyectos con Diferentes Tecnologías",
-      "viewProject": "Ver Proyecto"
+      "viewProject": "Ver Proyecto",
+      "projectSubtitle": "He desarrollado diversos proyectos utilizando frameworks y bibliotecas modernas. Cada proyecto demuestra diferentes capacidades técnicas."
     },
     "en": {
       "welcomeMessage": "Hello World!",
@@ -54,7 +61,8 @@
       "end": "commitment in each project.",
       "subtitle": "This portfolio is built with the fundamental web technologies: HTML, CSS and vanilla JavaScript.",
       "title": "Projects with Different Technologies",
-      "viewProject": "View Project"
+      "viewProject": "View Project",
+      "projectSubtitle": "I have developed various projects using modern frameworks and libraries. Each project demonstrates different technical capabilities."
     }
   },
   "projects": [
@@ -141,14 +149,26 @@
     {
       "id": 1,
       "company": "Neoland",
-      "date": "1 año",
-      "description": "Desempeño la labor de docente en el bootcamp de Desarrollo Web, utilizando las tecnologías más demandadas en la industria. Gracias Neoland por abrirme las puertas a nuevos desafíos, fortalecer mis habilidades pedagógicas y permitirme compartir mis conocimientos con futuros desarrolladores.",
-      "duration": "2025 (1 año)",
-      "employmentType": "Remoto",
+      "date": {
+        "es": "1 año",
+        "en": "1 year"
+      },
+      "description": {
+        "es": "Desempeño la labor de docente en el bootcamp de Desarrollo Web, utilizando las tecnologías más demandadas en la industria. Gracias Neoland por abrirme las puertas a nuevos desafíos, fortalecer mis habilidades pedagógicas y permitirme compartir mis conocimientos con futuros desarrolladores.",
+        "en": "I work as a teacher in the Web Development bootcamp, using the most in-demand technologies in the industry. Thank you Neoland for opening doors to new challenges, strengthening my pedagogical skills, and allowing me to share my knowledge with future developers."
+      },
+      "duration": "2025",
+      "employmentType": {
+        "es": "Remoto",
+        "en": "Remote"
+      },
       "link": "https://neoland.es/",
-      "role": "Profesor Bootcamp Desarrollo Web Full Stack",
+      "role": {
+        "es": "Profesor Bootcamp Desarrollo Web Full Stack",
+        "en": "Full Stack Web Development Bootcamp Teacher"
+      },
       "technologies": [
-        "Algoritmos",
+        "Algorithms",
         "HTML",
         "CSS",
         "JavaScript",
@@ -164,12 +184,24 @@
     {
       "id": 2,
       "company": "Vortex-IT",
-      "date": "2 años",
-      "description": "Colaboré en el diseño y desarrollo de interfaces de usuario y productos en promoción, adquiriendo experiencia en arquitecturas de proyectos escalables. Implementé funcionalidades de internacionalización, autenticación, manejo de cámaras y escáneres QR, y geolocalización.",
-      "duration": "2021 - 2023 (2 años)",
-      "employmentType": "Remoto",
+      "date": {
+        "es": "2 años",
+        "en": "2 years"
+      },
+      "description": {
+        "es": "Colaboré en el diseño y desarrollo de interfaces de usuario y productos en promoción, adquiriendo experiencia en arquitecturas de proyectos escalables. Implementé funcionalidades de internacionalización, autenticación, manejo de cámaras y escáneres QR, y geolocalización.",
+        "en": "I collaborated in the design and development of user interfaces and promotional products, gaining experience in scalable project architectures. I implemented internationalization, authentication, camera handling, QR scanners, and geolocation features."
+      },
+      "duration": "2021 - 2023",
+      "employmentType": {
+        "es": "Remoto",
+        "en": "Remote"
+      },
       "link": "https://vortex-it.com/",
-      "role": "Desarrollador Frontend Aplicaciones Web y Móviles",
+      "role": {
+        "es": "Desarrollador Frontend Aplicaciones Web y Móviles",
+        "en": "Frontend Web and Mobile Applications Developer"
+      },
       "technologies": [
         "HTML",
         "CSS",
@@ -189,12 +221,24 @@
     {
       "id": 3,
       "company": "Ministerio de Educación de la Nación Argentina",
-      "date": "1 año 6 meses",
-      "description": "Desarrollo de un sistema web accesible diseñado para gestionar usuarios con diversos roles y necesidades específicas. Durante este tiempo, adquirí mi primera experiencia en el uso de tecnologías orientadas a arquitecturas robustas, documentación y despliegues de aplicaciones.",
-      "duration": "2020 - 2021 (1 año y 6 meses)",
-      "employmentType": "Presencial y remoto",
+      "date": {
+        "es": "1 año 6 meses",
+        "en": "1 year 6 months"
+      },
+      "description": {
+        "es": "Desarrollo de un sistema web accesible diseñado para gestionar usuarios con diversos roles y necesidades específicas. Durante este tiempo, adquirí mi primera experiencia en el uso de tecnologías orientadas a arquitecturas robustas, documentación y despliegues de aplicaciones.",
+        "en": "Development of an accessible web system designed to manage users with various roles and specific needs. During this time, I gained my first experience using technologies oriented towards robust architectures, documentation, and application deployments."
+      },
+      "duration": "2020 - 2021",
+      "employmentType": {
+        "es": "Presencial y remoto",
+        "en": "On-site and remote"
+      },
       "link": "https://sime.educaciontuc.gov.ar/",
-      "role": "Desarrollador de Páginas Web",
+      "role": {
+        "es": "Desarrollador de Páginas Web",
+        "en": "Web Page Developer"
+      },
       "technologies": [
         "HTML",
         "CSS",
@@ -210,12 +254,24 @@
     {
       "id": 4,
       "company": "Universidad Nacional de Argentina",
-      "date": "4 años",
-      "description": "Colaboré como auxiliar docente en la asignatura de Laboratorio de Programación. Esta materia se enfoca en enseñar los fundamentos de la creación de páginas web accesibles y los principios básicos de la programación. Asistí en la planificación y dictado de clases, corrección de exámenes y proyectos estudiantiles. Este período me permitió fortalecer mis habilidades técnicas y mi capacidad para trabajar en equipo en entornos académicos.",
-      "duration": "2017 - 2021 (4 años)",
-      "employmentType": "Presencial y remoto",
+      "date": {
+        "es": "4 años",
+        "en": "4 years"
+      },
+      "description": {
+        "es": "Colaboré como auxiliar docente en la asignatura de Laboratorio de Programación. Esta materia se enfoca en enseñar los fundamentos de la creación de páginas web accesibles y los principios básicos de la programación. Asistí en la planificación y dictado de clases, corrección de exámenes y proyectos estudiantiles. Este período me permitió fortalecer mis habilidades técnicas y mi capacidad para trabajar en equipo en entornos académicos.",
+        "en": "I collaborated as a teaching assistant in the Programming Laboratory course. This subject focuses on teaching the fundamentals of creating accessible web pages and basic programming principles. I assisted in planning and teaching classes, grading exams, and student projects. This period allowed me to strengthen my technical skills and my ability to work as a team in academic environments."
+      },
+      "duration": "2017 - 2021",
+      "employmentType": {
+        "es": "Presencial y remoto",
+        "en": "On-site and remote"
+      },
       "link": "https://www.facet.unt.edu.ar/",
-      "role": "Auxiliar Docente Programación Web",
+      "role": {
+        "es": "Auxiliar Docente Programación Web",
+        "en": "Web Programming Teaching Assistant"
+      },
       "technologies": [
         "HTML",
         "CSS",
@@ -230,97 +286,153 @@
       ]
     }
   ],
+  "home": {
+    "es": {
+      "workExperienceDefaultTitle": "Mi Trayectoria en el Mundo de la Tecnología",
+      "workExperienceDefaultText": "Selecciona una experiencia laboral para conocer más detalles sobre mi recorrido profesional, las tecnologías que he utilizado y los proyectos en los que he participado.",
+      "descriptionLabel": "Descripción:",
+      "durationLabel": "Duración:",
+      "employmentTypeLabel": "Modalidad:",
+      "technologiesLabel": "Tecnologías Utilizadas:",
+      "skillsLabel": "Habilidades Adquiridas:"
+    },
+    "en": {
+      "workExperienceDefaultTitle": "My Journey in the Tech World",
+      "workExperienceDefaultText": "Select a work experience to learn more details about my professional journey, the technologies I have used, and the projects I have participated in.",
+      "descriptionLabel": "Description:",
+      "durationLabel": "Duration:",
+      "employmentTypeLabel": "Employment Type:",
+      "technologiesLabel": "Technologies Used:",
+      "skillsLabel": "Skills Acquired:"
+    }
+  },
   "educations": [
     {
       "id": 1,
-      "title": "Ciberseguridad",
+      "title": {
+        "es": "Ciberseguridad",
+        "en": "Cybersecurity"
+      },
       "institution": "CISCO Networking Academy",
-      "description": "Curso completo sobre fundamentos de ciberseguridad, cubriendo conceptos esenciales de protección de redes, identificación de amenazas, y mejores prácticas para mantener la seguridad de sistemas informáticos. Incluye módulos sobre criptografía, seguridad de endpoints, y respuesta a incidentes.",
+      "description": {
+        "es": "Curso completo sobre fundamentos de ciberseguridad, cubriendo conceptos esenciales de protección de redes, identificación de amenazas, y mejores prácticas para mantener la seguridad de sistemas informáticos. Incluye módulos sobre criptografía, seguridad de endpoints, y respuesta a incidentes.",
+        "en": "Complete course on cybersecurity fundamentals, covering essential concepts of network protection, threat identification, and best practices for maintaining computer system security. Includes modules on cryptography, endpoint security, and incident response."
+      },
       "skills": [
-        "Seguridad de Redes",
-        "Protección de Datos",
-        "Identificación de Amenazas",
-        "Criptografía Básica",
-        "Análisis de Vulnerabilidades",
-        "Respuesta a Incidentes"
+        "Network Security",
+        "Data Protection",
+        "Threat Identification",
+        "Basic Cryptography",
+        "Vulnerability Analysis",
+        "Incident Response"
       ],
       "link": "https://www.netacad.com/courses/cybersecurity"
     },
     {
       "id": 2,
-      "title": "Inglés - Nivel Intermedio Avanzado",
+      "title": {
+        "es": "Inglés - Nivel Intermedio Avanzado",
+        "en": "English - Upper Intermediate Level"
+      },
       "institution": "Centro Universitario de Idiomas",
-      "description": "Programa intensivo de inglés enfocado en habilidades comunicativas para entornos profesionales y técnicos. Desarrollo de competencias en lectura de documentación técnica, redacción de informes, y comunicación oral en contextos laborales del sector tecnológico.",
+      "description": {
+        "es": "Programa intensivo de inglés enfocado en habilidades comunicativas para entornos profesionales y técnicos. Desarrollo de competencias en lectura de documentación técnica, redacción de informes, y comunicación oral en contextos laborales del sector tecnológico.",
+        "en": "Intensive English program focused on communicative skills for professional and technical environments. Development of competencies in reading technical documentation, report writing, and oral communication in technology sector work contexts."
+      },
       "skills": [
-        "Inglés Técnico",
-        "Comunicación Oral",
-        "Redacción Profesional",
-        "Comprensión Lectora",
-        "Presentaciones en Inglés",
-        "Vocabulario IT"
+        "Technical English",
+        "Oral Communication",
+        "Professional Writing",
+        "Reading Comprehension",
+        "Presentations in English",
+        "IT Vocabulary"
       ],
       "link": ""
     },
     {
       "id": 3,
-      "title": "Argentina Programa 4.0",
+      "title": {
+        "es": "Argentina Programa 4.0",
+        "en": "Argentina Program 4.0"
+      },
       "institution": "CESSI Argentina",
-      "description": "Programa nacional de formación en programación y desarrollo de software. Incluye fundamentos de programación, estructuras de datos, algoritmos, y desarrollo web con tecnologías modernas. Enfoque práctico con proyectos reales y trabajo colaborativo.",
+      "description": {
+        "es": "Programa nacional de formación en programación y desarrollo de software. Incluye fundamentos de programación, estructuras de datos, algoritmos, y desarrollo web con tecnologías modernas. Enfoque práctico con proyectos reales y trabajo colaborativo.",
+        "en": "National training program in programming and software development. Includes programming fundamentals, data structures, algorithms, and web development with modern technologies. Practical approach with real projects and collaborative work."
+      },
       "skills": [
-        "Fundamentos de Programación",
-        "Estructuras de Datos",
-        "Algoritmos",
-        "Desarrollo Web",
-        "Trabajo en Equipo",
-        "Metodologías Ágiles"
+        "Programming Fundamentals",
+        "Data Structures",
+        "Algorithms",
+        "Web Development",
+        "Teamwork",
+        "Agile Methodologies"
       ],
       "link": "https://www.argentina.gob.ar/economia/conocimiento/argentina-programa"
     },
     {
       "id": 4,
-      "title": "Programador Web MERN Stack",
+      "title": {
+        "es": "Programador Web MERN Stack",
+        "en": "MERN Stack Web Developer"
+      },
       "institution": "Rolling Code School",
-      "description": "Bootcamp intensivo de desarrollo web full stack utilizando el stack MERN (MongoDB, Express, React, Node.js). Desarrollo de aplicaciones web completas desde cero, incluyendo diseño de bases de datos, APIs RESTful, autenticación, y despliegue en producción. Proyectos individuales y grupales con metodologías ágiles.",
+      "description": {
+        "es": "Bootcamp intensivo de desarrollo web full stack utilizando el stack MERN (MongoDB, Express, React, Node.js). Desarrollo de aplicaciones web completas desde cero, incluyendo diseño de bases de datos, APIs RESTful, autenticación, y despliegue en producción. Proyectos individuales y grupales con metodologías ágiles.",
+        "en": "Intensive full stack web development bootcamp using the MERN stack (MongoDB, Express, React, Node.js). Development of complete web applications from scratch, including database design, RESTful APIs, authentication, and production deployment. Individual and group projects with agile methodologies."
+      },
       "skills": [
         "MongoDB",
         "Express.js",
         "React",
         "Node.js",
         "JavaScript ES6+",
-        "APIs RESTful",
-        "Autenticación JWT",
+        "RESTful APIs",
+        "JWT Authentication",
         "Git & GitHub",
-        "Despliegue en Cloud"
+        "Cloud Deployment"
       ],
       "link": "https://rollingcodeschool.com/"
     },
     {
       "id": 5,
-      "title": "Inglés - Nivel Intermedio",
+      "title": {
+        "es": "Inglés - Nivel Intermedio",
+        "en": "English - Intermediate Level"
+      },
       "institution": "Universidad Tecnológica Nacional",
-      "description": "Curso académico de inglés con enfoque en comprensión de textos técnicos y científicos. Desarrollo de habilidades de lectura y escritura para entornos académicos y profesionales, con énfasis en terminología técnica del área de ingeniería y tecnología.",
+      "description": {
+        "es": "Curso académico de inglés con enfoque en comprensión de textos técnicos y científicos. Desarrollo de habilidades de lectura y escritura para entornos académicos y profesionales, con énfasis en terminología técnica del área de ingeniería y tecnología.",
+        "en": "Academic English course focused on comprehension of technical and scientific texts. Development of reading and writing skills for academic and professional environments, with emphasis on technical terminology in the engineering and technology field."
+      },
       "skills": [
-        "Comprensión de Textos Técnicos",
-        "Gramática Avanzada",
-        "Escritura Académica",
-        "Vocabulario Técnico",
-        "Conversación Básica"
+        "Technical Text Comprehension",
+        "Advanced Grammar",
+        "Academic Writing",
+        "Technical Vocabulary",
+        "Basic Conversation"
       ],
       "link": ""
     },
     {
       "id": 6,
-      "title": "Técnico en Computadoras",
+      "title": {
+        "es": "Técnico en Computadoras",
+        "en": "Computer Technician"
+      },
       "institution": "Universidad Tecnológica Nacional",
-      "description": "Carrera técnica enfocada en el mantenimiento, reparación y configuración de equipos informáticos. Incluye conocimientos de hardware, sistemas operativos, redes locales, y soporte técnico. Formación práctica en diagnóstico y resolución de problemas, instalación de software, y administración básica de sistemas.",
+      "description": {
+        "es": "Carrera técnica enfocada en el mantenimiento, reparación y configuración de equipos informáticos. Incluye conocimientos de hardware, sistemas operativos, redes locales, y soporte técnico. Formación práctica en diagnóstico y resolución de problemas, instalación de software, y administración básica de sistemas.",
+        "en": "Technical career focused on maintenance, repair, and configuration of computer equipment. Includes knowledge of hardware, operating systems, local networks, and technical support. Practical training in diagnostics and troubleshooting, software installation, and basic systems administration."
+      },
       "skills": [
-        "Mantenimiento de Hardware",
-        "Instalación de Sistemas Operativos",
-        "Configuración de Redes",
-        "Soporte Técnico",
-        "Diagnóstico de Problemas",
-        "Ensamblado de PCs",
-        "Administración de Sistemas"
+        "Hardware Maintenance",
+        "Operating System Installation",
+        "Network Configuration",
+        "Technical Support",
+        "Problem Diagnostics",
+        "PC Assembly",
+        "Systems Administration"
       ],
       "link": ""
     }

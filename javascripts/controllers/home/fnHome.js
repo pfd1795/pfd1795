@@ -7,11 +7,14 @@ function CardWorkCover(idWork = 0) {
 
   if (!worksCover) return;
 
+  const lang = currentLanguage;
+  const homeTexts = translations.home[lang];
+
   if (idWork === 0) {
     worksCover.innerHTML = `
       <div class="works-cover-content default-message">
-        <h3>Mi Trayectoria en el Mundo de la Tecnología</h3>
-        <p>Selecciona una experiencia laboral para conocer más detalles sobre mi recorrido profesional, las tecnologías que he utilizado y los proyectos en los que he participado.</p>
+        <h3>${homeTexts.workExperienceDefaultTitle}</h3>
+        <p>${homeTexts.workExperienceDefaultText}</p>
       </div>
     `;
     return;
@@ -25,21 +28,21 @@ function CardWorkCover(idWork = 0) {
     worksCover.innerHTML = `
       <div class="works-cover-content">
         <header class="works-detail-header">
-          <h3><a href="${selectedWork.link}" title="ir a ${selectedWork.company}" target="_blank" rel="noopener noreferrer">${selectedWork.company}</a></h3>
-          <h4>${selectedWork.role}</h4>
+          <h3><a href="${selectedWork.link}" title="${selectedWork.company}" target="_blank" rel="noopener noreferrer">${selectedWork.company}</a></h3>
+          <h4>${selectedWork.role[lang]}</h4>
         </header>
 
         <hr class="divider">
 
         <div class="works-detail-body">
-          <p><strong>Descripción:</strong> ${selectedWork.description}</p>
+          <p><strong>${homeTexts.descriptionLabel}</strong> ${selectedWork.description[lang]}</p>
 
-          <p><strong>Duración:</strong> ${selectedWork.date}</p>
+          <p><strong>${homeTexts.durationLabel}</strong> ${selectedWork.date[lang]}</p>
 
-          <p><strong>Modalidad:</strong> ${selectedWork.employmentType}</p>
+          <p><strong>${homeTexts.employmentTypeLabel}</strong> ${selectedWork.employmentType[lang]}</p>
 
           <div>
-            <strong>Tecnologías Utilizadas:</strong>
+            <strong>${homeTexts.technologiesLabel}</strong>
             <ul class="tech-list">${techList}</ul>
           </div>
         </div>
@@ -56,6 +59,8 @@ export function GridWorkExperience() {
 
     CardWorkCover(0);
 
+    const lang = currentLanguage;
+
     translations.workExperience.forEach((work) => {
       const article = document.createElement('article');
       article.className = 'card-work';
@@ -63,22 +68,19 @@ export function GridWorkExperience() {
       article.innerHTML = `
         <header>
           <h4>${work.company}</h4>
-          <h5>${work.role}</h5>
+          <h5>${work.role[lang]}</h5>
         </header>
 
-        <time datetime="${work.date}">${work.date}</time>
+        <time>${work.date[lang]}</time>
       `;
 
       article.addEventListener('click', () => {
-        // Quitar la clase active de todos los artículos
         container.querySelectorAll('.card-work').forEach((card) => {
           card.classList.remove('active');
         });
 
-        // Agregar la clase active al artículo clicado
         article.classList.add('active');
 
-        // Ejecutar tu función
         CardWorkCover(work.id);
       });
 
@@ -93,14 +95,16 @@ function ModalEducation(idEducation = 0) {
 
   if (selectedEducation) {
     const skillsList = selectedEducation.skills.map(skill => `<li>${skill}</li>`).join(", ");
+    const lang = currentLanguage;
+    const homeTexts = translations.home[lang];
 
     const content = document.createElement('section');
 
     content.innerHTML = `
       <header class="modal-header">
-        <h2>${selectedEducation.title}</h2>
+        <h2>${selectedEducation.title[lang]}</h2>
         <h3>
-          <a href="${selectedEducation.link}" title="${selectedEducation.title}" target="_blank">
+          <a href="${selectedEducation.link}" title="${selectedEducation.title[lang]}" target="_blank">
             ${selectedEducation.institution}
           </a>
         </h3>
@@ -110,12 +114,12 @@ function ModalEducation(idEducation = 0) {
 
       <section>
         <div>      
-          <h4>Descripción:</h4>
-          <p>${selectedEducation.description}</p>
+          <h4>${homeTexts.descriptionLabel}</h4>
+          <p>${selectedEducation.description[lang]}</p>
         </div>
 
         <div>
-          <h4>Habilidades Adquiridas:</h4>
+          <h4>${homeTexts.skillsLabel}</h4>
           <ul>${skillsList}</ul>
         </div>
       </section>
@@ -131,12 +135,14 @@ export function GridEducation() {
   if (container) {
     container.innerHTML = '';
 
+    const lang = currentLanguage;
+
     translations.educations.forEach((edu) => {
       const article = document.createElement('article');
       article.className = 'card-studies';
 
       article.innerHTML = `
-        <h4>${edu.title}</h4>
+        <h4>${edu.title[lang]}</h4>
         <p>${edu.institution}</p>
       `;
 
@@ -173,12 +179,18 @@ export function GridProjects() {
             `).join('')}
           </div>
 
-          <a href="${project.link}" class="project-button" target="_blank" rel="noopener noreferrer" title="Ver ${project.title}">
+          <a href="${project.link}" class="project-button" target="_blank" rel="noopener noreferrer" title="${project.title[lang]}">
             <span data-lang="viewProject">Ver Proyecto</span>
-            <img src="./assets/icons/arrow_right.svg">
+            <img src="./assets/icons/arrow_right.svg" alt="">
           </a>
         </div>
       </article>
     `).join('');
   }
+}
+
+export function reloadHomeContent() {
+  GridWorkExperience();
+  GridEducation();
+  GridProjects();
 }

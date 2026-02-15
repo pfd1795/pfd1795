@@ -1,11 +1,6 @@
 import { currentLanguage } from "../../lang/translations.config.js";
 import translations from "../../lang/translations.json" with { type: "json" };
-
-const STORAGE_KEY = "theme-mode";
-
-const modeToggle = document.querySelector(".toggle-switch");
-const modeText = document.querySelector(".theme-mode-toggle .theme-label");
-const modeIcon = document.querySelector(".toggle-slider img");
+import { getThemeMode, setThemeMode } from "../../utils/storage.js";
 
 let currentMode = "dark";
 
@@ -15,6 +10,9 @@ function applyTheme(mode) {
   document.body.classList.toggle("dark", mode === "dark");
   document.body.classList.toggle("light", mode === "light");
 
+  const modeToggle = document.querySelector(".toggle-switch");
+  const modeIcon = document.querySelector(".toggle-slider img");
+
   modeToggle?.classList.toggle("active", mode === "light");
 
   if (modeIcon) {
@@ -23,7 +21,7 @@ function applyTheme(mode) {
 
   updateModeText(mode);
 
-  localStorage.setItem(STORAGE_KEY, mode);
+  setThemeMode(mode);
 }
 
 function toggleMode() {
@@ -34,6 +32,7 @@ function toggleMode() {
 
 export function updateModeText(mode) {
   const lang = currentLanguage;
+  const modeText = document.querySelector(".theme-mode-toggle .theme-label");
 
   if (modeText) {
     modeText.textContent = translations.page[lang][mode];
@@ -41,10 +40,11 @@ export function updateModeText(mode) {
 }
 
 export default function themeMode() {
+  const modeToggle = document.querySelector(".toggle-switch");
+  
   modeToggle?.addEventListener("click", toggleMode);
 
-  const savedMode =
-    (localStorage.getItem(STORAGE_KEY)) ?? "dark";
+  const savedMode = getThemeMode();
 
   applyTheme(savedMode);
 }
