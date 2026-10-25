@@ -20,7 +20,7 @@
 */
 
 html {
-  font-size: 16px;
+  font-size: calc(16px * var(--font-scale, 1));
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -102,7 +102,8 @@ p {
 a {
   color: inherit;
   text-decoration: none;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: color var(--transition-fast) var(--ease-in-out),
+    background-color var(--transition-fast) var(--ease-in-out);
 }
 
 /*
@@ -110,9 +111,14 @@ a {
 - Outline visible para navegación con teclado.
 */
 
-a:focus-visible {
-  outline: 2px solid #007bff;
-  outline-offset: 2px;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--border-thick) solid var(--theme-color);
+  outline-offset: var(--border-thick);
 }
 
 /* ===== Listas - Reset de estilos por defecto =====
@@ -194,7 +200,10 @@ button,
 [type="submit"] {
   cursor: pointer;
   background: none;
-  transition: all 0.2s ease;
+  transition: background-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out),
+    border-color var(--transition-fast) var(--ease-in-out),
+    box-shadow var(--transition-fast) var(--ease-in-out);
 }
 
 /*

@@ -1,65 +1,66 @@
 /* ===== Variables CSS globales y sistema de diseño ===== */
 
 :root {
-  /* ===== Sistema de colores ===== */
+  /* ===== Alias de compatibilidad (mapeados al sistema nuevo) ===== */
 
-  --color-white: #ffffff;
-  --color-light: #dddddd;
-  --color-light-dark: #cccccc;
-  
-  --color-black: #000000;
-  --color-dark: #222222;
-  --color-dark-light: #333333;
+  --color-white: var(--n100);
+  --color-light: var(--n200);
+  --color-light-dark: var(--n300);
 
-  --color-gray: #9a9a9a;
+  --color-black: var(--n900);
+  --color-dark: var(--dn200);
+  --color-dark-light: var(--dn300);
 
-  --color-blue-light: #3b82f6;
-  --color-blue: #2563eb;
-  --color-blue-dark: #1d4ed8;
+  --color-gray: var(--n600);
 
-  --color-green-light: #10b981;
-  --color-green: #059669;
-  --color-green-dark: #047857;
+  --color-blue-light: var(--blue-claro);
+  --color-blue: var(--blue-normal);
+  --color-blue-dark: var(--blue-oscuro);
 
-  --color-red-light: #ef4444;
-  --color-red: #dc2626;
-  --color-red-dark: #b91c1c;
+  --color-green-light: var(--green-claro);
+  --color-green: var(--green-normal);
+  --color-green-dark: var(--green-oscuro);
 
-  --color-yellow-light: #f59e0b;
-  --color-yellow: #d97706;
-  --color-yellow-dark: #b45309;
+  --color-red-light: var(--red-claro);
+  --color-red: var(--red-normal);
+  --color-red-dark: var(--red-oscuro);
 
-  --color-purple-light: #8b5cf6;
-  --color-purple: #7c3aed;
-  --color-purple-dark: #6d28d9;
+  --color-yellow-light: var(--amber-claro);
+  --color-yellow: var(--amber-normal);
+  --color-yellow-dark: var(--amber-oscuro);
 
-  --color-pink-light: #ec4899;
-  --color-pink: #db2777;
-  --color-pink-dark: #be185d;
+  --color-purple-light: var(--violet-claro);
+  --color-purple: var(--violet-normal);
+  --color-purple-dark: var(--violet-oscuro);
 
-  --color-orange-light: #f97316;
-  --color-orange: #ea580c;
-  --color-orange-dark: #c2410c;
+  --color-pink-light: var(--pink-claro);
+  --color-pink: var(--pink-normal);
+  --color-pink-dark: var(--pink-oscuro);
 
-  --color-cyan-light: #06b6d4;
-  --color-cyan: #0891b2;
-  --color-cyan-dark: #0e7490;
+  --color-orange-light: var(--orange-claro);
+  --color-orange: var(--orange-normal);
+  --color-orange-dark: var(--orange-oscuro);
+
+  --color-cyan-light: var(--cyan-claro);
+  --color-cyan: var(--cyan-normal);
+  --color-cyan-dark: var(--cyan-oscuro);
 
   /* ===== Colores semánticos ===== */
 
-  --color-success: var(--color-green);
-
-  --color-warning: var(--color-yellow);
-
-  --color-error: var(--color-red);
-
-  --color-info: var(--color-cyan);
+  --color-success: var(--green-oscuro);
+  --color-warning: var(--amber-oscuro);
+  --color-error: var(--red-oscuro);
+  --color-info: var(--cyan-oscuro);
 
   /* ===== Colores del tema ===== */
 
-  --color-primary: var(--color-blue);
+  --color-primary: var(--theme-color);
 
-  --theme-color: var(--color-primary);
+  /* ===== Tema activo (se sobreescribe desde fnThemeColor.js) ===== */
+
+  --theme-color: hsl(210 75% 28%);
+  --theme-color-soft: hsl(210 75% 70%);
+  --theme-color-contrast: var(--color-white);
 
   /* ===== Sistema de tipografía ===== */
 
@@ -164,10 +165,6 @@
   /* 16px */
   --radius-full: 50%;
 
-  /* ===== Sistema de sombras ===== */
-
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-
   /* ===== Sistema de capas para stacking context ===== */
 
   --z-index: 1000;
@@ -176,10 +173,216 @@
   /* ===== Transiciones y animaciones ===== */
 
   --transition-fast: 150ms;
-  --transition-normal: 250ms;
-  --transition-slow: 350ms;
+  --transition-normal: 300ms;
+  --transition-slow: 500ms;
 
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Sistema de diseño portado de fortunista ===== */
+
+:root {
+  /* ===== Neutros claros (P.n0…P.n8) ===== */
+
+  --n100: hsl(220 0% 100%);
+  --n200: hsl(220 13% 95%);
+  --n300: hsl(220 11% 90%);
+  --n400: hsl(220 8% 82%);
+  --n500: hsl(220 6% 77%);
+  --n600: hsl(220 5% 58%);
+  --n700: hsl(220 3% 41%);
+  --n800: hsl(220 4% 29%);
+  --n900: hsl(220 7% 12%);
+
+  /* ===== Neutros oscuros (P.dn0…P.dn8) ===== */
+
+  --dn100: hsl(220 4% 10%);
+  --dn200: hsl(210 2% 15%);
+  --dn300: hsl(210 3% 25%);
+  --dn400: hsl(215 3% 31%);
+  --dn500: hsl(215 4% 38%);
+  --dn600: hsl(215 2% 48%);
+  --dn700: hsl(220 3% 65%);
+  --dn800: hsl(225 5% 86%);
+  --dn900: hsl(220 7% 91%);
+
+  /* ===== Acentos: trío claro / normal / oscuro (S = 75%) ===== */
+
+  --blue-claro: hsl(210 75% 70%);
+  --blue-normal: hsl(210 75% 45%);
+  --blue-oscuro: hsl(210 75% 28%);
+
+  --red-claro: hsl(354 75% 70%);
+  --red-normal: hsl(354 75% 45%);
+  --red-oscuro: hsl(354 75% 28%);
+
+  --green-claro: hsl(141 75% 70%);
+  --green-normal: hsl(141 75% 45%);
+  --green-oscuro: hsl(141 75% 28%);
+
+  --amber-claro: hsl(45 75% 75%);
+  --amber-normal: hsl(45 75% 55%);
+  --amber-oscuro: hsl(45 75% 35%);
+
+  --cyan-claro: hsl(189 75% 70%);
+  --cyan-normal: hsl(189 75% 45%);
+  --cyan-oscuro: hsl(189 75% 28%);
+
+  --violet-claro: hsl(241 75% 70%);
+  --violet-normal: hsl(241 75% 45%);
+  --violet-oscuro: hsl(241 75% 28%);
+
+  --pink-claro: hsl(330 75% 70%);
+  --pink-normal: hsl(330 75% 45%);
+  --pink-oscuro: hsl(330 75% 28%);
+
+  --orange-claro: hsl(20 75% 70%);
+  --orange-normal: hsl(20 75% 45%);
+  --orange-oscuro: hsl(20 75% 28%);
+
+  /* ===== Fondos temáticos (degradados) =====
+     Puente entre el tema de fondo elegido y el color de acento. El valor
+     "normal" se usa en modo claro y el "oscuro" en modo oscuro. */
+
+  --neutral-background-soft: var(--n200);
+
+  --bg-theme-blue: var(--blue-normal);
+  --bg-theme-red: var(--red-normal);
+  --bg-theme-green: var(--green-normal);
+  --bg-theme-amber: var(--amber-normal);
+  --bg-theme-cyan: var(--cyan-normal);
+  --bg-theme-pink: var(--pink-normal);
+  --bg-theme-violet: var(--violet-normal);
+  --bg-theme-orange: var(--orange-normal);
+
+  /* ===== Fondo de página (controlado desde el modal de Configuración) ===== */
+
+  --page-background: var(--color-background);
+  --page-gradient: none;
+  --page-scrim: none;
+  --page-background-size: cover;
+  --page-background-repeat: no-repeat;
+  --page-animation: none;
+
+  /* ===== Escala tipográfica accesible ===== */
+
+  --font-scale: 1;
+
+  /* ===== Acento de marca ===== */
+
+  --color-accent: var(--violet-oscuro);
+
+  /* ===== Superficies, bordes y texto ===== */
+
+  --color-background: var(--n200);
+  --color-background-neutral: var(--n200);
+  --color-surface: var(--n100);
+  --color-surface-raised: var(--n100);
+  --color-border: var(--n300);
+  --color-border-light: var(--n200);
+  --color-separator: var(--n300);
+
+  --color-overlay: hsl(0 0% 0% / 0.4);
+  --color-overlay-dark: hsl(0 0% 0% / 0.6);
+
+  --color-text: hsl(0 0% 2%);
+  --color-text-secondary: hsl(220 3% 41%);
+  --color-text-disabled: hsl(220 5% 58%);
+
+  /* ===== Tipografía ===== */
+
+  --text-caption: 0.75rem;
+  --text-body-sm: 0.875rem;
+  --text-body: 1rem;
+  --text-body-lg: 1.125rem;
+  --text-h4: 1.25rem;
+  --text-h3: 1.375rem;
+  --text-h2: 1.5rem;
+  --text-h1: 1.75rem;
+  --text-display: 2rem;
+
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --tracking-tight: -0.4px;
+  --tracking-normal: 0;
+  --tracking-wide: 0.4px;
+
+  /* ===== Espaciado semántico ===== */
+
+  --space-gutter: 1rem;
+  --space-container: 1.5rem;
+  --space-section: 2rem;
+  --space-screen: 2rem;
+
+  /* ===== Radios ===== */
+
+  --radius-xs: 2px;
+  --radius-xxl: 1.5rem;
+  --radius-pill: 9999px;
+
+  /* ===== Elevación ===== */
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.12);
+  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.18);
+  --shadow-xl: 0 8px 16px rgb(0 0 0 / 0.24);
+
+  /* ===== Bordes ===== */
+
+  --border-thin: 0.5px;
+  --border-normal: 1px;
+  --border-thick: 2px;
+
+  /* ===== Anchos de contenido ===== */
+
+  --content-list: 48rem;
+  --content-detail: 50.5rem;
+}
+
+/* ===== Modo oscuro: superficie, bordes y texto =====
+   La clase `.dark` se aplica en <body> (portafolio) y también en <html> para
+   que las subpáginas (mis-estudios) la fijen antes de pintar y eviten el
+   parpadeo. Ambos selectores comparten los mismos valores. */
+
+body.dark,
+html.dark {
+  --color-background: var(--dn100);
+  --color-background-neutral: var(--dn100);
+  --color-surface: var(--dn200);
+  --color-surface-raised: var(--dn300);
+  --color-border: var(--dn300);
+  --color-border-light: var(--dn200);
+  --color-separator: var(--dn300);
+
+  --color-text: var(--dn900);
+  --color-text-secondary: var(--dn700);
+  --color-text-disabled: var(--dn600);
+
+  /* Fondos temáticos en modo oscuro */
+  --neutral-background-soft: var(--dn100);
+
+  --bg-theme-blue: var(--blue-oscuro);
+  --bg-theme-red: var(--red-oscuro);
+  --bg-theme-green: var(--green-oscuro);
+  --bg-theme-amber: var(--amber-oscuro);
+  --bg-theme-cyan: var(--cyan-oscuro);
+  --bg-theme-pink: var(--pink-oscuro);
+  --bg-theme-violet: var(--violet-oscuro);
+  --bg-theme-orange: var(--orange-oscuro);
+}
+
+/* ===== Contraste sobre fondos temáticos =====
+   En modo claro, un velo neutro tenue sobre el degradado y un texto
+   secundario más oscuro mantienen la legibilidad sobre colores saturados
+   (el acento, las superficies y las tarjetas no cambian). */
+
+html.has-page-theme:not(.dark) {
+  --page-scrim: linear-gradient(hsl(220 13% 95% / 0.45), hsl(220 13% 95% / 0.45));
+  --color-text-secondary: hsl(220 4% 28%);
+  --color-text-disabled: hsl(220 5% 40%);
 }

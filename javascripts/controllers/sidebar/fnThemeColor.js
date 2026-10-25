@@ -1,34 +1,37 @@
 import { getThemeColor, setThemeColor } from "../../utils/storage.js";
+import { getThemeColorDef } from "../../utils/themeColors.js";
 
-function changeColor(color, colorValue) {
-  document.documentElement.style.setProperty('--theme-color', colorValue);
+function markSelected(color) {
+  const colorOptions = document.querySelectorAll(".color-option");
 
-  const colorOptions = document.querySelectorAll('.color-option');
-  
-  colorOptions.forEach(option => {
-    const htmlOption = option;
-    if (htmlOption.dataset.color === color) {
-      option.classList.add('selected');
-    } else {
-      option.classList.remove('selected');
-    }
+  colorOptions.forEach((option) => {
+    const isSelected = option.dataset.color === color;
+
+    option.classList.toggle("selected", isSelected);
+    option.setAttribute("aria-pressed", String(isSelected));
   });
+}
 
-  setThemeColor(color, colorValue);
+function changeColor(color) {
+  const themeColor = getThemeColorDef(color);
+  const root = document.documentElement;
+
+  root.style.setProperty("--theme-color", themeColor.value);
+  root.style.setProperty("--theme-color-soft", themeColor.soft);
+
+  markSelected(themeColor.color);
+
+  setThemeColor(themeColor.color, themeColor.value);
 }
 
 export default function themeColor() {
-  const colorOptions = document.querySelectorAll('.color-option');
-  const savedTheme = getThemeColor();
+  document.addEventListener("click", (event) => {
+    const option = event.target.closest(".color-option");
 
-  colorOptions.forEach(option => {
-    option.addEventListener('click', () => {
-      const htmlOption = option;
-      const color = htmlOption.dataset.color || 'blue';
-      const colorValue = htmlOption.dataset.value || '#3b82f6';
-      changeColor(color, colorValue);
-    });
+    if (!option) return;
+
+    changeColor(option.dataset.color || "blue");
   });
 
-  changeColor(savedTheme.color, savedTheme.value);
+  changeColor(getThemeColor().color);
 }

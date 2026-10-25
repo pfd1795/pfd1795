@@ -9,17 +9,27 @@
 .btn {
   align-items: center;
   background-color: var(--theme-color);
+  border: var(--border-normal) solid var(--theme-color);
   border-radius: var(--radius-md);
-  color: var(--color-white);
+  color: var(--theme-color-contrast);
   cursor: pointer;
-  display: flex;
-  font-weight: 600;
-  gap: .5rem;
-  padding: .3rem .7rem;
-  transition: all .1s ease;
+  display: inline-flex;
+  font-weight: var(--font-semibold);
+  gap: var(--space-2);
+  justify-content: center;
+  min-height: 2.75em;
+  padding: var(--space-2) var(--space-4);
+  transition: filter var(--transition-fast) var(--ease-in-out),
+    background-color var(--transition-fast) var(--ease-in-out),
+    border-color var(--transition-fast) var(--ease-in-out);
 
   &:hover {
-    outline: .2em solid var(--color-white);
+    filter: brightness(0.92);
+  }
+
+  &:focus-visible {
+    outline: var(--border-thick) solid var(--theme-color);
+    outline-offset: var(--border-thick);
   }
 }
 
@@ -32,9 +42,9 @@
   position: relative;
 
   .copy-notification {
-    background-color: var(--color-success);
+    background-color: var(--green-oscuro);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-md);
     color: var(--color-white);
     font-size: var(--text-sm);
     left: 50%;
@@ -58,7 +68,8 @@
 /* ===== diseño y separación ===== */
 
 .divider {
-  border: .1em solid var(--theme-color);
+  border: none;
+  border-top: var(--border-normal) solid var(--color-border);
+  margin: var(--space-4) 0;
   width: 100%;
-  margin: var(--space-2) 0;
 }

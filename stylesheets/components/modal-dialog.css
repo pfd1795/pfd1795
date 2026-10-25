@@ -3,19 +3,35 @@ body.modal-open {
 }
 
 .modal-dialog {
-  border-color: var(--theme-color);
-  border-radius: var(--radius-md);
+  --modal-border: var(--color-border);
+
+  background-color: var(--color-surface);
+  border: var(--border-normal) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  color: var(--color-text);
   max-height: 90vh;
   max-width: var(--size-2xl);
 
   &::backdrop {
     backdrop-filter: blur(.2em);
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: var(--color-overlay-dark);
   }
 
-  .btn {
+  /* El contenido puede superar la altura de la ventana (el modal de
+     Configuración creció al añadir fondo, dirección, velocidad y fuente).
+     El cuerpo hace scroll y el botón de cierre queda fijo. */
+  .modal-dialog-body {
+    max-height: calc(90vh - 3em);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .modal-close {
     align-items: center;
-    background-color: var(--color-red);
+    background-color: var(--red-oscuro);
+    border-color: var(--red-oscuro);
+    color: var(--color-white);
     display: flex;
     height: var(--space-10);
     justify-content: center;
@@ -25,21 +41,23 @@ body.modal-open {
     width: var(--space-10);
 
     &:hover {
-      background-color: var(--color-red-light);
+      background-color: var(--red-normal);
+      border-color: var(--red-normal);
+      filter: none;
     }
   }
 
   header {
     h2 {
       font-size: var(--text-3xl);
-      font-weight: var(--font-weight-bold);
+      font-weight: var(--font-bold);
       text-align: center;
       text-wrap: balance;
     }
 
     h3 {
       font-size: var(--text-xl);
-      font-weight: var(--font-weight-bold);
+      font-weight: var(--font-bold);
       text-align: center;
       text-wrap: balance;
 
@@ -49,7 +67,7 @@ body.modal-open {
         transition: color var(--transition-normal) var(--ease-in-out);
 
         &:hover {
-          color: var(--color-blue-light);
+          text-decoration-thickness: 2px;
         }
       }
     }
@@ -61,17 +79,17 @@ body.modal-open {
     gap: var(--space-4);
 
     p {
-      line-height: var(--leading-relaxed);
       display: inline;
+      line-height: var(--leading-relaxed);
     }
 
     h4 {
       background-color: var(--theme-color);
       border-radius: var(--radius-md);
-      color: var(--color-white);
+      color: var(--theme-color-contrast);
       display: inline;
       font-size: var(--text-sm);
-      font-weight: var(--font-weight-bold);
+      font-weight: var(--font-semibold);
       margin-right: var(--space-2);
       padding: var(--space-1) var(--space-2);
       text-transform: uppercase;
@@ -82,12 +100,310 @@ body.modal-open {
       align-items: center;
       display: inline;
       flex-wrap: wrap;
+      font-weight: var(--font-bold);
       gap: var(--space-1);
-      font-weight: var(--font-weight-bold);
 
       li {
         display: inline;
       }
     }
   }
+}
+
+/* ===== Modal de configuración ===== */
+
+.modal-dialog .settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: min(80vw, 22em);
+}
+
+.modal-dialog .settings .settings-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  padding: 0 var(--space-8) var(--space-3);
+  text-align: center;
+}
+
+.modal-dialog .settings .settings-icon {
+  flex-shrink: 0;
+  height: 1.5em;
+  opacity: .8;
+  width: 1.5em;
+}
+
+body:not(.dark) .modal-dialog .settings .settings-icon {
+  filter: invert(1);
+}
+
+.modal-dialog .settings .settings-label {
+  flex: 1;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+}
+
+.modal-dialog .settings .settings-row {
+  align-items: center;
+  border-top: var(--border-normal) solid var(--modal-border);
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+}
+
+.modal-dialog .settings .settings-row--colors {
+  align-items: stretch;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.modal-dialog .settings .settings-row-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-4);
+}
+
+.modal-dialog .settings .settings-row-header .settings-label {
+  flex: initial;
+}
+
+.modal-dialog .settings .color-options {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.modal-dialog .settings .color-option {
+  aspect-ratio: 1;
+  border: var(--border-thick) solid transparent;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: transform var(--transition-fast) var(--ease-in-out),
+    box-shadow var(--transition-fast) var(--ease-in-out);
+  width: 100%;
+
+  &:hover {
+    transform: scale(1.12);
+  }
+
+  &.selected {
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--theme-color);
+  }
+}
+
+/* ===== Tema de fondo (degradados) ===== */
+
+.modal-dialog .settings .theme-options {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.modal-dialog .settings .theme-option {
+  aspect-ratio: 1;
+  border: var(--border-thick) solid transparent;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  cursor: pointer;
+  transition: transform var(--transition-fast) var(--ease-in-out),
+    box-shadow var(--transition-fast) var(--ease-in-out);
+  width: 100%;
+
+  &:hover {
+    transform: scale(1.12);
+  }
+
+  &.selected {
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--theme-color);
+  }
+}
+
+/* ===== Dirección del degradado ===== */
+
+.modal-dialog .settings .settings-row--direction,
+.modal-dialog .settings .settings-row--speed,
+.modal-dialog .settings .settings-row--font {
+  flex-wrap: wrap;
+}
+
+.modal-dialog .settings .direction-options,
+.modal-dialog .settings .speed-options,
+.modal-dialog .settings .font-scale-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+
+/* Las filas de dirección y velocidad ceden el espacio sobrante a los
+   controles para que no se compriman contra la etiqueta. */
+.modal-dialog .settings .settings-row--direction .settings-label,
+.modal-dialog .settings .settings-row--speed .settings-label {
+  flex: 0 1 auto;
+}
+
+.modal-dialog .settings .settings-row--direction .direction-options,
+.modal-dialog .settings .settings-row--speed .speed-options {
+  flex: 1;
+  justify-content: flex-end;
+  margin-left: 0;
+}
+
+.modal-dialog .settings .direction-option {
+  align-items: center;
+  background-color: var(--color-border);
+  border: var(--border-normal) solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  cursor: pointer;
+  display: inline-flex;
+  height: 2em;
+  justify-content: center;
+  padding: 0;
+  transition: background-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out);
+  width: 2em;
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &.selected {
+    background-color: var(--theme-color);
+    border-color: var(--theme-color);
+    color: var(--theme-color-contrast);
+  }
+}
+
+.modal-dialog .settings .direction-icon {
+  fill: currentColor;
+}
+
+/* ===== Velocidad y tamaño de fuente ===== */
+
+.modal-dialog .settings .speed-option,
+.modal-dialog .settings .font-scale-option {
+  align-items: center;
+  background-color: var(--color-border);
+  border: var(--border-normal) solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  height: 2.25em;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  width: auto;
+  transition: background-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out);
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &.selected {
+    background-color: var(--theme-color);
+    border-color: var(--theme-color);
+    color: var(--theme-color-contrast);
+  }
+}
+
+.modal-dialog .settings .font-scale-option {
+  padding: 0;
+  width: 2.75em;
+
+  span {
+    line-height: 1;
+  }
+}
+
+/* Fila condicional: se oculta cuando no aplica al tema elegido. */
+.modal-dialog .settings .is-hidden {
+  display: none !important;
+}
+
+/* ===== Control segmentado (idioma) ===== */
+
+.modal-dialog .segmented {
+  background-color: var(--color-border);
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  gap: .2em;
+  padding: .2em;
+}
+
+.modal-dialog .segmented .segment {
+  border-radius: var(--radius-sm);
+  color: inherit;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  letter-spacing: .05em;
+  padding: .35em .9em;
+  transition: background-color var(--transition-fast) var(--ease-in-out),
+    color var(--transition-fast) var(--ease-in-out);
+  width: auto;
+}
+
+.modal-dialog .segmented .segment:hover {
+  background-color: var(--color-surface);
+}
+
+.modal-dialog .segmented .segment.active {
+  background-color: var(--theme-color);
+  color: var(--theme-color-contrast);
+}
+
+/* ===== Interruptor (modo oscuro) ===== */
+
+.modal-dialog .switch {
+  cursor: pointer;
+  display: inline-flex;
+  position: relative;
+  width: auto;
+}
+
+.modal-dialog .switch .switch-input {
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+}
+
+.modal-dialog .switch .switch-track {
+  background-color: var(--color-text-disabled);
+  border-radius: var(--radius-xl);
+  display: inline-block;
+  height: 1.75em;
+  position: relative;
+  transition: background-color var(--transition-normal) var(--ease-in-out);
+  width: 3.25em;
+}
+
+.modal-dialog .switch .switch-track::after {
+  background-color: var(--color-white);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  content: "";
+  height: 1.4em;
+  left: .175em;
+  position: absolute;
+  top: .175em;
+  transition: transform var(--transition-normal) var(--ease-in-out);
+  width: 1.4em;
+}
+
+.modal-dialog .switch .switch-input:checked + .switch-track {
+  background-color: var(--theme-color);
+}
+
+.modal-dialog .switch .switch-input:checked + .switch-track::after {
+  transform: translateX(1.5em);
+}
+
+.modal-dialog .switch .switch-input:focus-visible + .switch-track {
+  outline: var(--border-thick) solid var(--theme-color);
+  outline-offset: var(--border-thick);
 }

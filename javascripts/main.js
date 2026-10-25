@@ -7,6 +7,11 @@ function main() {
 
   if (document.getElementById('HomePage')) {
     SidebarController();
+  }
+
+  /* Las grillas de contenido solo existen en la portada; las subpáginas
+     (mis-estudios/) reutilizan el sidebar y el modal pero no montan home. */
+  if (document.querySelector('.main-layout')) {
     HomeController();
   }
 }

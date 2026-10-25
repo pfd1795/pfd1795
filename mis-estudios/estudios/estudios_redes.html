@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redes: fundamentos — Estudios de informática</title>
+  <meta name="description" content="Fundamentos de redes: capas, direcciones IP, puertos, DNS, HTTP y diagnóstico.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/style.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/navbar.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/sidebar.css">
+  <link rel="stylesheet" href="../../stylesheets/components/index.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Redes</p>
+          <h1>Redes: fundamentos</h1>
+          <p class="entrada">
+            Una red es un conjunto de dispositivos que intercambian datos siguiendo protocolos comunes.
+            Entender las capas, las direcciones IP, los puertos y DNS explica casi todo lo que ocurre
+            cuando abres una página o llamas a una API.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es una red?</a></li>
+            <li><a href="#modelo-por-capas">Modelo por capas</a></li>
+            <li><a href="#ip-y-puertos">Direcciones IP y puertos</a></li>
+            <li><a href="#dns">DNS: de nombres a direcciones</a></li>
+            <li><a href="#http">HTTP sobre TCP</a></li>
+            <li><a href="#diagnostico">Diagnóstico de red</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es una red?</h2>
+          <p>
+            Dos equipos conectados necesitan <strong>direcciones</strong> para identificarse,
+            <strong>rutas</strong> para llegar el uno al otro y <strong>protocolos</strong> para
+            entenderse. Internet es una red de redes que usa el conjunto de protocolos TCP/IP.
+          </p>
+          <p class="nota">
+            «Protocolo» es simplemente un acuerdo sobre el formato de los mensajes y el orden de los
+            intercambios. TCP e IP son dos de esos acuerdos, y se complementan.
+          </p>
+        </section>
+
+        <section id="modelo-por-capas" aria-labelledby="modelo-por-capas-titulo">
+          <h2 id="modelo-por-capas-titulo">Modelo por capas</h2>
+          <p>
+            Las redes se explican por capas, de modo que cada una usa los servicios de la inferior y
+            ofrece servicios a la superior. Es la idea del modelo OSI (7 capas) y de TCP/IP (4 capas).
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Capa (TCP/IP)</th>
+                <th scope="col">Se ocupa de</th>
+                <th scope="col">Ejemplos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Aplicación</td><td>Servicios que usa el programa</td><td>HTTP, DNS, SMTP, SSH</td></tr>
+              <tr><td>Transporte</td><td>Entrega de extremo a extremo</td><td>TCP, UDP</td></tr>
+              <tr><td>Internet</td><td>Direccionamiento y enrutado</td><td>IP, ICMP</td></tr>
+              <tr><td>Acceso a red</td><td>Enlace físico entre dispositivos</td><td>Ethernet, Wi-Fi</td></tr>
+            </tbody>
+          </table>
+          <p>
+            <strong>TCP</strong> garantiza que los datos lleguen completos y en orden (web, correo,
+            transferencia de archivos). <strong>UDP</strong> no garantiza entrega pero es más ligero y
+            rápido (DNS, vídeo en tiempo real, juegos).
+          </p>
+        </section>
+
+        <section id="ip-y-puertos" aria-labelledby="ip-y-puertos-titulo">
+          <h2 id="ip-y-puertos-titulo">Direcciones IP y puertos</h2>
+          <p>
+            La dirección IP identifica un <em>equipo</em>; el puerto identifica el <em>servicio</em>
+            dentro de ese equipo. La combinación <code>IP:puerto</code> se llama <em>socket</em>.
+          </p>
+          <pre><code>192.168.1.10:443      # IP privada de tu red local, puerto HTTPS
+  127.0.0.1:3000        # "localhost": tu propio equipo, servidor de desarrollo
+  ::1                   # localhost en IPv6
+
+  # Rangos privados (no enrutan en Internet)
+  10.0.0.0/8            172.16.0.0/12            192.168.0.0/16</code></pre>
+          <p>Puertos bien conocidos que conviene recordar:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Puerto</th>
+                <th scope="col">Servicio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>22</td><td>SSH</td></tr>
+              <tr><td>53</td><td>DNS</td></tr>
+              <tr><td>80</td><td>HTTP</td></tr>
+              <tr><td>443</td><td>HTTPS</td></tr>
+              <tr><td>3000 / 5173 / 8000</td><td>Servidores de desarrollo</td></tr>
+              <tr><td>5432 / 3306</td><td>PostgreSQL / MySQL</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="dns" aria-labelledby="dns-titulo">
+          <h2 id="dns-titulo">DNS: de nombres a direcciones</h2>
+          <p>
+            Las personas recordamos nombres, no números. El DNS (Domain Name System) traduce
+            <code>ejemplo.com</code> a una IP. Es una consulta jerárquica que suele resolverse usando UDP
+            en el puerto 53.
+          </p>
+          <pre><code># Consultar la IP asociada a un dominio (comando "dig")
+  dig ejemplo.com +short
+
+  # Resolver sólo la dirección, de forma simple
+  nslookup ejemplo.com</code></pre>
+          <p>
+            Los registros más habituales: <strong>A</strong> (IPv4), <strong>AAAA</strong> (IPv6),
+            <strong>CNAME</strong> (alias), <strong>MX</strong> (correo) y <strong>TXT</strong>
+            (verificaciones).
+          </p>
+        </section>
+
+        <section id="http" aria-labelledby="http-titulo">
+          <h2 id="http-titulo">HTTP sobre TCP</h2>
+          <p>
+            HTTP es el protocolo de la web: un cliente pide un recurso con una <em>petición</em> y el
+            servidor responde. HTTPS es HTTP cifrado con TLS.
+          </p>
+          <pre><code># Petición
+  GET /index.html HTTP/1.1
+  Host: ejemplo.com
+  Accept: text/html
+  User-Agent: mi-navegador
+
+  # Respuesta
+  HTTP/1.1 200 OK
+  Content-Type: text/html; charset=utf-8
+  Content-Length: 1024
+
+  &lt;!DOCTYPE html&gt; ...</code></pre>
+          <p>Códigos de estado más comunes:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Significado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>200 OK</td><td>Todo correcto.</td></tr>
+              <tr><td>301 / 302</td><td>Redirección permanente / temporal.</td></tr>
+              <tr><td>304 Not Modified</td><td>El recurso no cambió: usa la caché.</td></tr>
+              <tr><td>400 Bad Request</td><td>Petición mal formada.</td></tr>
+              <tr><td>401 / 403</td><td>No autenticado / sin permiso.</td></tr>
+              <tr><td>404 Not Found</td><td>El recurso no existe.</td></tr>
+              <tr><td>500 Internal Server Error</td><td>Fallo del servidor.</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            Los <em>métodos</em> indican la intención: <code>GET</code> lee, <code>POST</code> crea,
+            <code>PUT</code> o <code>PATCH</code> actualizan y <code>DELETE</code> borra.
+          </p>
+        </section>
+
+        <section id="diagnostico" aria-labelledby="diagnostico-titulo">
+          <h2 id="diagnostico-titulo">Diagnóstico de red</h2>
+          <p>Estas herramientas son tu primera parada ante un problema de conectividad:</p>
+          <pre><code>ping ejemplo.com          # ¿responde el equipo?
+  traceroute ejemplo.com    # por qué routers pasa el tráfico
+  curl -I https://ejemplo.com   # cabeceras de la respuesta HTTP
+  curl -v https://ejemplo.com   # detalle de la conexión y los encabezados
+  ss -tuln                  # puertos a la escucha en tu equipo
+  ip addr                   # direcciones de tus interfaces de red</code></pre>
+          <p>
+            Si <code>ping</code> falla por nombre pero funciona por IP, el problema está en DNS. Si la
+            IP responde pero el puerto no, suele ser un cortafuegos o un servicio caído. Verás estos
+            comandos con más detalle en <a href="estudios_terminal.html#referencia">Terminal · Referencia rápida</a>.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Usa siempre HTTPS en producción; nunca sirvas credenciales por HTTP.</li>
+            <li>No expongas bases de datos ni servicios internos a Internet: mantenlos en la red privada.</li>
+            <li>Devuelve el código de estado HTTP correcto: no todo es <code>200</code>.</li>
+            <li>Reutiliza conexiones y usa caché (<code>Cache-Control</code>, <code>ETag</code>).</li>
+            <li>Nombra los puertos de desarrollo no estándar para evitar conflictos con los conocidos.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_terminal.html#referencia">Terminal · Referencia rápida</a>: <code>curl</code>, <code>ping</code> y otros comandos de red.</li>
+            <li><a href="estudios_javascript.html#asincronia">JavaScript · Asincronía</a>: peticiones <code>fetch</code> sobre HTTP.</li>
+            <li><a href="estudios_html.html#estructura">HTML · Estructura mínima</a>: el documento que viaja en la respuesta HTTP.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pfd1795 | Enciclopedia informática</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta name="description" content="Enciclopedia estática de informática: computación, redes, lenguajes, frameworks, arquitectura, comandos y buenas prácticas." />
+  <meta name="keywords" content="desarrollador web, full stack developer, React, Next.js, React Native, PHP, JavaScript, TypeScript, SQL, NoSQL, MongoDB, programador, desarrollador frontend, desarrollador backend" />
+  <meta name="author" content="Pablo Diaz" />
+  
+  <link rel="stylesheet" href="../stylesheets/style.css">
+  
+  <link rel="stylesheet" href="../stylesheets/ui/navbar.css">
+  <link rel="stylesheet" href="../stylesheets/ui/sidebar.css">
+  <link rel="stylesheet" href="../stylesheets/components/index.css">
+
+  <link rel="stylesheet" href="../stylesheets/enciclopedia.css">
+
+  <script src="js/tema.js"></script>
+  <script src="js/buscador.js" defer></script>
+  <script src="../javascripts/main.js" defer type="module"></script>
+</head>
+
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../index.html" class="logo-link" title="inicio">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+      <span data-lang="menu">Menú</span>
+      <img src="../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="./index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor">
+      <h1>Enciclopedia de informática</h1>
+      <p class="entrada">
+        Material de consulta para programadores: explicaciones breves, ejemplos de código y buenas
+        prácticas. Empieza por el buscador o navega por categorías.
+      </p>
+
+      <form class="buscador" role="search">
+        <label class="buscador__etiqueta" for="buscador">Buscar estudios</label>
+        <input
+          class="buscador__campo"
+          type="search"
+          id="buscador"
+          name="q"
+          placeholder="Título, descripción o palabra clave (por ejemplo: flexbox)"
+          autocomplete="off">
+        <p class="buscador__contador" id="contador" role="status" aria-live="polite"></p>
+        <p class="buscador__mensaje" id="sin-resultados" hidden>
+          No hay estudios que coincidan con tu búsqueda. Prueba con otra palabra.
+        </p>
+      </form>
+
+      <section class="categoria" aria-labelledby="cat-fundamentos">
+        <h2 id="cat-fundamentos">Fundamentos de computación</h2>
+        <ul class="lista-estudios">
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Sistemas numéricos y representación de datos"
+                 data-descripcion="Binario, hexadecimal, bits, bytes y cómo se codifica la información."
+                 data-claves="binario hexadecimal bits bytes complemento a dos ascii unicode codificacion">
+              <h3 class="estudio-card__titulo">Sistemas numéricos y representación de datos</h3>
+              <p class="estudio-card__descripcion">Binario, hexadecimal, bits, bytes y codificación de texto.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Lógica digital y álgebra de Boole"
+                 data-descripcion="Operadores lógicos, tablas de verdad y puertas lógicas básicas."
+                 data-claves="boole and or not xor tabla de verdad puertas logica digital">
+              <h3 class="estudio-card__titulo">Lógica digital y álgebra de Boole</h3>
+              <p class="estudio-card__descripcion">Operadores lógicos, tablas de verdad y puertas.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Sistemas operativos"
+                 data-descripcion="Procesos, memoria, sistema de archivos y su relación con el terminal."
+                 data-claves="procesos memoria kernel sistema de archivos procesos planificacion">
+              <h3 class="estudio-card__titulo">Sistemas operativos</h3>
+              <p class="estudio-card__descripcion">Procesos, memoria y sistema de archivos.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-web">
+        <h2 id="cat-web">Web (HTML, CSS y JavaScript)</h2>
+        <ul class="lista-estudios">
+          <li>
+            <article class="estudio-card"
+                     data-titulo="HTML"
+                     data-descripcion="Estructura, semántica y accesibilidad del contenido de una página web."
+                     data-claves="html marcado etiquetas semantica estructura formularios accesibilidad enlaces">
+              <h3 class="estudio-card__titulo"><a href="estudios/estudios_html.html">HTML</a></h3>
+              <p class="estudio-card__descripcion">Estructura, semántica y accesibilidad del contenido.</p>
+            </article>
+          </li>
+          <li>
+            <article class="estudio-card"
+                     data-titulo="CSS"
+                     data-descripcion="Presentación, selectores, modelo de caja, Flexbox y Grid."
+                     data-claves="css estilos selectores box model flexbox grid responsive especificidad">
+              <h3 class="estudio-card__titulo"><a href="estudios/estudios_css.html">CSS</a></h3>
+              <p class="estudio-card__descripcion">Presentación, selectores, caja, Flexbox y Grid.</p>
+            </article>
+          </li>
+          <li>
+            <article class="estudio-card"
+                     data-titulo="JavaScript"
+                     data-descripcion="Lenguaje del navegador: tipos, funciones, DOM y asincronía."
+                     data-claves="javascript js tipos funciones closures dom eventos promesas async await">
+              <h3 class="estudio-card__titulo"><a href="estudios/estudios_javascript.html">JavaScript</a></h3>
+              <p class="estudio-card__descripcion">Tipos, funciones, DOM y asincronía.</p>
+            </article>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="HTTP y navegador web"
+                 data-descripcion="Peticiones, cabeceras, caché y ciclo de vida de una página."
+                 data-claves="http https cabeceras cache cookies navegador peticion respuesta">
+              <h3 class="estudio-card__titulo">HTTP y navegador web</h3>
+              <p class="estudio-card__descripcion">Peticiones, cabeceras, caché y ciclo de vida.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-redes">
+        <h2 id="cat-redes">Redes</h2>
+        <ul class="lista-estudios">
+          <li>
+            <article class="estudio-card"
+                     data-titulo="Redes: fundamentos"
+                     data-descripcion="Modelo por capas, direcciones IP, puertos, DNS y HTTP."
+                     data-claves="redes tcp ip udp puertos dns http modelo osi capas direccionamiento localhost">
+              <h3 class="estudio-card__titulo"><a href="estudios/estudios_redes.html">Redes: fundamentos</a></h3>
+              <p class="estudio-card__descripcion">Capas, IP, puertos, DNS y HTTP.</p>
+            </article>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Seguridad en redes y TLS"
+                 data-descripcion="Cifrado en tránsito, certificados y el papel de HTTPS."
+                 data-claves="tls ssl certificados https cifrado handshake seguridad redes">
+              <h3 class="estudio-card__titulo">Seguridad en redes y TLS</h3>
+              <p class="estudio-card__descripcion">Cifrado en tránsito, certificados y HTTPS.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-lenguajes">
+        <h2 id="cat-lenguajes">Lenguajes de programación</h2>
+        <ul class="lista-estudios">
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Python"
+                 data-descripcion="Sintaxis, estructuras de datos y ecosistema del lenguaje."
+                 data-claves="python sintaxis listas diccionarios pip scripting">
+              <h3 class="estudio-card__titulo">Python</h3>
+              <p class="estudio-card__descripcion">Sintaxis, estructuras de datos y ecosistema.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="C y gestión de memoria"
+                 data-descripcion="Punteros, memoria manual y compilación."
+                 data-claves="c punteros memoria malloc compilacion gcc bajo nivel">
+              <h3 class="estudio-card__titulo">C y gestión de memoria</h3>
+              <p class="estudio-card__descripcion">Punteros, memoria manual y compilación.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Paradigmas de programación"
+                 data-descripcion="Imperativo, orientado a objetos, funcional y sus diferencias."
+                 data-claves="paradigmas orientado a objetos funcional imperativo declarativo abstraccion">
+              <h3 class="estudio-card__titulo">Paradigmas de programación</h3>
+              <p class="estudio-card__descripcion">Imperativo, orientado a objetos y funcional.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-frameworks">
+        <h2 id="cat-frameworks">Frameworks</h2>
+        <ul class="lista-estudios">
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Frameworks de front-end"
+                 data-descripcion="Componentes, estado y cuándo conviene usar un framework."
+                 data-claves="frontend react vue componentes estado spa framework">
+              <h3 class="estudio-card__titulo">Frameworks de front-end</h3>
+              <p class="estudio-card__descripcion">Componentes, estado y cuándo usarlos.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Frameworks de back-end"
+                 data-descripcion="Enrutado, plantillas, ORM y APIs."
+                 data-claves="backend api rest enrutado plantillas orm servidor framework">
+              <h3 class="estudio-card__titulo">Frameworks de back-end</h3>
+              <p class="estudio-card__descripcion">Enrutado, plantillas, ORM y APIs.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-arquitectura">
+        <h2 id="cat-arquitectura">Arquitectura y diseño de software</h2>
+        <ul class="lista-estudios">
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Patrones de diseño"
+                 data-descripcion="Soluciones reutilizables a problemas habituales de diseño."
+                 data-claves="patrones diseno factory observer singleton estrategia arquitectura">
+              <h3 class="estudio-card__titulo">Patrones de diseño</h3>
+              <p class="estudio-card__descripcion">Soluciones reutilizables a problemas habituales.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Principios de diseño y SOLID"
+                 data-descripcion="Acoplamiento, cohesión y los cinco principios SOLID."
+                 data-claves="solid acoplamiento cohesion responsabilidad unica diseño modular">
+              <h3 class="estudio-card__titulo">Principios de diseño y SOLID</h3>
+              <p class="estudio-card__descripcion">Acoplamiento, cohesión y principios SOLID.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Cliente-servidor y APIs"
+                 data-descripcion="Cómo se comunican front-end y back-end."
+                 data-claves="cliente servidor api rest json endpoints arquitectura comunicacion">
+              <h3 class="estudio-card__titulo">Cliente-servidor y APIs</h3>
+              <p class="estudio-card__descripcion">Cómo se comunican front-end y back-end.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-terminal">
+        <h2 id="cat-terminal">Comandos y terminal</h2>
+        <ul class="lista-estudios">
+          <li>
+            <article class="estudio-card"
+                     data-titulo="Terminal y línea de comandos"
+                     data-descripcion="Navegación, archivos, permisos, procesos y tuberías."
+                     data-claves="terminal shell bash comandos navegacion permisos chmod grep tuberias pipe">
+              <h3 class="estudio-card__titulo"><a href="estudios/estudios_terminal.html">Terminal y línea de comandos</a></h3>
+              <p class="estudio-card__descripcion">Navegación, archivos, permisos, procesos y tuberías.</p>
+            </article>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-versiones">
+        <h2 id="cat-versiones">Control de versiones</h2>
+        <ul class="lista-estudios">
+          <li>
+            <article class="estudio-card"
+                     data-titulo="Git"
+                     data-descripcion="Repositorios, commits, ramas y trabajo con remotos."
+                     data-claves="git control de versiones commits ramas merge rebase repositorio remoto github">
+              <h3 class="estudio-card__titulo"><a href="estudios/estudios_git.html">Git</a></h3>
+              <p class="estudio-card__descripcion">Repositorios, commits, ramas y remotos.</p>
+            </article>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-bd">
+        <h2 id="cat-bd">Bases de datos</h2>
+        <ul class="lista-estudios">
+          <li>
+            <div class="estudio-card"
+                 data-titulo="SQL y bases de datos relacionales"
+                 data-descripcion="Tablas, consultas, claves e índices."
+                 data-claves="sql base de datos relacional tablas consultas join indices claves">
+              <h3 class="estudio-card__titulo">SQL y bases de datos relacionales</h3>
+              <p class="estudio-card__descripcion">Tablas, consultas, claves e índices.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Modelado de datos y normalización"
+                 data-descripcion="Cómo diseñar un esquema sin redundancias."
+                 data-claves="modelado normalizacion formas normales esquema entidad relacion">
+              <h3 class="estudio-card__titulo">Modelado de datos y normalización</h3>
+              <p class="estudio-card__descripcion">Cómo diseñar un esquema sin redundancias.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-seguridad">
+        <h2 id="cat-seguridad">Seguridad</h2>
+        <ul class="lista-estudios">
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Seguridad en aplicaciones web"
+                 data-descripcion="Inyección, XSS, CSRF y validación de entradas."
+                 data-claves="seguridad xss csrf inyeccion sql validacion owasp sanitizacion">
+              <h3 class="estudio-card__titulo">Seguridad en aplicaciones web</h3>
+              <p class="estudio-card__descripcion">Inyección, XSS, CSRF y validación de entradas.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Criptografía básica"
+                 data-descripcion="Hash, cifrado simétrico y asimétrico, y firmas."
+                 data-claves="criptografia hash sha cifrado simetrico asimetrico firma claves">
+              <h3 class="estudio-card__titulo">Criptografía básica</h3>
+              <p class="estudio-card__descripcion">Hash, cifrado simétrico y asimétrico.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-herramientas">
+        <h2 id="cat-herramientas">Herramientas</h2>
+        <ul class="lista-estudios">
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Editores, IDEs y depuración"
+                 data-descripcion="Herramientas del día a día y cómo depurar con método."
+                 data-claves="editor ide depuracion debugger breakpoints vscode herramientas">
+              <h3 class="estudio-card__titulo">Editores, IDEs y depuración</h3>
+              <p class="estudio-card__descripcion">Herramientas del día a día y depuración.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="estudio-card"
+                 data-titulo="Empaquetado y despliegue"
+                 data-descripcion="Builds, variables de entorno y publicación de aplicaciones."
+                 data-claves="despliegue build variables de entorno docker ci cd produccion">
+              <h3 class="estudio-card__titulo">Empaquetado y despliegue</h3>
+              <p class="estudio-card__descripcion">Builds, variables de entorno y publicación.</p>
+              <p class="estudio-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · Hecha con HTML, CSS y JavaScript sin dependencias externas.</p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú">
+        <span data-lang="close">Cerrar</span>
+        <img src="../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../index.html#inicio">
+          <img src="../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones">
+          <img class="sidebar-chevron" src="../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../index.html#experiencia">
+          <img src="../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../index.html#estudios">
+          <img src="../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../index.html#proyectos">
+          <img src="../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="./index.html" aria-current="page">
+        <img src="../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración">
+        <span data-lang="settings">Configuración</span>
+        <img src="../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

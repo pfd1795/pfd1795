@@ -2,16 +2,16 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pfd1795 | Home</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-  <meta name="description"
-    content="Desarrollador Web Full Stack especializado en React, Next.js, React Native, PHP, SQL y NoSQL. Creación de aplicaciones web y móviles escalables con experiencia en tecnologías modernas." />
-  <meta name="keywords"
-    content="desarrollador web, full stack developer, React, Next.js, React Native, PHP, JavaScript, TypeScript, SQL, NoSQL, MongoDB, programador, desarrollador frontend, desarrollador backend" />
+  <meta name="description" content="Desarrollador Web Full Stack especializado en React, Next.js, React Native, PHP, SQL y NoSQL. Creación de aplicaciones web y móviles escalables con experiencia en tecnologías modernas." />
+  <meta name="keywords" content="desarrollador web, full stack developer, React, Next.js, React Native, PHP, JavaScript, TypeScript, SQL, NoSQL, MongoDB, programador, desarrollador frontend, desarrollador backend" />
   <meta name="author" content="Pablo Diaz" />
+
+  <script src="./javascripts/theme-init.js"></script>
 
   <link rel="stylesheet" href="./stylesheets/style.css" />
   <link rel="stylesheet" href="./stylesheets/pages/home/index.css" />
@@ -27,13 +27,13 @@
     </a>
 
     <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
-      <span data-lang="menu">Configuración</span>
-      <img src="./assets/icons/setting.svg" alt="" />
+      <span data-lang="menu">Menú</span>
+      <img src="./assets/icons/menu.svg" alt="" />
     </button>
   </nav>
 
   <main class="main-layout">
-    <section class="zone-intro">
+    <section class="zone-intro" id="inicio">
       <section class="intro-section">
         <p class="welcome-text">
           <strong data-lang="welcomeMessage">¡Hola Mundo!</strong>
@@ -83,21 +83,17 @@
       </section>
     </section>
 
-    <section class="zone-work-experience">
+    <section class="zone-work-experience" id="experiencia">
       <header class="header">
         <h2 data-lang="experienceTitle">Experiencia Laboral</h2>
       </header>
 
       <section class="content">
-        <!-- Este contenedor ahora envuelve el cover y la grilla -->
-        <div class="works-container">
-          <div class="grid-works"></div>
-          <div class="works-cover"></div>
-        </div>
+        <div class="grid-works"></div>
       </section>
     </section>
 
-    <section class="zone-studies-courses">
+    <section class="zone-studies-courses" id="estudios">
       <header class="header">
         <h2 data-lang="studiesTitle">Estudios | Cursos</h2>
       </header>
@@ -107,7 +103,7 @@
 
     <hr class="divider">
 
-    <section class="zone-projects">
+    <section class="zone-projects" id="proyectos">
       <header class="header">
         <h2 class="title" data-lang="title">Proyectos con Diferentes Tecnologías</h2>
         <p data-lang="projectSubtitle">
@@ -182,61 +178,62 @@
 
   <div class="sidebar-overlay"></div>
 
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
     <header class="sidebar-header">
-      <h2 data-lang="menu">Configuración</h2>
+      <h2 data-lang="menu">Menú</h2>
 
-      <div>
-        <button class="btn" title="cerrar menú">
-          <span data-lang="close">Cerrar</span>
-          <img src="./assets/icons/close.svg" />
-        </button>
-      </div>
+      <button class="btn btn-close" title="cerrar menú">
+        <span data-lang="close">Cerrar</span>
+        <img src="./assets/icons/close.svg" alt="" />
+      </button>
     </header>
 
-    <div class="settings-section">
-      <section class="settings-language">
-        <label class="theme-label" data-lang="language">Idioma</label>
-        <button class="btn language-toggle" aria-label="Cambiar idioma">
-          <span class="current-lang">Español</span>
-          <img src="./assets/icons/translate.svg" alt="" />
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <button class="sidebar-item" data-target="inicio">
+          <img src="./assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
         </button>
-      </section>
 
-      <section class="settings-theme-mode">
-        <div class="theme-mode-toggle">
-          <label class="theme-label" data-lang="dark-mode">Modo Oscuro</label>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones">
+          <img class="sidebar-chevron" src="./assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
 
-          <div class="toggle-switch" role="switch" aria-checked="false" aria-label="Cambiar modo oscuro/claro">
-            <div class="toggle-slider">
-              <img src="./assets/icons/light_mode.svg" alt="" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <button class="sidebar-item sidebar-subitem" data-target="experiencia">
+          <img src="./assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </button>
 
-      <section class="settings-theme-color">
-        <label class="theme-label" data-lang="theme-color">Color del tema</label>
-        <div class="color-options">
-          <button class="color-option selected" style="background: #3b82f6;" data-color="blue" data-value="#3b82f6"
-            title="Azul" aria-label="Seleccionar tema azul"></button>
-          <button class="color-option" style="background: #10b981;" data-color="green" data-value="#10b981"
-            title="Verde" aria-label="Seleccionar tema verde"></button>
-          <button class="color-option" style="background: #f59e0b;" data-color="orange" data-value="#f59e0b"
-            title="Naranja" aria-label="Seleccionar tema naranja"></button>
-          <button class="color-option" style="background: #ef4444;" data-color="red" data-value="#ef4444"
-            title="Rojo" aria-label="Seleccionar tema rojo"></button>
-          <button class="color-option" style="background: #8b5cf6;" data-color="purple" data-value="#8b5cf6"
-            title="Morado" aria-label="Seleccionar tema morado"></button>
-          <button class="color-option" style="background: #ec4899;" data-color="pink" data-value="#ec4899"
-            title="Rosa" aria-label="Seleccionar tema rosa"></button>
-        </div>
-      </section>
-    </div>
+        <button class="sidebar-item sidebar-subitem" data-target="estudios">
+          <img src="./assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </button>
+
+        <button class="sidebar-item sidebar-subitem" data-target="proyectos">
+          <img src="./assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </button>
+      </div>
+
+      <a class="sidebar-item" href="./mis-estudios/index.html">
+        <img src="./assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración">
+        <span data-lang="settings">Configuración</span>
+        <img src="./assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
   </aside>
 
   <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="btn" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
     <div class="modal-dialog-body"></div>
   </dialog>
 </body>

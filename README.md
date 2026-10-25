@@ -1,55 +1,70 @@
-## Hi there 👋
+# Portafolio web de Pablo Diaz
 
-## 👋 Bienvenidos a mi repositorio de portafolio web
+Portafolio personal y enciclopedia de informática desarrollados con **HTML, CSS y JavaScript vanilla**, sin frameworks ni build step. El sitio es estático y se publica en GitHub Pages.
 
-Este repositorio contiene el código fuente de mi **página web principal de portafolio**, desarrollada con **HTML, CSS y JavaScript Vanilla**.
+**Producción:** https://pfd1795.github.io/pfd1795/
 
-He elegido este stack tecnológico para mantener un sitio **ligero, accesible, rápido y fácil de mantener**, además de ser el núcleo que conecta con mis demás proyectos, donde muestro habilidades con otras tecnologías.
+## Características
 
-* **Página web portafolio desplegado en GitHub Pages:** [https://pfd1795.github.io/pfd1795/](https://pfd1795.github.io/pfd1795/)
+- Portada con grillas de experiencia, estudios y proyectos generadas desde `javascripts/lang/translations.json`.
+- Menú lateral con navegación por secciones, submenú desplegable y scrollspy.
+- Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
+- Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
+- Enciclopedia de informática en `mis-estudios/`, con buscador y contenido educativo estático.
+- La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
 
----
+## Ejecución local
 
-### Próximas actualizaciones
+No hay que instalar dependencias ni ejecutar un build. Sirve el directorio por HTTP:
 
-El proyecto está en constante evolución.
+```bash
+# Opción 1
+python -m http.server 8000
 
-Pronto implementaré nuevas secciones, mejoras y funcionalidades.
+# Opción 2
+npx serve .
+```
 
-> **El código es completamente libre**, aunque mi información personal está protegida y no puede ser utilizada para fines externos.
+Luego abre `http://localhost:8000/`.
 
----
+> **Importante:** no abras `index.html` directamente con `file://`. Los módulos ES y la importación de JSON quedan bloqueados por CORS y la página no se renderiza correctamente.
 
-### Ejecutar el proyecto
+## Estructura
 
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/pfd1795/pfd1795.git
-   ```
-2. Abrir el archivo `index.html` en tu navegador.
+```text
+├── index.html              # Portada
+├── mis-estudios/           # Enciclopedia de informática
+├── javascripts/            # Módulos ES6 y lógica de la interfaz
+├── stylesheets/            # Estilos y sistema de diseño
+├── assets/                 # Imágenes, iconos y CV
+└── .github/workflows/      # Despliegue en GitHub Pages
+```
 
----
+La guía técnica detallada, las convenciones y las limitaciones conocidas están en [`AGENTS.md`](./AGENTS.md).
 
-### Contacto
+## Despliegue
 
-* **Página web portafolio:** [https://pfd1795.github.io/pfd1795/](https://pfd1795.github.io/pfd1795/)
-* **LinkedIn:** [https://www.linkedin.com/in/pfd-dev/](https://www.linkedin.com/in/pfd-dev/)
-* **GitHub:** [https://github.com/pfd1795](https://github.com/pfd1795)
-* **Email:** [pfd1795@gmail.com](mailto:pfd1795@gmail.com)
+GitHub Actions publica el contenido del repositorio en GitHub Pages en cada push a `main` (`.github/workflows/static.yml`). No requiere configuración adicional.
 
-<!--
-## Hi there 👋
+## Limitaciones
 
-**pfd1795/pfd1795** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+- Sitio completamente estático: sin backend, API, autenticación ni base de datos.
+- Sin tests automatizados, linting ni build; la única automatización es el despliegue.
+- Requiere un servidor HTTP local para funcionar.
+- Pensado para navegadores modernos (módulos ES, CSS nesting, `<dialog>`, `IntersectionObserver`).
+- La interfaz está traducida a español e inglés, pero el contenido de la enciclopedia solo está en español y algunas cadenas aún no están conectadas al sistema de traducciones.
+- Varias secciones de la enciclopedia están marcadas como “Próximamente”.
+- La imagen del proyecto de la portada se carga desde Unsplash.
 
-Here are some ideas to get you started:
+Los detalles técnicos y la deuda pendiente se documentan en [`AGENTS.md`](./AGENTS.md#limitaciones-y-problemas-conocidos).
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## Contacto
+
+- **Portafolio:** https://pfd1795.github.io/pfd1795/
+- **LinkedIn:** https://www.linkedin.com/in/pfd-dev/
+- **GitHub:** https://github.com/pfd1795
+- **Email:** pfd1795@gmail.com
+
+## Uso
+
+El código es libre, aunque la información personal del autor está protegida y no puede utilizarse para fines externos.

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSS — Estudios de informática</title>
+  <meta name="description"
+    content="Qué es CSS, selectores, especificidad, modelo de caja, Flexbox, Grid y buenas prácticas.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/style.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/navbar.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/sidebar.css">
+  <link rel="stylesheet" href="../../stylesheets/components/index.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+</head>
+
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Web (HTML, CSS y JavaScript)</p>
+          <h1>CSS</h1>
+          <p class="entrada">
+            CSS (Cascading Style Sheets) es el lenguaje que controla la presentación del HTML: colores,
+            tipografía, espaciado y disposición. Separa el contenido de su aspecto visual.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es y cómo se aplica?</a></li>
+            <li><a href="#selectores">Selectores y especificidad</a></li>
+            <li><a href="#modelo-de-caja">El modelo de caja</a></li>
+            <li><a href="#flexbox">Flexbox</a></li>
+            <li><a href="#grid">Grid</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es y cómo se aplica?</h2>
+          <p>
+            Una hoja de estilos es una lista de <strong>reglas</strong>. Cada regla tiene un selector (a
+            qué elementos afecta) y un bloque de declaraciones (propiedad: valor).
+          </p>
+          <pre><code>/* Selector: p. Declaraciones: color y max-width */
+  p {
+    color: #333333;
+    max-width: 40rem;
+  }</code></pre>
+          <p>Se puede aplicar de tres formas, preferidas en este orden:</p>
+          <ol>
+            <li>Archivo externo: <code>&lt;link rel="stylesheet" href="css/tema.css"&gt;</code>.</li>
+            <li>Bloque <code>&lt;style&gt;</code> en el <code>&lt;head&gt;</code>, para estilos puntuales de una página.
+            </li>
+            <li>Atributo <code>style=""</code>: evítalo salvo para pruebas.</li>
+          </ol>
+          <p class="nota">
+            La palabra «en cascada» significa que, ante reglas en conflicto, gana la de mayor
+            especificidad y, si empatan, la que aparece más abajo.
+          </p>
+        </section>
+
+        <section id="selectores" aria-labelledby="selectores-titulo">
+          <h2 id="selectores-titulo">Selectores y especificidad</h2>
+          <pre><code>p            { } /* etiqueta */
+  .tarjeta     { } /* clase (las más usadas) */
+  #principal   { } /* id (poco recomendado para estilos) */
+  nav a        { } /* descendiente */
+  ul &gt; li      { } /* hijo directo */
+  input[type="email"] { } /* por atributo */
+  a:hover      { } /* pseudo-clase: estado */
+  p::first-line { } /* pseudo-elemento: parte del contenido */</code></pre>
+          <p>
+            La especificidad se calcula por «peso»: los estilos en línea pesan más que los
+            <code>id</code>, los <code>id</code> más que las clases y atributos, y las clases más que
+            las etiquetas. Ante dudas, usa clases y evita <code>!important</code>.
+          </p>
+          <pre><code>/* Variables reutilizables y herencia */
+  :root {
+    --color-texto: #1b1f24;
+  }
+
+  .aviso {
+    color: var(--color-texto);
+    border-left: 3px solid orange;
+  }</code></pre>
+        </section>
+
+        <section id="modelo-de-caja" aria-labelledby="modelo-de-caja-titulo">
+          <h2 id="modelo-de-caja-titulo">El modelo de caja</h2>
+          <p>
+            Todo elemento es una caja formada por el contenido, el <code>padding</code> (relleno
+            interno), el <code>border</code> (borde) y el <code>margin</code> (espacio exterior).
+          </p>
+          <pre><code>/* Sin esto, el padding y el borde SUMAN al ancho declarado. */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  .caja {
+    width: 300px;
+    padding: 1rem;   /* espacio dentro */
+    border: 1px solid #ccc;
+    margin: 1rem;    /* espacio fuera */
+  }</code></pre>
+          <ul>
+            <li>Con <code>box-sizing: border-box</code>, <code>width</code> incluye padding y borde: mucho más
+              predecible.</li>
+            <li>Los márgenes verticales de elementos adyacentes pueden solaparse (<em>margin collapsing</em>).</li>
+            <li>Las unidades relativas (<code>rem</code>, <code>%</code>, <code>em</code>) se adaptan mejor que los
+              píxeles fijos.</li>
+          </ul>
+        </section>
+
+        <section id="flexbox" aria-labelledby="flexbox-titulo">
+          <h2 id="flexbox-titulo">Flexbox</h2>
+          <p>
+            Flexbox distribuye elementos en <strong>una dimensión</strong> (fila o columna). Se activa con
+            <code>display: flex</code> en el contenedor; los hijos pasan a ser elementos flexibles.
+          </p>
+          <pre><code>.barra {
+    display: flex;
+    justify-content: space-between; /* eje principal: horizontal por defecto */
+    align-items: center;            /* eje transversal: vertical por defecto */
+    gap: 1rem;                      /* separación entre hijos, sin márgenes */
+    flex-wrap: wrap;                /* permite pasar a la línea siguiente */
+  }
+
+  .barra__marca {
+    flex: 1 1 auto; /* grow shrink basis: puede crecer y encogerse */
+  }</code></pre>
+          <ul>
+            <li><code>justify-content</code> reparte el espacio en el eje principal.</li>
+            <li><code>align-items</code> alinea en el eje transversal.</li>
+            <li><code>flex-direction: column</code> cambia el eje principal a vertical.</li>
+            <li>Para cuadrículas de filas <em>y</em> columnas a la vez, usa Grid.</li>
+          </ul>
+        </section>
+
+        <section id="grid" aria-labelledby="grid-titulo">
+          <h2 id="grid-titulo">Grid</h2>
+          <p>
+            Grid organiza los hijos en <strong>filas y columnas</strong> al mismo tiempo. Es ideal para
+            rejillas de tarjetas y diseños de página completos.
+          </p>
+          <pre><code>.rejilla {
+    display: grid;
+    /* Columnas que se adaptan solas al ancho disponible */
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+  }
+
+  .destacado {
+    /* Ocupa dos columnas de la rejilla */
+    grid-column: span 2;
+  }</code></pre>
+          <p class="nota">
+            El <code>1fr</code> («una fracción») reparte el espacio libre entre columnas. Es la forma más
+            directa de hacer diseños fluidos sin media queries.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Separa la presentación en archivos externos y enlázalos desde el <a
+                href="estudios_html.html#estructura">HTML</a>.</li>
+            <li>Concentra colores, tipografías y espaciados en variables (<em>custom properties</em>) para cambiarlos en
+              un solo sitio.</li>
+            <li>Usa clases con nombres que describan el <strong>significado</strong> (<code>.nota</code>), no la
+              apariencia (<code>.caja-amarilla</code>).</li>
+            <li>Prefiere Flexbox/Grid a <code>float</code> y posicionamiento absoluto para maquetar.</li>
+            <li>Diseña primero para móvil y amplía con <code>@media (min-width: …)</code>.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <ul>
+            <li>Olvidar <code>box-sizing: border-box</code> y llevarse sorpresas con los anchos.</li>
+            <li>Abusar de <code>!important</code> para «arreglar» conflictos: es señal de mala estructura de selectores.
+            </li>
+            <li>Estilar por <code>id</code>, lo que dispara la especificidad y dificulta la reutilización.</li>
+            <li>Usar <code>height: 100%</code> cuando el padre no tiene altura definida: no hace nada.</li>
+            <li>Mezclar unidades sin criterio (<code>px</code>, <code>em</code>, <code>%</code>) y perder escalabilidad.
+            </li>
+          </ul>
+          <p class="aviso">
+            Si un estilo «no se aplica», revisa en las herramientas del navegador si otro selector con
+            mayor especificidad lo está sobrescribiendo (aparece tachado).
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Propiedad</th>
+                <th scope="col">Qué hace</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>display</code></td>
+                <td>Tipo de caja: <code>block</code>, <code>inline</code>, <code>flex</code>, <code>grid</code>,
+                  <code>none</code>.</td>
+              </tr>
+              <tr>
+                <td><code>color</code> / <code>background-color</code></td>
+                <td>Color del texto y del fondo.</td>
+              </tr>
+              <tr>
+                <td><code>font-family</code> / <code>font-size</code></td>
+                <td>Tipografía y tamaño del texto.</td>
+              </tr>
+              <tr>
+                <td><code>margin</code> / <code>padding</code></td>
+                <td>Espacio exterior e interior.</td>
+              </tr>
+              <tr>
+                <td><code>border</code> / <code>border-radius</code></td>
+                <td>Borde y esquinas redondeadas.</td>
+              </tr>
+              <tr>
+                <td><code>width</code> / <code>max-width</code></td>
+                <td>Ancho fijo y ancho máximo (más flexible).</td>
+              </tr>
+              <tr>
+                <td><code>gap</code></td>
+                <td>Separación entre hijos de flex o grid.</td>
+              </tr>
+              <tr>
+                <td><code>position</code></td>
+                <td><code>static</code>, <code>relative</code>, <code>absolute</code>, <code>fixed</code>,
+                  <code>sticky</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_html.html">HTML</a>: el contenido al que da forma CSS.</li>
+            <li><a href="estudios_html.html#semantica">HTML · Etiquetas y semántica</a>: por qué conviene estilar por
+              significado.</li>
+            <li><a href="estudios_javascript.html#dom">JavaScript · DOM</a>: cómo cambiar clases y estilos
+              dinámicamente.</li>
+            <li><a href="estudios_redes.html#http">Redes · HTTP</a>: las hojas de estilo se descargan como recursos
+              independientes.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

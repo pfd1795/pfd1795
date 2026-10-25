@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Git — Estudios de informática</title>
+  <meta name="description" content="Control de versiones con Git: repositorios, commits, ramas, remotos, deshacer cambios y buenas prácticas.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/style.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/navbar.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/sidebar.css">
+  <link rel="stylesheet" href="../../stylesheets/components/index.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Control de versiones</p>
+          <h1>Git</h1>
+          <p class="entrada">
+            Git es un sistema de control de versiones distribuido: registra la historia del proyecto,
+            permite trabajar en paralelo con ramas y colaborar mediante repositorios remotos.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es y cómo piensa?</a></li>
+            <li><a href="#flujo-basico">Flujo básico</a></li>
+            <li><a href="#ramas">Ramas</a></li>
+            <li><a href="#remotos">Repositorios remotos</a></li>
+            <li><a href="#deshacer-cambios">Deshacer cambios</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es y cómo piensa?</h2>
+          <p>
+            Git guarda <strong>instantáneas</strong> (snapshots) del proyecto, no solo diferencias. Cada
+            instantánea es un <em>commit</em> identificado por un hash y encadenado al anterior, lo que
+            forma el historial.
+          </p>
+          <p>Hay tres zonas que conviene distinguir:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Zona</th>
+                <th scope="col">Qué contiene</th>
+                <th scope="col">Cómo se pasa a la siguiente</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Directorio de trabajo</td><td>Los archivos tal como los editas</td><td><code>git add</code></td></tr>
+              <tr><td>Área de preparación (<em>staging</em>)</td><td>Los cambios listos para confirmar</td><td><code>git commit</code></td></tr>
+              <tr><td>Repositorio</td><td>El historial de commits</td><td><code>git push</code> al remoto</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            Un commit es un punto de guardado con significado. Preparar los cambios por partes permite
+            crear commits pequeños y claros en lugar de uno gigante y mezclado.
+          </p>
+        </section>
+
+        <section id="flujo-basico" aria-labelledby="flujo-basico-titulo">
+          <h2 id="flujo-basico-titulo">Flujo básico</h2>
+          <pre><code># Configuración inicial (una sola vez)
+  git config --global user.name "Tu Nombre"
+  git config --global user.email "tu@correo.com"
+
+  # Empezar: crear un repositorio o clonar uno existente
+  git init mi-proyecto
+  git clone https://ejemplo.com/usuario/repo.git
+
+  # Ciclo de trabajo diario
+  git status                     # ¿qué ha cambiado?
+  git add index.html             # preparar un archivo concreto
+  git add .                      # preparar todos los cambios
+  git commit -m "Añade el buscador"   # guardar la instantánea
+  git log --oneline              # ver el historial resumido</code></pre>
+        </section>
+
+        <section id="ramas" aria-labelledby="ramas-titulo">
+          <h2 id="ramas-titulo">Ramas</h2>
+          <p>
+            Una rama es una línea de desarrollo independiente. Sirven para trabajar en una función sin
+            tocar la versión estable, normalmente <code>main</code>.
+          </p>
+          <pre><code>git switch -c nueva-funcion     # crear una rama y cambiar a ella
+  # ... trabajar y hacer commits ...
+
+  git switch main                 # volver a la rama principal
+  git merge nueva-funcion         # traer los cambios de la rama
+
+  # Alternativa moderna: rebase reescribe la historia para dejarla lineal
+  git switch nueva-funcion
+  git rebase main</code></pre>
+          <p class="aviso">
+            <strong>Nunca reescribas la historia de una rama compartida.</strong> Un
+            <code>rebase</code> o un <code>push --force</code> sobre <code>main</code> rompe el trabajo
+            de los demás. Reescribe solo tus ramas locales.
+          </p>
+          <p>
+            Si dos ramas tocan las mismas líneas aparece un <em>conflicto</em>: Git marca los archivos,
+            tú eliges el contenido final, guardas y ejecutas <code>git add</code> y
+            <code>git commit</code> para completar la fusión.
+          </p>
+        </section>
+
+        <section id="remotos" aria-labelledby="remotos-titulo">
+          <h2 id="remotos-titulo">Repositorios remotos</h2>
+          <pre><code>git remote -v                   # ver los remotos configurados
+  git remote add origin URL       # añadir un remoto llamado "origin"
+  git push -u origin main         # subir la rama y enlazarla por defecto
+  git pull                        # traer y fusionar los cambios del remoto
+  git fetch                       # traer los cambios SIN fusionarlos aún</code></pre>
+          <p>
+            La diferencia clave: <code>fetch</code> es seguro porque solo actualiza tu copia del remoto;
+            <code>pull</code> es <code>fetch</code> más <code>merge</code> y puede provocar conflictos
+            de inmediato.
+          </p>
+        </section>
+
+        <section id="deshacer-cambios" aria-labelledby="deshacer-cambios-titulo">
+          <h2 id="deshacer-cambios-titulo">Deshacer cambios</h2>
+          <pre><code># Descartar cambios de un archivo que NO has preparado
+  git restore archivo.txt
+
+  # Quitar un archivo del área de preparación (sin perder cambios)
+  git restore --staged archivo.txt
+
+  # Corregir el último commit (mensaje o archivos olvidados)
+  git commit --amend
+
+  # Revertir un commit ya publicado creando uno nuevo que lo deshace
+  git revert a1b2c3d
+
+  # Volver atrás en la historia local (¡solo si no está compartido!)
+  git reset --hard a1b2c3d</code></pre>
+          <p class="nota">
+            Para trabajo local usa <code>restore</code> y <code>reset</code>; para historia ya
+            compartida, <code>revert</code>, que no borra nada.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Haz commits <strong>pequeños y atómicos</strong>: un cambio lógico por commit.</li>
+            <li>Escribe mensajes en imperativo y descriptivos: «Añade validación del correo».</li>
+            <li>Ignora archivos generados y secretos con un <code>.gitignore</code>; nunca subas claves.</li>
+            <li>Crea una rama por tarea y fusiónala mediante <em>pull request</em> o <em>merge request</em>.</li>
+            <li>Antes de trabajar, <code>git pull</code> para partir del estado más reciente.</li>
+            <li>Revisa <code>git status</code> y <code>git diff</code> antes de confirmar.</li>
+          </ul>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Comando</th>
+                <th scope="col">Qué hace</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>git init</code></td><td>Crea un repositorio en la carpeta actual.</td></tr>
+              <tr><td><code>git clone URL</code></td><td>Copia un repositorio remoto.</td></tr>
+              <tr><td><code>git status</code></td><td>Muestra el estado de los archivos.</td></tr>
+              <tr><td><code>git add</code></td><td>Pasa cambios al área de preparación.</td></tr>
+              <tr><td><code>git commit -m "..."</code></td><td>Registra una instantánea.</td></tr>
+              <tr><td><code>git log --oneline</code></td><td>Historial resumido de commits.</td></tr>
+              <tr><td><code>git diff</code></td><td>Diferencias entre zonas de trabajo.</td></tr>
+              <tr><td><code>git switch -c rama</code></td><td>Crea y cambia a una rama.</td></tr>
+              <tr><td><code>git merge rama</code></td><td>Fusiona una rama en la actual.</td></tr>
+              <tr><td><code>git pull</code> / <code>git push</code></td><td>Trae / envía cambios del remoto.</td></tr>
+              <tr><td><code>git restore</code></td><td>Descarta cambios en archivos.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_terminal.html#navegacion">Terminal · Navegación</a>: moverse por las carpetas del repositorio.</li>
+            <li><a href="estudios_terminal.html#referencia">Terminal · Referencia rápida</a>: comandos de archivos que acompañan a Git.</li>
+            <li><a href="estudios_redes.html#http">Redes · HTTP</a>: los remotos Git suelen comunicarse por HTTPS o SSH.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

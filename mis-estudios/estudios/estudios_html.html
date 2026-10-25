@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTML — Estudios de informática</title>
+  <meta name="description" content="Qué es HTML, estructura de un documento, etiquetas semánticas, formularios y buenas prácticas.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/style.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/navbar.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/sidebar.css">
+  <link rel="stylesheet" href="../../stylesheets/components/index.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Web (HTML, CSS y JavaScript)</p>
+          <h1>HTML</h1>
+          <p class="entrada">
+            HTML (HyperText Markup Language) es el lenguaje de marcado que describe la estructura y el
+            significado del contenido de una página web. El navegador lo lee y construye el DOM, el árbol
+            de nodos sobre el que trabajan CSS y JavaScript.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es y cómo funciona?</a></li>
+            <li><a href="#estructura">Estructura mínima de un documento</a></li>
+            <li><a href="#semantica">Etiquetas y semántica</a></li>
+            <li><a href="#formularios">Formularios y accesibilidad</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es y cómo funciona?</h2>
+          <p>
+            HTML no es un lenguaje de programación: no tiene variables, condiciones ni bucles. Es un
+            lenguaje de <em>marcado</em> compuesto por <strong>elementos</strong>, que se escriben con
+            una etiqueta de apertura, contenido y una etiqueta de cierre:
+            <code>&lt;p&gt;texto&lt;/p&gt;</code>. Algunos elementos no necesitan cierre, como
+            <code>&lt;img&gt;</code> o <code>&lt;br&gt;</code>.
+          </p>
+          <p>
+            El navegador lee el HTML de arriba abajo y construye el DOM (Document Object Model). La
+            apariencia la define <a href="estudios_css.html">CSS</a> y el comportamiento dinámico,
+            <a href="estudios_javascript.html">JavaScript</a>.
+          </p>
+          <p class="nota">
+            Regla de oro: el HTML describe <em>qué es</em> cada cosa (un título, un párrafo, una cita),
+            no <em>cómo se ve</em>. De cómo se ve se encarga CSS.
+          </p>
+        </section>
+
+        <section id="estructura" aria-labelledby="estructura-titulo">
+          <h2 id="estructura-titulo">Estructura mínima de un documento</h2>
+          <pre><code>&lt;!DOCTYPE html&gt;
+  &lt;html lang="es"&gt;
+    &lt;head&gt;
+      &lt;meta charset="utf-8"&gt;
+      &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+      &lt;title&gt;Mi página&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+      &lt;h1&gt;Hola&lt;/h1&gt;
+      &lt;p&gt;Primer párrafo.&lt;/p&gt;
+    &lt;/body&gt;
+  &lt;/html&gt;</code></pre>
+          <ul>
+            <li><code>&lt;!DOCTYPE html&gt;</code> activa el modo estándar del navegador. No lo omitas.</li>
+            <li><code>lang="es"</code> indica el idioma: lo usan lectores de pantalla y traductores.</li>
+            <li><code>charset="utf-8"</code> es imprescindible para tildes y eñes correctas.</li>
+            <li><code>viewport</code> hace que la página se adapte a pantallas de móvil.</li>
+            <li>El <code>&lt;head&gt;</code> contiene metadatos; el <code>&lt;body&gt;</code>, lo visible.</li>
+          </ul>
+        </section>
+
+        <section id="semantica" aria-labelledby="semantica-titulo">
+          <h2 id="semantica-titulo">Etiquetas y semántica</h2>
+          <p>
+            Usar la etiqueta adecuada mejora la accesibilidad, el SEO y el mantenimiento. Los
+            <em>landmarks</em> dividen la página en zonas reconocibles:
+          </p>
+          <pre><code>&lt;body&gt;
+    &lt;header&gt;Cabecera del sitio&lt;/header&gt;
+    &lt;nav&gt;Enlaces de navegación&lt;/nav&gt;
+    &lt;main&gt;
+      &lt;article&gt;
+        &lt;h2&gt;Título del artículo&lt;/h2&gt;
+        &lt;p&gt;Contenido principal...&lt;/p&gt;
+      &lt;/article&gt;
+      &lt;aside&gt;Información relacionada&lt;/aside&gt;
+    &lt;/main&gt;
+    &lt;footer&gt;Pie de página&lt;/footer&gt;
+  &lt;/body&gt;</code></pre>
+          <p>Para el texto y los enlaces:</p>
+          <pre><code>&lt;p&gt;
+    Texto con &lt;strong&gt;importancia&lt;/strong&gt;, &lt;em&gt;énfasis&lt;/em&gt; y
+    un &lt;a href="estudios_css.html"&gt;enlace a CSS&lt;/a&gt;.
+  &lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Elemento de lista no ordenada&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;blockquote cite="https://example.org"&gt;Cita textual.&lt;/blockquote&gt;
+  &lt;pre&gt;&lt;code&gt;código preformateado&lt;/code&gt;&lt;/pre&gt;</code></pre>
+          <p>
+            La jerarquía de encabezados <code>&lt;h1&gt;</code> a <code>&lt;h6&gt;</code> debe ser
+            coherente: normalmente un solo <code>&lt;h1&gt;</code> por página y sin saltar niveles.
+          </p>
+        </section>
+
+        <section id="formularios" aria-labelledby="formularios-titulo">
+          <h2 id="formularios-titulo">Formularios y accesibilidad</h2>
+          <p>
+            Cada campo debe tener su <code>&lt;label&gt;</code> asociado mediante <code>for</code> e
+            <code>id</code>: al pulsar la etiqueta se enfoca el campo y los lectores de pantalla lo
+            anuncian correctamente.
+          </p>
+          <pre><code>&lt;form action="/enviar" method="post"&gt;
+    &lt;label for="correo"&gt;Correo electrónico&lt;/label&gt;
+    &lt;input type="email" id="correo" name="correo" required autocomplete="email"&gt;
+
+    &lt;fieldset&gt;
+      &lt;legend&gt;Preferencias&lt;/legend&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" name="avisos"&gt;
+        Recibir avisos
+      &lt;/label&gt;
+    &lt;/fieldset&gt;
+
+    &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+  &lt;/form&gt;</code></pre>
+          <ul>
+            <li>Usa el <code>type</code> adecuado (<code>email</code>, <code>number</code>, <code>date</code>, <code>search</code>…): el navegador valida y muestra teclados adaptados.</li>
+            <li><code>required</code> obliga a rellenar; <code>autocomplete</code> ayuda a autorrellenar.</li>
+            <li><code>fieldset</code> y <code>legend</code> agrupan campos relacionados.</li>
+            <li><code>button type="submit"</code> envía el formulario; <code>type="button"</code> no.</li>
+          </ul>
+          <p class="nota">
+            Accesibilidad mínima: texto <code>alt</code> en las imágenes, contraste suficiente,
+            navegación con teclado y estructura de encabezados ordenada.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Elige el elemento por su <strong>significado</strong>, no por su aspecto. Un botón es <code>&lt;button&gt;</code>, no un <code>&lt;div&gt;</code> con un clic.</li>
+            <li>Indenta de forma consistente (dos espacios) y escribe etiquetas y atributos en minúsculas.</li>
+            <li>Cierra siempre las comillas de los atributos y todos los elementos que lo requieran.</li>
+            <li>Todo <code>&lt;img&gt;</code> necesita <code>alt</code>; si es decorativa, déjalo vacío: <code>alt=""</code>.</li>
+            <li>Valida el documento para detectar anidamientos incorrectos.</li>
+            <li>No uses <code>&lt;br&gt;</code> ni tablas para maquetar: eso es trabajo de <a href="estudios_css.html#modelo-de-caja">CSS</a>.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué está mal</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Olvidar <code>charset="utf-8"</code></td>
+                <td>Las tildes y símbolos se ven como caracteres extraños.</td>
+                <td>Añadirlo como primer elemento del <code>&lt;head&gt;</code>.</td>
+              </tr>
+              <tr>
+                <td>Varios <code>&lt;h1&gt;</code> y niveles saltados</td>
+                <td>Confunde a lectores de pantalla y al SEO.</td>
+                <td>Un <code>&lt;h1&gt;</code> por página y jerarquía continua.</td>
+              </tr>
+              <tr>
+                <td>Anidar <code>&lt;p&gt;</code> dentro de <code>&lt;p&gt;</code></td>
+                <td>El navegador cierra el párrafo antes de tiempo y reordena el DOM.</td>
+                <td>Usa elementos válidos para agrupar, como <code>&lt;div&gt;</code>.</td>
+              </tr>
+              <tr>
+                <td>Estilos con el atributo <code>style=""</code></td>
+                <td>Mezcla contenido y presentación y es difícil de mantener.</td>
+                <td>Defínelos en CSS con clases semánticas.</td>
+              </tr>
+              <tr>
+                <td>Tablas para distribuir el diseño</td>
+                <td>Rompe la semántica y la adaptación a móvil.</td>
+                <td>Usa Flexbox o Grid; reserva las tablas para datos tabulares.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Elemento</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>header</code></td><td>Cabecera de la página o de una sección.</td></tr>
+              <tr><td><code>nav</code></td><td>Conjunto de enlaces de navegación.</td></tr>
+              <tr><td><code>main</code></td><td>Contenido principal, único por página.</td></tr>
+              <tr><td><code>section</code></td><td>Sección temática, normalmente con encabezado.</td></tr>
+              <tr><td><code>article</code></td><td>Contenido independiente y reutilizable.</td></tr>
+              <tr><td><code>aside</code></td><td>Contenido relacionado o complementario.</td></tr>
+              <tr><td><code>footer</code></td><td>Pie de página o de sección.</td></tr>
+              <tr><td><code>h1</code>–<code>h6</code></td><td>Encabezados por nivel de importancia.</td></tr>
+              <tr><td><code>p</code></td><td>Párrafo.</td></tr>
+              <tr><td><code>a href</code></td><td>Enlace a otra página, sección o recurso.</td></tr>
+              <tr><td><code>img src alt</code></td><td>Imagen con texto alternativo obligatorio.</td></tr>
+              <tr><td><code>ul</code> / <code>ol</code> / <code>li</code></td><td>Listas no ordenadas y ordenadas.</td></tr>
+              <tr><td><code>input</code></td><td>Campo de formulario; el comportamiento depende de <code>type</code>.</td></tr>
+              <tr><td><code>label for</code></td><td>Etiqueta de un campo; <code>for</code> apunta a su <code>id</code>.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_css.html">CSS</a>: cómo dar estilo a la estructura que crea el HTML.</li>
+            <li><a href="estudios_css.html#flexbox">CSS · Flexbox</a>: la forma moderna de distribuir elementos.</li>
+            <li><a href="estudios_javascript.html#dom">JavaScript · DOM</a>: cómo leer y modificar el HTML desde código.</li>
+            <li><a href="estudios_redes.html#http">Redes · HTTP</a>: cómo viaja una página hasta el navegador.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

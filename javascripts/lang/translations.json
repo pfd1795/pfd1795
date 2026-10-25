@@ -5,13 +5,43 @@
       "menu": "Menú",
       "close": "Cerrar",
       "home": "Inicio",
+      "my-studies": "Mis estudios",
       "resume": "Currículum",
+      "projects": "Proyectos",
       "settings": "Configuración",
       "language": "Idioma",
       "dark-mode": "Modo Oscuro",
       "dark": "Modo Oscuro",
       "light": "Modo Claro",
       "theme-color": "Color del Tema",
+      "colorBlue": "Azul",
+      "colorGreen": "Verde",
+      "colorOrange": "Naranja",
+      "colorRed": "Rojo",
+      "colorPurple": "Morado",
+      "colorPink": "Rosa",
+      "colorAmber": "Ámbar",
+      "colorCyan": "Cian",
+      "colorViolet": "Violeta",
+      "theme-background": "Tema de fondo",
+      "themeDefault": "Sin tema",
+      "themeMulticolor": "Multicolor",
+      "gradient-direction": "Dirección del degradado",
+      "directionTopToBottom": "De arriba abajo",
+      "directionBottomToTop": "De abajo arriba",
+      "directionLeftToRight": "De izquierda a derecha",
+      "directionRightToLeft": "De derecha a izquierda",
+      "directionInside": "Del centro hacia adentro",
+      "directionOutside": "Del centro hacia afuera",
+      "directionSolid": "Color completo",
+      "psychedelic-speed": "Velocidad",
+      "speedSlow": "Lento",
+      "speedNormal": "Normal",
+      "speedFast": "Rápido",
+      "font-size": "Tamaño de fuente",
+      "sizeSmall": "Pequeña",
+      "sizeNormal": "Normal",
+      "sizeLarge": "Grande",
       "creditsText": "Los vectores e iconos son de",
       "developedBy": "SITIO DESARROLLADO POR",
       "htmlLabel": "Maquetación",
@@ -23,13 +53,43 @@
       "menu": "Menu",
       "close": "Close",
       "home": "Home",
+      "my-studies": "My Studies",
       "resume": "Resume",
+      "projects": "Projects",
       "settings": "Settings",
       "language": "Language",
       "dark-mode": "Dark Mode",
       "dark": "Dark Mode",
       "light": "Light Mode",
       "theme-color": "Theme Color",
+      "colorBlue": "Blue",
+      "colorGreen": "Green",
+      "colorOrange": "Orange",
+      "colorRed": "Red",
+      "colorPurple": "Purple",
+      "colorPink": "Pink",
+      "colorAmber": "Amber",
+      "colorCyan": "Cyan",
+      "colorViolet": "Violet",
+      "theme-background": "Background theme",
+      "themeDefault": "No theme",
+      "themeMulticolor": "Multicolor",
+      "gradient-direction": "Gradient direction",
+      "directionTopToBottom": "Top to bottom",
+      "directionBottomToTop": "Bottom to top",
+      "directionLeftToRight": "Left to right",
+      "directionRightToLeft": "Right to left",
+      "directionInside": "From the center inward",
+      "directionOutside": "From the center outward",
+      "directionSolid": "Solid color",
+      "psychedelic-speed": "Speed",
+      "speedSlow": "Slow",
+      "speedNormal": "Normal",
+      "speedFast": "Fast",
+      "font-size": "Font size",
+      "sizeSmall": "Small",
+      "sizeNormal": "Normal",
+      "sizeLarge": "Large",
       "creditsText": "Vectors and icons are from",
       "developedBy": "SITE DEVELOPED BY",
       "htmlLabel": "Layout",
@@ -111,7 +171,6 @@
       "experienceTitle": "Experiencia Laboral",
       "studiesTitle": "Estudios | Cursos",
       "description": "Descripción del Trabajo",
-      "date": "Duración",
       "workplace": "Lugar de Trabajo",
       "technologies": "Tecnologías Utilizadas",
       "copyNotification": "¡Correo copiado!"
@@ -139,7 +198,6 @@
       "experienceTitle": "Work Experience",
       "studiesTitle": "Studies | Courses",
       "description": "Job Description",
-      "date": "Duration",
       "workplace": "Workplace",
       "technologies": "Technologies Used",
       "copyNotification": "Email copied!"
@@ -149,15 +207,10 @@
     {
       "id": 1,
       "company": "Neoland",
-      "date": {
-        "es": "1 año",
-        "en": "1 year"
-      },
       "description": {
         "es": "Desempeño la labor de docente en el bootcamp de Desarrollo Web, utilizando las tecnologías más demandadas en la industria. Gracias Neoland por abrirme las puertas a nuevos desafíos, fortalecer mis habilidades pedagógicas y permitirme compartir mis conocimientos con futuros desarrolladores.",
         "en": "I work as a teacher in the Web Development bootcamp, using the most in-demand technologies in the industry. Thank you Neoland for opening doors to new challenges, strengthening my pedagogical skills, and allowing me to share my knowledge with future developers."
       },
-      "duration": "2025",
       "employmentType": {
         "es": "Remoto",
         "en": "Remote"
@@ -184,15 +237,10 @@
     {
       "id": 2,
       "company": "Vortex-IT",
-      "date": {
-        "es": "2 años",
-        "en": "2 years"
-      },
       "description": {
         "es": "Colaboré en el diseño y desarrollo de interfaces de usuario y productos en promoción, adquiriendo experiencia en arquitecturas de proyectos escalables. Implementé funcionalidades de internacionalización, autenticación, manejo de cámaras y escáneres QR, y geolocalización.",
         "en": "I collaborated in the design and development of user interfaces and promotional products, gaining experience in scalable project architectures. I implemented internationalization, authentication, camera handling, QR scanners, and geolocation features."
       },
-      "duration": "2021 - 2023",
       "employmentType": {
         "es": "Remoto",
         "en": "Remote"
@@ -221,15 +269,10 @@
     {
       "id": 3,
       "company": "Ministerio de Educación de la Nación Argentina",
-      "date": {
-        "es": "1 año 6 meses",
-        "en": "1 year 6 months"
-      },
       "description": {
         "es": "Desarrollo de un sistema web accesible diseñado para gestionar usuarios con diversos roles y necesidades específicas. Durante este tiempo, adquirí mi primera experiencia en el uso de tecnologías orientadas a arquitecturas robustas, documentación y despliegues de aplicaciones.",
         "en": "Development of an accessible web system designed to manage users with various roles and specific needs. During this time, I gained my first experience using technologies oriented towards robust architectures, documentation, and application deployments."
       },
-      "duration": "2020 - 2021",
       "employmentType": {
         "es": "Presencial y remoto",
         "en": "On-site and remote"
@@ -254,15 +297,10 @@
     {
       "id": 4,
       "company": "Universidad Nacional de Argentina",
-      "date": {
-        "es": "4 años",
-        "en": "4 years"
-      },
       "description": {
         "es": "Colaboré como auxiliar docente en la asignatura de Laboratorio de Programación. Esta materia se enfoca en enseñar los fundamentos de la creación de páginas web accesibles y los principios básicos de la programación. Asistí en la planificación y dictado de clases, corrección de exámenes y proyectos estudiantiles. Este período me permitió fortalecer mis habilidades técnicas y mi capacidad para trabajar en equipo en entornos académicos.",
         "en": "I collaborated as a teaching assistant in the Programming Laboratory course. This subject focuses on teaching the fundamentals of creating accessible web pages and basic programming principles. I assisted in planning and teaching classes, grading exams, and student projects. This period allowed me to strengthen my technical skills and my ability to work as a team in academic environments."
       },
-      "duration": "2017 - 2021",
       "employmentType": {
         "es": "Presencial y remoto",
         "en": "On-site and remote"
@@ -288,22 +326,18 @@
   ],
   "home": {
     "es": {
-      "workExperienceDefaultTitle": "Mi Trayectoria en el Mundo de la Tecnología",
-      "workExperienceDefaultText": "Selecciona una experiencia laboral para conocer más detalles sobre mi recorrido profesional, las tecnologías que he utilizado y los proyectos en los que he participado.",
       "descriptionLabel": "Descripción:",
-      "durationLabel": "Duración:",
       "employmentTypeLabel": "Modalidad:",
       "technologiesLabel": "Tecnologías Utilizadas:",
-      "skillsLabel": "Habilidades Adquiridas:"
+      "skillsLabel": "Habilidades Adquiridas:",
+      "visitWebsiteLabel": "Ver sitio web"
     },
     "en": {
-      "workExperienceDefaultTitle": "My Journey in the Tech World",
-      "workExperienceDefaultText": "Select a work experience to learn more details about my professional journey, the technologies I have used, and the projects I have participated in.",
       "descriptionLabel": "Description:",
-      "durationLabel": "Duration:",
       "employmentTypeLabel": "Employment Type:",
       "technologiesLabel": "Technologies Used:",
-      "skillsLabel": "Skills Acquired:"
+      "skillsLabel": "Skills Acquired:",
+      "visitWebsiteLabel": "Visit website"
     }
   },
   "educations": [

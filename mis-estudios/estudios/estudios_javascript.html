@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JavaScript — Estudios de informática</title>
+  <meta name="description" content="JavaScript: tipos, variables, funciones, el DOM, eventos, asincronía y buenas prácticas.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/style.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/navbar.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/sidebar.css">
+  <link rel="stylesheet" href="../../stylesheets/components/index.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Web (HTML, CSS y JavaScript)</p>
+          <h1>JavaScript</h1>
+          <p class="entrada">
+            JavaScript es el lenguaje de programación que añade comportamiento a las páginas web:
+            responde a eventos, modifica el DOM y se comunica con servidores. Hoy también se usa fuera
+            del navegador.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es y dónde se ejecuta?</a></li>
+            <li><a href="#variables-y-tipos">Variables y tipos</a></li>
+            <li><a href="#funciones">Funciones y ámbito</a></li>
+            <li><a href="#dom">El DOM y los eventos</a></li>
+            <li><a href="#asincronia">Asincronía</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es y dónde se ejecuta?</h2>
+          <p>
+            JavaScript (JS) se ejecuta en un <em>motor</em> (V8 en Chrome, SpiderMonkey en Firefox).
+            Dentro del navegador tiene acceso a APIs como el DOM y los eventos; fuera, en Node.js, accede
+            al sistema de archivos y a la red del servidor.
+          </p>
+          <p>Se incluye en una página con la etiqueta <code>&lt;script&gt;</code>:</p>
+          <pre><code>&lt;!-- Al final del body: el DOM ya existe cuando se ejecuta --&gt;
+  &lt;script src="js/app.js"&gt;&lt;/script&gt;</code></pre>
+          <p class="nota">
+            El atributo <code>defer</code> descarga el script en paralelo y lo ejecuta cuando el HTML
+            está analizado, sin bloquear el dibujado de la página.
+          </p>
+        </section>
+
+        <section id="variables-y-tipos" aria-labelledby="variables-y-tipos-titulo">
+          <h2 id="variables-y-tipos-titulo">Variables y tipos</h2>
+          <p>
+            Declara con <code>const</code> siempre que puedas y con <code>let</code> si el valor
+            cambiará. Evita <code>var</code> por su ámbito confuso.
+          </p>
+          <pre><code>const nombre = 'Ana';          // string
+  let contador = 0;              // number
+  const activo = true;           // boolean
+  const vacio = null;            // ausencia intencional de valor
+  let sinDefinir;                // undefined
+
+  // Comparaciones: usa === (estricta), no == (convierte tipos)
+  1 == '1';   // true  (evítalo)
+  1 === '1';  // false (correcto)
+
+  // Plantillas de texto con acentos graves
+  console.log(`Hola, ${nombre}: ${contador + 1} mensajes`);</code></pre>
+          <p>
+            Los tipos primitivos son <code>string</code>, <code>number</code>, <code>boolean</code>,
+            <code>null</code>, <code>undefined</code>, <code>bigint</code> y <code>symbol</code>. Todo lo
+            demás (objetos, arrays, funciones) son referencias.
+          </p>
+        </section>
+
+        <section id="funciones" aria-labelledby="funciones-titulo">
+          <h2 id="funciones-titulo">Funciones y ámbito</h2>
+          <pre><code>// Declaración clásica
+  function sumar(a, b) {
+    return a + b;
+  }
+
+  // Función flecha, más breve (y sin su propio this)
+  const doblar = (n) => n * 2;
+
+  // Array de objetos + métodos de array
+  const tareas = [
+    { texto: 'Estudiar', hecha: false },
+    { texto: 'Repasar', hecha: true }
+  ];
+
+  const pendientes = tareas
+    .filter((t) => !t.hecha)   // filtra
+    .map((t) => t.texto);      // transforma
+
+  console.log(pendientes); // ['Estudiar']</code></pre>
+          <p>
+            Una función tiene acceso a las variables de su ámbito y de los ámbitos que la contienen
+            (<em>closure</em>). Cada módulo o bloque crea un ámbito con <code>let</code> y
+            <code>const</code>.
+          </p>
+        </section>
+
+        <section id="dom" aria-labelledby="dom-titulo">
+          <h2 id="dom-titulo">El DOM y los eventos</h2>
+          <p>
+            El DOM es la representación en memoria del <a href="estudios_html.html">HTML</a>. JS puede
+            leerlo, modificarlo y reaccionar a lo que hace el usuario.
+          </p>
+          <pre><code>const input = document.querySelector('#buscador');
+  const lista = document.querySelector('.lista-estudios');
+
+  // Reaccionar a la escritura del usuario
+  input.addEventListener('input', (evento) =&gt; {
+    const valor = evento.target.value.toLowerCase();
+
+    lista.querySelectorAll('li').forEach((item) =&gt; {
+      const coincide = item.textContent.toLowerCase().includes(valor);
+      item.hidden = !coincide; // cambiar el DOM según el texto
+    });
+  });</code></pre>
+          <p>
+            Usa <code>querySelector</code> y <code>addEventListener</code> en vez de atributos
+            <code>onclick</code> en el HTML: separa el comportamiento del contenido.
+          </p>
+        </section>
+
+        <section id="asincronia" aria-labelledby="asincronia-titulo">
+          <h2 id="asincronia-titulo">Asincronía</h2>
+          <p>
+            JavaScript es de un solo hilo, pero no se bloquea: las operaciones lentas (red, temporizadores)
+            se delegan y se retoman cuando terminan.
+          </p>
+          <pre><code>// async/await: escrita de forma secuencial, ejecución asíncrona
+  async function obtenerUsuarios() {
+    try {
+      const respuesta = await fetch('/api/usuarios');
+      if (!respuesta.ok) {
+        throw new Error('Error HTTP ' + respuesta.status);
+      }
+      const datos = await respuesta.json();
+      return datos;
+    } catch (error) {
+      console.error('No se pudieron cargar los usuarios:', error);
+    }
+  }</code></pre>
+          <p class="nota">
+            <code>await</code> solo puede usarse dentro de una función <code>async</code> o en el nivel
+            superior de un módulo. Envuélvelo siempre en <code>try/catch</code> para manejar fallos.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Usa <code>const</code> por defecto y <code>let</code> solo cuando cambie el valor.</li>
+            <li>Compara siempre con <code>===</code> y <code>!==</code>.</li>
+            <li>Evita variables globales: encierra el código en funciones o módulos.</li>
+            <li>Separa la lógica del DOM de la lógica de datos.</li>
+            <li>Maneja los errores explícitamente en lugar de silenciarlos.</li>
+            <li>Ejecuta el código tras cargar el DOM (<code>defer</code> o <code>DOMContentLoaded</code>).</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <ul>
+            <li>Usar <code>==</code> y llevarse sorpresas con las conversiones de tipo.</li>
+            <li>Confundir <code>null</code> con <code>undefined</code> al comprobar valores.</li>
+            <li>Modificar un array mientras se recorre.</li>
+            <li>Pensar que una función <code>async</code> bloquea: siempre devuelve una promesa.</li>
+            <li>Olvidar <code>preventDefault()</code> en un formulario y recargar la página sin querer.</li>
+            <li>Mutaciones inesperadas por compartir referencias entre objetos.</li>
+          </ul>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Expresión</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>const</code> / <code>let</code></td><td>Declarar variables inmutables y mutables.</td></tr>
+              <tr><td><code>typeof x</code></td><td>Conocer el tipo de un valor.</td></tr>
+              <tr><td><code>array.map(fn)</code></td><td>Crear un nuevo array transformando cada elemento.</td></tr>
+              <tr><td><code>array.filter(fn)</code></td><td>Quedarse con los elementos que cumplen la condición.</td></tr>
+              <tr><td><code>document.querySelector</code></td><td>Obtener el primer elemento que coincide con un selector CSS.</td></tr>
+              <tr><td><code>elemento.addEventListener</code></td><td>Ejecutar código al ocurrir un evento.</td></tr>
+              <tr><td><code>await</code> / <code>async</code></td><td>Escribir código asíncrono de forma secuencial.</td></tr>
+              <tr><td><code>JSON.parse</code> / <code>stringify</code></td><td>Convertir entre texto JSON y objetos.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_html.html">HTML</a>: el marcado que JS lee y transforma.</li>
+            <li><a href="estudios_html.html#formularios">HTML · Formularios</a>: validación y envío desde JS.</li>
+            <li><a href="estudios_css.html#selectores">CSS · Selectores</a>: los mismos selectores que usa <code>querySelector</code>.</li>
+            <li><a href="estudios_redes.html#http">Redes · HTTP</a>: qué ocurre realmente tras <code>fetch</code>.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

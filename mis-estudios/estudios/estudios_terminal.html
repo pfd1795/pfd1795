@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terminal y línea de comandos — Estudios de informática</title>
+  <meta name="description" content="Línea de comandos: navegación, archivos, permisos, procesos, tuberías y comandos de referencia.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/style.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/navbar.css">
+  <link rel="stylesheet" href="../../stylesheets/ui/sidebar.css">
+  <link rel="stylesheet" href="../../stylesheets/components/index.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Comandos y terminal</p>
+          <h1>Terminal y línea de comandos</h1>
+          <p class="entrada">
+            La terminal es una interfaz de texto para controlar el sistema: moverte por carpetas,
+            gestionar archivos, ejecutar programas y combinarlos. Los ejemplos usan Bash, el intérprete
+            más común en Linux y macOS.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es una terminal?</a></li>
+            <li><a href="#navegacion">Navegación</a></li>
+            <li><a href="#archivos-y-carpetas">Archivos y carpetas</a></li>
+            <li><a href="#permisos">Permisos</a></li>
+            <li><a href="#procesos">Procesos</a></li>
+            <li><a href="#tuberias">Tuberías y redirección</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es una terminal?</h2>
+          <p>
+            La <strong>terminal</strong> es el programa que muestra texto; el <strong>shell</strong> es
+            el intérprete que lee tus comandos y los ejecuta. Cada comando tiene la forma
+            <code>programa opciones argumentos</code>.
+          </p>
+          <pre><code>echo "Hola, mundo"        # programa: echo, sin opciones, un argumento
+  ls -la /home              # opciones -la, argumento /home
+  man ls                    # manual de un comando (se sale con "q")</code></pre>
+          <p class="nota">
+            Rutas: <code>. </code> es la carpeta actual, <code>..</code> la superior,
+            <code>~</code> tu carpeta personal y <code>/</code> la raíz del sistema.
+          </p>
+        </section>
+
+        <section id="navegacion" aria-labelledby="navegacion-titulo">
+          <h2 id="navegacion-titulo">Navegación</h2>
+          <pre><code>pwd                 # dónde estoy (print working directory)
+  ls                  # qué hay aquí
+  ls -la              # listar todo, incluidos ocultos, con detalles
+  cd proyectos        # entrar en una carpeta
+  cd ..               # subir un nivel
+  cd ~                # ir a mi carpeta personal
+  cd -                # volver a la carpeta anterior</code></pre>
+          <p class="nota">
+            El tabulador autocompleta nombres y la flecha arriba recupera el comando anterior. Son las
+            dos teclas que más tiempo te ahorrarán.
+          </p>
+        </section>
+
+        <section id="archivos-y-carpetas" aria-labelledby="archivos-y-carpetas-titulo">
+          <h2 id="archivos-y-carpetas-titulo">Archivos y carpetas</h2>
+          <pre><code>mkdir nueva-carpeta        # crear carpeta (-p crea también los padres)
+  touch notas.txt            # crear un archivo vacío
+  cp origen destino          # copiar (-r para carpetas)
+  mv archivo.txt docs/       # mover; también sirve para renombrar
+  rm archivo.txt             # borrar (-r carpetas, -i pide confirmación)
+  cat archivo.txt            # mostrar su contenido
+  less archivo.txt           # verlo por páginas (salir con "q")
+  head -n 5 archivo.txt      # primeras 5 líneas
+  tail -f log.txt            # últimas líneas, en vivo, mientras crece
+  find . -name "*.js"        # buscar por nombre a partir de la carpeta actual</code></pre>
+          <p class="aviso">
+            <strong><code>rm</code> no tiene papelera.</strong> Un <code>rm -rf</code> mal escrito borra
+            de forma permanente. Comprueba siempre la ruta con <code>pwd</code> y <code>ls</code> antes.
+          </p>
+        </section>
+
+        <section id="permisos" aria-labelledby="permisos-titulo">
+          <h2 id="permisos-titulo">Permisos</h2>
+          <p>
+            Cada archivo tiene permisos para el <em>propietario</em>, el <em>grupo</em> y el <em>resto</em>.
+            Se pueden leer, escribir y ejecutar (r, w, x).
+          </p>
+          <pre><code>ls -l script.sh
+  # -rwxr-xr-- 1 ana dev 512 ... script.sh
+  #  |||| ||| |||-- resto: puede leer
+  #  |||| |||-- grupo: leer y ejecutar
+  #  ||||-- propietario: leer, escribir y ejecutar
+
+  chmod +x script.sh          # añadir permiso de ejecución
+  chmod 644 config.txt        # propietario rw; grupo y resto, solo lectura
+  chown ana:dev archivo.txt   # cambiar propietario y grupo (necesita permisos)
+  sudo comando                # ejecutar como administrador (úsalo con cuidado)</code></pre>
+          <p>
+            El código <code>644</code> es la suma de los valores r=4, w=2, x=1 para los tres grupos. Es
+            el patrón habitual en archivos normales; <code>755</code> se usa para programas y carpetas.
+          </p>
+        </section>
+
+        <section id="procesos" aria-labelledby="procesos-titulo">
+          <h2 id="procesos-titulo">Procesos</h2>
+          <pre><code>ps aux               # listar todos los procesos en ejecución
+  top                  # monitor interactivo (salir con "q")
+  kill 1234            # pedir que termine el proceso con PID 1234
+  kill -9 1234         # forzarlo (último recurso)
+  comando &amp;            # lanzar en segundo plano
+  jobs                 # ver los trabajos en segundo plano de esta terminal
+  fg                   # traer de vuelta el último trabajo en segundo plano
+  Ctrl+C               # interrumpir el proceso en primer plano
+  Ctrl+Z               # suspenderlo y devolver el control</code></pre>
+        </section>
+
+        <section id="tuberias" aria-labelledby="tuberias-titulo">
+          <h2 id="tuberias-titulo">Tuberías y redirección</h2>
+          <p>
+            La filosofía de Unix: programas pequeños que hacen una cosa bien y se combinan. La tubería
+            <code>|</code> conecta la salida de uno con la entrada del siguiente.
+          </p>
+          <pre><code># Contar cuántos archivos .js hay en el proyecto
+  find . -name "*.js" | wc -l
+
+  # Buscar un proceso concreto
+  ps aux | grep node
+
+  # Guardar la salida en un archivo (> sobrescribe, >> añade)
+  ls -la > listado.txt
+  echo "nueva línea" >> listado.txt
+
+  # Descartar errores enviándolos a /dev/null
+  comando 2&gt; /dev/null</code></pre>
+          <p>
+            <code>grep</code> filtra líneas por un patrón, <code>wc</code> cuenta líneas o palabras y
+            <code>sort</code> / <code>uniq</code> ordenan y eliminan duplicados. Encadenados hacen
+            análisis de texto muy potente.
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Comando</th>
+                <th scope="col">Qué hace</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>pwd</code> / <code>cd</code> / <code>ls</code></td><td>Orientarse y listar.</td></tr>
+              <tr><td><code>mkdir</code> / <code>touch</code></td><td>Crear carpetas y archivos.</td></tr>
+              <tr><td><code>cp</code> / <code>mv</code> / <code>rm</code></td><td>Copiar, mover o borrar.</td></tr>
+              <tr><td><code>cat</code> / <code>less</code> / <code>head</code> / <code>tail</code></td><td>Ver el contenido de archivos.</td></tr>
+              <tr><td><code>find</code> / <code>grep</code></td><td>Buscar archivos / buscar dentro de textos.</td></tr>
+              <tr><td><code>chmod</code> / <code>chown</code></td><td>Permisos y propiedad.</td></tr>
+              <tr><td><code>ps</code> / <code>top</code> / <code>kill</code></td><td>Ver y controlar procesos.</td></tr>
+              <tr><td><code>curl</code> / <code>ping</code> / <code>dig</code></td><td>Herramientas de red.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_git.html#flujo-basico">Git · Flujo básico</a>: la terminal es su entorno natural.</li>
+            <li><a href="estudios_redes.html#diagnostico">Redes · Diagnóstico</a>: <code>ping</code>, <code>curl</code> y <code>dig</code> en contexto.</li>
+            <li><a href="estudios_redes.html#dns">Redes · DNS</a>: qué hace <code>dig</code> por debajo.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>
