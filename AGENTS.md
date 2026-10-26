@@ -6,7 +6,7 @@ Portafolio web personal desarrollado con HTML, CSS y JavaScript vanilla. Sitio e
 
 **URL de producción:** https://pfd1795.github.io/pfd1795/
 
-**Documentación vigente:** `README.md` (introducción y ejecución para personas) y este `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes). No hay un plan de tareas, fases, auditorías, informes ni roadmap activo.
+**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes) y `MEJORAS.md` (historial de mejoras implementadas y roadmap de pendientes). No hay fases, auditorías ni informes activos; el "roadmap" de `MEJORAS.md` recoge solo pendientes conocidos y debe mantenerse sincronizado con el código.
 
 ---
 
@@ -217,5 +217,5 @@ element?.addEventListener('click', () => {
 - **Sin frameworks ni build**: Vanilla JS/CSS únicamente; no introducir bundlers, frameworks ni backend.
 - **GitHub Pages**: mantener rutas relativas y compatibilidad con despliegue estático desde `main`.
 - **Performance**: usar `loading="lazy"` en imágenes.
-- **Documentación**: mantener `README.md` y `AGENTS.md` sincronizados con el código; no reintroducir planes de tareas o fases obsoletas.
+- **Documentación**: mantener `README.md`, `AGENTS.md` y `MEJORAS.md` sincronizados con el código; no reintroducir planes de tareas o fases obsoletas. Una mejora que se completa debe pasarse de "pendientes" a "implementadas" en `MEJORAS.md` en el mismo cambio.
 - **Información personal**: no modificar los datos personales del desarrollador.
