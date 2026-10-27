@@ -5,11 +5,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pfd1795 | Home</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
 
   <meta name="description" content="Desarrollador Web Full Stack especializado en React, Next.js, React Native, PHP, SQL y NoSQL. Creación de aplicaciones web y móviles escalables con experiencia en tecnologías modernas." />
   <meta name="keywords" content="desarrollador web, full stack developer, React, Next.js, React Native, PHP, JavaScript, TypeScript, SQL, NoSQL, MongoDB, programador, desarrollador frontend, desarrollador backend" />
   <meta name="author" content="Pablo Diaz" />
+  <meta name="theme-color" content="#191a1b" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="pfd1795 | Pablo Diaz — Desarrollador Web Full Stack" />
+  <meta property="og:description" content="Desarrollador Web Full Stack especializado en React, Next.js, React Native, PHP, SQL y NoSQL. Creación de aplicaciones web y móviles escalables con experiencia en tecnologías modernas." />
+  <meta property="og:url" content="https://pfd1795.github.io/pfd1795/" />
+  <meta property="og:image" content="https://pfd1795.github.io/pfd1795/assets/images/profile.png" />
+  <meta property="og:locale" content="es_ES" />
+  <meta name="twitter:card" content="summary" />
 
   <script src="./javascripts/theme-init.js"></script>
 
@@ -20,19 +28,21 @@
 </head>
 
 <body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
   <nav class="navbar">
-    <a href="./index.html" class="logo-link" title="inicio">
+    <a href="./index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
       <h1>Pablo Diaz</h1>
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
-    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
       <span data-lang="menu">Menú</span>
       <img src="./assets/icons/menu.svg" alt="" />
     </button>
   </nav>
 
-  <main class="main-layout">
+  <main id="contenido" class="main-layout">
     <section class="zone-intro" id="inicio">
       <section class="intro-section">
         <p class="welcome-text">
@@ -43,7 +53,7 @@
 
         <div class="intro-content">
           <figure>
-            <img src="./assets/images/profile.png" alt="Foto de perfil" loading="lazy" />
+            <img src="./assets/images/profile.png" alt="Foto de perfil" loading="lazy" width="1024" height="1024" />
           </figure>
 
           <p class="description-text">
@@ -57,25 +67,25 @@
       </section>
 
       <section class="header-contact">
-        <a href="https://www.linkedin.com/in/pfd-dev/" title="LinkedIn" target="_blank" class="social-link">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+        <a href="https://www.linkedin.com/in/pfd-dev/" title="LinkedIn" target="_blank" class="social-link" aria-label="LinkedIn" rel="noopener noreferrer">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path
               d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
           </svg>
         </a>
 
         <div class="email-container">
-          <div class="social-link email-link" title="Copiar correo">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+          <button type="button" class="social-link email-link" title="Copiar correo" aria-label="Copiar correo" data-i18n-title="copyEmail" data-i18n-aria-label="copyEmail">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path
                 d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" />
             </svg>
-          </div>
-          <span class="copy-notification">¡Correo copiado!</span>
+          </button>
+          <span class="copy-notification" data-lang="copyNotification" role="status" aria-live="polite">¡Correo copiado!</span>
         </div>
 
-        <a href="https://github.com/pfd1795" title="GitHub" target="_blank" class="social-link">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+        <a href="https://github.com/pfd1795" title="GitHub" target="_blank" class="social-link" aria-label="GitHub" rel="noopener noreferrer">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path
               d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
           </svg>
@@ -126,7 +136,7 @@
       <section>
         <div class="tech-item">
           <figure>
-            <img src="./assets/icons/html.svg" alt="HTML">
+            <img src="./assets/icons/html.svg" alt="HTML" width="86" height="86">
           </figure>
           <p class="tech-name" data-lang="htmlLabel">Maquetación</p>
         </div>
@@ -135,7 +145,7 @@
 
         <div class="tech-item">
           <figure>
-            <img src="./assets/icons/css.svg" alt="CSS">
+            <img src="./assets/icons/css.svg" alt="CSS" width="86" height="86">
           </figure>
           <p class="tech-name" data-lang="cssLabel">Diseño</p>
         </div>
@@ -144,7 +154,7 @@
 
         <div class="tech-item">
           <figure>
-            <img src="./assets/icons/js.svg" alt="JavaScript">
+            <img src="./assets/icons/js.svg" alt="JavaScript" width="86" height="86">
           </figure>
           <p class="tech-name" data-lang="jsLabel">Programación</p>
         </div>
@@ -156,11 +166,11 @@
     <p class="credits-text" data-lang="creditsText">
       Los vectores y iconos son de
       <a href="https://github.com/garudatechnologydevelopers/sketch-icons?ref=svgrepo.com" title="GitHub"
-        target="_blank">github/GarudaTechnology</a> y
-      <a href="https://www.svgrepo.com/author/Garuda%20Technology/" target="_blank">svgrepo/GarudaTechnology</a>
+        target="_blank" rel="noopener noreferrer">github/GarudaTechnology</a> y
+      <a href="https://www.svgrepo.com/author/Garuda%20Technology/" target="_blank" rel="noopener noreferrer">svgrepo/GarudaTechnology</a>
       con la licencia MIT de
-      <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>. Y de
-      <a href="https://fonts.google.com/icons" target="_blank">google/icons</a>
+      <a href="https://www.svgrepo.com/" target="_blank" rel="noopener noreferrer">SVG Repo</a>. Y de
+      <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer">google/icons</a>
     </p>
 
     <hr class="divider">
@@ -169,7 +179,7 @@
       <div class="developer-info">
         <p class="developer-label" data-lang="developedBy">SITIO DESARROLLADO POR</p>
 
-        <a href="https://github.com/pfd1795" target="_blank" class="developer-link">pfd1795</a>
+        <a href="https://github.com/pfd1795" target="_blank" class="developer-link" rel="noopener noreferrer">pfd1795</a>
       </div>
 
       <p class="version-text">Ver. 1.0</p>
@@ -182,7 +192,7 @@
     <header class="sidebar-header">
       <h2 data-lang="menu">Menú</h2>
 
-      <button class="btn btn-close" title="cerrar menú">
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
         <span data-lang="close">Cerrar</span>
         <img src="./assets/icons/close.svg" alt="" />
       </button>
@@ -196,7 +206,7 @@
         </button>
 
         <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
-          title="mostrar secciones" aria-label="mostrar secciones">
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
           <img class="sidebar-chevron" src="./assets/icons/chevron_down.svg" alt="" />
         </button>
       </div>
@@ -225,7 +235,7 @@
     </nav>
 
     <footer class="sidebar-footer">
-      <button class="btn btn-settings" title="Abrir configuración">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
         <span data-lang="settings">Configuración</span>
         <img src="./assets/icons/setting.svg" alt="" />
       </button>
@@ -233,7 +243,7 @@
   </aside>
 
   <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
     <div class="modal-dialog-body"></div>
   </dialog>
 </body>

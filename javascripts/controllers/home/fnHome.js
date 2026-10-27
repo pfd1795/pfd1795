@@ -115,9 +115,9 @@ function ModalEducation(idEducation = 0) {
 
     content.innerHTML = `
       <header class="modal-header">
-        <h2>${selectedEducation.title[lang]}</h2>
+        <h2 id="modal-title">${selectedEducation.title[lang]}</h2>
         <h3>
-          <a href="${selectedEducation.link}" title="${selectedEducation.title[lang]}" target="_blank">
+          <a href="${selectedEducation.link}" title="${selectedEducation.title[lang]}" target="_blank" rel="noopener noreferrer">
             ${selectedEducation.institution}
           </a>
         </h3>
@@ -151,12 +151,14 @@ export function GridEducation() {
     const lang = currentLanguage;
 
     translations.educations.forEach((edu) => {
-      const article = document.createElement('article');
+      const article = document.createElement('button');
       article.className = 'card-studies';
+      article.type = 'button';
+      article.setAttribute('aria-haspopup', 'dialog');
 
       article.innerHTML = `
-        <h4>${edu.title[lang]}</h4>
-        <p>${edu.institution}</p>
+        <span class="card-studies__title">${edu.title[lang]}</span>
+        <span class="card-studies__institution">${edu.institution}</span>
       `;
 
       article.addEventListener('click', () => ModalEducation(edu.id));
@@ -176,7 +178,7 @@ export function GridProjects() {
       <article class="project-card">
         <div class="project-image-container">
           <figure>
-            <img src="${project.image}" alt="${project.title[lang]}" class="project-image" loading="lazy" />
+            <img src="${project.image}" alt="${project.title[lang]}" class="project-image" loading="lazy" width="800" height="400" />
           </figure>
           <div class="image-overlay"></div>
         </div>
@@ -193,7 +195,7 @@ export function GridProjects() {
           </div>
 
           <a href="${project.link}" class="project-button" target="_blank" rel="noopener noreferrer" title="${project.title[lang]}">
-            <span data-lang="viewProject">Ver Proyecto</span>
+            <span data-lang="viewProject">${translations.introSection[lang].viewProject}</span>
             <img src="./assets/icons/arrow_right.svg" alt="">
           </a>
         </div>

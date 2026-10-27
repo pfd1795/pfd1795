@@ -46,7 +46,16 @@
       "developedBy": "SITIO DESARROLLADO POR",
       "htmlLabel": "Maquetación",
       "cssLabel": "Diseño",
-      "jsLabel": "Programación"
+      "jsLabel": "Programación",
+      "skipToContent": "Saltar al contenido",
+      "homeTitle": "inicio",
+      "openMenu": "abrir menú",
+      "closeMenu": "cerrar menú",
+      "showSections": "mostrar secciones",
+      "openSettings": "Abrir configuración",
+      "copyEmail": "Copiar correo",
+      "closeWindow": "Cerrar ventana",
+      "closeWindowHint": "Cerrar ventana (Esc)"
     },
     "en": {
       "web-developer": "Web Developer",
@@ -94,7 +103,16 @@
       "developedBy": "SITE DEVELOPED BY",
       "htmlLabel": "Layout",
       "cssLabel": "Design",
-      "jsLabel": "Programming"
+      "jsLabel": "Programming",
+      "skipToContent": "Skip to content",
+      "homeTitle": "home",
+      "openMenu": "open menu",
+      "closeMenu": "close menu",
+      "showSections": "show sections",
+      "openSettings": "Open settings",
+      "copyEmail": "Copy email",
+      "closeWindow": "Close window",
+      "closeWindowHint": "Close window (Esc)"
     }
   },
   "introSection": {
@@ -136,7 +154,7 @@
         "es": "Colección de aplicaciones web modernas construidas con Next.js, React y Tailwind CSS.",
         "en": "Collection of modern web applications built with Next.js, React and Tailwind CSS."
       },
-      "image": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop",
+      "image": "./assets/images/project-nextjs.jpg",
       "link": "https://proyectos-nextjs.vercel.app/home",
       "technologies": [
         "Next.js",

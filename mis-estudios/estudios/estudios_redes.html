@@ -15,15 +15,15 @@
   <script src="../../javascripts/main.js" defer type="module"></script>
 </head>
 <body id="HomePage" class="body-container">
-  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
 
   <nav class="navbar">
-    <a href="../../index.html" class="logo-link" title="inicio">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
       <h1>Pablo Diaz</h1>
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
-    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar">
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
       <span data-lang="menu">Menú</span>
       <img src="../../assets/icons/menu.svg" alt="" />
     </button>
@@ -251,7 +251,7 @@
     <header class="sidebar-header">
       <h2 data-lang="menu">Menú</h2>
 
-      <button class="btn btn-close" title="cerrar menú">
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
         <span data-lang="close">Cerrar</span>
         <img src="../../assets/icons/close.svg" alt="" />
       </button>
@@ -265,7 +265,7 @@
         </a>
 
         <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
-          title="mostrar secciones" aria-label="mostrar secciones">
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
           <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
         </button>
       </div>
@@ -294,7 +294,7 @@
     </nav>
 
     <footer class="sidebar-footer">
-      <button class="btn btn-settings" title="Abrir configuración">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
         <span data-lang="settings">Configuración</span>
         <img src="../../assets/icons/setting.svg" alt="" />
       </button>
@@ -302,7 +302,7 @@
   </aside>
 
   <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana">&times;</button>
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
     <div class="modal-dialog-body"></div>
   </dialog>
 </body>

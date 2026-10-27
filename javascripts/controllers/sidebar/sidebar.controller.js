@@ -21,6 +21,13 @@ export default function SidebarController() {
     expandToggle.setAttribute("aria-expanded", String(isOpen));
   }
 
+  function setBackgroundInert(inert) {
+    document.querySelectorAll('.navbar, .main-layout, .main-content, .footer, .modal-dialog')
+      .forEach((element) => {
+        element.inert = inert;
+      });
+  }
+
   function openMenu() {
     if (!sidebar || !overlay) return;
 
@@ -32,6 +39,9 @@ export default function SidebarController() {
     if (submenu?.querySelector(".sidebar-item.active")) {
       setSubmenuOpen(true);
     }
+
+    setBackgroundInert(true);
+    closeButton?.focus();
   }
 
   function closeMenu() {
@@ -41,6 +51,11 @@ export default function SidebarController() {
     overlay.classList.remove("active");
     document.body.style.overflow = "";
     openButton?.setAttribute("aria-expanded", "false");
+    setBackgroundInert(false);
+
+    if (sidebar?.contains(document.activeElement)) {
+      openButton?.focus();
+    }
   }
 
   openButton?.addEventListener("click", openMenu);

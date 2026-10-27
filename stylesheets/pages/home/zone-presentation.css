@@ -121,6 +121,7 @@
     padding: var(--space-2);
     transition: background-color var(--transition-fast) var(--ease-in-out),
       color var(--transition-fast) var(--ease-in-out);
+    width: auto;
 
     &:hover {
       background-color: var(--theme-color);

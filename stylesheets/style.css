@@ -70,19 +70,6 @@ html {
   }
 }
 
-/* ===== PAGE LAYOUT - Layout principal del contenido ===== */
-
-.main-layout {
-  /* padding: var(--space-4); */
-
-  @media (min-width: 768px) {}
-
-  @media (min-width: 1200px) {
-    /* width: min(65%, var(--size-7xl)); */
-    /* padding: var(--space-8); */
-  }
-}
-
 /* ===== FOOTER - pie de página ===== */
 
 .footer {

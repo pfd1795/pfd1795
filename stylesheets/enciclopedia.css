@@ -58,27 +58,6 @@ main {
   max-width: 48rem;
 }
 
-/* ===== Salto al contenido (skip link) ===== */
-
-.saltar {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: calc(var(--z-index-navbar) + 1);
-  padding: var(--space-2) var(--space-4);
-  background-color: var(--color-surface);
-  color: var(--enc-accent);
-  border: var(--border-normal) solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  text-decoration: none;
-}
-
-.saltar:focus {
-  left: var(--space-4);
-  top: var(--space-4);
-}
-
 /* ===== Cabecera de sección de la enciclopedia ===== */
 
 .cabecera {

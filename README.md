@@ -12,6 +12,7 @@ Portafolio personal y enciclopedia de informática desarrollados con **HTML, CSS
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
 - Enciclopedia de informática en `mis-estudios/`, con buscador y contenido educativo estático.
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
+- Accesibilidad: salto al contenido, tarjetas de estudios operables por teclado, foco gestionado en el menú lateral y avisos anunciados a lectores de pantalla.
 
 ## Ejecución local
 
@@ -52,9 +53,8 @@ GitHub Actions publica el contenido del repositorio en GitHub Pages en cada push
 - Sin tests automatizados, linting ni build; la única automatización es el despliegue.
 - Requiere un servidor HTTP local para funcionar.
 - Pensado para navegadores modernos (módulos ES, CSS nesting, `<dialog>`, `IntersectionObserver`).
-- La interfaz está traducida a español e inglés, pero el contenido de la enciclopedia solo está en español y algunas cadenas aún no están conectadas al sistema de traducciones.
-- Varias secciones de la enciclopedia están marcadas como “Próximamente”.
-- La imagen del proyecto de la portada se carga desde Unsplash.
+- La interfaz está traducida a español e inglés; el contenido de la enciclopedia solo está en español.
+- Varias secciones de la enciclopedia están marcadas como "Próximamente".
 
 Los detalles técnicos y la deuda pendiente se documentan en [`AGENTS.md`](./AGENTS.md#limitaciones-y-problemas-conocidos).
 

@@ -129,7 +129,7 @@ element?.addEventListener('click', () => {
 - **Utils**: Funciones puras exportadas nombradas
 - **DOM**: Verificar existencia antes de manipular (`if (element)`)
 - **Eventos**: Usar delegation cuando sea posible
-- **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`, que navega) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`, fondo y borde neutros) que despliega un `.sidebar-submenu` con 3 elementos (`.sidebar-subitem` con icono; `data-target` en la portada: experiencia, estudios, proyectos). En la portada esos elementos son `<button data-target>` y hacen scroll suave antes de cerrar el menú; en `mis-estudios/` son enlaces que navegan a la sección equivalente del portafolio. El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible; si es una hija, abre el submenú y añade `.has-active` al `--group` (indicador tenue en la fila padre).
+- **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`, que navega) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`, fondo y borde neutros) que despliega un `.sidebar-submenu` con 3 elementos (`.sidebar-subitem` con icono; `data-target` en la portada: experiencia, estudios, proyectos). En la portada esos elementos son `<button data-target>` y hacen scroll suave antes de cerrar el menú; en `mis-estudios/` son enlaces que navegan a la sección equivalente del portafolio. El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible; si es una hija, abre el submenú y añade `.has-active` al `--group` (indicador tenue en la fila padre). Al abrir el menú, `sidebar.controller.js` marca el fondo como `inert` (`.navbar`, `.main-layout`/`.main-content`, `.footer` y `.modal-dialog`) y lleva el foco al botón de cierre; al cerrarlo retira el `inert` y devuelve el foco al botón de abrir si estaba dentro del menú.
 - **"Mis estudios" (enlace externo)**: debajo de la fila "Inicio" y fuera del `--group` hay un `<a class="sidebar-item" href="./mis-estudios/index.html">` (icono `menu_book`) que navega a la enciclopedia. No lleva chevron ni `data-target`, por lo que el scrollspy lo ignora; `sidebar.controller.js` cierra el menú al pulsarlo. La enciclopedia (`mis-estudios/`) es contenido estático que **comparte la preferencia de tema** del portafolio: su `js/tema.js` lee las claves `theme-mode`, `theme-color-value`, `theme-background`, `gradient-direction`, `psychedelic-speed` y `font-scale` de `localStorage` (las mismas de `utils/storage.js`) y aplica `.dark` en `<html>`, el acento derivado, el fondo/degradado y la escala tipográfica antes de pintar. Sus páginas cargan también la barra y el menú laterales del portafolio junto con `javascripts/main.js`, de modo que el modal de Configuración (idioma, modo, color, tema de fondo, dirección, velocidad y tamaño de fuente) funciona igual que en la portada; en la enciclopedia los items del menú son enlaces en lugar de botones `data-target`: `../index.html#seccion` desde `mis-estudios/index.html` y `../../index.html#seccion` desde `mis-estudios/estudios/*.html`.
 - **Rutas de assets**: los iconos que se inyectan desde JS (modal de Configuración y modo) se resuelven con `utils/assets.js` (`import.meta.url` → `assets/icons/`), para que funcionen tanto desde la raíz (`index.html`) como desde subcarpetas (`mis-estudios/`).
 - **Configuración**: el modal (`.modal-dialog`) se rellena desde `controllers/settings/settings.controller.js`; los controles de idioma/modo/color/fondo/dirección/velocidad y tamaño de fuente usan **delegación de eventos sobre `document`**, por lo que siguen funcionando aunque el contenido se genere dinámicamente en cada apertura. Las filas de "Dirección del degradado" y "Velocidad" son condicionales: se muestran/ocultan con `.is-hidden` según el tema de fondo elegido (dirección para temas con degradado; velocidad solo para `multicolor`). La lógica de aplicación vive en `controllers/sidebar/fnBackgroundTheme.js` (fondo, dirección y velocidad) y `fnFontScale.js`; los datos de temas/direcciones/velocidades/escalas están centralizados en `utils/themeBackgrounds.js`. `applyTranslations()` actualiza el texto de `[data-lang]` y también el `title`/`aria-label` de `[data-i18n-title]`/`[data-i18n-aria-label]`, de modo que los controles generados dinámicamente cambian de idioma sin reabrir el modal.
@@ -144,7 +144,8 @@ element?.addEventListener('click', () => {
 - **Tamaño de fuente**: `html` usa `font-size: calc(16px * var(--font-scale, 1))`; el modal fija `--font-scale` en 0.85, 1 o 1.15, por lo que escala toda la tipografía basada en `rem` sin tocar los breakpoints en `px`.
 - **Modo oscuro**: clase `.dark` en `body.dark` (portafolio) y también en `html.dark` (subpáginas como `mis-estudios/`, que la fijan antes de pintar); `root.css` admite ambos selectores y `fnThemeMode.js` actualiza los dos nodos para que el tema quede sincronizado. Redefine las variables semánticas (`--color-background`, `--color-surface`, `--color-text`, …), por lo que los componentes se adaptan solos.
 - **Enciclopedia**: `stylesheets/enciclopedia.css` adapta `mis-estudios/` al sistema del portafolio (se carga junto a `style.css`, `ui/navbar.css`, `ui/sidebar.css` y `components/index.css`). Conserva los nombres de clase originales de la enciclopedia y usa un acento adaptativo `--enc-accent` (variante oscura en modo claro y clara en modo oscuro).
-- **Modal**: `.modal-dialog` usa las variables semánticas y se adapta al modo oscuro automáticamente; el botón de cierre usa `.modal-close`.
+- **Modal**: `.modal-dialog` usa las variables semánticas y se adapta al modo oscuro automáticamente; el botón de cierre usa `.modal-close`. El dialog referencia `aria-labelledby="modal-title"`, por lo que cada contenido dinámico (Configuración y educación) debe generar un elemento con `id="modal-title"` en cada apertura.
+- **Salto al contenido**: el estilo del enlace `.saltar` vive en `components/index.css` y lo comparten la portada y la enciclopedia.
 - **Transiciones**: variables `--transition-normal`, `--ease-in-out`; se anulan con `prefers-reduced-motion: reduce`.
 
 ---
@@ -184,25 +185,20 @@ element?.addEventListener('click', () => {
 ### Internacionalización
 
 - La interfaz tiene traducciones ES/EN, pero el contenido de la enciclopedia (`mis-estudios/`) está solo en español.
-- Problema conocido: el botón "Ver Proyecto" queda en español al cambiar a inglés. `fnChangeLanguage.js` ejecuta `applyTranslations()` antes de `reloadHomeContent()`, y las tarjetas se regeneran después.
-- Problema conocido: el aviso "¡Correo copiado!" tiene la clave `copyNotification` en `translations.json`, pero el elemento de `index.html` no lleva `data-lang`.
 - `applyTranslations()` busca claves en `page`, `introSection`, `home` y `header`; una clave nueva debe colocarse en una de esas secciones.
+- Las cadenas que se renderizan desde JavaScript se traducen al generarse (por ejemplo, `GridProjects()` toma `viewProject` de `translations.introSection[lang]`), no vía `data-lang`.
 
 ### Contenido y assets
 
 - Varias tarjetas de la enciclopedia están marcadas como "Próximamente"; no todo el temario está desarrollado.
-- La imagen del proyecto de la portada se carga desde Unsplash; sin conexión no se muestra.
+- La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada).
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas.
 - El correo que copia `utils/copyEmail.js` está fijado en el código. Si cambia, hay que actualizarlo ahí y en la información de contacto.
-- Problema conocido: `index.html` declara el favicon con `href="/favicon.svg"`. En el sitio de proyecto de GitHub Pages eso apunta a `https://pfd1795.github.io/favicon.svg` (404) en lugar de `./favicon.svg`.
 
 ### Deuda técnica y accesibilidad
 
-- Queda un media query vacío en `stylesheets/style.css` (`.main-layout`, `@media (min-width: 768px)`).
-- El modal de educación usa `aria-labelledby="modal-title"`, pero ese `id` solo lo genera el modal de Configuración; los modales de educación quedan sin etiqueta accesible.
 - No existe la clase `.modal-closed`; el bloqueo de scroll del modal se controla con `.modal-open` en `<body>`.
-- Algunos textos siguen hardcodeados en español, por ejemplo el `title` "Copiar correo" y el `aria-label` "Cerrar ventana".
-- Cuidar el orden entre `applyTranslations()` y las funciones que regeneran HTML (`GridWorkExperience`, `GridProjects`) al tocar idioma.
+- Cuidar el orden entre `applyTranslations()` y las funciones que regeneran HTML (`GridWorkExperience`, `GridProjects`) al tocar idioma: las cadenas renderizadas en JS deben traducirse al generarse.
 
 ### Rendimiento y mantenimiento
 
