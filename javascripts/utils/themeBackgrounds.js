@@ -9,8 +9,8 @@
      - las escalas de fuente,
      - el constructor de estilos CSS que consume fnBackgroundTheme.js.
 
-   Los colores se expresan como variables CSS del sistema (root.css), de modo
-   que el degradado se adapta solo al modo claro/oscuro.
+   Los colores se expresan como variables CSS del sistema (sección `:root` de
+   stylesheets/base.css), de modo que el degradado se adapta solo al modo claro/oscuro.
    ========================================================================== */
 
 export const BACKGROUND_THEMES = [

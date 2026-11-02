@@ -1,0 +1,350 @@
+{
+  "version": 1,
+  "games": [
+    {
+      "slug": "snake",
+      "title": {
+        "es": "Snake Retro",
+        "en": "Retro Snake"
+      },
+      "description": {
+        "es": "El clásico de la serpiente con estética arcade neón: come, crece y evita chocar contra los muros o contra tu propia cola.",
+        "en": "The classic snake game with neon arcade looks: eat, grow and avoid crashing into the walls or your own tail."
+      },
+      "genre": {
+        "es": "Arcade · habilidad",
+        "en": "Arcade · skill"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Flechas / WASD · D-pad táctil",
+        "en": "Arrows / WASD · touch D-pad"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "space-invaders",
+      "title": {
+        "es": "Space Invaders Retro",
+        "en": "Retro Space Invaders"
+      },
+      "description": {
+        "es": "Defiende la Tierra de oleadas infinitas de aliens con búnkeres destructibles, OVNI bonus y dificultad progresiva.",
+        "en": "Defend Earth from endless alien waves with destructible bunkers, a bonus UFO and rising difficulty."
+      },
+      "genre": {
+        "es": "Shooter · arcade",
+        "en": "Shooter · arcade"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Flechas / A-D · Espacio · botones táctiles",
+        "en": "Arrows / A-D · Space · touch buttons"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "ajedrez",
+      "title": {
+        "es": "Ajedrez Arcade",
+        "en": "Arcade Chess"
+      },
+      "description": {
+        "es": "Ajedrez completo en Canvas 2D con estética arcade: reglas íntegras, IA propia con tres niveles y modo para dos jugadores.",
+        "en": "Full chess on Canvas 2D with arcade looks: complete rules, built-in AI with three levels and a two-player mode."
+      },
+      "genre": {
+        "es": "Tablero · IA",
+        "en": "Board · AI"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Clic / táctil · U deshacer · Esc pausa",
+        "en": "Click / touch · U undo · Esc pause"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "damas",
+      "title": {
+        "es": "Damas Arcade",
+        "en": "Arcade Checkers"
+      },
+      "description": {
+        "es": "Damas españolas en Canvas 2D con capturas encadenadas, IA con tres niveles y modo para dos jugadores.",
+        "en": "Spanish checkers on Canvas 2D with chained captures, a three-level AI and a two-player mode."
+      },
+      "genre": {
+        "es": "Tablero · IA",
+        "en": "Board · AI"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Clic / táctil · U deshacer · Esc pausa",
+        "en": "Click / touch · U undo · Esc pause"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "dungeon-crawler",
+      "title": {
+        "es": "Neon Depths",
+        "en": "Neon Depths"
+      },
+      "description": {
+        "es": "Explora mazmorras procedurales con vista cenital, combate en tiempo real e iluminación dinámica, y derrota al Guardián de la profundidad 5.",
+        "en": "Explore procedurally generated dungeons in a top-down action crawler with dynamic lighting, and defeat the depth-5 Guardian."
+      },
+      "genre": {
+        "es": "Acción · mazmorras",
+        "en": "Action · dungeon"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "WASD / flechas · Espacio atacar · D-pad táctil",
+        "en": "WASD / arrows · Space attack · touch D-pad"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "neon-racer",
+      "title": {
+        "es": "Neon Racer",
+        "en": "Neon Racer"
+      },
+      "description": {
+        "es": "Carrera arcade infinita por una autopista de tres carriles: esquiva el tráfico mientras tu velocidad sigue subiendo.",
+        "en": "Endless arcade racer on a three-lane highway: dodge the traffic while your speed keeps rising."
+      },
+      "genre": {
+        "es": "Carreras · arcade",
+        "en": "Racing · arcade"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Flechas / A-D · botones táctiles",
+        "en": "Arrows / A-D · touch buttons"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "plataformas",
+      "title": {
+        "es": "Neon Ninja",
+        "en": "Neon Ninja"
+      },
+      "description": {
+        "es": "Plataformas 2D estilo run 'n gun: corre, salta y lanza shurikens en tres niveles con pinchos y enemigos.",
+        "en": "Run 'n gun 2D platformer: run, jump and throw shurikens across three levels with spikes and enemies."
+      },
+      "genre": {
+        "es": "Plataformas · acción",
+        "en": "Platformer · action"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Flechas / WASD · Espacio saltar · X shuriken",
+        "en": "Arrows / WASD · Space jump · X shuriken"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "tower-defense",
+      "title": {
+        "es": "Neon Defense",
+        "en": "Neon Defense"
+      },
+      "description": {
+        "es": "Tower defense con 4 torres mejorables, 20 oleadas y enemigos que escalan en vida y velocidad.",
+        "en": "Tower defense with 4 upgradeable towers, 20 waves and enemies that scale in health and speed."
+      },
+      "genre": {
+        "es": "Estrategia · torres",
+        "en": "Strategy · towers"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Clic colocar · 1-4 torres · U mejorar · V vender",
+        "en": "Click to place · 1-4 towers · U upgrade · V sell"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "match-3",
+      "title": {
+        "es": "Dulce Explosión",
+        "en": "Sweet Blast"
+      },
+      "description": {
+        "es": "Puzzle match-3 con caramelos especiales, cascadas en combo y niveles infinitos de dificultad creciente.",
+        "en": "Match-3 puzzle with special candies, combo cascades and endless levels of rising difficulty."
+      },
+      "genre": {
+        "es": "Puzzle · match-3",
+        "en": "Puzzle · match-3"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Clic / arrastrar · flechas y Enter · táctil",
+        "en": "Click / drag · arrows and Enter · touch"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "arkanoid",
+      "title": {
+        "es": "Rompebloques Neón",
+        "en": "Neon Breakout"
+      },
+      "description": {
+        "es": "Arkanoid con 5 niveles, ladrillos plateados y dorados, y cápsulas de poder: pala grande, multibola, láser y más.",
+        "en": "Arkanoid with 5 levels, silver and gold bricks, and power-ups: big paddle, multiball, laser and more."
+      },
+      "genre": {
+        "es": "Arcade · habilidad",
+        "en": "Arcade · skill"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Flechas / A-D · ratón · tocar para lanzar",
+        "en": "Arrows / A-D · mouse · tap to launch"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "ritmo",
+      "title": {
+        "es": "Pixel Riff",
+        "en": "Pixel Riff"
+      },
+      "description": {
+        "es": "Juego de ritmo con música chiptune generada en tiempo real: acierta las notas en 3 canciones de dominio público.",
+        "en": "Rhythm game with real-time chiptune audio: hit the notes in 3 public-domain songs."
+      },
+      "genre": {
+        "es": "Ritmo · música",
+        "en": "Rhythm · music"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D", "Web Audio"],
+      "controls": {
+        "es": "D F J K · flechas · botones táctiles",
+        "en": "D F J K · arrows · touch buttons"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "pong",
+      "title": {
+        "es": "Pong Neón",
+        "en": "Neon Pong"
+      },
+      "description": {
+        "es": "El clásico Pong contra una CPU: devuelve la pelota y llega primero a 7 puntos.",
+        "en": "Classic Pong against a CPU: return the ball and be the first to 7 points."
+      },
+      "genre": {
+        "es": "Arcade · deporte",
+        "en": "Arcade · sport"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "W/S · flechas · arrastrar en móvil",
+        "en": "W/S · arrows · drag on mobile"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "piedras-papel-tijeras",
+      "title": {
+        "es": "Piedra, Papel o Tijeras",
+        "en": "Rock, Paper, Scissors"
+      },
+      "description": {
+        "es": "Piedra, papel o tijeras contra la CPU con marcador: gana quien llegue primero a 5 puntos.",
+        "en": "Rock, paper, scissors against the CPU with a scoreboard: first to 5 points wins."
+      },
+      "genre": {
+        "es": "Casual · arcade",
+        "en": "Casual · arcade"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Teclas 1-2-3 o botones · Enter jugar",
+        "en": "Keys 1-2-3 or buttons · Enter play"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "pool",
+      "title": {
+        "es": "Pixel Pool 8",
+        "en": "Pixel Pool 8"
+      },
+      "description": {
+        "es": "Billar 8-ball arcade en vista superior: hunde las 15 bolas con física elástica y la bola 8 siempre al final.",
+        "en": "Top-down 8-ball arcade billiards: sink all 15 balls with elastic physics and the 8-ball last."
+      },
+      "genre": {
+        "es": "Billar · física",
+        "en": "Billiards · physics"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D", "Web Audio"],
+      "controls": {
+        "es": "Arrastrar y soltar (tirachinas) · táctil",
+        "en": "Drag and release (slingshot) · touch"
+      },
+      "cover": null,
+      "status": "published"
+    },
+    {
+      "slug": "ta-te-ti",
+      "title": {
+        "es": "Ta Te Ti",
+        "en": "Tic-Tac-Toe"
+      },
+      "description": {
+        "es": "Tres en raya contra una CPU que bloquea y ataca: alinea tres marcas para ganar.",
+        "en": "Tic-tac-toe against a CPU that blocks and attacks: line up three marks to win."
+      },
+      "genre": {
+        "es": "Tablero · casual",
+        "en": "Board · casual"
+      },
+      "year": 2026,
+      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "controls": {
+        "es": "Clic / táctil · teclas 1-9",
+        "en": "Click / touch · keys 1-9"
+      },
+      "cover": null,
+      "status": "published"
+    }
+  ]
+}

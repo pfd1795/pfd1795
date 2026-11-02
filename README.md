@@ -1,6 +1,6 @@
 # Portafolio web de Pablo Diaz
 
-Portafolio personal y enciclopedia de informática desarrollados con **HTML, CSS y JavaScript vanilla**, sin frameworks ni build step. El sitio es estático y se publica en GitHub Pages.
+Portafolio personal, enciclopedia de informática y colección de juegos arcade desarrollados con **HTML, CSS y JavaScript vanilla**, sin frameworks ni build step. El sitio es estático y se publica en GitHub Pages.
 
 **Producción:** https://pfd1795.github.io/pfd1795/
 
@@ -11,6 +11,9 @@ Portafolio personal y enciclopedia de informática desarrollados con **HTML, CSS
 - Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
 - Enciclopedia de informática en `mis-estudios/`, con buscador y contenido educativo estático.
+- Colección de 15 juegos arcade en `juegos/`, con una grilla generada desde `javascripts/data/juegos.json`.
+- Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva.
+- La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
 - Accesibilidad: salto al contenido, tarjetas de estudios operables por teclado, foco gestionado en el menú lateral y avisos anunciados a lectores de pantalla.
 
@@ -35,13 +38,27 @@ Luego abre `http://localhost:8000/`.
 ```text
 ├── index.html              # Portada
 ├── mis-estudios/           # Enciclopedia de informática
+├── juegos/                 # Grilla y juegos arcade (ver juegos/README.md)
 ├── javascripts/            # Módulos ES6 y lógica de la interfaz
-├── stylesheets/            # Estilos y sistema de diseño
+├── stylesheets/            # CSS: base compartida + estilos de cada página
 ├── assets/                 # Imágenes, iconos y CV
 └── .github/workflows/      # Despliegue en GitHub Pages
 ```
 
 La guía técnica detallada, las convenciones y las limitaciones conocidas están en [`AGENTS.md`](./AGENTS.md).
+
+## Juegos
+
+La página [`juegos/index.html`](./juegos/index.html) muestra una grilla con los juegos publicados. Cada tarjeta abre el
+juego en una pestaña nueva; los juegos son páginas independientes para no mezclar su Canvas y sus
+controles con el chrome del portafolio.
+
+Para agregar un juego nuevo, sigue la guía [`juegos/README.md`](./juegos/README.md). El resumen es:
+
+1. Copiar la carpeta a `juegos/<slug>/`.
+2. Renombrar su documentación a `README-juego.md`.
+3. Añadir la entrada en `javascripts/data/juegos.json`.
+4. Probar por HTTP y actualizar la documentación.
 
 ## Despliegue
 
@@ -53,7 +70,7 @@ GitHub Actions publica el contenido del repositorio en GitHub Pages en cada push
 - Sin tests automatizados, linting ni build; la única automatización es el despliegue.
 - Requiere un servidor HTTP local para funcionar.
 - Pensado para navegadores modernos (módulos ES, CSS nesting, `<dialog>`, `IntersectionObserver`).
-- La interfaz está traducida a español e inglés; el contenido de la enciclopedia solo está en español.
+- La interfaz está traducida a español e inglés; el contenido de la enciclopedia y de los juegos solo está en español, mientras que las tarjetas de la grilla se traducen ES/EN.
 - Varias secciones de la enciclopedia están marcadas como "Próximamente".
 
 Los detalles técnicos y la deuda pendiente se documentan en [`AGENTS.md`](./AGENTS.md#limitaciones-y-problemas-conocidos).

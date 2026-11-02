@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Ta Te Ti — 3 en Raya · Arcade Neón</title>
+<style>
+  :root {
+    --bg:#070a18; --panel:#101630; --line:#28345d;
+    --text:#eff3ff; --muted:#9ba8cf; --cyan:#4dc9ff;
+    --pink:#ff4d6d; --yellow:#ffe74c; --green:#6eeb83;
+  }
+  * { box-sizing:border-box; }
+  html,body { width:100%; height:100%; margin:0; overflow:hidden; }
+  body {
+    display:flex; flex-direction:column; align-items:center;
+    background:radial-gradient(ellipse at 50% 0%,#172047 0%,var(--bg) 68%);
+    color:var(--text); font-family:"Courier New",monospace;
+    user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  header {
+    width:min(96vw,720px); display:flex; justify-content:space-between; align-items:center;
+    padding:10px 4px 6px;
+  }
+  h1 {
+    margin:0; color:var(--yellow); font-size:clamp(15px,4vw,21px);
+    letter-spacing:2px; text-shadow:0 0 10px #ffe74c66;
+  }
+  button {
+    color:var(--text); font-family:inherit; font-weight:bold; letter-spacing:1px;
+    background:#151d3b; border:2px solid var(--line); border-radius:9px;
+    padding:8px 12px; cursor:pointer;
+  }
+  button:focus-visible { outline:3px solid var(--yellow); outline-offset:2px; }
+  button:active { transform:translateY(1px); border-color:var(--yellow); }
+  #hud {
+    width:min(96vw,720px); display:flex; justify-content:center; gap:clamp(12px,5vw,40px);
+    padding:3px 4px 8px; color:var(--muted); font-size:11px; letter-spacing:1px;
+  }
+  #hud b { color:var(--text); font-size:15px; margin-left:5px; }
+  main { flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; padding:4px 8px 12px; }
+  canvas { display:block; border-radius:14px; touch-action:none; }
+
+  #modal {
+    position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
+    padding:16px; background:#02040dcc;
+  }
+  #modal[hidden] { display:none; }
+  .modal-card {
+    width:min(92vw,410px); background:var(--panel); border:2px solid var(--line);
+    border-radius:14px; padding:16px; box-shadow:0 0 35px #4dc9ff22;
+  }
+  .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:13px; }
+  .modal-head h2 { margin:0; font-size:16px; color:var(--cyan); letter-spacing:2px; }
+  .modal-card ul { list-style:none; padding:0; margin:0 0 14px; display:grid; gap:8px; }
+  .modal-card li {
+    display:flex; justify-content:space-between; gap:10px; padding:9px 11px;
+    border:1px solid var(--line); border-radius:8px; background:#090e23; font-size:13px;
+  }
+  .soon { color:var(--muted); font-style:italic; }
+  .instructions { border-top:1px dashed var(--line); padding-top:10px; color:var(--muted); font-size:12px; line-height:1.55; }
+  .instructions h3 { margin:0 0 5px; color:var(--green); font-size:13px; letter-spacing:2px; }
+  .instructions p { margin:5px 0; }
+  .instructions strong { color:var(--text); }
+</style>
+</head>
+<body>
+<header>
+  <h1>TA TE TI · 3 EN RAYA</h1>
+  <button id="options-button" type="button">Opciones</button>
+</header>
+
+<div id="hud">
+  <span>JUGADOR (X)<b id="player-score">0</b></span>
+  <span>VICTORIAS<b id="record">0</b></span>
+  <span>CPU (O)<b id="cpu-score">0</b></span>
+</div>
+
+<main id="stage"><canvas id="game" aria-label="Tablero de Ta Te Ti"></canvas></main>
+
+<div id="modal" hidden>
+  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="options-title">
+    <div class="modal-head">
+      <h2 id="options-title">OPCIONES</h2>
+      <button id="close-options" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <ul>
+      <li><span>Música</span><span class="soon">Próximamente</span></li>
+      <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
+      <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+      <li><span>Modo 2 jugadores</span><span class="soon">Próximamente</span></li>
+    </ul>
+    <div class="instructions">
+      <h3>REGLAS Y CONTROLES</h3>
+      <p>Tú eres <strong>X</strong> y juegas contra la CPU (<strong>O</strong>). Gana quien logre alinear tres marcas en horizontal, vertical o diagonal.</p>
+      <p><strong>Teclado:</strong> teclas 1 a 9 para elegir casilla (como el teclado numérico: 1 arriba-izquierda, 9 abajo-derecha). Enter inicia o reinicia. P o ESC = pausa.</p>
+      <p><strong>Móvil:</strong> toca la casilla donde quieras colocar tu X.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+'use strict';
+
+const W = 560;
+const H = 490;
+const CELL = 110;
+const BOARD_SIZE = CELL*3;
+const BOARD_X = (W-BOARD_SIZE)/2;
+const BOARD_Y = 100;
+const COMBOS = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const stage = document.getElementById('stage');
+const modal = document.getElementById('modal');
+
+let state = 'start'; // start, playing, paused, victory, gameover, draw
+let board = Array(9).fill('');
+let turn = 'player'; // player | cpu
+let cpuTimer = 0;
+let hoverCell = -1;
+let winInfo = null;  // { symbol, combo }
+let sessionWins = 0;
+let sessionLosses = 0;
+let totalWins = 0;
+let buttons = [];
+let modalPausedGame = false;
+
+const stars = Array.from({length:46}, () => ({
+  x:Math.random()*W, y:Math.random()*H,
+  size:0.7+Math.random()*1.4, alpha:0.12+Math.random()*0.35
+}));
+
+function loadRecord() {
+  try { totalWins = Number(localStorage.getItem('tateti_neon_record')) || 0; }
+  catch (_) { totalWins = 0; }
+}
+function saveRecord() {
+  try { localStorage.setItem('tateti_neon_record', String(totalWins)); }
+  catch (_) { /* localStorage puede estar deshabilitado */ }
+}
+function updateHud() {
+  document.getElementById('player-score').textContent = sessionWins;
+  document.getElementById('cpu-score').textContent = sessionLosses;
+  document.getElementById('record').textContent = totalWins;
+}
+function resizeCanvas() {
+  const rect = stage.getBoundingClientRect();
+  const scale = Math.max(0.35, Math.min((rect.width-16)/W, (rect.height-24)/H, 1.25));
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  canvas.width = Math.round(W*dpr);
+  canvas.height = Math.round(H*dpr);
+  canvas.style.width = Math.round(W*scale)+'px';
+  canvas.style.height = Math.round(H*scale)+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+function startGame() {
+  board = Array(9).fill('');
+  turn = 'player';
+  winInfo = null;
+  hoverCell = -1;
+  cpuTimer = 0;
+  state = 'playing';
+  updateHud();
+}
+function pauseGame()  { if (state === 'playing') state = 'paused'; }
+function resumeGame() { if (state === 'paused') state = 'playing'; }
+
+function lineWins(b, a, c, d, sym) { return b[a]===sym && b[c]===sym && b[d]===sym; }
+function checkWin(b) {
+  for (const [a,c,d] of COMBOS) {
+    if (b[a] && b[a]===b[c] && b[a]===b[d]) return { symbol:b[a], combo:[a,c,d] };
+  }
+  return null;
+}
+function boardFull(b) { return b.every(cell => cell !== ''); }
+
+function afterMove() {
+  winInfo = checkWin(board);
+  if (winInfo) {
+    if (winInfo.symbol === 'X') {
+      sessionWins++;
+      totalWins++;
+      saveRecord();
+      state = 'victory';
+    } else {
+      sessionLosses++;
+      state = 'gameover';
+    }
+    updateHud();
+    return;
+  }
+  if (boardFull(board)) {
+    state = 'draw';
+    return;
+  }
+  turn = turn === 'player' ? 'cpu' : 'player';
+  if (turn === 'cpu') cpuTimer = 0.55;
+}
+function playerMove(index) {
+  if (state !== 'playing' || turn !== 'player' || board[index]) return;
+  board[index] = 'X';
+  hoverCell = -1;
+  afterMove();
+}
+
+/* CPU: intenta ganar, bloquea, prefiere centro y esquinas, con errores ocasionales */
+function chooseCpuMove() {
+  const empties = board.map((v,i) => v ? -1 : i).filter(i => i >= 0);
+  const tryLine = sym => {
+    for (const i of empties) {
+      const copy = board.slice();
+      copy[i] = sym;
+      if (checkWin(copy)) return i;
+    }
+    return -1;
+  };
+  let move = tryLine('O');                     // ganar si puede
+  if (move < 0) move = tryLine('X');           // bloquear al jugador
+  if (move >= 0) return move;
+
+  if (empties.includes(4) && Math.random() < 0.8) return 4;
+  const corners = [0,2,6,8].filter(i => empties.includes(i));
+  if (corners.length && Math.random() < 0.6) return corners[Math.floor(Math.random()*corners.length)];
+  return empties[Math.floor(Math.random()*empties.length)];
+}
+function cpuMove() {
+  const move = chooseCpuMove();
+  if (move >= 0 && !board[move]) board[move] = 'O';
+  afterMove();
+}
+
+/* Dibujo */
+function drawText(text,x,y,size,color,weight='bold') {
+  ctx.font = `${weight} ${size}px "Courier New",monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = color;
+  ctx.fillText(text,x,y);
+}
+function drawButton(id,cx,cy,w,h,label,primary=false) {
+  const x=cx-w/2, y=cy-h/2;
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,10);
+  ctx.fillStyle = primary ? '#3b1729' : '#121a38';
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = primary ? '#ff4d6d' : '#4dc9ff';
+  ctx.shadowColor = ctx.strokeStyle;
+  ctx.shadowBlur = 9;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  drawText(label,cx,cy,16,'#eff3ff');
+  buttons.push({id,x,y,w,h});
+}
+function cellCenter(index) {
+  const col = index % 3;
+  const row = Math.floor(index/3);
+  return { x:BOARD_X+col*CELL+CELL/2, y:BOARD_Y+row*CELL+CELL/2 };
+}
+function drawX(cx,cy) {
+  const s = CELL*0.30;
+  ctx.save();
+  ctx.strokeStyle = '#4dc9ff';
+  ctx.lineWidth = 8;
+  ctx.lineCap = 'round';
+  ctx.shadowColor = '#4dc9ff';
+  ctx.shadowBlur = 14;
+  ctx.beginPath();
+  ctx.moveTo(cx-s,cy-s); ctx.lineTo(cx+s,cy+s);
+  ctx.moveTo(cx+s,cy-s); ctx.lineTo(cx-s,cy+s);
+  ctx.stroke();
+  ctx.restore();
+}
+function drawO(cx,cy) {
+  const s = CELL*0.29;
+  ctx.save();
+  ctx.strokeStyle = '#ff4d6d';
+  ctx.lineWidth = 8;
+  ctx.shadowColor = '#ff4d6d';
+  ctx.shadowBlur = 14;
+  ctx.beginPath();
+  ctx.arc(cx,cy,s,0,Math.PI*2);
+  ctx.stroke();
+  ctx.restore();
+}
+function drawBackground() {
+  ctx.fillStyle = '#080d22';
+  ctx.fillRect(0,0,W,H);
+  for (const star of stars) {
+    ctx.globalAlpha = star.alpha;
+    ctx.fillStyle = '#e1eaff';
+    ctx.fillRect(star.x,star.y,star.size,star.size);
+  }
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = 'rgba(77,201,255,.25)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(8,8,W-16,H-16);
+}
+function drawArena() {
+  drawBackground();
+
+  drawText('JUGADOR (X)',140,32,13,'#4dc9ff');
+  drawText(String(sessionWins),140,64,30,'#eff3ff');
+  drawText('CPU (O)',420,32,13,'#ff4d6d');
+  drawText(String(sessionLosses),420,64,30,'#eff3ff');
+  drawText('VS',W/2,50,15,'#9ba8cf');
+
+  // Resaltado de casilla al pasar el cursor.
+  if (hoverCell >= 0 && state==='playing' && turn==='player' && !board[hoverCell]) {
+    const col = hoverCell%3, row = Math.floor(hoverCell/3);
+    ctx.fillStyle = 'rgba(77,201,255,.10)';
+    ctx.fillRect(BOARD_X+col*CELL,BOARD_Y+row*CELL,CELL,CELL);
+  }
+
+  // Rejilla.
+  ctx.strokeStyle = '#344064';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  for (let i=1;i<=2;i++) {
+    ctx.beginPath();
+    ctx.moveTo(BOARD_X+i*CELL,BOARD_Y+6);
+    ctx.lineTo(BOARD_X+i*CELL,BOARD_Y+BOARD_SIZE-6);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(BOARD_X+6,BOARD_Y+i*CELL);
+    ctx.lineTo(BOARD_X+BOARD_SIZE-6,BOARD_Y+i*CELL);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(77,201,255,.35)';
+  ctx.strokeRect(BOARD_X-4,BOARD_Y-4,BOARD_SIZE+8,BOARD_SIZE+8);
+
+  // Marcas.
+  for (let i=0;i<9;i++) {
+    if (!board[i]) continue;
+    const c = cellCenter(i);
+    if (board[i]==='X') drawX(c.x,c.y); else drawO(c.x,c.y);
+  }
+
+  // Línea de victoria.
+  if (winInfo) {
+    const a = cellCenter(winInfo.combo[0]);
+    const b = cellCenter(winInfo.combo[2]);
+    ctx.save();
+    ctx.strokeStyle = '#ffe74c';
+    ctx.lineWidth = 7;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = '#ffe74c';
+    ctx.shadowBlur = 16;
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y);
+    ctx.lineTo(b.x,b.y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Estado de turno.
+  if (state==='playing') {
+    if (turn==='player') drawText('TU TURNO — ELIGE UNA CASILLA',W/2,BOARD_Y+BOARD_SIZE+28,13,'#4dc9ff');
+    else drawText('TURNO DE LA CPU…',W/2,BOARD_Y+BOARD_SIZE+28,13,'#ff4d6d');
+  }
+}
+function drawOverlay(title,color,subtitle,primaryId,primaryLabel) {
+  ctx.fillStyle = 'rgba(3,5,17,.86)';
+  ctx.fillRect(0,0,W,H);
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 18;
+  drawText(title,W/2,H*0.31,34,color);
+  ctx.shadowBlur = 0;
+  drawText(subtitle,W/2,H*0.44,14,'#c5cce4','normal');
+  drawButton(primaryId,W/2,H*0.61,230,44,primaryLabel,true);
+  drawButton('menu',W/2,H*0.80,180,40,'MENÚ');
+}
+function render() {
+  buttons = [];
+  ctx.clearRect(0,0,W,H);
+  drawArena();
+
+  if (state==='start') {
+    drawOverlay('TA TE TI','#ffe74c','Tú eres X. Gana quien alinee tres marcas.','start','JUGAR');
+  } else if (state==='paused') {
+    ctx.fillStyle = 'rgba(3,5,17,.86)';
+    ctx.fillRect(0,0,W,H);
+    ctx.shadowColor = '#4dc9ff';
+    ctx.shadowBlur = 18;
+    drawText('PAUSA',W/2,H*0.26,34,'#4dc9ff');
+    ctx.shadowBlur = 0;
+    drawButton('resume',W/2,H*0.45,230,44,'REANUDAR',true);
+    drawButton('restart',W/2,H*0.60,230,44,'REINICIAR');
+    drawButton('menu',W/2,H*0.75,230,44,'MENÚ');
+  } else if (state==='victory') {
+    drawOverlay('¡VICTORIA!','#6eeb83',`Marcador: TÚ ${sessionWins} — CPU ${sessionLosses}`,'restart','JUGAR OTRA VEZ');
+  } else if (state==='gameover') {
+    drawOverlay('GAME OVER','#ff4d6d',`Marcador: TÚ ${sessionWins} — CPU ${sessionLosses}`,'restart','INTENTAR DE NUEVO');
+  } else if (state==='draw') {
+    drawOverlay('EMPATE','#ffe74c','Nadie logró alinear tres en raya.','restart','JUGAR OTRA VEZ');
+  }
+}
+function handleCanvasClick(x,y) {
+  for (const b of buttons) {
+    if (x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h) {
+      if (b.id==='start' || b.id==='restart') startGame();
+      else if (b.id==='resume') resumeGame();
+      else if (b.id==='menu') { state='start'; winInfo=null; board=Array(9).fill(''); }
+      return;
+    }
+  }
+}
+function cellAt(x,y) {
+  if (x<BOARD_X || y<BOARD_Y || x>=BOARD_X+BOARD_SIZE || y>=BOARD_Y+BOARD_SIZE) return -1;
+  const col = Math.floor((x-BOARD_X)/CELL);
+  const row = Math.floor((y-BOARD_Y)/CELL);
+  return row*3+col;
+}
+
+/* Entrada: puntero */
+function logicalCoords(event) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x:(event.clientX-rect.left)*W/rect.width,
+    y:(event.clientY-rect.top)*H/rect.height
+  };
+}
+canvas.addEventListener('pointerdown', event => {
+  event.preventDefault();
+  const p = logicalCoords(event);
+  if (state==='start' || state==='paused' || state==='victory' || state==='gameover' || state==='draw') {
+    handleCanvasClick(p.x,p.y);
+    return;
+  }
+  if (state==='playing' && turn==='player') {
+    const cell = cellAt(p.x,p.y);
+    if (cell >= 0) playerMove(cell);
+  }
+});
+canvas.addEventListener('pointermove', event => {
+  const p = logicalCoords(event);
+  hoverCell = (state==='playing' && turn==='player') ? cellAt(p.x,p.y) : -1;
+  canvas.style.cursor = (hoverCell >= 0 && !board[hoverCell]) ? 'pointer' : 'default';
+});
+canvas.addEventListener('pointerleave', () => { hoverCell = -1; });
+canvas.addEventListener('contextmenu', event => event.preventDefault());
+
+/* Entrada: teclado */
+window.addEventListener('keydown', event => {
+  const key = event.key.toLowerCase();
+  if (key >= '1' && key <= '9') {
+    event.preventDefault();
+    playerMove(Number(key)-1);
+    return;
+  }
+  if (key==='escape' && !modal.hidden) {
+    closeOptions();
+    return;
+  }
+  if (key==='p' || key==='escape') {
+    if (state==='playing') pauseGame();
+    else if (state==='paused') resumeGame();
+    return;
+  }
+  if (key==='enter' || key===' ') {
+    event.preventDefault();
+    if (state==='start' || state==='victory' || state==='gameover' || state==='draw') startGame();
+    else if (state==='paused') resumeGame();
+  }
+});
+window.addEventListener('blur', () => { if (state==='playing') pauseGame(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && state==='playing') pauseGame();
+});
+
+/* Opciones */
+function closeOptions() {
+  modal.hidden = true;
+  if (modalPausedGame && state==='paused') resumeGame();
+  modalPausedGame = false;
+}
+document.getElementById('options-button').addEventListener('click', () => {
+  modalPausedGame = state==='playing';
+  if (modalPausedGame) pauseGame();
+  modal.hidden = false;
+});
+document.getElementById('close-options').addEventListener('click', closeOptions);
+modal.addEventListener('click', event => {
+  if (event.target===modal) closeOptions();
+});
+
+/* Bucle principal */
+let lastTime = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05,(now-lastTime)/1000);
+  lastTime = now;
+  if (state==='playing' && turn==='cpu') {
+    cpuTimer -= dt;
+    if (cpuTimer <= 0) cpuMove();
+  }
+  render();
+  requestAnimationFrame(frame);
+}
+
+window.addEventListener('resize',resizeCanvas);
+loadRecord();
+updateHud();
+resizeCanvas();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

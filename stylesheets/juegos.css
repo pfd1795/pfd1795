@@ -1,0 +1,160 @@
+/* ===== JUEGOS - Grilla y tarjetas (juegos/) ===== */
+
+/* Requiere base.css. Se carga después de la base.
+   La grilla se genera desde javascripts/data/juegos.json. */
+
+/* ===== 1. PÁGINA ===== */
+.juegos-main {
+  margin-inline: auto;
+  max-width: 64rem;
+  padding: var(--space-6) var(--space-4) var(--space-8);
+  width: 100%;
+}
+
+.juegos-header {
+  max-width: 60ch;
+
+  h1 {
+    font-size: var(--text-h1);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+    margin: 0;
+  }
+}
+
+.juegos-intro {
+  color: var(--color-text-secondary);
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-relaxed);
+  margin: var(--space-3) 0 0;
+}
+
+/* ===== 2. GRILLA ===== */
+.juegos-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+  margin-top: var(--space-6);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.juegos-vacio {
+  color: var(--color-text-secondary);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: var(--space-6);
+  text-align: center;
+}
+
+/* ===== 3. TARJETA ===== */
+.juego-card {
+  background-color: var(--color-surface);
+  border: var(--border-normal) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  transition: box-shadow var(--transition-normal) var(--ease-in-out),
+    transform var(--transition-normal) var(--ease-in-out),
+    border-color var(--transition-slow) var(--ease-in-out),
+    background-color var(--transition-slow) var(--ease-in-out);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  &:focus-within {
+    outline: var(--border-thick) solid var(--theme-color);
+    outline-offset: var(--border-thick);
+  }
+}
+
+.juego-card__cabecera {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+
+.juego-card__genero,
+.juego-card__anio {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.juego-card__anio {
+  white-space: nowrap;
+}
+
+.juego-card__titulo {
+  font-size: var(--text-h3);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+.juego-card__descripcion {
+  color: var(--color-text-secondary);
+  flex: 1;
+  line-height: var(--leading-relaxed);
+  margin: 0;
+}
+
+/* ===== 4. TECNOLOGÍAS ===== */
+.juego-card__tecnologias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.juego-card__tecnologia {
+  background-color: var(--color-background);
+  border: var(--border-normal) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  padding: var(--space-1) var(--space-3);
+}
+
+/* ===== 5. CONTROLES Y ACCIÓN ===== */
+.juego-card__controles {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin: 0;
+
+  strong {
+    color: var(--color-text);
+    font-weight: var(--font-semibold);
+  }
+}
+
+.juego-card__jugar {
+  align-self: flex-start;
+  margin-top: var(--space-1);
+  text-decoration: none;
+
+  img {
+    height: 1.1em;
+    width: 1.1em;
+  }
+}
+
+.juego-card__nota {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  margin: 0;
+}

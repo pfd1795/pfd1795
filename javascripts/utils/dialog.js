@@ -1,4 +1,4 @@
-export function OpenModalDialog() {
+function OpenModalDialog() {
   const dialog = document.querySelector(".modal-dialog");
 
   if (!dialog) return;
@@ -26,7 +26,7 @@ export function ModalDialog(content = "contenido...") {
   OpenModalDialog();
 }
 
-export function CloseModalDialog() {
+function CloseModalDialog() {
   const dialog = document.querySelector(".modal-dialog");
 
   if (!dialog) return;

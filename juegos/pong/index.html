@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Pong Neón</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:#070a18; --panel:#101630; --line:#28345d;
+    --text:#eff3ff; --muted:#9ba8cf; --cyan:#4dc9ff; --pink:#ff4d6d;
+    --yellow:#ffe74c; --green:#6eeb83;
+  }
+  * { box-sizing:border-box; }
+  html,body { width:100%; height:100%; margin:0; overflow:hidden; }
+  body {
+    display:flex; flex-direction:column; align-items:center;
+    background:radial-gradient(ellipse at 50% 0%,#172047 0%,var(--bg) 65%);
+    color:var(--text); font-family:"Courier New",monospace;
+    user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  header {
+    width:min(96vw,820px); display:flex; align-items:center; justify-content:space-between;
+    padding:10px 4px 6px;
+  }
+  h1 { margin:0; color:var(--yellow); font-size:clamp(16px,4vw,21px); letter-spacing:2px; text-shadow:0 0 10px #ffe74c77; }
+  button {
+    font:inherit; color:var(--text); font-weight:bold; letter-spacing:1px;
+    background:#151d3b; border:2px solid var(--line); border-radius:8px;
+    padding:7px 12px; cursor:pointer;
+  }
+  button:active { border-color:var(--yellow); transform:translateY(1px); }
+  #hud {
+    width:min(96vw,820px); display:flex; justify-content:center; gap:clamp(16px,6vw,48px);
+    padding:3px 4px 9px; color:var(--muted); font-size:12px; letter-spacing:1px;
+  }
+  #hud b { color:var(--text); font-size:17px; margin-left:7px; }
+  main { flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; padding:4px 8px 12px; }
+  canvas { display:block; border-radius:12px; touch-action:none; }
+  #options-modal {
+    position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
+    padding:16px; background:#02040dcc;
+  }
+  #options-modal[hidden] { display:none; }
+  .modal {
+    width:min(92vw,420px); background:var(--panel); border:2px solid var(--line);
+    border-radius:14px; padding:16px; box-shadow:0 0 35px #4dc9ff22;
+  }
+  .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .modal h2 { margin:0; font-size:16px; letter-spacing:2px; color:var(--cyan); }
+  .modal ul { list-style:none; margin:0 0 14px; padding:0; display:grid; gap:8px; }
+  .modal li { display:flex; justify-content:space-between; gap:12px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:#090e23; font-size:13px; }
+  .soon { color:var(--muted); font-style:italic; }
+  .controls { border-top:1px dashed var(--line); padding-top:10px; color:var(--muted); font-size:12px; line-height:1.55; }
+  .controls h3 { margin:0 0 5px; color:var(--green); font-size:13px; letter-spacing:2px; }
+  .controls p { margin:5px 0; }
+  .controls strong { color:var(--text); }
+</style>
+</head>
+<body>
+<header>
+  <h1>PONG NEÓN</h1>
+  <button id="options-button" type="button">Opciones</button>
+</header>
+
+<div id="hud" aria-label="Marcador">
+  <span>JUGADOR <b id="player-score">0</b></span>
+  <span>RÉCORD <b id="best-score">0</b></span>
+  <span>CPU <b id="cpu-score">0</b></span>
+</div>
+
+<main id="stage"><canvas id="game" aria-label="Juego Pong"></canvas></main>
+
+<div id="options-modal" hidden>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="options-title">
+    <div class="modal-head">
+      <h2 id="options-title">OPCIONES</h2>
+      <button id="close-options" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <ul>
+      <li><span>Música</span><span class="soon">Próximamente</span></li>
+      <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
+      <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+      <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
+    </ul>
+    <div class="controls">
+      <h3>CONTROLES</h3>
+      <p><strong>Escritorio:</strong> W/S o ↑/↓ para mover la pala. También puedes moverla con el ratón. Espacio lanza la pelota; P o ESC pausa.</p>
+      <p><strong>Móvil / tablet:</strong> arrastra el dedo verticalmente por el tablero para mover la pala del jugador. Toca para lanzar.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+'use strict';
+
+/* Configuración del campo de juego */
+const WIDTH = 800;
+const HEIGHT = 500;
+const WIN_SCORE = 7;
+const PADDLE_W = 14;
+const PADDLE_H = 94;
+const BALL_R = 9;
+const PLAYER_X = 34;
+const CPU_X = WIDTH - 34 - PADDLE_W;
+const PLAYER_SPEED = 440;
+const BALL_START_SPEED = 350;
+const MAX_BALL_SPEED = 690;
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const stage = document.getElementById('stage');
+
+let state = 'start'; // start, playing, paused, gameover, victory
+let playerScore = 0;
+let cpuScore = 0;
+let bestScore = 0;
+let lastTime = performance.now();
+let elapsed = 0;
+let servingIn = 0;
+let serveDirection = 1;
+let pointerY = null;
+let pointerActive = false;
+let modalWasPlaying = false;
+let buttons = [];
+const keys = { up:false, down:false };
+
+const player = { x:PLAYER_X, y:HEIGHT/2-PADDLE_H/2, w:PADDLE_W, h:PADDLE_H };
+const cpu = { x:CPU_X, y:HEIGHT/2-PADDLE_H/2, w:PADDLE_W, h:PADDLE_H };
+const ball = { x:WIDTH/2, y:HEIGHT/2, vx:0, vy:0, trail:[] };
+
+const stars = Array.from({length:55}, () => ({
+  x:Math.random()*WIDTH, y:Math.random()*HEIGHT,
+  size:0.7+Math.random()*1.5, alpha:0.15+Math.random()*0.4
+}));
+
+function loadRecord() {
+  try { bestScore = Number(localStorage.getItem('pong_neon_best')) || 0; }
+  catch (_) { bestScore = 0; }
+}
+function saveRecord() {
+  try { localStorage.setItem('pong_neon_best', String(bestScore)); }
+  catch (_) { /* localStorage puede estar deshabilitado */ }
+}
+function updateHud() {
+  document.getElementById('player-score').textContent = playerScore;
+  document.getElementById('cpu-score').textContent = cpuScore;
+  document.getElementById('best-score').textContent = bestScore;
+}
+function resizeCanvas() {
+  const rect = stage.getBoundingClientRect();
+  const scale = Math.min((rect.width-8)/WIDTH, (rect.height-8)/HEIGHT);
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  canvas.width = Math.round(WIDTH*dpr);
+  canvas.height = Math.round(HEIGHT*dpr);
+  canvas.style.width = Math.round(WIDTH*scale) + 'px';
+  canvas.style.height = Math.round(HEIGHT*scale) + 'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+
+function resetBall(direction) {
+  ball.x = WIDTH/2;
+  ball.y = HEIGHT/2;
+  ball.vx = 0;
+  ball.vy = 0;
+  ball.trail.length = 0;
+  serveDirection = direction;
+  servingIn = 0.8;
+}
+function startGame() {
+  playerScore = 0;
+  cpuScore = 0;
+  player.y = HEIGHT/2-PADDLE_H/2;
+  cpu.y = HEIGHT/2-PADDLE_H/2;
+  state = 'playing';
+  resetBall(1);
+  updateHud();
+}
+function launchBall() {
+  if (state !== 'playing' || ball.vx !== 0 || ball.vy !== 0 || servingIn > 0) return;
+  const angle = (Math.random()*0.7 - 0.35);
+  ball.vx = Math.cos(angle) * BALL_START_SPEED * serveDirection;
+  ball.vy = Math.sin(angle) * BALL_START_SPEED;
+}
+function pauseGame() {
+  if (state === 'playing') state = 'paused';
+}
+function resumeGame() {
+  if (state === 'paused') state = 'playing';
+}
+function pointTo(scorer) {
+  if (scorer === 'player') {
+    playerScore++;
+    if (playerScore > bestScore) {
+      bestScore = playerScore;
+      saveRecord();
+    }
+    serveDirection = 1;
+  } else {
+    cpuScore++;
+    serveDirection = -1;
+  }
+  updateHud();
+  if (playerScore >= WIN_SCORE) {
+    state = 'victory';
+    return;
+  }
+  if (cpuScore >= WIN_SCORE) {
+    state = 'gameover';
+    return;
+  }
+  resetBall(serveDirection);
+}
+function startServing() {
+  if (state === 'start') startGame();
+  if (state === 'playing') launchBall();
+}
+
+/* Puntero y coordenadas escaladas a la resolución lógica */
+function pointerPosition(event) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x:(event.clientX-rect.left)*WIDTH/rect.width,
+    y:(event.clientY-rect.top)*HEIGHT/rect.height
+  };
+}
+canvas.addEventListener('pointerdown', event => {
+  event.preventDefault();
+  if (state === 'start') { startGame(); return; }
+  if (state === 'paused' || state === 'gameover' || state === 'victory') {
+    const p = pointerPosition(event);
+    handleOverlayClick(p.x,p.y);
+    return;
+  }
+  if (state === 'playing') {
+    pointerActive = event.pointerType !== 'mouse';
+    pointerY = pointerPosition(event).y;
+    startServing();
+    try { canvas.setPointerCapture(event.pointerId); } catch (_) {}
+  }
+});
+canvas.addEventListener('pointermove', event => {
+  if (state !== 'playing') return;
+  const p = pointerPosition(event);
+  if (event.pointerType === 'mouse') {
+    pointerActive = true;
+    pointerY = p.y;
+  } else if (pointerActive) {
+    pointerY = p.y;
+  }
+});
+window.addEventListener('pointerup', () => {
+  if (pointerY !== null) pointerActive = false;
+});
+canvas.addEventListener('pointercancel', () => { pointerActive = false; });
+canvas.addEventListener('contextmenu', event => event.preventDefault());
+
+/* Teclado */
+window.addEventListener('keydown', event => {
+  const key = event.key.toLowerCase();
+  if (key === 'arrowup' || key === 'arrowdown' || key === ' ') event.preventDefault();
+
+  if (key === 'escape' || key === 'p') {
+    if (!document.getElementById('options-modal').hidden) return;
+    if (state === 'playing') pauseGame();
+    else if (state === 'paused') resumeGame();
+    return;
+  }
+
+  if (key === 'w' || key === 'arrowup') keys.up = true;
+  if (key === 's' || key === 'arrowdown') keys.down = true;
+
+  if (key === ' ' || key === 'enter') {
+    if (state === 'start' || state === 'gameover' || state === 'victory') startGame();
+    else if (state === 'paused') resumeGame();
+    else startServing();
+  }
+});
+window.addEventListener('keyup', event => {
+  const key = event.key.toLowerCase();
+  if (key === 'w' || key === 'arrowup') keys.up = false;
+  if (key === 's' || key === 'arrowdown') keys.down = false;
+});
+window.addEventListener('blur', () => {
+  keys.up = false;
+  keys.down = false;
+  if (state === 'playing') pauseGame();
+});
+
+/* Opciones */
+const modal = document.getElementById('options-modal');
+document.getElementById('options-button').addEventListener('click', () => {
+  modalWasPlaying = state === 'playing';
+  if (modalWasPlaying) pauseGame();
+  modal.hidden = false;
+});
+function closeOptions() {
+  modal.hidden = true;
+  if (modalWasPlaying && state === 'paused') resumeGame();
+  modalWasPlaying = false;
+}
+document.getElementById('close-options').addEventListener('click', closeOptions);
+modal.addEventListener('click', event => {
+  if (event.target === modal) closeOptions();
+});
+
+/* Física y puntuación */
+function update(dt) {
+  if (state !== 'playing') return;
+  elapsed += dt;
+
+  if (keys.up) player.y -= PLAYER_SPEED*dt;
+  if (keys.down) player.y += PLAYER_SPEED*dt;
+  if (pointerActive && pointerY !== null) {
+    const target = pointerY-player.h/2;
+    player.y += (target-player.y)*Math.min(1,dt*16);
+  }
+  player.y = clamp(player.y, 12, HEIGHT-player.h-12);
+
+  // CPU con reacción limitada para que siga siendo vencible.
+  const cpuSpeed = Math.min(390, 265 + Math.max(playerScore,cpuScore)*13);
+  const cpuCenter = cpu.y+cpu.h/2;
+  const targetY = ball.vx > 0 ? ball.y : HEIGHT/2 + Math.sin(elapsed*1.8)*30;
+  if (targetY > cpuCenter+9) cpu.y += Math.min(cpuSpeed*dt,targetY-cpuCenter);
+  else if (targetY < cpuCenter-9) cpu.y -= Math.min(cpuSpeed*dt,cpuCenter-targetY);
+  cpu.y = clamp(cpu.y,12,HEIGHT-cpu.h-12);
+
+  if (servingIn > 0) {
+    servingIn -= dt;
+    ball.x = WIDTH/2;
+    ball.y = HEIGHT/2;
+    return;
+  }
+  if (ball.vx === 0 && ball.vy === 0) return;
+
+  ball.trail.push({x:ball.x,y:ball.y});
+  if (ball.trail.length > 8) ball.trail.shift();
+
+  ball.x += ball.vx*dt;
+  ball.y += ball.vy*dt;
+
+  if (ball.y-BALL_R < 10) {
+    ball.y = 10+BALL_R;
+    ball.vy = Math.abs(ball.vy);
+  }
+  if (ball.y+BALL_R > HEIGHT-10) {
+    ball.y = HEIGHT-10-BALL_R;
+    ball.vy = -Math.abs(ball.vy);
+  }
+
+  // Colisión con pala del jugador.
+  if (ball.vx < 0 &&
+      ball.x-BALL_R <= player.x+player.w &&
+      ball.x+BALL_R >= player.x &&
+      ball.y+BALL_R >= player.y &&
+      ball.y-BALL_R <= player.y+player.h) {
+    ball.x = player.x+player.w+BALL_R;
+    bounceFromPaddle(player,1);
+  }
+
+  // Colisión con pala de la CPU.
+  if (ball.vx > 0 &&
+      ball.x+BALL_R >= cpu.x &&
+      ball.x-BALL_R <= cpu.x+cpu.w &&
+      ball.y+BALL_R >= cpu.y &&
+      ball.y-BALL_R <= cpu.y+cpu.h) {
+    ball.x = cpu.x-BALL_R;
+    bounceFromPaddle(cpu,-1);
+  }
+
+  if (ball.x+BALL_R < 0) pointTo('cpu');
+  else if (ball.x-BALL_R > WIDTH) pointTo('player');
+}
+function bounceFromPaddle(paddle, direction) {
+  const offset = clamp((ball.y-(paddle.y+paddle.h/2))/(paddle.h/2),-1,1);
+  const angle = offset*1.08;
+  const speed = Math.min(MAX_BALL_SPEED, Math.hypot(ball.vx,ball.vy)*1.045+7);
+  ball.vx = Math.cos(angle)*speed*direction;
+  ball.vy = Math.sin(angle)*speed;
+}
+
+/* Renderizado Canvas 2D */
+function drawCourt() {
+  ctx.fillStyle = '#070b1c';
+  ctx.fillRect(0,0,WIDTH,HEIGHT);
+
+  for (const star of stars) {
+    ctx.globalAlpha = star.alpha;
+    ctx.fillStyle = '#dce8ff';
+    ctx.fillRect(star.x,star.y,star.size,star.size);
+  }
+  ctx.globalAlpha = 1;
+
+  // Límites.
+  ctx.fillStyle = '#4dc9ff';
+  ctx.globalAlpha = 0.55;
+  ctx.fillRect(10,8,WIDTH-20,3);
+  ctx.fillRect(10,HEIGHT-11,WIDTH-20,3);
+  ctx.globalAlpha = 1;
+
+  // Línea central discontinua.
+  ctx.fillStyle = '#37456f';
+  for (let y=20;y<HEIGHT-20;y+=27) ctx.fillRect(WIDTH/2-2,y,4,15);
+
+  // Palas.
+  drawGlowRect(player.x,player.y,player.w,player.h,'#4dc9ff');
+  drawGlowRect(cpu.x,cpu.y,cpu.w,cpu.h,'#ff4d6d');
+
+  // Estela y pelota.
+  for (let i=0;i<ball.trail.length;i++) {
+    const t = ball.trail[i];
+    ctx.globalAlpha = (i/ball.trail.length)*0.28;
+    ctx.fillStyle = '#4dc9ff';
+    ctx.beginPath();
+    ctx.arc(t.x,t.y,BALL_R*(0.35+0.65*i/ball.trail.length),0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  ctx.shadowColor = '#4dc9ff';
+  ctx.shadowBlur = 16;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(ball.x,ball.y,BALL_R,0,Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+function drawGlowRect(x,y,w,h,color) {
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,6);
+  ctx.fill();
+  ctx.restore();
+}
+function drawButton(id,cx,cy,w,h,label,primary=false) {
+  const x=cx-w/2, y=cy-h/2;
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,10);
+  ctx.fillStyle=primary?'#3a1628':'#121a38';
+  ctx.fill();
+  ctx.lineWidth=2;
+  ctx.strokeStyle=primary?'#ff4d6d':'#4dc9ff';
+  ctx.shadowColor=ctx.strokeStyle;
+  ctx.shadowBlur=9;
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  ctx.font='bold 18px "Courier New",monospace';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillStyle='#eff3ff';
+  ctx.fillText(label,cx,cy+1);
+  buttons.push({id,x,y,w,h});
+}
+function overlay() {
+  ctx.fillStyle='#040716e8';
+  ctx.fillRect(0,0,WIDTH,HEIGHT);
+}
+function drawStart() {
+  overlay();
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.shadowColor='#4dc9ff';
+  ctx.shadowBlur=18;
+  ctx.fillStyle='#4dc9ff';
+  ctx.font='bold 76px "Courier New",monospace';
+  ctx.fillText('PONG',WIDTH/2,HEIGHT*0.31);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#9ba8cf';
+  ctx.font='bold 16px "Courier New",monospace';
+  ctx.fillText('ARCADE NEÓN',WIDTH/2,HEIGHT*0.42);
+  drawButton('start',WIDTH/2,HEIGHT*0.57,230,48,'JUGAR',true);
+  ctx.fillStyle='#ffe74c';
+  ctx.font='bold 16px "Courier New",monospace';
+  ctx.fillText('RÉCORD  '+bestScore,WIDTH/2,HEIGHT*0.72);
+  ctx.fillStyle='#9ba8cf';
+  ctx.font='14px "Courier New",monospace';
+  ctx.fillText('Primero en llegar a '+WIN_SCORE+' puntos gana',WIDTH/2,HEIGHT*0.81);
+  ctx.fillText('ENTER o toca la pantalla',WIDTH/2,HEIGHT*0.89);
+}
+function drawPaused() {
+  overlay();
+  drawTitle('PAUSA','#4dc9ff',HEIGHT*0.31);
+  drawButton('resume',WIDTH/2,HEIGHT*0.49,230,46,'REANUDAR',true);
+  drawButton('restart',WIDTH/2,HEIGHT*0.62,230,46,'REINICIAR',false);
+  drawButton('menu',WIDTH/2,HEIGHT*0.75,230,46,'MENÚ',false);
+}
+function drawEnd(won) {
+  overlay();
+  drawTitle(won?'¡VICTORIA!':'GAME OVER',won?'#6eeb83':'#ff4d6d',HEIGHT*0.31);
+  ctx.fillStyle='#eff3ff';
+  ctx.font='bold 18px "Courier New",monospace';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('JUGADOR  '+playerScore+'   ·   CPU  '+cpuScore,WIDTH/2,HEIGHT*0.44);
+  ctx.fillStyle='#ffe74c';
+  ctx.font='bold 16px "Courier New",monospace';
+  ctx.fillText('RÉCORD  '+bestScore,WIDTH/2,HEIGHT*0.51);
+  drawButton('restart',WIDTH/2,HEIGHT*0.65,250,46,'JUGAR DE NUEVO',true);
+  drawButton('menu',WIDTH/2,HEIGHT*0.78,230,46,'MENÚ',false);
+}
+function drawTitle(text,color,y) {
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.font='bold 45px "Courier New",monospace';
+  ctx.shadowColor=color;
+  ctx.shadowBlur=18;
+  ctx.fillStyle=color;
+  ctx.fillText(text,WIDTH/2,y);
+  ctx.shadowBlur=0;
+}
+function render() {
+  buttons=[];
+  ctx.clearRect(0,0,WIDTH,HEIGHT);
+  drawCourt();
+  if (state==='start') drawStart();
+  else if (state==='paused') drawPaused();
+  else if (state==='gameover') drawEnd(false);
+  else if (state==='victory') drawEnd(true);
+  else if (state==='playing' && servingIn>0) {
+    ctx.fillStyle='#dce8ff';
+    ctx.font='bold 16px "Courier New",monospace';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText('LISTO…',WIDTH/2,HEIGHT/2+38);
+  }
+}
+function handleOverlayClick(x,y) {
+  for (const b of buttons) {
+    if (x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h) {
+      if (b.id==='start' || b.id==='restart') startGame();
+      else if (b.id==='resume') resumeGame();
+      else if (b.id==='menu') state='start';
+      return;
+    }
+  }
+}
+
+/* Bucle principal */
+function frame(now) {
+  const dt=Math.min(0.04,(now-lastTime)/1000);
+  lastTime=now;
+  if (state==='playing') update(dt);
+  render();
+  requestAnimationFrame(frame);
+}
+
+loadRecord();
+updateHud();
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

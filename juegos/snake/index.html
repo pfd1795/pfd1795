@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0d0221" />
+  <title>Snake Retro</title>
+  <style>
+    /* ================= Variables y base ================= */
+    :root {
+      --bg: #0d0221;
+      --panel: #1a1033;
+      --text: #eaeaea;
+      --muted: #9b8fb8;
+      --neon-green: #39ff14;
+      --neon-pink: #ff2a6d;
+      --neon-cyan: #05d9e8;
+      --neon-yellow: #ffd60a;
+      --neon-purple: #b967ff;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", ui-monospace, Menlo, monospace;
+      overscroll-behavior: none;
+    }
+
+    .app { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; }
+
+    /* ================= Barra superior ================= */
+    .topbar {
+      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid rgba(185, 103, 255, 0.4);
+    }
+    .topbar h1 {
+      margin: 0; font-size: 1.25rem; letter-spacing: 3px;
+      color: var(--neon-green);
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.8);
+    }
+    .btn {
+      font: inherit; font-size: 0.9rem; cursor: pointer;
+      background: transparent; color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan); border-radius: 6px;
+      padding: 7px 14px; transition: box-shadow 0.15s, background 0.15s;
+    }
+    .btn:hover, .btn:active { background: rgba(5, 217, 232, 0.12); box-shadow: 0 0 10px rgba(5, 217, 232, 0.5); }
+
+    /* ================= Barra secundaria (HUD) ================= */
+    .subbar {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px;
+      padding: 8px 12px; font-size: 0.9rem; letter-spacing: 1px;
+    }
+    .subbar .label { color: var(--muted); }
+    .subbar .val { font-weight: bold; }
+    .val.playing { color: var(--neon-green); }
+    .val.paused  { color: var(--neon-yellow); }
+    .val.over    { color: var(--neon-pink); }
+    .val.start   { color: var(--neon-cyan); }
+    #score { color: var(--neon-cyan); }
+    #best  { color: var(--neon-yellow); }
+    #speed { color: var(--neon-purple); }
+
+    /* ================= Canvas ================= */
+    canvas {
+      display: block;
+      width: min(92vw, 480px, 65vh);
+      aspect-ratio: 1 / 1;
+      margin: 4px 0;
+      border: 2px solid var(--neon-purple);
+      border-radius: 8px;
+      box-shadow: 0 0 18px rgba(185, 103, 255, 0.45);
+      touch-action: none;
+      background: var(--bg);
+    }
+
+    /* ================= D-pad táctil ================= */
+    .dpad {
+      display: none;
+      grid-template-areas: ". up ." "left . right" ". down .";
+      grid-template-columns: repeat(3, 68px);
+      grid-template-rows: repeat(3, 58px);
+      gap: 8px;
+      margin: 14px 0 26px;
+    }
+    .dpad button {
+      font: inherit; font-size: 1.4rem; cursor: pointer;
+      color: var(--neon-cyan);
+      background: rgba(5, 217, 232, 0.08);
+      border: 1px solid rgba(5, 217, 232, 0.6);
+      border-radius: 10px;
+      user-select: none; -webkit-user-select: none;
+      touch-action: none;
+    }
+    .dpad button:active { background: rgba(5, 217, 232, 0.3); }
+    .dpad .up    { grid-area: up; }
+    .dpad .down  { grid-area: down; }
+    .dpad .left  { grid-area: left; }
+    .dpad .right { grid-area: right; }
+    @media (hover: none) and (pointer: coarse), (max-width: 600px) {
+      .dpad { display: grid; }
+    }
+
+    /* ================= Modal de opciones ================= */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 10;
+      background: rgba(0, 0, 0, 0.72);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal {
+      width: 100%; max-width: 420px;
+      background: var(--panel);
+      border: 1px solid var(--neon-purple); border-radius: 10px;
+      box-shadow: 0 0 30px rgba(185, 103, 255, 0.4);
+      padding-bottom: 18px;
+    }
+    .modal > header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(185, 103, 255, 0.3);
+    }
+    .modal h2 {
+      margin: 0; font-size: 1.05rem; letter-spacing: 2px;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px rgba(5, 217, 232, 0.7);
+    }
+    #btnCloseModal { background: none; border: none; color: var(--text); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+    .options-list { list-style: none; margin: 0; padding: 8px 16px; }
+    .options-list li {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+      font-size: 0.95rem;
+    }
+    .soon { color: var(--muted); font-style: italic; font-size: 0.82rem; }
+    .controls-info { padding: 6px 16px 0; font-size: 0.85rem; line-height: 1.5; }
+    .controls-info h3 { margin: 10px 0 4px; font-size: 0.88rem; letter-spacing: 1px; color: var(--neon-yellow); }
+    .controls-info p { margin: 4px 0; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Barra superior: título + opciones -->
+    <header class="topbar">
+      <h1>SNAKE</h1>
+      <button class="btn" id="btnOptions" aria-haspopup="dialog">Opciones</button>
+    </header>
+
+    <!-- Barra secundaria: HUD -->
+    <div class="subbar" aria-live="polite">
+      <span><span class="label">Puntuación: </span><span class="val" id="score">0</span></span>
+      <span><span class="label">Récord: </span><span class="val" id="best">0</span></span>
+      <span><span class="label">Velocidad: </span><span class="val" id="speed">1.0x</span></span>
+      <span><span class="label">Estado: </span><span class="val start" id="status">En inicio</span></span>
+    </div>
+
+    <!-- Lienzo principal -->
+    <canvas id="game" aria-label="Juego Snake"></canvas>
+
+    <!-- D-pad táctil para móviles -->
+    <div class="dpad" id="dpad" aria-label="Controles táctiles">
+      <button class="up" data-dir="up" aria-label="Arriba">▲</button>
+      <button class="left" data-dir="left" aria-label="Izquierda">◀</button>
+      <button class="right" data-dir="right" aria-label="Derecha">▶</button>
+      <button class="down" data-dir="down" aria-label="Abajo">▼</button>
+    </div>
+
+    <!-- Modal de opciones -->
+    <div class="modal-backdrop" id="modalBackdrop" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header>
+          <h2 id="modalTitle">Opciones</h2>
+          <button id="btnCloseModal" aria-label="Cerrar">✕</button>
+        </header>
+        <ul class="options-list">
+          <li><span>Música</span><span class="soon">Próximamente</span></li>
+          <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
+          <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+          <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
+        </ul>
+        <section class="controls-info">
+          <h3>Controles</h3>
+          <p><strong>Escritorio:</strong> Flechas o WASD para moverte · Espacio o P: pausa · Enter: jugar / reiniciar</p>
+          <p><strong>Móvil:</strong> D-pad táctil para moverte · Toca la pantalla para jugar y pausar</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      /* ================= Configuración ================= */
+      const COLS = 20, ROWS = 20, CELL = 24;
+      const BASE_INTERVAL = 150; // ms entre pasos al inicio
+      const MIN_INTERVAL  = 65;  // límite de velocidad
+      const SPEEDUP       = 3;   // ms menos de intervalo por comida
+      const SCORE_PER_FOOD = 10;
+      const BEST_KEY = 'snake_best_v1';
+
+      const State = { START: 'start', PLAYING: 'playing', PAUSED: 'paused', OVER: 'over' };
+      const STATUS_TEXT = { start: 'En inicio', playing: 'Jugando', paused: 'Pausa', over: 'Game Over' };
+
+      /* ================= Referencias DOM ================= */
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const scoreEl = document.getElementById('score');
+      const bestEl = document.getElementById('best');
+      const speedEl = document.getElementById('speed');
+      const statusEl = document.getElementById('status');
+      const btnOptions = document.getElementById('btnOptions');
+      const modalBackdrop = document.getElementById('modalBackdrop');
+      const btnCloseModal = document.getElementById('btnCloseModal');
+      const dpad = document.getElementById('dpad');
+
+      /* ================= Lienzo nítido en pantallas HiDPI ================= */
+      const W = COLS * CELL, H = ROWS * CELL;
+      const DPR = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = W * DPR;
+      canvas.height = H * DPR;
+
+      /* ================= Estado del juego ================= */
+      const game = {
+        state: State.START,
+        snake: [],
+        dir: { x: 1, y: 0 },
+        dirQueue: [],
+        food: null,
+        score: 0,
+        best: loadBest(),
+        foodsEaten: 0,
+        interval: BASE_INTERVAL,
+        accumulator: 0,
+        lastTime: 0,
+        won: false,
+        newRecord: false,
+      };
+
+      /* ================= Persistencia ================= */
+      function loadBest() {
+        try { return Number(localStorage.getItem(BEST_KEY)) || 0; }
+        catch (err) { return 0; }
+      }
+      function saveBest(value) {
+        try { localStorage.setItem(BEST_KEY, String(value)); } catch (err) { /* almacenamiento no disponible */ }
+      }
+
+      /* ================= HUD ================= */
+      function updateHUD() {
+        scoreEl.textContent = game.score;
+        bestEl.textContent = game.best;
+        speedEl.textContent = (BASE_INTERVAL / game.interval).toFixed(1) + 'x';
+        statusEl.textContent = STATUS_TEXT[game.state];
+        statusEl.className = 'val ' + game.state;
+      }
+
+      /* ================= Lógica del juego ================= */
+      function resetGame() {
+        const cx = Math.floor(COLS / 2), cy = Math.floor(ROWS / 2);
+        game.snake = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }];
+        game.dir = { x: 1, y: 0 };
+        game.dirQueue = [];
+        game.score = 0;
+        game.foodsEaten = 0;
+        game.interval = BASE_INTERVAL;
+        game.accumulator = 0;
+        game.won = false;
+        game.newRecord = false;
+        spawnFood();
+      }
+
+      function startGame() {
+        resetGame();
+        game.state = State.PLAYING;
+        closeModal();
+        updateHUD();
+      }
+
+      function togglePause() {
+        if (game.state === State.PLAYING) {
+          game.state = State.PAUSED;
+        } else if (game.state === State.PAUSED) {
+          game.state = State.PLAYING;
+          game.accumulator = 0;
+        }
+        updateHUD();
+      }
+
+      function endGame(win) {
+        game.state = State.OVER;
+        game.won = !!win;
+        if (game.score > game.best) {
+          game.best = game.score;
+          game.newRecord = game.score > 0;
+          saveBest(game.best);
+        }
+        updateHUD();
+      }
+
+      function spawnFood() {
+        const free = [];
+        for (let x = 0; x < COLS; x++) {
+          for (let y = 0; y < ROWS; y++) {
+            if (!game.snake.some((s) => s.x === x && s.y === y)) free.push({ x, y });
+          }
+        }
+        game.food = free.length ? free[(Math.random() * free.length) | 0] : null;
+      }
+
+      function queueDir(x, y) {
+        const last = game.dirQueue.length ? game.dirQueue[game.dirQueue.length - 1] : game.dir;
+        if ((x === last.x && y === last.y) || (x === -last.x && y === -last.y)) return;
+        if (game.dirQueue.length < 2) game.dirQueue.push({ x, y });
+      }
+
+      function step() {
+        // Aplica la siguiente dirección en cola (sin giros de 180°)
+        if (game.dirQueue.length) {
+          const next = game.dirQueue.shift();
+          if (next.x !== -game.dir.x || next.y !== -game.dir.y) game.dir = next;
+        }
+
+        const head = game.snake[0];
+        const nx = head.x + game.dir.x;
+        const ny = head.y + game.dir.y;
+
+        // Colisión con pared
+        if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) return endGame(false);
+
+        const eating = !!game.food && nx === game.food.x && ny === game.food.y;
+
+        // Avanza: nueva cabeza y cola según corresponda
+        game.snake.unshift({ x: nx, y: ny });
+        if (!eating) game.snake.pop();
+
+        // Colisión con el propio cuerpo
+        for (let i = 1; i < game.snake.length; i++) {
+          if (game.snake[i].x === nx && game.snake[i].y === ny) return endGame(false);
+        }
+
+        if (eating) {
+          game.score += SCORE_PER_FOOD;
+          game.foodsEaten++;
+          game.interval = Math.max(MIN_INTERVAL, BASE_INTERVAL - game.foodsEaten * SPEEDUP);
+          spawnFood();
+          if (!game.food) return endGame(true); // tablero completo: victoria
+          updateHUD();
+        }
+      }
+
+      /* ================= Bucle principal ================= */
+      function loop(t) {
+        const dt = Math.min(t - game.lastTime, 100);
+        game.lastTime = t;
+
+        if (game.state === State.PLAYING) {
+          game.accumulator += dt;
+          while (game.accumulator >= game.interval && game.state === State.PLAYING) {
+            game.accumulator -= game.interval;
+            step();
+          }
+        }
+        draw(t);
+        requestAnimationFrame(loop);
+      }
+
+      /* ================= Dibujo ================= */
+      function draw(t) {
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+        drawGrid();
+        drawFood(t);
+        drawSnake();
+
+        if (game.state === State.START) drawStart(t);
+        else if (game.state === State.PAUSED) drawPause();
+        else if (game.state === State.OVER) drawOver(t);
+      }
+
+      function drawGrid() {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 1; i < COLS; i++) { ctx.moveTo(i * CELL + 0.5, 0); ctx.lineTo(i * CELL + 0.5, H); }
+        for (let j = 1; j < ROWS; j++) { ctx.moveTo(0, j * CELL + 0.5); ctx.lineTo(W, j * CELL + 0.5); }
+        ctx.stroke();
+      }
+
+      function drawFood(t) {
+        if (!game.food) return;
+        const px = game.food.x * CELL, py = game.food.y * CELL;
+        const pulse = 0.7 + 0.3 * Math.sin(t / 180);
+        ctx.save();
+        ctx.shadowColor = '#ff2a6d';
+        ctx.shadowBlur = 14 * pulse;
+        ctx.fillStyle = '#ff2a6d';
+        ctx.fillRect(px + 5, py + 5, CELL - 10, CELL - 10);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillRect(px + 8, py + 8, 4, 4);
+        ctx.restore();
+      }
+
+      function drawSnake() {
+        // Cuerpo con brillo neón
+        ctx.save();
+        ctx.shadowColor = '#39ff14';
+        ctx.shadowBlur = 10;
+        game.snake.forEach((seg, i) => {
+          ctx.fillStyle = i === 0 ? '#b6ff00' : (i % 2 ? '#2fbf0f' : '#39ff14');
+          ctx.fillRect(seg.x * CELL + 2, seg.y * CELL + 2, CELL - 4, CELL - 4);
+        });
+        ctx.restore();
+
+        // Ojos de la cabeza
+        const head = game.snake[0];
+        if (!head) return;
+        const hx = head.x * CELL, hy = head.y * CELL;
+        ctx.fillStyle = '#0d0221';
+        if (game.dir.x !== 0) {
+          const ox = game.dir.x > 0 ? CELL - 9 : 5;
+          ctx.fillRect(hx + ox, hy + 6, 4, 4);
+          ctx.fillRect(hx + ox, hy + CELL - 10, 4, 4);
+        } else {
+          const oy = game.dir.y > 0 ? CELL - 9 : 5;
+          ctx.fillRect(hx + 6, hy + oy, 4, 4);
+          ctx.fillRect(hx + CELL - 10, hy + oy, 4, 4);
+        }
+      }
+
+      function overlay(alpha) {
+        ctx.fillStyle = 'rgba(5, 2, 20, ' + alpha + ')';
+        ctx.fillRect(0, 0, W, H);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+      }
+
+      function neonText(text, x, y, size, color, glow) {
+        ctx.save();
+        ctx.font = 'bold ' + size + 'px "Courier New", monospace';
+        ctx.shadowColor = color;
+        ctx.shadowBlur = glow || 18;
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+        ctx.restore();
+      }
+
+      function whiteText(text, x, y, size, alpha) {
+        ctx.save();
+        ctx.font = size + 'px "Courier New", monospace';
+        ctx.fillStyle = 'rgba(234, 234, 234, ' + (alpha == null ? 1 : alpha) + ')';
+        ctx.fillText(text, x, y);
+        ctx.restore();
+      }
+
+      function drawStart(t) {
+        overlay(0.72);
+        neonText('SNAKE', W / 2, H / 2 - 70, 56, '#39ff14');
+        const blink = 0.45 + 0.55 * Math.abs(Math.sin(t / 350));
+        whiteText('[ JUGAR ]', W / 2, H / 2 + 4, 24, blink);
+        whiteText('Presiona Enter o toca la pantalla', W / 2, H / 2 + 46, 14);
+        whiteText('Flechas / WASD para moverte', W / 2, H / 2 + 72, 13, 0.7);
+      }
+
+      function drawPause() {
+        overlay(0.6);
+        neonText('PAUSA', W / 2, H / 2 - 16, 40, '#ffd60a');
+        whiteText('Espacio o toca la pantalla para reanudar', W / 2, H / 2 + 28, 14);
+      }
+
+      function drawOver(t) {
+        overlay(0.75);
+        if (game.won) {
+          neonText('¡VICTORIA!', W / 2, H / 2 - 80, 40, '#ffd60a');
+        } else {
+          neonText('GAME OVER', W / 2, H / 2 - 80, 40, '#ff2a6d');
+        }
+        whiteText('Puntuación: ' + game.score, W / 2, H / 2 - 26, 18);
+        whiteText('Récord: ' + game.best, W / 2, H / 2 + 4, 18);
+        if (game.newRecord) neonText('¡Nuevo récord!', W / 2, H / 2 + 34, 16, '#ffd60a', 10);
+        const blink = 0.45 + 0.55 * Math.abs(Math.sin(t / 350));
+        whiteText('[ Jugar nuevamente ]', W / 2, H / 2 + 76, 20, blink);
+        whiteText('Enter o toca la pantalla', W / 2, H / 2 + 108, 13, 0.7);
+      }
+
+      /* ================= Entradas: teclado ================= */
+      const KEY_DIRS = {
+        ArrowUp: [0, -1], KeyW: [0, -1],
+        ArrowDown: [0, 1], KeyS: [0, 1],
+        ArrowLeft: [-1, 0], KeyA: [-1, 0],
+        ArrowRight: [1, 0], KeyD: [1, 0],
+      };
+
+      document.addEventListener('keydown', (e) => {
+        // Modal abierto: solo Escape cierra
+        if (!modalBackdrop.hidden) {
+          if (e.code === 'Escape') closeModal();
+          return;
+        }
+        if (e.code === 'Escape' || e.code === 'KeyP') { togglePause(); return; }
+        if (e.code === 'Space') {
+          e.preventDefault();
+          if (game.state === State.PLAYING || game.state === State.PAUSED) togglePause();
+          else startGame();
+          return;
+        }
+        if (e.code === 'Enter') {
+          e.preventDefault();
+          if (game.state === State.START || game.state === State.OVER) startGame();
+          return;
+        }
+        const dir = KEY_DIRS[e.code];
+        if (dir) {
+          e.preventDefault();
+          if (game.state === State.START) startGame();
+          if (game.state === State.PLAYING) queueDir(dir[0], dir[1]);
+        }
+      });
+
+      /* ================= Entradas: táctiles / clic ================= */
+      canvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (game.state === State.START || game.state === State.OVER) startGame();
+        else togglePause();
+      });
+
+      const DPAD_DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+      dpad.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        const btn = e.target.closest('button[data-dir]');
+        if (!btn) return;
+        if (game.state === State.START || game.state === State.OVER) startGame();
+        const d = DPAD_DIRS[btn.dataset.dir];
+        if (game.state === State.PLAYING) queueDir(d[0], d[1]);
+      });
+      dpad.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      /* ================= Modal de opciones ================= */
+      function openModal() {
+        if (game.state === State.PLAYING) togglePause(); // abrir opciones pausa la partida
+        modalBackdrop.hidden = false;
+      }
+      function closeModal() { modalBackdrop.hidden = true; }
+
+      btnOptions.addEventListener('click', openModal);
+      btnCloseModal.addEventListener('click', closeModal);
+      modalBackdrop.addEventListener('click', (e) => {
+        if (e.target === modalBackdrop) closeModal();
+      });
+
+      // Evita que los botones retengan el foco y capturen Space/Enter
+      document.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => b.blur()));
+
+      /* ================= Inicio ================= */
+      resetGame();
+      updateHUD();
+      game.lastTime = performance.now();
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>

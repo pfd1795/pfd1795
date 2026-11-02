@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Pixel Pool 8 — Billar arcade</title>
+<style>
+  :root{
+    --bg:#0b0b14; --panel:#12122a; --line:#23234a;
+    --text:#e8e8f4; --muted:#9a9ab8;
+    --green:#39ff8b; --pink:#ff4d6d; --yellow:#ffd23f; --blue:#4dc9ff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:"Courier New",ui-monospace,monospace;touch-action:manipulation}
+
+  /* Barra superior */
+  #topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:2px solid var(--line)}
+  #topbar h1{font-size:18px;letter-spacing:3px;color:var(--green);text-shadow:0 0 8px rgba(57,255,139,.5)}
+  .top-actions{display:flex;gap:8px}
+  button{font-family:inherit;cursor:pointer;background:transparent;letter-spacing:2px;font-weight:bold}
+  #btnOptions{border:2px solid var(--yellow);color:var(--yellow);padding:6px 12px;font-size:12px}
+  #btnOptions:hover{background:rgba(255,210,63,.12)}
+  #btnPause{display:none;border:2px solid var(--pink);color:var(--pink);padding:6px 12px;font-size:12px}
+  body[data-state="playing"] #btnPause,body[data-state="paused"] #btnPause{display:inline-block}
+
+  /* Barra secundaria informativa */
+  #infobar{display:flex;flex-wrap:wrap;gap:6px 18px;padding:8px 14px;font-size:12px;letter-spacing:1px;color:var(--muted);background:#0e0e1e;border-bottom:2px solid var(--line)}
+  #infobar b{color:var(--text);font-size:14px;margin-left:4px}
+
+  /* Escenario */
+  #stage{position:relative;width:min(100vw,460px);margin:0 auto}
+  #game{display:block;width:100%;height:auto;background:var(--bg);touch-action:none}
+  #scanlines{position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 4px)}
+
+  /* Modal de opciones */
+  #modal{position:fixed;inset:0;background:rgba(4,4,12,.82);display:flex;align-items:center;justify-content:center;z-index:10}
+  #modal.hidden{display:none}
+  .modal-box{background:var(--panel);border:2px solid var(--green);max-width:430px;width:92%;max-height:86vh;overflow:auto;padding:18px 20px}
+  .modal-box h2{color:var(--green);letter-spacing:3px;font-size:18px;margin-bottom:10px}
+  .modal-box h3{color:var(--yellow);letter-spacing:2px;font-size:14px;margin:14px 0 6px}
+  .modal-box h4{font-size:12px;color:var(--text);margin-bottom:2px}
+  .opts{list-style:none}
+  .opts li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .soon{color:var(--muted);font-style:italic}
+  .rules{font-size:12px;color:var(--muted);line-height:1.5}
+  .ctrl-cols{display:flex;gap:16px;flex-wrap:wrap}
+  .ctrl-cols div{flex:1;min-width:170px}
+  .ctrl-cols p{font-size:12px;color:var(--muted);margin-bottom:4px}
+  #modalActions{display:none;margin-top:14px}
+  body[data-state="playing"] #modalActions,body[data-state="paused"] #modalActions{display:block}
+  #modalActions button,#mClose{display:block;width:100%;padding:9px;margin-top:8px;font-size:12px;border:2px solid}
+  #mResume{border-color:var(--green);color:var(--green)}
+  #mRestart{border-color:var(--yellow);color:var(--yellow)}
+  #mExit{border-color:var(--pink);color:var(--pink)}
+  #mClose{border-color:var(--muted);color:var(--muted)}
+</style>
+</head>
+<body data-state="title">
+
+<header id="topbar">
+  <h1>PIXEL POOL</h1>
+  <div class="top-actions">
+    <button id="btnPause" type="button">⏸ PAUSA</button>
+    <button id="btnOptions" type="button">OPCIONES</button>
+  </div>
+</header>
+
+<div id="infobar">
+  <span>PUNTOS<b id="hudScore">0</b></span>
+  <span>RÉCORD<b id="hudBest">0</b></span>
+  <span>BOLAS<b id="hudBalls">15</b></span>
+  <span>TIROS<b id="hudShots">25</b></span>
+</div>
+
+<main id="stage">
+  <canvas id="game" width="480" height="720"></canvas>
+  <div id="scanlines"></div>
+</main>
+
+<div id="modal" class="hidden" role="dialog" aria-modal="true" aria-label="Opciones">
+  <div class="modal-box">
+    <h2>OPCIONES</h2>
+    <ul class="opts">
+      <li><span>Música</span><span class="soon">Próximamente</span></li>
+      <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
+      <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+      <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
+    </ul>
+    <h3>REGLAS</h3>
+    <p class="rules">
+      Hundir las 15 bolas con un número limitado de tiros.
+      La bola 8 debe ser la última: si cae antes, se acaba la partida.
+      Embocar la blanca es falta (-100 puntos). Cada bola da +1 tiro extra.
+    </p>
+    <h3>CONTROLES</h3>
+    <div class="ctrl-cols">
+      <div>
+        <h4>Escritorio</h4>
+        <p>Ratón: arrastra desde cualquier punto</p>
+        <p>(estilo tirachinas) y suelta para golpear</p>
+        <p>ESC / P: pausa · ENTER: confirmar</p>
+      </div>
+      <div>
+        <h4>Móvil</h4>
+        <p>Arrastra con el dedo y suelta</p>
+        <p>Toca la pantalla para continuar en pausa</p>
+        <p>⏸ PAUSA (barra superior)</p>
+      </div>
+    </div>
+    <div id="modalActions">
+      <button id="mResume" type="button">REANUDAR</button>
+      <button id="mRestart" type="button">REINICIAR PARTIDA</button>
+      <button id="mExit" type="button">SALIR AL MENÚ</button>
+    </div>
+    <button id="mClose" type="button">CERRAR</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ===================== 1. CONSTANTES Y UTILIDADES ===================== */
+const $=s=>document.querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dist=(x1,y1,x2,y2)=>Math.hypot(x2-x1,y2-y1);
+const TAU=Math.PI*2;
+const W=480,H=720,R=11,DIAM=R*2;
+const TABLE={x:24,y:24,w:432,h:672};            // marco exterior de la mesa
+const PLAY={x:38,y:38,w:404,h:644};             // zona de juego (dentro de las bandas)
+const POCKET_R=23,CAPTURE_R=POCKET_R-1;
+const POCKETS=[
+  {x:PLAY.x,y:PLAY.y},{x:PLAY.x+PLAY.w,y:PLAY.y},
+  {x:PLAY.x,y:PLAY.y+PLAY.h},{x:PLAY.x+PLAY.w,y:PLAY.y+PLAY.h},
+  {x:PLAY.x-8,y:PLAY.y+PLAY.h/2},{x:PLAY.x+PLAY.w+8,y:PLAY.y+PLAY.h/2}
+];
+const COL={bg:'#0b0b14',felt:'#0d3024',rail:'#1d2a52',railEdge:'#4dc9ff',
+  pocket:'#04040a',white:'#f4f4f8',eight:'#34344a'};
+const BALL_COLORS={1:'#ffd23f',2:'#4dc9ff',3:'#ff4d6d',4:'#b06bff',
+  5:'#ff9f1c',6:'#39ff8b',7:'#d97742'};
+const ballColor=num=>num===0?COL.white:num===8?COL.eight:BALL_COLORS[num>8?num-8:num];
+const isStripe=num=>num>8;
+/* Física */
+const REST_BALL=0.96,REST_WALL=0.82,EXP_FRIC=1.6,LIN_FRIC=30,STOP_V=6;
+/* Reglas */
+const MAX_POWER=180,MIN_SHOT=0.05,SHOT_MIN_SPEED=340,SHOT_MAX_SPEED=1500;
+const START_SHOTS=25,MAX_SHOTS=35,SCRATCH_PENALTY=100,SHOT_BONUS=50;
+
+/* ===================== 2. ESTADO DEL JUEGO ===================== */
+const game={
+  state:'title', score:0, best:0, shots:START_SHOTS, bonus:0, newBest:false,
+  moving:false, shotSunk:0, eightDown:false, scratch:false,
+  overReason:'', floats:[]
+};
+function syncBody(){document.body.dataset.state=game.state;}
+function goTitle(){game.state='title';syncBody();updateHUD();}
+
+/* ===================== 3. PERSISTENCIA (localStorage) ===================== */
+const store={
+  KEY:'pixelpool_records_v1',
+  load(){try{const d=JSON.parse(localStorage.getItem(store.KEY));
+    return d&&d.best||0}catch(e){return 0}},
+  save(v){try{localStorage.setItem(store.KEY,JSON.stringify({best:v}))}catch(e){}}
+};
+
+/* ===================== 4. MOTOR DE AUDIO (Web Audio API) ===================== */
+class AudioEngine{
+  constructor(){this.ctx=null;}
+  init(){
+    if(this.ctx)return;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return;
+    this.ctx=new AC();
+    this.master=this.ctx.createGain();
+    this.master.gain.value=0.5;
+    this.master.connect(this.ctx.destination);
+    const len=Math.floor(this.ctx.sampleRate*0.3);
+    this.noise=this.ctx.createBuffer(1,len,this.ctx.sampleRate);
+    const d=this.noise.getChannelData(0);
+    for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+  }
+  resume(){if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume();}
+  tone(type,f0,f1,dur,vol){
+    const c=this.ctx;if(!c)return;
+    const t=c.currentTime,o=c.createOscillator(),gn=c.createGain();
+    o.type=type;o.frequency.setValueAtTime(f0,t);
+    if(f1)o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+    gn.gain.setValueAtTime(vol,t);
+    gn.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(gn);gn.connect(this.master);o.start(t);o.stop(t+dur+0.02);
+  }
+  burst(dur,vol,freq,q){
+    const c=this.ctx;if(!c)return;
+    const t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),gn=c.createGain();
+    s.buffer=this.noise;f.type='bandpass';f.frequency.value=freq;f.Q.value=q||1;
+    gn.gain.setValueAtTime(vol,t);
+    gn.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    s.connect(f);f.connect(gn);gn.connect(this.master);
+    s.start(t);s.stop(t+dur+0.02);
+  }
+  clack(v){this.burst(0.05,clamp(v,0.05,0.5),2600,1.2);}          // bola contra bola
+  cushion(v){this.tone('sine',110,55,0.07,clamp(v,0.03,0.18));}   // banda
+  pocketSnd(){this.tone('square',480,140,0.16,0.18);this.burst(0.1,0.1,900,1);} // tronera
+  strike(v){this.burst(0.04,clamp(v,0.05,0.3),1400,1);}           // golpe del taco
+  tick(){this.tone('square',880,0,0.05,0.07);}                    // menú
+}
+const audio=new AudioEngine();
+function ensureAudio(){audio.init();audio.resume();}
+
+/* ===================== 5. BOLAS Y RAQUETA ===================== */
+let balls=[];
+function makeBall(num,x,y){return{num,x,y,vx:0,vy:0,active:true,sink:null};}
+function rack(){
+  balls=[makeBall(0,240,620)]; // bola blanca abajo
+  const others=[1,2,3,4,5,6,7,9,10,11,12,13,14,15];
+  for(let i=others.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [others[i],others[j]]=[others[j],others[i]];
+  }
+  const nums=[];let oi=0;
+  for(let i=0;i<15;i++)nums.push(i===4?8:others[oi++]); // la 8, centro de la 3ª fila
+  const apexX=240,apexY=268,gx=R*2.04,gy=R*1.8;let k=0;
+  for(let row=0;row<5;row++)for(let c=0;c<=row;c++){
+    balls.push(makeBall(nums[k++],apexX+(c-row/2)*gx,apexY-row*gy));
+  }
+}
+const allStopped=()=>balls.every(b=>!b.active||(!b.sink&&b.vx===0&&b.vy===0));
+function anyMoving(){return balls.some(b=>b.active&&!b.sink&&(b.vx!==0||b.vy!==0));}
+function nearestPocket(b){
+  let best=POCKETS[0],bd=Infinity;
+  for(const p of POCKETS){const d=dist(b.x,b.y,p.x,p.y);if(d<bd){bd=d;best=p;}}
+  return best;
+}
+
+/* ===================== 6. FÍSICA ===================== */
+function nearPocketMouth(b){return POCKETS.some(p=>dist(b.x,b.y,p.x,p.y)<POCKET_R+9);}
+function physicsSteps(dt){
+  let m=0;
+  for(const b of balls)if(b.active&&!b.sink)m=Math.max(m,Math.abs(b.vx),Math.abs(b.vy));
+  return clamp(Math.ceil(m*dt/(R*0.55)),1,12);
+}
+function sinkBall(b,p){
+  b.sink={t:0,px:p.x,py:p.y};b.vx=0;b.vy=0;
+  if(b.num===0){game.scratch=true;audio.pocketSnd();return;}
+  if(b.num===8){game.eightDown=true;audio.pocketSnd();addFloat('¡BOLA 8!',p.x,p.y-24,'#ff4d6d');return;}
+  game.shotSunk++;
+  const pts=100*game.shotSunk;
+  game.score+=pts;
+  game.shots=Math.min(MAX_SHOTS,game.shots+1);
+  addFloat('+'+pts,p.x,p.y-24,'#ffd23f');
+  if(game.shotSunk>1)addFloat('¡COMBO x'+game.shotSunk+'!',p.x,p.y-46,'#39ff8b');
+  addFloat('+1 TIRO',p.x,p.y-4,'#4dc9ff');
+  audio.pocketSnd();
+}
+function physicsStep(dt){
+  for(const b of balls){
+    if(!b.active||b.sink)continue;
+    b.x+=b.vx*dt;b.y+=b.vy*dt;
+    /* fricción del tapete */
+    const sp=Math.hypot(b.vx,b.vy);
+    if(sp>0){
+      const ns=Math.max(0,sp-LIN_FRIC*dt)*Math.exp(-EXP_FRIC*dt);
+      if(ns<STOP_V){b.vx=0;b.vy=0;}
+      else{b.vx*=ns/sp;b.vy*=ns/sp;}
+    }
+    /* troneras */
+    let sunk=false;
+    for(const p of POCKETS){
+      if(dist(b.x,b.y,p.x,p.y)<CAPTURE_R){sinkBall(b,p);sunk=true;break;}
+    }
+    if(sunk)continue;
+    /* seguridad: bolas que escapan del tapete caen en la tronera más cercana */
+    if(b.x<PLAY.x-26||b.x>PLAY.x+PLAY.w+26||b.y<PLAY.y-26||b.y>PLAY.y+PLAY.h+26){
+      sinkBall(b,nearestPocket(b));continue;
+    }
+    /* bandas (desactivadas junto a las troneras para poder entrar) */
+    if(!nearPocketMouth(b)){
+      let hit=0;
+      if(b.x<PLAY.x+R&&b.vx<0){b.x=PLAY.x+R;b.vx*=-REST_WALL;hit=1;}
+      else if(b.x>PLAY.x+PLAY.w-R&&b.vx>0){b.x=PLAY.x+PLAY.w-R;b.vx*=-REST_WALL;hit=1;}
+      if(b.y<PLAY.y+R&&b.vy<0){b.y=PLAY.y+R;b.vy*=-REST_WALL;hit=1;}
+      else if(b.y>PLAY.y+PLAY.h-R&&b.vy>0){b.y=PLAY.y+PLAY.h-R;b.vy*=-REST_WALL;hit=1;}
+      if(hit)audio.cushion((Math.abs(b.vx)+Math.abs(b.vy))/1500);
+    }
+  }
+  /* colisiones bola-bola (masas iguales, choque elástico) */
+  for(let i=0;i<balls.length;i++){
+    const a=balls[i];if(!a.active||a.sink)continue;
+    for(let j=i+1;j<balls.length;j++){
+      const b=balls[j];if(!b.active||b.sink)continue;
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);
+      if(d>0&&d<DIAM){
+        const nx=dx/d,ny=dy/d,overlap=DIAM-d;
+        a.x-=nx*overlap/2;a.y-=ny*overlap/2;
+        b.x+=nx*overlap/2;b.y+=ny*overlap/2;
+        const vn1=a.vx*nx+a.vy*ny,vn2=b.vx*nx+b.vy*ny;
+        if(vn2-vn1<0){
+          const k=(1+REST_BALL)/2*(vn2-vn1);
+          a.vx+=k*nx;a.vy+=k*ny;b.vx-=k*nx;b.vy-=k*ny;
+          const imp=Math.abs(vn2-vn1);
+          if(imp>40)audio.clack(imp/1400);
+        }
+      }
+    }
+  }
+}
+
+/* ===================== 7. LÓGICA DE TIRO Y REGLAS ===================== */
+function addFloat(text,x,y,color){game.floats.push({text,x,y,color,life:0.9});}
+function respotCue(){
+  const cue=balls[0];
+  cue.active=true;cue.sink=null;cue.vx=0;cue.vy=0;
+  const spots=[[240,620],[240,590],[210,620],[270,620],[240,560],[180,620],[300,620],[240,530]];
+  for(const[x,y]of spots){
+    if(balls.every(b=>b===cue||!b.active||dist(x,y,b.x,b.y)>DIAM+2)){cue.x=x;cue.y=y;return;}
+  }
+  cue.x=240;cue.y=620;
+}
+function resolveShot(){
+  if(game.scratch){
+    game.score=Math.max(0,game.score-SCRATCH_PENALTY);
+    addFloat('¡FALTA! -'+SCRATCH_PENALTY,240,560,'#ff4d6d');
+    respotCue();game.scratch=false;
+  }
+  const objsLeft=balls.filter(b=>b.active&&b.num>0).length;
+  if(game.eightDown){
+    if(objsLeft===0){finish(true);return;}
+    finish(false,'la bola 8 cayó antes de tiempo');return;
+  }
+  if(game.shots<=0){finish(false,'te quedaste sin tiros');return;}
+  updateHUD();
+}
+function finish(won,reason){
+  if(won){game.bonus=game.shots*SHOT_BONUS;game.score+=game.bonus;}
+  game.overReason=reason||'';
+  if(game.score>game.best){game.best=game.score;game.newBest=true;store.save(game.best);}
+  game.state=won?'victory':'gameover';syncBody();updateHUD();
+}
+function startGame(){
+  ensureAudio();rack();
+  game.score=0;game.shots=START_SHOTS;game.bonus=0;game.newBest=false;
+  game.moving=false;game.shotSunk=0;game.eightDown=false;game.scratch=false;
+  game.overReason='';game.floats=[];aim.active=false;aim.power=0;
+  closeModal();game.state='playing';syncBody();updateHUD();
+}
+function pauseGame(){
+  if(game.state!=='playing')return;
+  aim.active=false;aim.power=0;
+  game.state='paused';syncBody();
+}
+function resumeGame(){
+  if(game.state!=='paused')return;
+  audio.resume();game.state='playing';syncBody();
+}
+
+/* ===================== 8. APUNTADO (tirachinas) ===================== */
+const aim={active:false,id:null,sx:0,sy:0,x:0,y:0,power:0,dirx:0,diry:0};
+function updateAim(){
+  const dx=aim.sx-aim.x,dy=aim.sy-aim.y,d=Math.hypot(dx,dy);
+  if(d>6){aim.dirx=dx/d;aim.diry=dy/d;aim.power=clamp(d/MAX_POWER,0,1);}
+  else{aim.power=0;}
+}
+function shoot(){
+  const cue=balls[0];
+  const sp=SHOT_MIN_SPEED+(SHOT_MAX_SPEED-SHOT_MIN_SPEED)*aim.power;
+  cue.vx=aim.dirx*sp;cue.vy=aim.diry*sp;
+  game.shots--;game.moving=true;game.shotSunk=0;
+  audio.strike(0.1+aim.power*0.25);
+  aim.power=0;updateHUD();
+}
+/* Lanza un rayo desde la blanca: primera bola o banda en la trayectoria */
+function castRay(ox,oy,dx,dy){
+  let bestT=Infinity,ball=null;
+  for(const b of balls){
+    if(!b.active||b.sink||b.num===0)continue;
+    const fx=ox-b.x,fy=oy-b.y;
+    const bq=fx*dx+fy*dy,cq=fx*fx+fy*fy-DIAM*DIAM;
+    const disc=bq*bq-cq;
+    if(disc>0){
+      const t=-bq-Math.sqrt(disc);
+      if(t>0.01&&t<bestT){bestT=t;ball=b;}
+    }
+  }
+  const cand=[];
+  if(dx<0)cand.push((PLAY.x+R-ox)/dx);
+  if(dx>0)cand.push((PLAY.x+PLAY.w-R-ox)/dx);
+  if(dy<0)cand.push((PLAY.y+R-oy)/dy);
+  if(dy>0)cand.push((PLAY.y+PLAY.h-R-oy)/dy);
+  for(const t of cand)if(t>0.01&&t<bestT){bestT=t;ball=null;}
+  return{t:bestT===Infinity?0:bestT,ball};
+}
+
+/* ===================== 9. LIENZO ===================== */
+const canvas=$('#game'),g=canvas.getContext('2d');
+function setupCanvas(){
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  g.setTransform(dpr,0,0,dpr,0,0);
+}
+setupCanvas();
+window.addEventListener('resize',setupCanvas);
+function txt(s,x,y,size,color,align='center'){
+  g.fillStyle=color;g.textAlign=align;g.textBaseline='middle';
+  g.font='bold '+size+'px "Courier New",monospace';
+  g.fillText(s,x,y);
+}
+function circle(x,y,r,fill){g.fillStyle=fill;g.beginPath();g.arc(x,y,r,0,TAU);g.fill();}
+
+/* ===================== 10. RENDERIZADO ===================== */
+function drawTable(){
+  g.fillStyle=COL.rail;g.fillRect(TABLE.x,TABLE.y,TABLE.w,TABLE.h);
+  g.strokeStyle=COL.railEdge;g.lineWidth=2;
+  g.strokeRect(TABLE.x+1,TABLE.y+1,TABLE.w-2,TABLE.h-2);
+  g.fillStyle=COL.felt;g.fillRect(TABLE.x+6,TABLE.y+6,TABLE.w-12,TABLE.h-12);
+  /* marcas de salida */
+  g.fillStyle='rgba(255,255,255,0.14)';
+  for(const[sx,sy]of[[240,620],[240,268]]){g.beginPath();g.arc(sx,sy,3,0,TAU);g.fill();}
+  /* troneras */
+  for(const p of POCKETS){
+    circle(p.x,p.y,POCKET_R,COL.pocket);
+    g.strokeStyle='rgba(255,255,255,0.15)';g.lineWidth=2;
+    g.beginPath();g.arc(p.x,p.y,POCKET_R,0,TAU);g.stroke();
+  }
+}
+function drawBall(b){
+  let x=b.x,y=b.y,scale=1;
+  if(b.sink){
+    const t=Math.min(1,b.sink.t/0.22);
+    scale=1-t*0.85;x=b.x+(b.sink.px-b.x)*t;y=b.y+(b.sink.py-b.y)*t;
+  }
+  const r=Math.max(1,R*scale),col=ballColor(b.num);
+  g.fillStyle='rgba(0,0,0,0.35)';
+  g.beginPath();g.ellipse(x+2,y+3,r*1.05,r*0.9,0,0,TAU);g.fill();
+  if(isStripe(b.num)){
+    circle(x,y,r,COL.white);
+    g.save();g.beginPath();g.arc(x,y,r,0,TAU);g.clip();
+    g.fillStyle=col;g.fillRect(x-r,y-r*0.45,r*2,r*0.9);g.restore();
+  }else circle(x,y,r,col);
+  circle(x-r*0.32,y-r*0.35,r*0.24,'rgba(255,255,255,0.45)');
+  if(b.num>0){
+    circle(x,y+1,r*0.48,'#ffffff');
+    g.fillStyle='#111120';
+    g.font='bold '+Math.max(7,Math.round(r*0.62))+'px "Courier New",monospace';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(String(b.num),x,y+1.5);
+  }
+}
+function drawAim(){
+  if(!aim.active||aim.power<=0)return;
+  const cue=balls[0];if(!cue.active)return;
+  const dx=aim.dirx,dy=aim.diry;
+  const hit=castRay(cue.x,cue.y,dx,dy);
+  const gx=cue.x+dx*hit.t,gy=cue.y+dy*hit.t;
+  g.setLineDash([6,6]);g.strokeStyle='rgba(255,255,255,0.75)';g.lineWidth=2;
+  g.beginPath();g.moveTo(cue.x,cue.y);g.lineTo(gx,gy);g.stroke();g.setLineDash([]);
+  g.beginPath();g.arc(gx,gy,R,0,TAU);g.stroke();
+  if(hit.ball){
+    const n=Math.hypot(hit.ball.x-gx,hit.ball.y-gy)||1;
+    const nx=(hit.ball.x-gx)/n,ny=(hit.ball.y-gy)/n;
+    g.strokeStyle=ballColor(hit.ball.num);
+    g.beginPath();g.moveTo(hit.ball.x,hit.ball.y);
+    g.lineTo(hit.ball.x+nx*52,hit.ball.y+ny*52);g.stroke();
+  }
+  /* taco */
+  g.strokeStyle='#c9a15a';g.lineWidth=5;g.lineCap='round';
+  g.beginPath();
+  g.moveTo(cue.x-dx*(R+4),cue.y-dy*(R+4));
+  g.lineTo(cue.x-dx*(22+aim.power*90+110),cue.y-dy*(22+aim.power*90+110));
+  g.stroke();g.lineCap='butt';
+  /* medidor de potencia */
+  g.strokeStyle='rgba(255,255,255,0.4)';g.lineWidth=2;g.strokeRect(140,686,200,14);
+  g.fillStyle=aim.power>0.8?'#ff4d6d':aim.power>0.5?'#ffd23f':'#39ff8b';
+  g.fillRect(142,688,196*aim.power,10);
+}
+function renderPlaying(){
+  g.fillStyle=COL.bg;g.fillRect(0,0,W,H);
+  drawTable();
+  for(const b of balls)if(b.active)drawBall(b);
+  drawAim();
+  for(const f of game.floats){
+    g.globalAlpha=clamp(f.life/0.9,0,1);
+    txt(f.text,f.x,f.y,17,f.color);
+  }
+  g.globalAlpha=1;
+  if(!game.moving&&!aim.active)
+    txt('ARRASTRA Y SUELTA PARA GOLPEAR',240,14,12,'rgba(255,255,255,0.45)');
+  if(game.shots<=5&&game.shots>0){
+    const pulse=Math.sin(performance.now()/180)>0;
+    txt('¡ÚLTIMOS '+game.shots+' TIROS!',468,14,12,pulse?'#ff4d6d':'rgba(255,77,109,0.5)','right');
+  }
+}
+function renderPauseOverlay(){
+  g.fillStyle='rgba(5,5,15,0.75)';g.fillRect(0,0,W,H);
+  txt('PAUSA',240,320,44,'#4dc9ff');
+  txt('ESC / P O TOCA PARA CONTINUAR',240,380,14,'rgba(255,255,255,0.6)');
+}
+function drawMiniRack(){
+  let k=0;
+  for(let row=0;row<5;row++)for(let c=0;c<=row;c++){
+    const x=240+(c-row/2)*18,y=436-row*15.5,n=[1,2,3,4,5,6,7,9,10,11,12,13,14,15][k];k++;
+    const col=k===5?'#34344a':BALL_COLORS[n>8?n-8:n];
+    circle(x,y,8,isStripe(n)&&k!==5?'#ffffff':col);
+    if(isStripe(n)&&k!==5){g.save();g.beginPath();g.arc(x,y,8,0,TAU);g.clip();
+      g.fillStyle=col;g.fillRect(x-8,y-3.6,16,7.2);g.restore();}
+  }
+  circle(240,505,9,COL.white);
+}
+function renderTitle(ts){
+  g.fillStyle=COL.bg;g.fillRect(0,0,W,H);
+  txt('PIXEL',240,175,72,'#39ff8b');
+  txt('POOL',240,248,72,'#ff4d6d');
+  txt('BILLAR ARCADE · 8-BALL',240,300,15,'rgba(255,255,255,0.55)');
+  drawMiniRack();
+  g.globalAlpha=0.75+0.25*Math.sin(ts/300);
+  g.strokeStyle='#ffd23f';g.lineWidth=3;g.strokeRect(150,545,180,56);
+  txt('JUGAR',240,573,24,'#ffd23f');g.globalAlpha=1;
+  if(Math.sin(ts/400)>-0.2)txt('PULSA UNA TECLA O TOCA LA PANTALLA',240,630,14,'rgba(255,255,255,0.7)');
+  txt('RÉCORD: '+game.best,240,662,14,'#ffd23f');
+  txt('SIN DEPENDENCIAS · OFFLINE',240,694,12,'rgba(255,255,255,0.35)');
+}
+const RESULT_BTNS=[
+  {x:52,y:560,w:180,h:56,label:'OTRA VEZ',col:'#39ff8b',action:()=>startGame()},
+  {x:248,y:560,w:180,h:56,label:'MENÚ',col:'#ff4d6d',action:()=>goTitle()}
+];
+function renderResults(ts){
+  g.fillStyle=COL.bg;g.fillRect(0,0,W,H);
+  const won=game.state==='victory';
+  txt(won?'¡VICTORIA!':'GAME OVER',240,90,40,won?'#39ff8b':'#ff4d6d');
+  if(won)txt('BONUS DE TIROS +'+game.bonus,240,132,15,'#4dc9ff');
+  else txt('('+game.overReason+')',240,132,14,'rgba(255,255,255,0.6)');
+  txt('PUNTUACIÓN',240,205,14,'rgba(255,255,255,0.6)');
+  txt(String(game.score),240,242,36,'#ffffff');
+  if(game.newBest&&Math.sin(ts/250)>-0.3)txt('¡NUEVO RÉCORD!',240,286,17,'#ffd23f');
+  txt('RÉCORD: '+game.best,240,318,14,'rgba(255,255,255,0.55)');
+  const left=balls.filter(b=>b.active&&b.num>0).length;
+  txt('BOLAS EMBOCADAS '+(15-left)+' / 15',240,356,14,'rgba(255,255,255,0.55)');
+  txt('TIROS RESTANTES '+game.shots,240,384,14,'rgba(255,255,255,0.55)');
+  for(const b of RESULT_BTNS){
+    g.strokeStyle=b.col;g.lineWidth=3;g.strokeRect(b.x,b.y,b.w,b.h);
+    txt(b.label,b.x+b.w/2,b.y+b.h/2,18,b.col);
+  }
+  txt('ENTER: OTRA VEZ · ESC: MENÚ',240,660,13,'rgba(255,255,255,0.4)');
+}
+function render(ts){
+  switch(game.state){
+    case 'title':renderTitle(ts);break;
+    case 'playing':renderPlaying();break;
+    case 'paused':renderPlaying();renderPauseOverlay();break;
+    case 'victory':case 'gameover':renderResults(ts);break;
+  }
+}
+
+/* ===================== 11. HUD (barra secundaria) ===================== */
+const hud={score:$('#hudScore'),best:$('#hudBest'),balls:$('#hudBalls'),shots:$('#hudShots')};
+function updateHUD(){
+  hud.score.textContent=game.score;
+  hud.best.textContent=game.best;
+  hud.balls.textContent=balls.length?balls.filter(b=>b.active&&b.num>0).length:15;
+  hud.shots.textContent=game.shots;
+}
+
+/* ===================== 12. ENTRADA ===================== */
+const modal=$('#modal');
+const inside=(x,y,b)=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h;
+function openModal(){if(game.state==='playing')pauseGame();modal.classList.remove('hidden');}
+function closeModal(){modal.classList.add('hidden');}
+
+window.addEventListener('keydown',e=>{
+  if(e.repeat)return;
+  const code=e.code;
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(code))e.preventDefault();
+  ensureAudio();
+  if(!modal.classList.contains('hidden')){
+    if(code==='Escape'||code==='Enter'){closeModal();if(game.state==='paused')resumeGame();}
+    return;
+  }
+  switch(game.state){
+    case 'title':startGame();break;
+    case 'playing':
+      if(code==='Escape'||code==='KeyP')pauseGame();
+      break;
+    case 'paused':
+      if(code==='Escape'||code==='KeyP'||code==='Enter'||code==='Space')resumeGame();
+      break;
+    case 'victory':case 'gameover':
+      if(code==='Enter'||code==='Space')startGame();
+      else if(code==='Escape')goTitle();
+      break;
+  }
+});
+
+canvas.addEventListener('pointerdown',e=>{
+  e.preventDefault();ensureAudio();
+  const r=canvas.getBoundingClientRect();
+  const x=(e.clientX-r.left)*W/r.width,y=(e.clientY-r.top)*H/r.height;
+  switch(game.state){
+    case 'title':startGame();break;
+    case 'playing':
+      if(game.moving||!allStopped())break;
+      aim.active=true;aim.id=e.pointerId;
+      aim.sx=x;aim.sy=y;aim.x=x;aim.y=y;aim.power=0;aim.dirx=0;aim.diry=0;
+      try{canvas.setPointerCapture(e.pointerId);}catch(err){}
+      break;
+    case 'paused':resumeGame();break;
+    case 'victory':case 'gameover':
+      for(const b of RESULT_BTNS)if(inside(x,y,b)){audio.tick();b.action();return;}
+      break;
+  }
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!aim.active||e.pointerId!==aim.id)return;
+  const r=canvas.getBoundingClientRect();
+  aim.x=(e.clientX-r.left)*W/r.width;
+  aim.y=(e.clientY-r.top)*H/r.height;
+  updateAim();
+});
+canvas.addEventListener('pointerup',e=>{
+  if(!aim.active||e.pointerId!==aim.id)return;
+  aim.active=false;
+  if(aim.power>MIN_SHOT&&game.state==='playing'&&!game.moving&&allStopped())shoot();
+  else aim.power=0;
+});
+canvas.addEventListener('pointercancel',()=>{aim.active=false;aim.power=0;});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+
+$('#btnOptions').addEventListener('click',()=>{ensureAudio();openModal();});
+$('#btnPause').addEventListener('click',()=>{
+  if(game.state==='playing')pauseGame();
+  else if(game.state==='paused')resumeGame();
+});
+$('#mResume').addEventListener('click',()=>{closeModal();resumeGame();});
+$('#mRestart').addEventListener('click',startGame);
+$('#mExit').addEventListener('click',()=>{closeModal();goTitle();});
+$('#mClose').addEventListener('click',closeModal);
+modal.addEventListener('pointerdown',e=>{if(e.target===modal)closeModal();});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&game.state==='playing')pauseGame();
+});
+
+/* ===================== 13. BUCLE PRINCIPAL ===================== */
+function update(dt){
+  /* animaciones de caída en tronera */
+  for(const b of balls){
+    if(b.sink){b.sink.t+=dt;if(b.sink.t>=0.22){b.active=false;b.sink=null;}}
+  }
+  /* física con sub-pasos para evitar túneles a alta velocidad */
+  if(anyMoving()){
+    const steps=physicsSteps(dt),sdt=dt/steps;
+    for(let s=0;s<steps;s++)physicsStep(sdt);
+  }
+  /* fin del disparo */
+  if(game.moving&&allStopped()){game.moving=false;resolveShot();}
+  /* textos flotantes */
+  for(let i=game.floats.length-1;i>=0;i--){
+    const f=game.floats[i];f.y-=40*dt;f.life-=dt;
+    if(f.life<=0)game.floats.splice(i,1);
+  }
+  updateHUD();
+}
+let lastTs=0;
+function frame(ts){
+  const dt=Math.min(0.05,(ts-lastTs)/1000||0);
+  lastTs=ts;
+  if(game.state==='playing')update(dt);
+  render(ts);
+  requestAnimationFrame(frame);
+}
+game.best=store.load();
+syncBody();
+updateHUD();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

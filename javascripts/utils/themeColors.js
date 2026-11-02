@@ -43,10 +43,8 @@ const THEME_COLORS = [
   }
 ];
 
-const DEFAULT_THEME_COLOR = "blue";
-
 function getThemeColorDef(color) {
   return THEME_COLORS.find((item) => item.color === color) ?? THEME_COLORS[0];
 }
 
-export { THEME_COLORS, DEFAULT_THEME_COLOR, getThemeColorDef };
+export { THEME_COLORS, getThemeColorDef };

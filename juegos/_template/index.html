@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0d0221" />
+  <title>Nombre del juego</title>
+  <style>
+    /* ================= Variables y base ================= */
+    :root {
+      --bg: #0d0221;
+      --panel: #1a1033;
+      --text: #eaeaea;
+      --muted: #9b8fb8;
+      --neon-green: #39ff14;
+      --neon-pink: #ff2a6d;
+      --neon-cyan: #05d9e8;
+      --neon-yellow: #ffd60a;
+      --neon-purple: #b967ff;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", ui-monospace, Menlo, monospace;
+      overscroll-behavior: none;
+    }
+
+    /* ================= Barra superior ================= */
+    .topbar {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid var(--panel);
+    }
+    .topbar h1 { margin: 0; font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .topbar button,
+    .touch-controls button,
+    .modal-actions button {
+      background: var(--panel);
+      color: var(--text);
+      border: 2px solid var(--neon-cyan);
+      border-radius: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .topbar button:hover,
+    .touch-controls button:hover,
+    .modal-actions button:hover { background: #241747; }
+
+    /* ================= HUD ================= */
+    .hud {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hud strong { color: var(--neon-yellow); }
+
+    /* ================= Escenario ================= */
+    .stage {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      justify-content: center;
+      padding: 0 1rem;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 480px;
+      height: auto;
+      aspect-ratio: 3 / 4;
+      background: #07010f;
+      border: 2px solid var(--panel);
+      border-radius: 0.5rem;
+      touch-action: none;
+    }
+
+    /* ================= Controles táctiles ================= */
+    .touch-controls {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem 1.4rem;
+    }
+    .touch-controls button {
+      flex: 1;
+      min-height: 3.25rem;
+      font-size: 1.2rem;
+      border-color: var(--neon-purple);
+    }
+    .touch-controls button[data-action] { border-color: var(--neon-green); }
+
+    @media (hover: hover) and (pointer: fine) {
+      .touch-controls { opacity: 0.55; }
+    }
+
+    /* ================= Modal ================= */
+    dialog {
+      width: min(92vw, 26rem);
+      padding: 0;
+      color: var(--text);
+      background: var(--panel);
+      border: 2px solid var(--neon-cyan);
+      border-radius: 0.75rem;
+    }
+    dialog::backdrop { background: rgb(0 0 0 / 0.7); }
+    .modal-body { padding: 1.25rem; }
+    .modal-body h2 { margin: 0 0 1rem; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .modal-body h3 { margin: 1rem 0 0.5rem; font-size: 0.85rem; color: var(--neon-cyan); text-transform: uppercase; }
+    .modal-body ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.9rem; }
+    .modal-body li { margin: 0.25rem 0; }
+    .modal-actions { display: flex; justify-content: flex-end; margin-top: 1.25rem; }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <h1>Nombre del juego</h1>
+    <button type="button" id="btn-options">Opciones</button>
+  </header>
+
+  <section class="hud" aria-live="polite">
+    <span>Puntuación: <strong id="score">0</strong></span>
+    <span>Récord: <strong id="best">0</strong></span>
+    <span id="state-label">Inicio</span>
+  </section>
+
+  <main class="stage">
+    <canvas id="game" width="480" height="640" aria-label="Área de juego del videojuego"></canvas>
+  </main>
+
+  <div class="touch-controls" aria-label="Controles táctiles">
+    <button type="button" data-move="left" aria-label="Mover a la izquierda">◀</button>
+    <button type="button" data-action="play">Jugar</button>
+    <button type="button" data-move="right" aria-label="Mover a la derecha">▶</button>
+  </div>
+
+  <dialog id="options" aria-labelledby="options-title">
+    <div class="modal-body">
+      <h2 id="options-title">Opciones</h2>
+
+      <h3>Próximamente</h3>
+      <ul>
+        <li>Música</li>
+        <li>Efectos de sonido</li>
+        <li>Dificultad</li>
+        <li>Temas visuales</li>
+      </ul>
+
+      <h3>Controles</h3>
+      <ul>
+        <li>Escritorio: flechas o A/D para moverte, Enter para jugar o reiniciar.</li>
+        <li>Escritorio: P o Escape para pausar.</li>
+        <li>Móvil: botones ◀ ▶ y botón Jugar.</li>
+      </ul>
+
+      <div class="modal-actions">
+        <button type="button" id="btn-close-options">Cerrar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ================= Configuración ================= */
+      const BEST_KEY = 'template_best_v1';
+      const WIDTH = 480;
+      const HEIGHT = 640;
+      const PLAYER_SPEED = 320;
+      const DROP_SPEED = 170;
+      const DROP_INTERVAL = 0.85;
+
+      /* ================= DOM ================= */
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const scoreLabel = document.getElementById('score');
+      const bestLabel = document.getElementById('best');
+      const stateLabel = document.getElementById('state-label');
+      const optionsDialog = document.getElementById('options');
+
+      /* ================= Estado ================= */
+      const STATE = {
+        START: 'start',
+        PLAYING: 'playing',
+        PAUSED: 'paused',
+        OVER: 'over'
+      };
+
+      const game = {
+        state: STATE.START,
+        score: 0,
+        best: loadBest(),
+        player: { x: WIDTH / 2 - 22, y: HEIGHT - 64, w: 44, h: 44 },
+        drops: [],
+        spawnTimer: 0,
+        lastTime: 0
+      };
+
+      /* ================= Persistencia ================= */
+      function loadBest() {
+        try {
+          return Number(localStorage.getItem(BEST_KEY)) || 0;
+        } catch (error) {
+          return 0;
+        }
+      }
+
+      function saveBest(value) {
+        try {
+          localStorage.setItem(BEST_KEY, String(value));
+        } catch (error) {
+          /* Almacenamiento no disponible. */
+        }
+      }
+
+      /* ================= Utilidades ================= */
+      function updateHud() {
+        scoreLabel.textContent = String(game.score);
+        bestLabel.textContent = String(game.best);
+        stateLabel.textContent = {
+          [STATE.START]: 'Inicio',
+          [STATE.PLAYING]: 'Jugando',
+          [STATE.PAUSED]: 'Pausa',
+          [STATE.OVER]: 'Game Over'
+        }[game.state];
+      }
+
+      function resetGame() {
+        game.score = 0;
+        game.drops = [];
+        game.spawnTimer = 0;
+        game.player.x = WIDTH / 2 - game.player.w / 2;
+        updateHud();
+      }
+
+      function startGame() {
+        resetGame();
+        game.state = STATE.PLAYING;
+        updateHud();
+      }
+
+      function endGame() {
+        game.state = STATE.OVER;
+
+        if (game.score > game.best) {
+          game.best = game.score;
+          saveBest(game.best);
+        }
+
+        updateHud();
+      }
+
+      function togglePause() {
+        if (game.state === STATE.PLAYING) {
+          game.state = STATE.PAUSED;
+        } else if (game.state === STATE.PAUSED) {
+          game.state = STATE.PLAYING;
+        }
+
+        updateHud();
+      }
+
+      /* ================= Entrada ================= */
+      const keys = new Set();
+
+      document.addEventListener('keydown', (event) => {
+        if (['ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD', 'Space', 'Enter'].includes(event.code)) {
+          event.preventDefault();
+        }
+
+        if (event.code === 'ArrowLeft' || event.code === 'KeyA') keys.add('left');
+        if (event.code === 'ArrowRight' || event.code === 'KeyD') keys.add('right');
+
+        if (event.code === 'Enter' || event.code === 'Space') {
+          if (game.state === STATE.START || game.state === STATE.OVER) startGame();
+        }
+
+        if (event.code === 'KeyP' || event.code === 'Escape') togglePause();
+      });
+
+      document.addEventListener('keyup', (event) => {
+        if (event.code === 'ArrowLeft' || event.code === 'KeyA') keys.delete('left');
+        if (event.code === 'ArrowRight' || event.code === 'KeyD') keys.delete('right');
+      });
+
+      document.querySelectorAll('[data-move]').forEach((button) => {
+        const direction = button.dataset.move;
+
+        const press = (event) => {
+          event.preventDefault();
+          keys.add(direction);
+        };
+
+        const release = () => keys.delete(direction);
+
+        button.addEventListener('pointerdown', press);
+        button.addEventListener('pointerup', release);
+        button.addEventListener('pointercancel', release);
+        button.addEventListener('pointerleave', release);
+      });
+
+      document.querySelector('[data-action="play"]').addEventListener('click', () => {
+        if (game.state === STATE.START || game.state === STATE.OVER) startGame();
+        else togglePause();
+      });
+
+      /* ================= Opciones ================= */
+      document.getElementById('btn-options').addEventListener('click', () => optionsDialog.showModal());
+      document.getElementById('btn-close-options').addEventListener('click', () => optionsDialog.close());
+      optionsDialog.addEventListener('click', (event) => {
+        if (event.target === optionsDialog) optionsDialog.close();
+      });
+
+      /* ================= Actualización ================= */
+      function spawnDrop() {
+        const size = 26;
+
+        game.drops.push({
+          x: Math.random() * (WIDTH - size),
+          y: -size,
+          size
+        });
+      }
+
+      function update(dt) {
+        if (game.state !== STATE.PLAYING) return;
+
+        if (keys.has('left')) game.player.x -= PLAYER_SPEED * dt;
+        if (keys.has('right')) game.player.x += PLAYER_SPEED * dt;
+
+        game.player.x = Math.max(0, Math.min(WIDTH - game.player.w, game.player.x));
+
+        game.spawnTimer += dt;
+
+        if (game.spawnTimer >= DROP_INTERVAL) {
+          game.spawnTimer = 0;
+          spawnDrop();
+        }
+
+        for (const drop of game.drops) {
+          drop.y += DROP_SPEED * dt;
+
+          const caught =
+            drop.y + drop.size >= game.player.y &&
+            drop.x + drop.size >= game.player.x &&
+            drop.x <= game.player.x + game.player.w;
+
+          if (caught) {
+            drop.caught = true;
+            game.score += 10;
+
+            if (game.score > game.best) {
+              game.best = game.score;
+            }
+
+            updateHud();
+          }
+
+          if (!drop.caught && drop.y > HEIGHT) {
+            endGame();
+          }
+        }
+
+        game.drops = game.drops.filter((drop) => !drop.caught && drop.y <= HEIGHT);
+      }
+
+      /* ================= Dibujo ================= */
+      function draw() {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+        ctx.strokeStyle = 'rgba(185, 103, 255, 0.15)';
+        ctx.lineWidth = 1;
+
+        for (let y = 0; y < HEIGHT; y += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(WIDTH, y);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = '#05d9e8';
+        ctx.fillRect(game.player.x, game.player.y, game.player.w, game.player.h);
+
+        ctx.fillStyle = '#39ff14';
+
+        for (const drop of game.drops) {
+          ctx.fillRect(drop.x, drop.y, drop.size, drop.size);
+        }
+
+        if (game.state !== STATE.PLAYING) {
+          ctx.fillStyle = 'rgba(7, 1, 15, 0.72)';
+          ctx.fillRect(0, 0, WIDTH, HEIGHT);
+          ctx.textAlign = 'center';
+
+          if (game.state === STATE.START) {
+            ctx.fillStyle = '#ffd60a';
+            ctx.font = 'bold 34px "Courier New", monospace';
+            ctx.fillText('NOMBRE DEL JUEGO', WIDTH / 2, HEIGHT / 2 - 30);
+            ctx.fillStyle = '#eaeaea';
+            ctx.font = '18px "Courier New", monospace';
+            ctx.fillText('Pulsa Enter o Jugar', WIDTH / 2, HEIGHT / 2 + 20);
+          }
+
+          if (game.state === STATE.PAUSED) {
+            ctx.fillStyle = '#05d9e8';
+            ctx.font = 'bold 34px "Courier New", monospace';
+            ctx.fillText('PAUSA', WIDTH / 2, HEIGHT / 2);
+          }
+
+          if (game.state === STATE.OVER) {
+            ctx.fillStyle = '#ff2a6d';
+            ctx.font = 'bold 34px "Courier New", monospace';
+            ctx.fillText('GAME OVER', WIDTH / 2, HEIGHT / 2 - 40);
+            ctx.fillStyle = '#eaeaea';
+            ctx.font = '18px "Courier New", monospace';
+            ctx.fillText(`Puntuación: ${game.score}`, WIDTH / 2, HEIGHT / 2 + 5);
+            ctx.fillText(`Récord: ${game.best}`, WIDTH / 2, HEIGHT / 2 + 35);
+            ctx.fillText('Pulsa Enter o Jugar', WIDTH / 2, HEIGHT / 2 + 75);
+          }
+        }
+      }
+
+      /* ================= Bucle ================= */
+      function loop(timestamp) {
+        const dt = Math.min(0.05, (timestamp - game.lastTime) / 1000 || 0);
+        game.lastTime = timestamp;
+
+        update(dt);
+        draw();
+
+        requestAnimationFrame(loop);
+      }
+
+      updateHud();
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+
+</html>

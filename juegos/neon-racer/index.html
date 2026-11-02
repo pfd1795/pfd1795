@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0d0221" />
+  <title>Neon Racer</title>
+  <style>
+    /* ================= Variables y base ================= */
+    :root {
+      --bg: #0d0221;
+      --panel: #1a1033;
+      --text: #eaeaea;
+      --muted: #9b8fb8;
+      --neon-green: #39ff14;
+      --neon-pink: #ff2a6d;
+      --neon-cyan: #05d9e8;
+      --neon-yellow: #ffd60a;
+      --neon-purple: #b967ff;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", ui-monospace, Menlo, monospace;
+      overscroll-behavior: none;
+    }
+
+    .app { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; }
+
+    /* ================= Barra superior ================= */
+    .topbar {
+      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid rgba(185, 103, 255, 0.4);
+    }
+    .topbar h1 {
+      margin: 0; font-size: 1rem; letter-spacing: 2px;
+      color: var(--neon-green);
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.8);
+    }
+    .btn {
+      font: inherit; font-size: 0.9rem; cursor: pointer;
+      background: transparent; color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan); border-radius: 6px;
+      padding: 7px 14px; transition: box-shadow 0.15s, background 0.15s;
+    }
+    .btn:hover, .btn:active { background: rgba(5, 217, 232, 0.12); box-shadow: 0 0 10px rgba(5, 217, 232, 0.5); }
+
+    /* ================= Barra secundaria (HUD) ================= */
+    .subbar {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px;
+      padding: 8px 12px; font-size: 0.88rem; letter-spacing: 1px;
+    }
+    .subbar .label { color: var(--muted); }
+    .subbar .val { font-weight: bold; }
+    .val.playing { color: var(--neon-green); }
+    .val.paused  { color: var(--neon-yellow); }
+    .val.over    { color: var(--neon-pink); }
+    .val.start   { color: var(--neon-cyan); }
+    #score { color: var(--neon-cyan); }
+    #best  { color: var(--neon-yellow); }
+    #speed { color: var(--neon-purple); }
+
+    /* ================= Canvas ================= */
+    canvas {
+      display: block;
+      width: min(92vw, 430px, 64vh);
+      aspect-ratio: 3 / 4;
+      margin: 4px 0;
+      border: 2px solid var(--neon-purple);
+      border-radius: 8px;
+      box-shadow: 0 0 18px rgba(185, 103, 255, 0.45);
+      touch-action: none;
+      background: var(--bg);
+    }
+
+    /* ================= Botones táctiles ================= */
+    .touchpad {
+      display: none;
+      align-items: center; justify-content: center; gap: 40px;
+      width: min(92vw, 430px);
+      margin: 12px 0 24px;
+    }
+    .tbtn {
+      font: inherit; font-size: 1.8rem; cursor: pointer;
+      width: 110px; height: 60px;
+      color: var(--neon-cyan);
+      background: rgba(5, 217, 232, 0.08);
+      border: 1px solid rgba(5, 217, 232, 0.6);
+      border-radius: 10px;
+      user-select: none; -webkit-user-select: none;
+      touch-action: none;
+    }
+    .tbtn:active { background: rgba(5, 217, 232, 0.3); }
+    @media (hover: none) and (pointer: coarse), (max-width: 600px) {
+      .touchpad { display: flex; }
+    }
+
+    /* ================= Modal de opciones ================= */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 10;
+      background: rgba(0, 0, 0, 0.72);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal {
+      width: 100%; max-width: 440px;
+      background: var(--panel);
+      border: 1px solid var(--neon-purple); border-radius: 10px;
+      box-shadow: 0 0 30px rgba(185, 103, 255, 0.4);
+      padding-bottom: 18px;
+    }
+    .modal > header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(185, 103, 255, 0.3);
+    }
+    .modal h2 {
+      margin: 0; font-size: 1.05rem; letter-spacing: 2px;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px rgba(5, 217, 232, 0.7);
+    }
+    #btnCloseModal { background: none; border: none; color: var(--text); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+    .options-list { list-style: none; margin: 0; padding: 8px 16px; }
+    .options-list li {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+      font-size: 0.95rem;
+    }
+    .soon { color: var(--muted); font-style: italic; font-size: 0.82rem; }
+    .controls-info { padding: 6px 16px 0; font-size: 0.85rem; line-height: 1.5; }
+    .controls-info h3 { margin: 10px 0 4px; font-size: 0.88rem; letter-spacing: 1px; color: var(--neon-yellow); }
+    .controls-info p { margin: 4px 0; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Barra superior: título + opciones -->
+    <header class="topbar">
+      <h1>NEON RACER</h1>
+      <button class="btn" id="btnOptions" aria-haspopup="dialog">Opciones</button>
+    </header>
+
+    <!-- Barra secundaria: HUD -->
+    <div class="subbar" aria-live="polite">
+      <span><span class="label">Puntuación: </span><span class="val" id="score">0</span></span>
+      <span><span class="label">Récord: </span><span class="val" id="best">0</span></span>
+      <span><span class="label">Velocidad: </span><span class="val" id="speed">0</span></span>
+      <span><span class="label">Estado: </span><span class="val start" id="status">En inicio</span></span>
+    </div>
+
+    <!-- Lienzo principal -->
+    <canvas id="game" aria-label="Juego de carreras"></canvas>
+
+    <!-- Controles táctiles para móviles -->
+    <div class="touchpad" id="touchpad" aria-label="Controles táctiles">
+      <button class="tbtn" id="btnLeft" aria-label="Izquierda">◀</button>
+      <button class="tbtn" id="btnRight" aria-label="Derecha">▶</button>
+    </div>
+
+    <!-- Modal de opciones -->
+    <div class="modal-backdrop" id="modalBackdrop" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header>
+          <h2 id="modalTitle">Opciones</h2>
+          <button id="btnCloseModal" aria-label="Cerrar">✕</button>
+        </header>
+        <ul class="options-list">
+          <li><span>Música</span><span class="soon">Próximamente</span></li>
+          <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
+          <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+          <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
+        </ul>
+        <section class="controls-info">
+          <h3>Controles</h3>
+          <p><strong>Escritorio:</strong> Flechas o A/D para moverte · Espacio o P: pausa · Enter: jugar / reiniciar</p>
+          <p><strong>Móvil:</strong> Botones ◀ ▶ para moverte · Toca la pantalla para jugar y pausar</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      /* ================= Configuración ================= */
+      const W = 480, H = 640;
+      const ROAD_X = 90, ROAD_W = 300, LANES = 3, LANE_W = ROAD_W / LANES;
+      const START_SPEED = 220;   // velocidad inicial (px/s)
+      const MAX_SPEED   = 560;   // velocidad máxima
+      const ACCEL       = 12;    // aceleración (px/s cada segundo)
+      const BEST_KEY = 'racer_best_v1';
+
+      const State = { START: 'start', PLAYING: 'playing', PAUSED: 'paused', OVER: 'over' };
+      const STATUS_TEXT = { start: 'En inicio', playing: 'Jugando', paused: 'Pausa', over: 'Game Over' };
+
+      /* ================= Sprites pixel art ================= */
+      const PX = 4; // tamaño de píxel
+      const CAR_SHAPE = [
+        '...XXXX...',
+        '..XXXXXX..',
+        'X..XXXX..X',
+        'X..XXXX..X',
+        'X.XXXXXX.X',
+        'X.XXXXXX.X',
+        'X.XXXXXX.X',
+        'X.XXXXXX.X',
+        'X..XXXX..X',
+        'X..XXXX..X',
+        '..XXXXXX..',
+        '...XXXX...',
+      ];
+      const TRUCK_SHAPE = [
+        '..XXXXXX..',
+        '..XXXXXX..',
+        '..XXXXXX..',
+        '..X....X..',
+        '..X....X..',
+        '..X....X..',
+        '..X....X..',
+        '..XXXXXX..',
+        '..XXXXXX..',
+        '..XXXXXX..',
+        '..XXXXXX..',
+        '..X....X..',
+        '..X....X..',
+        '..X....X..',
+        '..X....X..',
+        '..XXXXXX..',
+        '..XXXXXX..',
+        '..XXXXXX..',
+        '..X.XX.X..',
+        '..XXXXXX..',
+      ];
+
+      // Pre-renderiza cada patrón en un canvas fuera de pantalla (rendimiento)
+      function spriteCanvas(pattern, color) {
+        const c = document.createElement('canvas');
+        c.width = pattern[0].length * PX;
+        c.height = pattern.length * PX;
+        const g = c.getContext('2d');
+        g.fillStyle = color;
+        pattern.forEach((row, r) => {
+          for (let i = 0; i < row.length; i++) if (row[i] === 'X') g.fillRect(i * PX, r * PX, PX, PX);
+        });
+        return c;
+      }
+
+      const CAR_COLORS = ['#ff2a6d', '#05d9e8', '#b967ff'];
+      const PLAYER_IMG = spriteCanvas(CAR_SHAPE, '#ffd60a');
+      const CAR_IMGS = CAR_COLORS.map((c) => spriteCanvas(CAR_SHAPE, c));
+      const TRUCK_IMGS = CAR_COLORS.map((c) => spriteCanvas(TRUCK_SHAPE, c));
+
+      /* ================= Referencias DOM ================= */
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const scoreEl = document.getElementById('score');
+      const bestEl = document.getElementById('best');
+      const speedEl = document.getElementById('speed');
+      const statusEl = document.getElementById('status');
+      const btnOptions = document.getElementById('btnOptions');
+      const modalBackdrop = document.getElementById('modalBackdrop');
+      const btnCloseModal = document.getElementById('btnCloseModal');
+
+      const DPR = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = W * DPR;
+      canvas.height = H * DPR;
+
+      /* ================= Estado del juego ================= */
+      const game = {
+        state: State.START,
+        score: 0,
+        best: loadBest(),
+        newRecord: false,
+        distance: 0,   // píxeles recorridos
+        speed: 0,      // velocidad actual (px/s)
+        scroll: 0,     // desfase de las líneas de la carretera
+        player: { x: W / 2 - 20, y: H - 130, w: 40, h: 48 },
+        traffic: [],
+        spawnTimer: 600,
+        explosions: [],
+        popups: [],
+        input: { left: false, right: false },
+      };
+
+      /* ================= Persistencia ================= */
+      function loadBest() {
+        try { return Number(localStorage.getItem(BEST_KEY)) || 0; }
+        catch (err) { return 0; }
+      }
+      function saveBest(value) {
+        try { localStorage.setItem(BEST_KEY, String(value)); } catch (err) { /* almacenamiento no disponible */ }
+      }
+
+      /* ================= HUD ================= */
+      function updateHUD() {
+        scoreEl.textContent = Math.floor(game.score);
+        bestEl.textContent = game.best;
+        speedEl.textContent = Math.round(game.speed * 0.6);
+        statusEl.textContent = STATUS_TEXT[game.state];
+        statusEl.className = 'val ' + game.state;
+      }
+
+      /* ================= Utilidades ================= */
+      function hits(r1, r2) {
+        return r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y;
+      }
+      function addExplosion(x, y, color) {
+        game.explosions.push({ x, y, t: 0.35, color });
+      }
+      function addPopup(text, x, y) {
+        game.popups.push({ text, x, y, life: 0.9 });
+      }
+
+      /* ================= Flujo del juego ================= */
+      function startGame() {
+        game.score = 0;
+        game.distance = 0;
+        game.speed = START_SPEED;
+        game.scroll = 0;
+        game.traffic = [];
+        game.spawnTimer = 600;
+        game.explosions = [];
+        game.popups = [];
+        game.newRecord = false;
+        game.player.x = W / 2 - 20;
+        game.state = State.PLAYING;
+        closeModal();
+        updateHUD();
+      }
+
+      function endGame() {
+        game.state = State.OVER;
+        if (game.score > game.best) {
+          game.best = Math.floor(game.score);
+          game.newRecord = game.best > 0;
+          saveBest(game.best);
+        }
+        updateHUD();
+      }
+
+      function togglePause() {
+        if (game.state === State.PLAYING) game.state = State.PAUSED;
+        else if (game.state === State.PAUSED) game.state = State.PLAYING;
+        updateHUD();
+      }
+
+      /* ================= Tráfico ================= */
+      function spawnTraffic() {
+        // Carriles ocupados cerca de la cima: nunca bloquea los 3 a la vez
+        const occupied = new Set();
+        for (const c of game.traffic) {
+          if (c.y < 340) occupied.add(Math.floor((c.x + c.w / 2 - ROAD_X) / LANE_W));
+        }
+        const free = [];
+        for (let l = 0; l < LANES; l++) if (!occupied.has(l)) free.push(l);
+        if (!free.length) return;
+
+        const lane = free[(Math.random() * free.length) | 0];
+        const isTruck = Math.random() < 0.22;
+        const idx = (Math.random() * CAR_COLORS.length) | 0;
+        const h = isTruck ? TRUCK_SHAPE.length * PX : CAR_SHAPE.length * PX;
+        // Cuanto más lejos llegas, el tráfico circula más lento (más difícil adelantar)
+        const slow = Math.min(60, game.distance / 60);
+        const vy = Math.max(100, 130 + Math.random() * 70 - slow);
+
+        game.traffic.push({
+          x: ROAD_X + lane * LANE_W + (LANE_W - 40) / 2,
+          y: -h - 10,
+          w: 40, h,
+          vy,
+          img: isTruck ? TRUCK_IMGS[idx] : CAR_IMGS[idx],
+          counted: false,
+        });
+      }
+
+      /* ================= Actualización ================= */
+      function update(dt) {
+        updateEffects(dt);
+        if (game.state !== State.PLAYING) return;
+
+        const s = dt / 1000;
+
+        // Aceleración progresiva y puntuación por distancia (1 punto por cada 10 px)
+        game.speed = Math.min(MAX_SPEED, game.speed + ACCEL * s);
+        game.distance += game.speed * s;
+        game.score += game.speed * s / 10;
+        game.scroll = (game.scroll + game.speed * s) % 80;
+
+        // Dirección del jugador
+        const vx = (game.input.right ? 1 : 0) - (game.input.left ? 1 : 0);
+        game.player.x = Math.max(ROAD_X + 2, Math.min(ROAD_X + ROAD_W - 42, game.player.x + vx * 300 * s));
+
+        // Aparición de tráfico (intervalo decrece con la distancia)
+        game.spawnTimer -= dt;
+        if (game.spawnTimer <= 0) {
+          spawnTraffic();
+          game.spawnTimer = Math.max(650, 1500 - game.distance / 8) * (0.8 + Math.random() * 0.4);
+        }
+
+        // Movimiento del tráfico (velocidad relativa a la del jugador)
+        for (let i = game.traffic.length - 1; i >= 0; i--) {
+          const c = game.traffic[i];
+          c.y += (game.speed - c.vy) * s;
+
+          // Adelatamiento superado: bonus
+          if (!c.counted && c.y > game.player.y + game.player.h) {
+            c.counted = true;
+            game.score += 10;
+            addPopup('+10', c.x + c.w / 2, c.y - 8);
+          }
+          if (c.y > H + 30) { game.traffic.splice(i, 1); continue; }
+
+          // Colisión: fin de la partida
+          if (hits(game.player, c)) {
+            addExplosion(game.player.x + 20, game.player.y + 24, '#ffd60a');
+            addExplosion(c.x + c.w / 2, c.y + c.h / 2, '#ff2a6d');
+            endGame();
+            return;
+          }
+        }
+
+        speedEl.textContent = Math.round(game.speed * 0.6);
+      }
+
+      function updateEffects(dt) {
+        const s = dt / 1000;
+        for (let i = game.explosions.length - 1; i >= 0; i--) {
+          game.explosions[i].t -= s;
+          if (game.explosions[i].t <= 0) game.explosions.splice(i, 1);
+        }
+        for (let i = game.popups.length - 1; i >= 0; i--) {
+          const p = game.popups[i];
+          p.life -= s;
+          p.y -= 30 * s;
+          if (p.life <= 0) game.popups.splice(i, 1);
+        }
+      }
+
+      /* ================= Dibujo ================= */
+      function draw(t) {
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        ctx.fillStyle = '#0d0221';
+        ctx.fillRect(0, 0, W, H);
+        drawSideDashes();
+        drawRoad();
+        drawTraffic();
+        drawPlayer();
+        drawEffects();
+
+        if (game.state === State.START) drawStart(t);
+        else if (game.state === State.PAUSED) drawPause();
+        else if (game.state === State.OVER) drawOver(t);
+      }
+
+      function drawSideDashes() {
+        // Marcas laterales en movimiento (sensación de velocidad)
+        for (let y = game.scroll - 80; y < H; y += 80) {
+          ctx.fillStyle = 'rgba(5, 217, 232, 0.5)';
+          ctx.fillRect(48, y, 8, 24);
+          ctx.fillStyle = 'rgba(255, 42, 109, 0.5)';
+          ctx.fillRect(424, y, 8, 24);
+        }
+      }
+
+      function drawRoad() {
+        // Asfalto
+        ctx.fillStyle = '#221543';
+        ctx.fillRect(ROAD_X, 0, ROAD_W, H);
+
+        // Bordes con brillo neón
+        ctx.save();
+        ctx.shadowColor = '#ff2a6d';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = '#ff2a6d';
+        ctx.fillRect(ROAD_X - 8, 0, 4, H);
+        ctx.fillRect(ROAD_X + ROAD_W + 4, 0, 4, H);
+        ctx.restore();
+
+        // Líneas de carril discontinuas
+        ctx.fillStyle = 'rgba(234, 234, 234, 0.55)';
+        for (let y = game.scroll - 80; y < H; y += 80) {
+          ctx.fillRect(ROAD_X + LANE_W - 3, y, 6, 36);
+          ctx.fillRect(ROAD_X + 2 * LANE_W - 3, y, 6, 36);
+        }
+      }
+
+      function drawTraffic() {
+        for (const c of game.traffic) {
+          ctx.save();
+          ctx.shadowColor = '#b967ff';
+          ctx.shadowBlur = 6;
+          ctx.drawImage(c.img, c.x, c.y);
+          ctx.restore();
+        }
+      }
+
+      function drawPlayer() {
+        if (game.state === State.OVER) return; // el coche quedó destruido
+        ctx.save();
+        ctx.shadowColor = '#ffd60a';
+        ctx.shadowBlur = 12;
+        ctx.drawImage(PLAYER_IMG, game.player.x, game.player.y);
+        ctx.restore();
+      }
+
+      function drawEffects() {
+        for (const e of game.explosions) {
+          const k = 1 - e.t / 0.35;
+          ctx.globalAlpha = 1 - k;
+          ctx.fillStyle = e.color;
+          for (let i = 0; i < 8; i++) {
+            const ang = i * Math.PI / 4;
+            const d = 4 + k * 14;
+            ctx.fillRect(e.x + Math.cos(ang) * d - 1.5, e.y + Math.sin(ang) * d - 1.5, 3, 3);
+          }
+        }
+        ctx.globalAlpha = 1;
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (const p of game.popups) {
+          ctx.globalAlpha = Math.min(1, p.life * 2);
+          ctx.font = 'bold 14px "Courier New", monospace';
+          ctx.fillStyle = '#ffd60a';
+          ctx.fillText(p.text, p.x, p.y);
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      function overlay(alpha) {
+        ctx.fillStyle = 'rgba(5, 2, 20, ' + alpha + ')';
+        ctx.fillRect(0, 0, W, H);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+      }
+
+      function neonText(text, x, y, size, color, glow) {
+        ctx.save();
+        ctx.font = 'bold ' + size + 'px "Courier New", monospace';
+        ctx.shadowColor = color;
+        ctx.shadowBlur = glow || 18;
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+        ctx.restore();
+      }
+
+      function whiteText(text, x, y, size, alpha) {
+        ctx.save();
+        ctx.font = size + 'px "Courier New", monospace';
+        ctx.fillStyle = 'rgba(234, 234, 234, ' + (alpha == null ? 1 : alpha) + ')';
+        ctx.fillText(text, x, y);
+        ctx.restore();
+      }
+
+      function drawStart(t) {
+        overlay(0.7);
+        neonText('NEON RACER', W / 2, 130, 42, '#39ff14');
+        whiteText('Esquiva el tráfico · Adelantar: +10', W / 2, 186, 15);
+        whiteText('Un choque y se acabó', W / 2, 212, 13, 0.8);
+        ctx.drawImage(PLAYER_IMG, W / 2 - 20, 250);
+        const blink = 0.45 + 0.55 * Math.abs(Math.sin(t / 350));
+        whiteText('[ JUGAR ]', W / 2, 390, 24, blink);
+        whiteText('Presiona Enter o toca la pantalla', W / 2, 434, 14);
+        whiteText('Flechas / A-D para moverte', W / 2, 460, 12, 0.7);
+      }
+
+      function drawPause() {
+        overlay(0.6);
+        neonText('PAUSA', W / 2, H / 2 - 16, 40, '#ffd60a');
+        whiteText('Espacio o toca la pantalla para reanudar', W / 2, H / 2 + 28, 14);
+      }
+
+      function drawOver(t) {
+        overlay(0.75);
+        neonText('GAME OVER', W / 2, H / 2 - 80, 40, '#ff2a6d');
+        whiteText('Puntuación: ' + Math.floor(game.score), W / 2, H / 2 - 26, 18);
+        whiteText('Récord: ' + game.best, W / 2, H / 2 + 4, 18);
+        if (game.newRecord) neonText('¡Nuevo récord!', W / 2, H / 2 + 34, 16, '#ffd60a', 10);
+        const blink = 0.45 + 0.55 * Math.abs(Math.sin(t / 350));
+        whiteText('[ Jugar nuevamente ]', W / 2, H / 2 + 76, 20, blink);
+        whiteText('Enter o toca la pantalla', W / 2, H / 2 + 108, 13, 0.7);
+      }
+
+      /* ================= Bucle principal ================= */
+      let lastTime = performance.now();
+      function loop(t) {
+        const dt = Math.min(t - lastTime, 50);
+        lastTime = t;
+        update(dt);
+        draw(t);
+        requestAnimationFrame(loop);
+      }
+
+      /* ================= Entradas: teclado ================= */
+      const MOVE_KEYS = {
+        ArrowLeft: 'left', KeyA: 'left',
+        ArrowRight: 'right', KeyD: 'right',
+      };
+
+      document.addEventListener('keydown', (e) => {
+        if (!modalBackdrop.hidden) {
+          if (e.code === 'Escape') closeModal();
+          return;
+        }
+        if (e.code === 'Escape' || e.code === 'KeyP') { e.preventDefault(); togglePause(); return; }
+        if (e.code === 'Space') {
+          e.preventDefault();
+          if (game.state === State.START || game.state === State.OVER) startGame();
+          else togglePause();
+          return;
+        }
+        if (e.code === 'Enter') {
+          e.preventDefault();
+          if (game.state === State.START || game.state === State.OVER) startGame();
+          return;
+        }
+        const dir = MOVE_KEYS[e.code];
+        if (dir) {
+          e.preventDefault();
+          game.input[dir] = true;
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        const dir = MOVE_KEYS[e.code];
+        if (dir) game.input[dir] = false;
+      });
+
+      /* ================= Entradas: táctiles / clic ================= */
+      canvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (game.state === State.START || game.state === State.OVER) startGame();
+        else togglePause();
+      });
+
+      function bindHold(id, action) {
+        const el = document.getElementById(id);
+        const on = (e) => {
+          e.preventDefault();
+          if (game.state === State.START || game.state === State.OVER) startGame();
+          action(true);
+        };
+        const off = (e) => { e.preventDefault(); action(false); };
+        el.addEventListener('pointerdown', on);
+        el.addEventListener('pointerup', off);
+        el.addEventListener('pointerleave', off);
+        el.addEventListener('pointercancel', off);
+        el.addEventListener('contextmenu', (e) => e.preventDefault());
+      }
+      bindHold('btnLeft', (v) => { game.input.left = v; });
+      bindHold('btnRight', (v) => { game.input.right = v; });
+
+      /* ================= Modal de opciones ================= */
+      function openModal() {
+        if (game.state === State.PLAYING) togglePause(); // abrir opciones pausa la partida
+        modalBackdrop.hidden = false;
+      }
+      function closeModal() { modalBackdrop.hidden = true; }
+
+      btnOptions.addEventListener('click', openModal);
+      btnCloseModal.addEventListener('click', closeModal);
+      modalBackdrop.addEventListener('click', (e) => {
+        if (e.target === modalBackdrop) closeModal();
+      });
+
+      // Evita que los botones retengan el foco y capturen Space/Enter
+      document.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => b.blur()));
+
+      /* ================= Inicio ================= */
+      updateHUD();
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>

@@ -70,7 +70,8 @@
 
   function aplicarModo() {
     /* Modo claro/oscuro: se fija en <html> para que esté listo antes de
-       pintar; root.css admite tanto `html.dark` como `body.dark`. */
+       pintar; el bloque `:root` de base.css admite tanto `html.dark` como
+       `body.dark`. */
     var modo = leer(CLAVE_MODO) || MODO_POR_DEFECTO;
 
     raiz.classList.toggle('dark', modo !== 'light');
@@ -79,7 +80,7 @@
 
   function aplicarAcento() {
     /* Acento: variables inline en <html>. Sin valor válido se recuperan los
-       defaults definidos en stylesheets/root.css. */
+       defaults definidos en la sección `:root` de stylesheets/base.css. */
     var acento = leer(CLAVE_ACENTO);
 
     if (!esColorValido(acento)) {

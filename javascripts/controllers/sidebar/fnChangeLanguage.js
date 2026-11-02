@@ -3,6 +3,7 @@ import translations from "../../lang/translations.json" with { type: "json" };
 import { getLanguage, setLanguage } from "../../utils/storage.js";
 import { updateModeText } from "./fnThemeMode.js";
 import { reloadHomeContent } from "../home/fnHome.js";
+import { reloadGamesContent } from "../juegos/fnJuegos.js";
 
 const VALID_LANGUAGES = ["es", "en"];
 
@@ -72,6 +73,7 @@ function changeLanguage(lang) {
 
   updateModeText();
   reloadHomeContent();
+  reloadGamesContent();
 }
 
 export default function sectionLanguage() {
