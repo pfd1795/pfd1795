@@ -16,13 +16,20 @@
         "en": "Arcade · skill"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Flechas / WASD · D-pad táctil",
         "en": "Arrows / WASD · touch D-pad"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/snake/cover.jpg"
+      ]
     },
     {
       "slug": "space-invaders",
@@ -39,13 +46,20 @@
         "en": "Shooter · arcade"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Flechas / A-D · Espacio · botones táctiles",
         "en": "Arrows / A-D · Space · touch buttons"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/space-invaders/cover.jpg"
+      ]
     },
     {
       "slug": "ajedrez",
@@ -62,13 +76,20 @@
         "en": "Board · AI"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Clic / táctil · U deshacer · Esc pausa",
         "en": "Click / touch · U undo · Esc pause"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/ajedrez/cover.jpg"
+      ]
     },
     {
       "slug": "damas",
@@ -85,13 +106,20 @@
         "en": "Board · AI"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Clic / táctil · U deshacer · Esc pausa",
         "en": "Click / touch · U undo · Esc pause"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/damas/cover.jpg"
+      ]
     },
     {
       "slug": "dungeon-crawler",
@@ -108,13 +136,20 @@
         "en": "Action · dungeon"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "WASD / flechas · Espacio atacar · D-pad táctil",
         "en": "WASD / arrows · Space attack · touch D-pad"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/dungeon-crawler/cover.jpg"
+      ]
     },
     {
       "slug": "neon-racer",
@@ -131,13 +166,20 @@
         "en": "Racing · arcade"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Flechas / A-D · botones táctiles",
         "en": "Arrows / A-D · touch buttons"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/neon-racer/cover.jpg"
+      ]
     },
     {
       "slug": "plataformas",
@@ -154,13 +196,20 @@
         "en": "Platformer · action"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Flechas / WASD · Espacio saltar · X shuriken",
         "en": "Arrows / WASD · Space jump · X shuriken"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/plataformas/cover.jpg"
+      ]
     },
     {
       "slug": "tower-defense",
@@ -177,13 +226,20 @@
         "en": "Strategy · towers"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Clic colocar · 1-4 torres · U mejorar · V vender",
         "en": "Click to place · 1-4 towers · U upgrade · V sell"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/tower-defense/cover.jpg"
+      ]
     },
     {
       "slug": "match-3",
@@ -200,13 +256,20 @@
         "en": "Puzzle · match-3"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Clic / arrastrar · flechas y Enter · táctil",
         "en": "Click / drag · arrows and Enter · touch"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/match-3/cover.jpg"
+      ]
     },
     {
       "slug": "arkanoid",
@@ -223,13 +286,20 @@
         "en": "Arcade · skill"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Flechas / A-D · ratón · tocar para lanzar",
         "en": "Arrows / A-D · mouse · tap to launch"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/arkanoid/cover.jpg"
+      ]
     },
     {
       "slug": "ritmo",
@@ -246,13 +316,21 @@
         "en": "Rhythm · music"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D", "Web Audio"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D",
+        "Web Audio"
+      ],
       "controls": {
         "es": "D F J K · flechas · botones táctiles",
         "en": "D F J K · arrows · touch buttons"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/ritmo/cover.jpg"
+      ]
     },
     {
       "slug": "pong",
@@ -269,13 +347,20 @@
         "en": "Arcade · sport"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "W/S · flechas · arrastrar en móvil",
         "en": "W/S · arrows · drag on mobile"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/pong/cover.jpg"
+      ]
     },
     {
       "slug": "piedras-papel-tijeras",
@@ -292,13 +377,20 @@
         "en": "Casual · arcade"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Teclas 1-2-3 o botones · Enter jugar",
         "en": "Keys 1-2-3 or buttons · Enter play"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/piedras-papel-tijeras/cover.jpg"
+      ]
     },
     {
       "slug": "pool",
@@ -315,13 +407,21 @@
         "en": "Billiards · physics"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D", "Web Audio"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D",
+        "Web Audio"
+      ],
       "controls": {
         "es": "Arrastrar y soltar (tirachinas) · táctil",
         "en": "Drag and release (slingshot) · touch"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/pool/cover.jpg"
+      ]
     },
     {
       "slug": "ta-te-ti",
@@ -338,13 +438,20 @@
         "en": "Board · casual"
       },
       "year": 2026,
-      "technologies": ["HTML5", "CSS3", "JavaScript", "Canvas 2D"],
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
       "controls": {
         "es": "Clic / táctil · teclas 1-9",
         "en": "Click / touch · keys 1-9"
       },
-      "cover": null,
-      "status": "published"
+      "status": "published",
+      "covers": [
+        "../assets/images/games/ta-te-ti/cover.jpg"
+      ]
     }
   ]
 }

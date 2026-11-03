@@ -31,10 +31,18 @@ function CardGame(game, lang, texts) {
   const description = getText(game.description, lang);
   const controls = getText(game.controls, lang);
   const technologies = Array.isArray(game.technologies) ? game.technologies : [];
+  const covers = Array.isArray(game.covers) ? game.covers.filter(Boolean) : [];
+  const hasCarousel = covers.length > 1;
 
   article.className = 'juego-card';
 
   article.innerHTML = `
+    <div class="juego-card__portada${hasCarousel ? ' juego-card__portada--carousel' : ''}${covers.length === 0 ? ' juego-card__portada--placeholder' : ''}" aria-hidden="true">
+      ${covers.length
+        ? covers.map((src) => `<img class="juego-card__portada-img" src="${src}" alt="" loading="lazy" decoding="async" />`).join('')
+        : ''}
+    </div>
+
     <header class="juego-card__cabecera">
       <span class="juego-card__genero">${genre}</span>
       ${game.year ? `<span class="juego-card__anio">${game.year}</span>` : ''}

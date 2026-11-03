@@ -20,6 +20,8 @@ mantenerlos sincronizados con el código es parte del mantenimiento (ver `AGENTS
   checklist de calidad y solución de problemas.
 - [`prompts/crear-videojuegos.md`](./prompts/crear-videojuegos.md) — prompt/instrucciones para generar
   un juego nuevo integrado en el portafolio.
+- [`prompts/portadas-juegos.md`](./prompts/portadas-juegos.md) — prompt/instrucciones para generar
+  las 3 portadas (pixel art retro arcade) de cada juego y su integración en la grilla.
 - Documentación por juego: `../juegos/<slug>/README-juego.md`.
 
 ## Convenciones

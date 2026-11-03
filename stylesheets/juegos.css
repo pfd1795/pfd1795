@@ -158,3 +158,78 @@
   font-size: var(--text-xs);
   margin: 0;
 }
+
+/* ===== 6. PORTADA / CARRUSEL ===== */
+.juego-card__portada {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--color-background), var(--color-surface));
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.juego-card__portada-img {
+  height: 100%;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+/* Carrusel crossfade (3 imágenes, ~12 s por ciclo) */
+.juego-card__portada--carousel .juego-card__portada-img {
+  animation: juego-portada-fade 12s infinite;
+  opacity: 0;
+}
+
+.juego-card__portada--carousel .juego-card__portada-img:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.juego-card__portada--carousel .juego-card__portada-img:nth-child(2) {
+  animation-delay: 4s;
+}
+
+.juego-card__portada--carousel .juego-card__portada-img:nth-child(3) {
+  animation-delay: 8s;
+}
+
+.juego-card:hover .juego-card__portada-img,
+.juego-card:focus-within .juego-card__portada-img {
+  animation-play-state: paused;
+}
+
+@keyframes juego-portada-fade {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  33% { opacity: 1; }
+  41% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Placeholder (sin portadas) */
+.juego-card__portada--placeholder {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 2px,
+      rgba(255, 255, 255, 0.03) 4px
+    ),
+    linear-gradient(135deg, #0a0a0f, #1a1a2e);
+}
+
+/* Reduced motion: sin animación, solo la primera imagen */
+@media (prefers-reduced-motion: reduce) {
+  .juego-card__portada--carousel .juego-card__portada-img {
+    animation: none;
+    opacity: 0;
+  }
+
+  .juego-card__portada--carousel .juego-card__portada-img:first-child {
+    opacity: 1;
+  }
+}
