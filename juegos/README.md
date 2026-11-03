@@ -110,8 +110,8 @@ Abre `http://localhost:8000/juegos/` y comprueba:
 ### 5. Actualizar la documentación
 
 - Añade el juego a la tabla de catálogo de este README (sección siguiente).
-- Si corresponde, registra la mejora en [`../MEJORAS.md`](../MEJORAS.md).
-- Mantén sincronizados `README.md`, `AGENTS.md` y `MEJORAS.md` del portafolio.
+- Si corresponde, registra la mejora en [`../docs/MEJORAS.md`](../docs/MEJORAS.md).
+- Mantén sincronizados `README.md`, `AGENTS.md` y `docs/MEJORAS.md` del portafolio.
 
 ---
 
@@ -217,4 +217,4 @@ manifiesto.
 
 - [README del portafolio](../README.md)
 - [Guía técnica para agentes](../AGENTS.md)
-- [Historial de mejoras](../MEJORAS.md)
+- [Historial de mejoras](../docs/MEJORAS.md)

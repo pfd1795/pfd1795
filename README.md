@@ -37,6 +37,7 @@ Luego abre `http://localhost:8000/`.
 
 ```text
 ├── index.html              # Portada
+├── docs/                   # Documentación organizada (índice, mejoras, prompts)
 ├── mis-estudios/           # Enciclopedia de informática
 ├── juegos/                 # Grilla y juegos arcade (ver juegos/README.md)
 ├── javascripts/            # Módulos ES6 y lógica de la interfaz
@@ -46,6 +47,8 @@ Luego abre `http://localhost:8000/`.
 ```
 
 La guía técnica detallada, las convenciones y las limitaciones conocidas están en [`AGENTS.md`](./AGENTS.md).
+
+La documentación organizada del proyecto está en [`docs/README.md`](./docs/README.md).
 
 ## Juegos
 

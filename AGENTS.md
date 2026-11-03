@@ -6,7 +6,7 @@ Portafolio web personal desarrollado con HTML, CSS y JavaScript vanilla. Sitio e
 
 **URL de producción:** https://pfd1795.github.io/pfd1795/
 
-**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `MEJORAS.md` (historial de mejoras implementadas y roadmap de pendientes) y `juegos/README.md` (cómo agregar y documentar juegos). No hay fases, auditorías ni informes activos; el "roadmap" de `MEJORAS.md` recoge solo pendientes conocidos y debe mantenerse sincronizado con el código.
+**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `docs/MEJORAS.md` (historial de mejoras implementadas y roadmap de pendientes), `juegos/README.md` (cómo agregar y documentar juegos) y `docs/README.md` (índice de la documentación). No hay fases, auditorías ni informes activos; el "roadmap" de `docs/MEJORAS.md` recoge solo pendientes conocidos y debe mantenerse sincronizado con el código.
 
 ---
 
@@ -35,6 +35,11 @@ Automático via GitHub Actions en push a `main` (`.github/workflows/static.yml`)
 ```
 ├── README.md               # Introducción y ejecución para personas
 ├── AGENTS.md               # Guía técnica para agentes
+├── docs/                   # Documentación organizada (índice, mejoras, prompts)
+│   ├── README.md           # Índice de la documentación
+│   ├── MEJORAS.md          # Historial de mejoras y roadmap
+│   └── prompts/
+│       └── crear-videojuegos.md  # Prompt para crear juegos integrados
 ├── index.html              # Entrada principal
 ├── mis-estudios/           # Enciclopedia de informática (contenido educativo)
 ├── juegos/                 # Grilla y juegos arcade (guía en juegos/README.md)
@@ -223,6 +228,7 @@ element?.addEventListener('click', () => {
 - **Sin frameworks ni build**: Vanilla JS/CSS únicamente; no introducir bundlers, frameworks ni backend.
 - **GitHub Pages**: mantener rutas relativas y compatibilidad con despliegue estático desde `main`.
 - **Performance**: usar `loading="lazy"` en imágenes.
-- **Documentación**: mantener `README.md`, `AGENTS.md`, `MEJORAS.md` y `juegos/README.md` sincronizados con el código; no reintroducir planes de tareas o fases obsoletas. Una mejora que se completa debe pasarse de "pendientes" a "implementadas" en `MEJORAS.md` en el mismo cambio.
+- **Documentación**: mantener `README.md`, `AGENTS.md`, `docs/MEJORAS.md` y `juegos/README.md` sincronizados con el código; no reintroducir planes de tareas o fases obsoletas. Una mejora que se completa debe pasarse de "pendientes" a "implementadas" en `docs/MEJORAS.md` en el mismo cambio.
 - **Juegos**: un juego nuevo se integra copiando su carpeta a `juegos/<slug>/`, añadiendo su entrada a `javascripts/data/juegos.json` y documentándolo con `README-juego.md`; no se edita el juego para adaptarlo al chrome del portafolio.
 - **Información personal**: no modificar los datos personales del desarrollador.
+- **Commits**: no crear commits automáticamente ni ejecutar `git commit`; los commits son manuales y los realiza el desarrollador.

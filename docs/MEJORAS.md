@@ -93,6 +93,12 @@ descripción.
 | **Etiqueta de los modales de educación** | El contenido genera `id="modal-title"`, que es lo que referencia el `aria-labelledby` del `<dialog>`. |
 | **Enlaces externos seguros** | Todos los `target="_blank"` llevan `rel="noopener noreferrer"`. |
 
+### Documentación
+
+| Área | Mejora |
+| --- | --- |
+| **Organización** | Se creó `docs/` con índice (`docs/README.md`), se movió `MEJORAS.md` a `docs/MEJORAS.md` y el prompt de juegos a `docs/prompts/crear-videojuegos.md` (adaptado al flujo del portafolio). Se eliminó `prompt_task.md` y `.abacusai/` como ruido. |
+
 ---
 
 ## Mejoras pendientes (roadmap)
@@ -141,10 +147,12 @@ Trabajo realizado y por hacer sobre la propia documentación del repositorio.
       internacionalización, limitaciones conocidas y reglas de mantenimiento.
 - [x] **Personas.** `README.md` cubre características, ejecución local, estructura, despliegue, limitaciones
       y contacto.
-- [ ] **Mantener `MEJORAS.md` sincronizado.** Como cualquier otro doc del repo: una mejora que se complete
+- [ ] **Mantener `docs/MEJORAS.md` sincronizado.** Como cualquier otro doc del repo: una mejora que se complete
       se mueve de "pendientes" a "implementadas" en el mismo cambio de código; nunca dejarla estancada.
 - [x] **Revisar idioma del `title`/`aria-label` hardcodeados.** Conectados al sistema de traducciones
       en los 8 HTML.
+- [x] **Reorganizar la documentación.** Se creó `docs/` con índice, se movieron `MEJORAS.md` y el
+      prompt de juegos, y se eliminó ruido (`prompt_task.md`, `.abacusai/`).
 
 ---
 
