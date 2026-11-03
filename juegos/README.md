@@ -87,7 +87,7 @@ Edita [`javascripts/data/juegos.json`](../javascripts/data/juegos.json) y agrega
     "es": "Flechas / WASD · botones táctiles",
     "en": "Arrows / WASD · touch buttons"
   },
-  "cover": null,
+  "covers": ["../assets/images/games/mi-juego/cover.jpg"],
   "status": "published"
 }
 ```
@@ -110,8 +110,8 @@ Abre `http://localhost:8000/juegos/` y comprueba:
 ### 5. Actualizar la documentación
 
 - Añade el juego a la tabla de catálogo de este README (sección siguiente).
-- Si corresponde, registra la mejora en [`../docs/MEJORAS.md`](../docs/MEJORAS.md).
-- Mantén sincronizados `README.md`, `AGENTS.md` y `docs/MEJORAS.md` del portafolio.
+- Genera su portada y añádela al manifiesto (ver `docs/prompts/portadas-juegos.md`, herramienta de desarrollo).
+- Mantén sincronizados `README.md`, `AGENTS.md` y `juegos/README.md` del portafolio.
 
 ---
 
@@ -128,12 +128,13 @@ Es la **única fuente de verdad** de la grilla. La página no contiene tarjetas 
 | `year` | number | No | Año de publicación; se muestra en la cabecera. |
 | `technologies` | string[] | No | Chips de tecnologías. |
 | `controls` | `{ es, en }` | No | Resumen de controles. |
-| `cover` | string \| null | No | Ruta a una portada futura. Hoy la grilla es tipográfica. |
+| `covers` | string[] | No | Rutas relativas a las portadas (`../assets/images/games/<slug>/cover.jpg`). Con una imagen la tarjeta la muestra estática; con 2–3 activa un carrusel por CSS; sin imágenes o con el campo ausente, placeholder con degradado. |
 | `status` | `"published"` \| `"wip"` | Sí | Solo `published` aparece en la grilla. |
 
 Notas:
 
-- El enlace se construye automáticamente como `./<slug>/index.html`; no guardes rutas en el JSON.
+- El archivo tiene una clave raíz `version` (formato del manifiesto) y el array `games`; no los elimines.
+- El enlace para jugar se construye automáticamente como `./<slug>/index.html`; no guardes la URL del juego en el JSON (las rutas del campo `covers` sí van en el JSON).
 - Si un `slug` no cumple el patrón o falta `status`, el juego se omite y se registra un aviso en
   la consola. La página sigue funcionando.
 - Los textos deben existir en español e inglés. Si falta un idioma, se usa el español.
@@ -217,4 +218,4 @@ manifiesto.
 
 - [README del portafolio](../README.md)
 - [Guía técnica para agentes](../AGENTS.md)
-- [Historial de mejoras](../docs/MEJORAS.md)
+- [Índice de la documentación](../docs/README.md)

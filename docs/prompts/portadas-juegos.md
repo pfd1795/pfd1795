@@ -1,5 +1,8 @@
 # Prompt: portadas (covers) para la grilla de juegos
 
+> **Herramienta de desarrollo.** No es documentación de referencia del proyecto: otros agentes
+> no deben leer este documento salvo que el desarrollador se lo pida por orden explícito.
+
 Documento de referencia para generar las **3 portadas** de cada juego de la colección
 `juegos/` del portafolio **pfd1795**. Diseñado para que un agente IA generador de
 imágenes (o un diseñador) produzca los assets de forma consistente y reproducible.

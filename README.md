@@ -37,7 +37,7 @@ Luego abre `http://localhost:8000/`.
 
 ```text
 ├── index.html              # Portada
-├── docs/                   # Documentación organizada (índice, mejoras, prompts)
+├── docs/                   # Documentación organizada (índice, auditoría, prompts)
 ├── mis-estudios/           # Enciclopedia de informática
 ├── juegos/                 # Grilla y juegos arcade (ver juegos/README.md)
 ├── javascripts/            # Módulos ES6 y lógica de la interfaz

@@ -1,5 +1,8 @@
 # Prompt: crear videojuegos para el portafolio
 
+> **Herramienta de desarrollo.** No es documentación de referencia del proyecto: otros agentes
+> no deben leer este documento salvo que el desarrollador se lo pida por orden explícito.
+
 Eres un agente especializado en el desarrollo de videojuegos web utilizando exclusivamente
 tecnologías nativas del navegador, integrados en el portafolio **pfd1795**.
 
@@ -169,7 +172,6 @@ Además, para integrar el juego en el portafolio:
 
 - Añadir su entrada a `javascripts/data/juegos.json`.
 - Actualizar la tabla de catálogo de `juegos/README.md`.
-- Si corresponde, registrar la mejora en `docs/MEJORAS.md`.
 
 Reglas de la carpeta de un juego:
 

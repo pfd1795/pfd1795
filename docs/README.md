@@ -10,23 +10,27 @@ mantenerlos sincronizados con el código es parte del mantenimiento (ver `AGENTS
 
 ## Para agentes y mantenimiento
 
-- [`AGENTS.md`](../AGENTS.md) — arquitectura, convenciones de código, patrones de diseño,
-  internacionalización, limitaciones conocidas y reglas de mantenimiento.
-- [`MEJORAS.md`](./MEJORAS.md) — historial de mejoras implementadas y roadmap de pendientes.
+- [`AGENTS.md`](../AGENTS.md) — arquitectura, convenciones de código, internacionalización,
+  limitaciones conocidas y reglas de mantenimiento.
+- [`AUDITORIA.md`](./AUDITORIA.md) — hoja de verificación para auditar el proyecto.
 
 ## Juegos
 
 - [`juegos/README.md`](../juegos/README.md) — guía para agregar y documentar juegos, manifiesto,
   checklist de calidad y solución de problemas.
-- [`prompts/crear-videojuegos.md`](./prompts/crear-videojuegos.md) — prompt/instrucciones para generar
-  un juego nuevo integrado en el portafolio.
-- [`prompts/portadas-juegos.md`](./prompts/portadas-juegos.md) — prompt/instrucciones para generar
-  las 3 portadas (pixel art retro arcade) de cada juego y su integración en la grilla.
 - Documentación por juego: `../juegos/<slug>/README-juego.md`.
+
+## Herramientas de desarrollo
+
+Esta carpeta solo se lee a pedido explícito del desarrollador; no forma parte de la
+documentación de referencia para agentes.
+
+- [`prompts/crear-videojuegos.md`](./prompts/crear-videojuegos.md) — instrucciones para generar
+  un juego nuevo integrado en el portafolio.
+- [`prompts/portadas-juegos.md`](./prompts/portadas-juegos.md) — instrucciones para generar
+  las portadas (pixel art retro arcade) de los juegos y su integración en la grilla.
 
 ## Convenciones
 
-- No reintroducir planes de tareas ni auditorías obsoletas; el estado real está en el código.
-- Una mejora completada se mueve de "pendientes" a "implementadas" en `docs/MEJORAS.md` en el mismo
-  cambio de código.
+- No reintroducir planes de tareas, fases ni auditorías obsoletas; el estado real está en el código.
 - Las rutas de la documentación son relativas al archivo que las contiene.
