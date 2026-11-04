@@ -49,7 +49,8 @@ Archivo único `index.html` con tres bloques:
 
 ## Persistencia
 
-- `localStorage` con clave `dungeon_best_v1` guarda el récord de puntuación.
+- `localStorage` con clave `dungeon-crawler_best_v1` guarda el récord de puntuación
+  (la clave antigua `dungeon_best_v1` se migra automáticamente).
 - Acceso envuelto en try/catch para navegadores con almacenamiento bloqueado.
 - Sin servidores ni almacenamiento externo.
 

@@ -7,15 +7,16 @@
 <style>
   :root {
     color-scheme: dark;
-    --bg:#070a18; --panel:#101630; --line:#28345d;
-    --text:#eff3ff; --muted:#9ba8cf; --cyan:#4dc9ff; --pink:#ff4d6d;
-    --yellow:#ffe74c; --green:#6eeb83;
+    --bg:#0d0221; --panel:#1a1033; --line:rgba(185,103,255,0.4);
+    --text:#eaeaea; --muted:#9b8fb8;
+    --neon-green:#39ff14; --neon-pink:#ff2a6d; --neon-cyan:#05d9e8; --neon-yellow:#ffd60a; --neon-purple:#b967ff;
+    --cyan:var(--neon-cyan); --pink:var(--neon-pink); --yellow:var(--neon-yellow); --green:var(--neon-green);
   }
   * { box-sizing:border-box; }
   html,body { width:100%; height:100%; margin:0; overflow:hidden; }
   body {
     display:flex; flex-direction:column; align-items:center;
-    background:radial-gradient(ellipse at 50% 0%,#172047 0%,var(--bg) 65%);
+    background:var(--bg);
     color:var(--text); font-family:"Courier New",monospace;
     user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
   }
@@ -23,13 +24,14 @@
     width:min(96vw,820px); display:flex; align-items:center; justify-content:space-between;
     padding:10px 4px 6px;
   }
-  h1 { margin:0; color:var(--yellow); font-size:clamp(16px,4vw,21px); letter-spacing:2px; text-shadow:0 0 10px #ffe74c77; }
+  h1 { margin:0; color:var(--neon-green); font-size:clamp(16px,4vw,21px); letter-spacing:2px; text-shadow:0 0 8px rgba(57,255,20,0.8); }
   button {
-    font:inherit; color:var(--text); font-weight:bold; letter-spacing:1px;
-    background:#151d3b; border:2px solid var(--line); border-radius:8px;
-    padding:7px 12px; cursor:pointer;
+    font:inherit; color:var(--neon-cyan); font-weight:bold; letter-spacing:1px;
+    background:transparent; border:1px solid var(--neon-cyan); border-radius:8px;
+    padding:7px 12px; cursor:pointer; transition:box-shadow 0.15s, background 0.15s;
   }
-  button:active { border-color:var(--yellow); transform:translateY(1px); }
+  button:hover { background:rgba(5,217,232,0.12); box-shadow:0 0 10px rgba(5,217,232,0.5); }
+  button:active { transform:translateY(1px); }
   #hud {
     width:min(96vw,820px); display:flex; justify-content:center; gap:clamp(16px,6vw,48px);
     padding:3px 4px 9px; color:var(--muted); font-size:12px; letter-spacing:1px;
@@ -37,22 +39,28 @@
   #hud b { color:var(--text); font-size:17px; margin-left:7px; }
   main { flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; padding:4px 8px 12px; }
   canvas { display:block; border-radius:12px; touch-action:none; }
-  #options-modal {
-    position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
-    padding:16px; background:#02040dcc;
+
+  /* ================= Scanlines CRT (sutil, canon compartido) ================= */
+  .scanlines {
+    position:fixed; inset:0; pointer-events:none; z-index:5;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0 1px, transparent 1px 4px);
   }
-  #options-modal[hidden] { display:none; }
-  .modal {
-    width:min(92vw,420px); background:var(--panel); border:2px solid var(--line);
-    border-radius:14px; padding:16px; box-shadow:0 0 35px #4dc9ff22;
+
+  /* ================= Modal de opciones ================= */
+  dialog {
+    width:min(92vw,420px); padding:16px;
+    color:var(--text); background:var(--panel);
+    border:1px solid var(--neon-purple); border-radius:14px;
+    box-shadow:0 0 30px rgba(185,103,255,0.4);
   }
+  dialog::backdrop { background:rgba(0,0,0,0.72); }
   .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
-  .modal h2 { margin:0; font-size:16px; letter-spacing:2px; color:var(--cyan); }
-  .modal ul { list-style:none; margin:0 0 14px; padding:0; display:grid; gap:8px; }
-  .modal li { display:flex; justify-content:space-between; gap:12px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:#090e23; font-size:13px; }
+  dialog h2 { margin:0; font-size:16px; letter-spacing:2px; color:var(--neon-cyan); text-shadow:0 0 8px rgba(5,217,232,0.7); }
+  dialog ul { list-style:none; margin:0 0 14px; padding:0; display:grid; gap:8px; }
+  dialog li { display:flex; justify-content:space-between; gap:12px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:#12052e; font-size:13px; }
   .soon { color:var(--muted); font-style:italic; }
   .controls { border-top:1px dashed var(--line); padding-top:10px; color:var(--muted); font-size:12px; line-height:1.55; }
-  .controls h3 { margin:0 0 5px; color:var(--green); font-size:13px; letter-spacing:2px; }
+  .controls h3 { margin:0 0 5px; color:var(--neon-green); font-size:13px; letter-spacing:2px; }
   .controls p { margin:5px 0; }
   .controls strong { color:var(--text); }
 </style>
@@ -71,8 +79,7 @@
 
 <main id="stage"><canvas id="game" aria-label="Juego Pong"></canvas></main>
 
-<div id="options-modal" hidden>
-  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="options-title">
+<dialog id="options" aria-labelledby="options-title">
     <div class="modal-head">
       <h2 id="options-title">OPCIONES</h2>
       <button id="close-options" type="button" aria-label="Cerrar">✕</button>
@@ -88,8 +95,9 @@
       <p><strong>Escritorio:</strong> W/S o ↑/↓ para mover la pala. También puedes moverla con el ratón. Espacio lanza la pelota; P o ESC pausa.</p>
       <p><strong>Móvil / tablet:</strong> arrastra el dedo verticalmente por el tablero para mover la pala del jugador. Toca para lanzar.</p>
     </div>
-  </section>
-</div>
+</dialog>
+
+<div class="scanlines" aria-hidden="true"></div>
 
 <script>
 'use strict';
@@ -121,7 +129,6 @@ let servingIn = 0;
 let serveDirection = 1;
 let pointerY = null;
 let pointerActive = false;
-let modalWasPlaying = false;
 let buttons = [];
 const keys = { up:false, down:false };
 
@@ -134,12 +141,29 @@ const stars = Array.from({length:55}, () => ({
   size:0.7+Math.random()*1.5, alpha:0.15+Math.random()*0.4
 }));
 
+const BEST_KEY = 'pong_best_v1';
+const LEGACY_BEST_KEYS = ['pong_neon_best'];
+
+function migrateBestKey() {
+  try {
+    if (localStorage.getItem(BEST_KEY) == null) {
+      for (const oldKey of LEGACY_BEST_KEYS) {
+        const legacy = localStorage.getItem(oldKey);
+        if (legacy != null) { localStorage.setItem(BEST_KEY, legacy); localStorage.removeItem(oldKey); break; }
+      }
+    } else {
+      for (const oldKey of LEGACY_BEST_KEYS) { if (localStorage.getItem(oldKey) != null) localStorage.removeItem(oldKey); }
+    }
+  } catch (_) { /* localStorage puede estar deshabilitado */ }
+}
+migrateBestKey(); // conserva el récord con la clave nueva
+
 function loadRecord() {
-  try { bestScore = Number(localStorage.getItem('pong_neon_best')) || 0; }
+  try { bestScore = Number(localStorage.getItem(BEST_KEY)) || 0; }
   catch (_) { bestScore = 0; }
 }
 function saveRecord() {
-  try { localStorage.setItem('pong_neon_best', String(bestScore)); }
+  try { localStorage.setItem(BEST_KEY, String(bestScore)); }
   catch (_) { /* localStorage puede estar deshabilitado */ }
 }
 function updateHud() {
@@ -262,7 +286,7 @@ window.addEventListener('keydown', event => {
   if (key === 'arrowup' || key === 'arrowdown' || key === ' ') event.preventDefault();
 
   if (key === 'escape' || key === 'p') {
-    if (!document.getElementById('options-modal').hidden) return;
+    if (optionsDialog.open) return;
     if (state === 'playing') pauseGame();
     else if (state === 'paused') resumeGame();
     return;
@@ -289,21 +313,21 @@ window.addEventListener('blur', () => {
 });
 
 /* Opciones */
-const modal = document.getElementById('options-modal');
+const optionsDialog = document.getElementById('options');
+let modalWasPlaying = false;
 document.getElementById('options-button').addEventListener('click', () => {
   modalWasPlaying = state === 'playing';
   if (modalWasPlaying) pauseGame();
-  modal.hidden = false;
+  optionsDialog.showModal();
 });
-function closeOptions() {
-  modal.hidden = true;
+optionsDialog.addEventListener('close', () => {
   if (modalWasPlaying && state === 'paused') resumeGame();
   modalWasPlaying = false;
-}
-document.getElementById('close-options').addEventListener('click', closeOptions);
-modal.addEventListener('click', event => {
-  if (event.target === modal) closeOptions();
 });
+optionsDialog.addEventListener('click', event => {
+  if (event.target === optionsDialog) optionsDialog.close(); // clic en el backdrop
+});
+document.getElementById('close-options').addEventListener('click', () => optionsDialog.close());
 
 /* Física y puntuación */
 function update(dt) {
@@ -382,42 +406,42 @@ function bounceFromPaddle(paddle, direction) {
 
 /* Renderizado Canvas 2D */
 function drawCourt() {
-  ctx.fillStyle = '#070b1c';
+  ctx.fillStyle = '#0a0328';
   ctx.fillRect(0,0,WIDTH,HEIGHT);
 
   for (const star of stars) {
     ctx.globalAlpha = star.alpha;
-    ctx.fillStyle = '#dce8ff';
+    ctx.fillStyle = '#eaeaea';
     ctx.fillRect(star.x,star.y,star.size,star.size);
   }
   ctx.globalAlpha = 1;
 
   // Límites.
-  ctx.fillStyle = '#4dc9ff';
+  ctx.fillStyle = '#05d9e8';
   ctx.globalAlpha = 0.55;
   ctx.fillRect(10,8,WIDTH-20,3);
   ctx.fillRect(10,HEIGHT-11,WIDTH-20,3);
   ctx.globalAlpha = 1;
 
   // Línea central discontinua.
-  ctx.fillStyle = '#37456f';
+  ctx.fillStyle = '#3b2a5e';
   for (let y=20;y<HEIGHT-20;y+=27) ctx.fillRect(WIDTH/2-2,y,4,15);
 
   // Palas.
-  drawGlowRect(player.x,player.y,player.w,player.h,'#4dc9ff');
-  drawGlowRect(cpu.x,cpu.y,cpu.w,cpu.h,'#ff4d6d');
+  drawGlowRect(player.x,player.y,player.w,player.h,'#05d9e8');
+  drawGlowRect(cpu.x,cpu.y,cpu.w,cpu.h,'#ff2a6d');
 
   // Estela y pelota.
   for (let i=0;i<ball.trail.length;i++) {
     const t = ball.trail[i];
     ctx.globalAlpha = (i/ball.trail.length)*0.28;
-    ctx.fillStyle = '#4dc9ff';
+    ctx.fillStyle = '#05d9e8';
     ctx.beginPath();
     ctx.arc(t.x,t.y,BALL_R*(0.35+0.65*i/ball.trail.length),0,Math.PI*2);
     ctx.fill();
   }
   ctx.globalAlpha = 1;
-  ctx.shadowColor = '#4dc9ff';
+  ctx.shadowColor = '#05d9e8';
   ctx.shadowBlur = 16;
   ctx.fillStyle = '#ffffff';
   ctx.beginPath();
@@ -439,10 +463,10 @@ function drawButton(id,cx,cy,w,h,label,primary=false) {
   const x=cx-w/2, y=cy-h/2;
   ctx.beginPath();
   ctx.roundRect(x,y,w,h,10);
-  ctx.fillStyle=primary?'#3a1628':'#121a38';
+  ctx.fillStyle=primary?'#3d0f24':'#1a1033';
   ctx.fill();
   ctx.lineWidth=2;
-  ctx.strokeStyle=primary?'#ff4d6d':'#4dc9ff';
+  ctx.strokeStyle=primary?'#ff2a6d':'#05d9e8';
   ctx.shadowColor=ctx.strokeStyle;
   ctx.shadowBlur=9;
   ctx.stroke();
@@ -450,52 +474,52 @@ function drawButton(id,cx,cy,w,h,label,primary=false) {
   ctx.font='bold 18px "Courier New",monospace';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.fillStyle='#eff3ff';
+  ctx.fillStyle='#eaeaea';
   ctx.fillText(label,cx,cy+1);
   buttons.push({id,x,y,w,h});
 }
 function overlay() {
-  ctx.fillStyle='#040716e8';
+  ctx.fillStyle='#05021ae6';
   ctx.fillRect(0,0,WIDTH,HEIGHT);
 }
 function drawStart() {
   overlay();
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.shadowColor='#4dc9ff';
+  ctx.shadowColor='#05d9e8';
   ctx.shadowBlur=18;
-  ctx.fillStyle='#4dc9ff';
+  ctx.fillStyle='#05d9e8';
   ctx.font='bold 76px "Courier New",monospace';
   ctx.fillText('PONG',WIDTH/2,HEIGHT*0.31);
   ctx.shadowBlur=0;
-  ctx.fillStyle='#9ba8cf';
+  ctx.fillStyle='#9b8fb8';
   ctx.font='bold 16px "Courier New",monospace';
   ctx.fillText('ARCADE NEÓN',WIDTH/2,HEIGHT*0.42);
   drawButton('start',WIDTH/2,HEIGHT*0.57,230,48,'JUGAR',true);
-  ctx.fillStyle='#ffe74c';
+  ctx.fillStyle='#ffd60a';
   ctx.font='bold 16px "Courier New",monospace';
   ctx.fillText('RÉCORD  '+bestScore,WIDTH/2,HEIGHT*0.72);
-  ctx.fillStyle='#9ba8cf';
+  ctx.fillStyle='#9b8fb8';
   ctx.font='14px "Courier New",monospace';
   ctx.fillText('Primero en llegar a '+WIN_SCORE+' puntos gana',WIDTH/2,HEIGHT*0.81);
   ctx.fillText('ENTER o toca la pantalla',WIDTH/2,HEIGHT*0.89);
 }
 function drawPaused() {
   overlay();
-  drawTitle('PAUSA','#4dc9ff',HEIGHT*0.31);
+  drawTitle('PAUSA','#05d9e8',HEIGHT*0.31);
   drawButton('resume',WIDTH/2,HEIGHT*0.49,230,46,'REANUDAR',true);
   drawButton('restart',WIDTH/2,HEIGHT*0.62,230,46,'REINICIAR',false);
   drawButton('menu',WIDTH/2,HEIGHT*0.75,230,46,'MENÚ',false);
 }
 function drawEnd(won) {
   overlay();
-  drawTitle(won?'¡VICTORIA!':'GAME OVER',won?'#6eeb83':'#ff4d6d',HEIGHT*0.31);
-  ctx.fillStyle='#eff3ff';
+  drawTitle(won?'¡VICTORIA!':'GAME OVER',won?'#39ff14':'#ff2a6d',HEIGHT*0.31);
+  ctx.fillStyle='#eaeaea';
   ctx.font='bold 18px "Courier New",monospace';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
   ctx.fillText('JUGADOR  '+playerScore+'   ·   CPU  '+cpuScore,WIDTH/2,HEIGHT*0.44);
-  ctx.fillStyle='#ffe74c';
+  ctx.fillStyle='#ffd60a';
   ctx.font='bold 16px "Courier New",monospace';
   ctx.fillText('RÉCORD  '+bestScore,WIDTH/2,HEIGHT*0.51);
   drawButton('restart',WIDTH/2,HEIGHT*0.65,250,46,'JUGAR DE NUEVO',true);
@@ -520,7 +544,7 @@ function render() {
   else if (state==='gameover') drawEnd(false);
   else if (state==='victory') drawEnd(true);
   else if (state==='playing' && servingIn>0) {
-    ctx.fillStyle='#dce8ff';
+    ctx.fillStyle='#eaeaea';
     ctx.font='bold 16px "Courier New",monospace';
     ctx.textAlign='center';
     ctx.textBaseline='middle';

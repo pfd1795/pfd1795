@@ -7,40 +7,42 @@
 <title>Pixel Pool 8 — Billar arcade</title>
 <style>
   :root{
-    --bg:#0b0b14; --panel:#12122a; --line:#23234a;
-    --text:#e8e8f4; --muted:#9a9ab8;
-    --green:#39ff8b; --pink:#ff4d6d; --yellow:#ffd23f; --blue:#4dc9ff;
+    --bg:#0d0221; --panel:#1a1033; --line:rgba(185,103,255,0.4);
+    --text:#eaeaea; --muted:#9b8fb8;
+    --neon-green:#39ff14; --neon-pink:#ff2a6d; --neon-cyan:#05d9e8; --neon-yellow:#ffd60a; --neon-purple:#b967ff;
+    --green:var(--neon-green); --pink:var(--neon-pink); --yellow:var(--neon-yellow); --blue:var(--neon-cyan);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{background:var(--bg);color:var(--text);font-family:"Courier New",ui-monospace,monospace;touch-action:manipulation}
 
   /* Barra superior */
-  #topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:2px solid var(--line)}
-  #topbar h1{font-size:18px;letter-spacing:3px;color:var(--green);text-shadow:0 0 8px rgba(57,255,139,.5)}
+  #topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+  #topbar h1{font-size:18px;letter-spacing:3px;color:var(--neon-green);text-shadow:0 0 8px rgba(57,255,20,.8)}
   .top-actions{display:flex;gap:8px}
   button{font-family:inherit;cursor:pointer;background:transparent;letter-spacing:2px;font-weight:bold}
-  #btnOptions{border:2px solid var(--yellow);color:var(--yellow);padding:6px 12px;font-size:12px}
-  #btnOptions:hover{background:rgba(255,210,63,.12)}
-  #btnPause{display:none;border:2px solid var(--pink);color:var(--pink);padding:6px 12px;font-size:12px}
+  #btnOptions{border:1px solid var(--neon-cyan);color:var(--neon-cyan);padding:6px 12px;font-size:12px}
+  #btnOptions:hover{background:rgba(5,217,232,.12);box-shadow:0 0 10px rgba(5,217,232,.5)}
+  #btnPause{display:none;border:1px solid var(--neon-pink);color:var(--neon-pink);padding:6px 12px;font-size:12px}
   body[data-state="playing"] #btnPause,body[data-state="paused"] #btnPause{display:inline-block}
 
   /* Barra secundaria informativa */
-  #infobar{display:flex;flex-wrap:wrap;gap:6px 18px;padding:8px 14px;font-size:12px;letter-spacing:1px;color:var(--muted);background:#0e0e1e;border-bottom:2px solid var(--line)}
+  #infobar{display:flex;flex-wrap:wrap;gap:6px 18px;padding:8px 14px;font-size:12px;letter-spacing:1px;color:var(--muted);background:#160b33;border-bottom:1px solid var(--line)}
   #infobar b{color:var(--text);font-size:14px;margin-left:4px}
 
   /* Escenario */
   #stage{position:relative;width:min(100vw,460px);margin:0 auto}
   #game{display:block;width:100%;height:auto;background:var(--bg);touch-action:none}
-  #scanlines{position:absolute;inset:0;pointer-events:none;
-    background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 4px)}
 
-  /* Modal de opciones */
-  #modal{position:fixed;inset:0;background:rgba(4,4,12,.82);display:flex;align-items:center;justify-content:center;z-index:10}
-  #modal.hidden{display:none}
-  .modal-box{background:var(--panel);border:2px solid var(--green);max-width:430px;width:92%;max-height:86vh;overflow:auto;padding:18px 20px}
-  .modal-box h2{color:var(--green);letter-spacing:3px;font-size:18px;margin-bottom:10px}
-  .modal-box h3{color:var(--yellow);letter-spacing:2px;font-size:14px;margin:14px 0 6px}
-  .modal-box h4{font-size:12px;color:var(--text);margin-bottom:2px}
+  /* ================= Scanlines CRT (sutil, canon compartido) ================= */
+  .scanlines{position:fixed;inset:0;pointer-events:none;z-index:5;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0 1px,transparent 1px 4px)}
+
+  /* ================= Modal de opciones ================= */
+  dialog{background:var(--panel);border:1px solid var(--neon-purple);max-width:430px;width:92%;max-height:86vh;overflow:auto;padding:18px 20px;box-shadow:0 0 30px rgba(185,103,255,0.4)}
+  dialog::backdrop{background:rgba(0,0,0,0.72)}
+  dialog h2{color:var(--neon-cyan);letter-spacing:3px;font-size:18px;margin-bottom:10px;text-shadow:0 0 8px rgba(5,217,232,0.7)}
+  dialog h3{color:var(--neon-yellow);letter-spacing:2px;font-size:14px;margin:14px 0 6px}
+  dialog h4{font-size:12px;color:var(--text);margin-bottom:2px}
   .opts{list-style:none}
   .opts li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
   .soon{color:var(--muted);font-style:italic}
@@ -50,10 +52,10 @@
   .ctrl-cols p{font-size:12px;color:var(--muted);margin-bottom:4px}
   #modalActions{display:none;margin-top:14px}
   body[data-state="playing"] #modalActions,body[data-state="paused"] #modalActions{display:block}
-  #modalActions button,#mClose{display:block;width:100%;padding:9px;margin-top:8px;font-size:12px;border:2px solid}
-  #mResume{border-color:var(--green);color:var(--green)}
-  #mRestart{border-color:var(--yellow);color:var(--yellow)}
-  #mExit{border-color:var(--pink);color:var(--pink)}
+  #modalActions button,#mClose{display:block;width:100%;padding:9px;margin-top:8px;font-size:12px;border:1px solid}
+  #mResume{border-color:var(--neon-green);color:var(--neon-green)}
+  #mRestart{border-color:var(--neon-yellow);color:var(--neon-yellow)}
+  #mExit{border-color:var(--neon-pink);color:var(--neon-pink)}
   #mClose{border-color:var(--muted);color:var(--muted)}
 </style>
 </head>
@@ -76,12 +78,10 @@
 
 <main id="stage">
   <canvas id="game" width="480" height="720"></canvas>
-  <div id="scanlines"></div>
 </main>
 
-<div id="modal" class="hidden" role="dialog" aria-modal="true" aria-label="Opciones">
-  <div class="modal-box">
-    <h2>OPCIONES</h2>
+<dialog id="options" aria-labelledby="options-title">
+    <h2 id="options-title">OPCIONES</h2>
     <ul class="opts">
       <li><span>Música</span><span class="soon">Próximamente</span></li>
       <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
@@ -115,8 +115,9 @@
       <button id="mExit" type="button">SALIR AL MENÚ</button>
     </div>
     <button id="mClose" type="button">CERRAR</button>
-  </div>
-</div>
+</dialog>
+
+<div class="scanlines" aria-hidden="true"></div>
 
 <script>
 'use strict';
@@ -134,10 +135,10 @@ const POCKETS=[
   {x:PLAY.x,y:PLAY.y+PLAY.h},{x:PLAY.x+PLAY.w,y:PLAY.y+PLAY.h},
   {x:PLAY.x-8,y:PLAY.y+PLAY.h/2},{x:PLAY.x+PLAY.w+8,y:PLAY.y+PLAY.h/2}
 ];
-const COL={bg:'#0b0b14',felt:'#0d3024',rail:'#1d2a52',railEdge:'#4dc9ff',
+const COL={bg:'#0d0221',felt:'#0d3024',rail:'#2a1a52',railEdge:'#05d9e8',
   pocket:'#04040a',white:'#f4f4f8',eight:'#34344a'};
-const BALL_COLORS={1:'#ffd23f',2:'#4dc9ff',3:'#ff4d6d',4:'#b06bff',
-  5:'#ff9f1c',6:'#39ff8b',7:'#d97742'};
+const BALL_COLORS={1:'#ffd60a',2:'#05d9e8',3:'#ff2a6d',4:'#b967ff',
+  5:'#ff9f1c',6:'#39ff14',7:'#d97742'};
 const ballColor=num=>num===0?COL.white:num===8?COL.eight:BALL_COLORS[num>8?num-8:num];
 const isStripe=num=>num>8;
 /* Física */
@@ -157,9 +158,19 @@ function goTitle(){game.state='title';syncBody();updateHUD();}
 
 /* ===================== 3. PERSISTENCIA (localStorage) ===================== */
 const store={
-  KEY:'pixelpool_records_v1',
-  load(){try{const d=JSON.parse(localStorage.getItem(store.KEY));
-    return d&&d.best||0}catch(e){return 0}},
+  KEY:'pool_best_v1',
+  LEGACY:'pixelpool_records_v1',
+  load(){
+    try{
+      if(localStorage.getItem(store.KEY)==null){
+        const legacy=localStorage.getItem(store.LEGACY);
+        if(legacy!=null)localStorage.setItem(store.KEY,legacy); // conserva el récord con la clave nueva
+      }
+      if(localStorage.getItem(store.LEGACY)!=null)localStorage.removeItem(store.LEGACY);
+      const d=JSON.parse(localStorage.getItem(store.KEY));
+      return d&&d.best||0
+    }catch(e){return 0}
+  },
   save(v){try{localStorage.setItem(store.KEY,JSON.stringify({best:v}))}catch(e){}}
 };
 
@@ -242,14 +253,14 @@ function physicsSteps(dt){
 function sinkBall(b,p){
   b.sink={t:0,px:p.x,py:p.y};b.vx=0;b.vy=0;
   if(b.num===0){game.scratch=true;audio.pocketSnd();return;}
-  if(b.num===8){game.eightDown=true;audio.pocketSnd();addFloat('¡BOLA 8!',p.x,p.y-24,'#ff4d6d');return;}
+  if(b.num===8){game.eightDown=true;audio.pocketSnd();addFloat('¡BOLA 8!',p.x,p.y-24,'#ff2a6d');return;}
   game.shotSunk++;
   const pts=100*game.shotSunk;
   game.score+=pts;
   game.shots=Math.min(MAX_SHOTS,game.shots+1);
-  addFloat('+'+pts,p.x,p.y-24,'#ffd23f');
-  if(game.shotSunk>1)addFloat('¡COMBO x'+game.shotSunk+'!',p.x,p.y-46,'#39ff8b');
-  addFloat('+1 TIRO',p.x,p.y-4,'#4dc9ff');
+  addFloat('+'+pts,p.x,p.y-24,'#ffd60a');
+  if(game.shotSunk>1)addFloat('¡COMBO x'+game.shotSunk+'!',p.x,p.y-46,'#39ff14');
+  addFloat('+1 TIRO',p.x,p.y-4,'#05d9e8');
   audio.pocketSnd();
 }
 function physicsStep(dt){
@@ -319,7 +330,7 @@ function respotCue(){
 function resolveShot(){
   if(game.scratch){
     game.score=Math.max(0,game.score-SCRATCH_PENALTY);
-    addFloat('¡FALTA! -'+SCRATCH_PENALTY,240,560,'#ff4d6d');
+    addFloat('¡FALTA! -'+SCRATCH_PENALTY,240,560,'#ff2a6d');
     respotCue();game.scratch=false;
   }
   const objsLeft=balls.filter(b=>b.active&&b.num>0).length;
@@ -469,7 +480,7 @@ function drawAim(){
   g.stroke();g.lineCap='butt';
   /* medidor de potencia */
   g.strokeStyle='rgba(255,255,255,0.4)';g.lineWidth=2;g.strokeRect(140,686,200,14);
-  g.fillStyle=aim.power>0.8?'#ff4d6d':aim.power>0.5?'#ffd23f':'#39ff8b';
+  g.fillStyle=aim.power>0.8?'#ff2a6d':aim.power>0.5?'#ffd60a':'#39ff14';
   g.fillRect(142,688,196*aim.power,10);
 }
 function renderPlaying(){
@@ -486,12 +497,12 @@ function renderPlaying(){
     txt('ARRASTRA Y SUELTA PARA GOLPEAR',240,14,12,'rgba(255,255,255,0.45)');
   if(game.shots<=5&&game.shots>0){
     const pulse=Math.sin(performance.now()/180)>0;
-    txt('¡ÚLTIMOS '+game.shots+' TIROS!',468,14,12,pulse?'#ff4d6d':'rgba(255,77,109,0.5)','right');
+    txt('¡ÚLTIMOS '+game.shots+' TIROS!',468,14,12,pulse?'#ff2a6d':'rgba(255,77,109,0.5)','right');
   }
 }
 function renderPauseOverlay(){
   g.fillStyle='rgba(5,5,15,0.75)';g.fillRect(0,0,W,H);
-  txt('PAUSA',240,320,44,'#4dc9ff');
+  txt('PAUSA',240,320,44,'#05d9e8');
   txt('ESC / P O TOCA PARA CONTINUAR',240,380,14,'rgba(255,255,255,0.6)');
 }
 function drawMiniRack(){
@@ -507,30 +518,30 @@ function drawMiniRack(){
 }
 function renderTitle(ts){
   g.fillStyle=COL.bg;g.fillRect(0,0,W,H);
-  txt('PIXEL',240,175,72,'#39ff8b');
-  txt('POOL',240,248,72,'#ff4d6d');
+  txt('PIXEL',240,175,72,'#39ff14');
+  txt('POOL',240,248,72,'#ff2a6d');
   txt('BILLAR ARCADE · 8-BALL',240,300,15,'rgba(255,255,255,0.55)');
   drawMiniRack();
   g.globalAlpha=0.75+0.25*Math.sin(ts/300);
-  g.strokeStyle='#ffd23f';g.lineWidth=3;g.strokeRect(150,545,180,56);
-  txt('JUGAR',240,573,24,'#ffd23f');g.globalAlpha=1;
+  g.strokeStyle='#ffd60a';g.lineWidth=3;g.strokeRect(150,545,180,56);
+  txt('JUGAR',240,573,24,'#ffd60a');g.globalAlpha=1;
   if(Math.sin(ts/400)>-0.2)txt('PULSA UNA TECLA O TOCA LA PANTALLA',240,630,14,'rgba(255,255,255,0.7)');
-  txt('RÉCORD: '+game.best,240,662,14,'#ffd23f');
+  txt('RÉCORD: '+game.best,240,662,14,'#ffd60a');
   txt('SIN DEPENDENCIAS · OFFLINE',240,694,12,'rgba(255,255,255,0.35)');
 }
 const RESULT_BTNS=[
-  {x:52,y:560,w:180,h:56,label:'OTRA VEZ',col:'#39ff8b',action:()=>startGame()},
-  {x:248,y:560,w:180,h:56,label:'MENÚ',col:'#ff4d6d',action:()=>goTitle()}
+  {x:52,y:560,w:180,h:56,label:'OTRA VEZ',col:'#39ff14',action:()=>startGame()},
+  {x:248,y:560,w:180,h:56,label:'MENÚ',col:'#ff2a6d',action:()=>goTitle()}
 ];
 function renderResults(ts){
   g.fillStyle=COL.bg;g.fillRect(0,0,W,H);
   const won=game.state==='victory';
-  txt(won?'¡VICTORIA!':'GAME OVER',240,90,40,won?'#39ff8b':'#ff4d6d');
-  if(won)txt('BONUS DE TIROS +'+game.bonus,240,132,15,'#4dc9ff');
+  txt(won?'¡VICTORIA!':'GAME OVER',240,90,40,won?'#39ff14':'#ff2a6d');
+  if(won)txt('BONUS DE TIROS +'+game.bonus,240,132,15,'#05d9e8');
   else txt('('+game.overReason+')',240,132,14,'rgba(255,255,255,0.6)');
   txt('PUNTUACIÓN',240,205,14,'rgba(255,255,255,0.6)');
   txt(String(game.score),240,242,36,'#ffffff');
-  if(game.newBest&&Math.sin(ts/250)>-0.3)txt('¡NUEVO RÉCORD!',240,286,17,'#ffd23f');
+  if(game.newBest&&Math.sin(ts/250)>-0.3)txt('¡NUEVO RÉCORD!',240,286,17,'#ffd60a');
   txt('RÉCORD: '+game.best,240,318,14,'rgba(255,255,255,0.55)');
   const left=balls.filter(b=>b.active&&b.num>0).length;
   txt('BOLAS EMBOCADAS '+(15-left)+' / 15',240,356,14,'rgba(255,255,255,0.55)');
@@ -560,19 +571,19 @@ function updateHUD(){
 }
 
 /* ===================== 12. ENTRADA ===================== */
-const modal=$('#modal');
+const optionsDialog=$('#options');
 const inside=(x,y,b)=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h;
-function openModal(){if(game.state==='playing')pauseGame();modal.classList.remove('hidden');}
-function closeModal(){modal.classList.add('hidden');}
+function openModal(){if(game.state==='playing')pauseGame();optionsDialog.showModal();}
+function closeModal(){if(optionsDialog.open)optionsDialog.close();}
 
 window.addEventListener('keydown',e=>{
   if(e.repeat)return;
   const code=e.code;
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(code))e.preventDefault();
   ensureAudio();
-  if(!modal.classList.contains('hidden')){
-    if(code==='Escape'||code==='Enter'){closeModal();if(game.state==='paused')resumeGame();}
-    return;
+  if(optionsDialog.open){
+    if(code==='Enter'){closeModal();if(game.state==='paused')resumeGame();}
+    return; // ESC cierra el dialog de forma nativa
   }
   switch(game.state){
     case 'title':startGame();break;
@@ -632,7 +643,7 @@ $('#mResume').addEventListener('click',()=>{closeModal();resumeGame();});
 $('#mRestart').addEventListener('click',startGame);
 $('#mExit').addEventListener('click',()=>{closeModal();goTitle();});
 $('#mClose').addEventListener('click',closeModal);
-modal.addEventListener('pointerdown',e=>{if(e.target===modal)closeModal();});
+optionsDialog.addEventListener('click',e=>{if(e.target===optionsDialog)closeModal();}); // clic en el backdrop
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden&&game.state==='playing')pauseGame();
 });

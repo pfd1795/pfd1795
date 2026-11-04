@@ -10,8 +10,12 @@ mantenerlos sincronizados con el código es parte del mantenimiento (ver `AGENTS
 
 ## Para agentes y mantenimiento
 
-- [`AGENTS.md`](../AGENTS.md) — arquitectura, convenciones de código, internacionalización,
-  limitaciones conocidas y reglas de mantenimiento.
+- [`AGENTS.md`](../AGENTS.md) — arquitectura, mapa de módulos, inventario de claves de
+  `localStorage`, convenciones de código, verificación manual, limitaciones conocidas y reglas de
+  mantenimiento.
+- `AGENTS.md` locales por carpeta (la raíz es la referencia; los locales solo añaden reglas propias):
+  - [`juegos/AGENTS.md`](../juegos/AGENTS.md) — reglas de la grilla y de los juegos integrados.
+  - [`mis-estudios/AGENTS.md`](../mis-estudios/AGENTS.md) — reglas de la enciclopedia.
 - [`AUDITORIA.md`](./AUDITORIA.md) — hoja de verificación para auditar el proyecto.
 
 ## Juegos

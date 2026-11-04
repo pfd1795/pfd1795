@@ -43,7 +43,8 @@ Archivo único `index.html` con tres bloques:
 
 ## Persistencia
 
-- `localStorage` con clave `racer_best_v1` guarda el récord.
+- `localStorage` con clave `neon-racer_best_v1` guarda el récord (la clave
+  antigua `racer_best_v1` se migra automáticamente).
 - Acceso envuelto en try/catch para navegadores con almacenamiento bloqueado.
 - Sin servidores ni almacenamiento externo.
 

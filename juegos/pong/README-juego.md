@@ -40,8 +40,9 @@ implementados en JavaScript sin dependencias externas.
 
 ## Persistencia
 
-`localStorage` guarda el récord en la clave `pong_neon_best`. Si el
-almacenamiento no está disponible, la partida sigue funcionando.
+`localStorage` guarda el récord en la clave `pong_best_v1` (la clave antigua
+`pong_neon_best` se migra automáticamente). Si el almacenamiento no está
+disponible, la partida sigue funcionando.
 
 ## Posibles Mejoras
 

@@ -6,15 +6,16 @@
 <title>Piedra, Papel o Tijeras — Arcade Neón</title>
 <style>
   :root {
-    --bg:#070a18; --panel:#101630; --line:#28345d;
-    --text:#eff3ff; --muted:#9ba8cf; --cyan:#4dc9ff;
-    --pink:#ff4d6d; --yellow:#ffe74c; --green:#6eeb83;
+    --bg:#0d0221; --panel:#1a1033; --line:rgba(185,103,255,0.4);
+    --text:#eaeaea; --muted:#9b8fb8;
+    --neon-green:#39ff14; --neon-pink:#ff2a6d; --neon-cyan:#05d9e8; --neon-yellow:#ffd60a; --neon-purple:#b967ff;
+    --cyan:var(--neon-cyan); --pink:var(--neon-pink); --yellow:var(--neon-yellow); --green:var(--neon-green);
   }
   * { box-sizing:border-box; }
   html,body { width:100%; height:100%; margin:0; overflow:hidden; }
   body {
     display:flex; flex-direction:column; align-items:center;
-    background:radial-gradient(ellipse at 50% 0%,#172047 0%,var(--bg) 68%);
+    background:var(--bg);
     color:var(--text); font-family:"Courier New",monospace;
     user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
   }
@@ -23,16 +24,17 @@
     padding:10px 4px 6px;
   }
   h1 {
-    margin:0; color:var(--yellow); font-size:clamp(15px,4vw,21px);
-    letter-spacing:2px; text-shadow:0 0 10px #ffe74c66;
+    margin:0; color:var(--neon-green); font-size:clamp(15px,4vw,21px);
+    letter-spacing:2px; text-shadow:0 0 8px rgba(57,255,20,0.8);
   }
   button {
-    color:var(--text); font-family:inherit; font-weight:bold; letter-spacing:1px;
-    background:#151d3b; border:2px solid var(--line); border-radius:9px;
-    padding:8px 12px; cursor:pointer;
+    color:var(--neon-cyan); font-family:inherit; font-weight:bold; letter-spacing:1px;
+    background:transparent; border:1px solid var(--neon-cyan); border-radius:9px;
+    padding:8px 12px; cursor:pointer; transition:box-shadow 0.15s, background 0.15s;
   }
-  button:focus-visible { outline:3px solid var(--yellow); outline-offset:2px; }
-  button:active { transform:translateY(1px); border-color:var(--yellow); }
+  button:hover { background:rgba(5,217,232,0.12); box-shadow:0 0 10px rgba(5,217,232,0.5); }
+  button:focus-visible { outline:3px solid var(--neon-yellow); outline-offset:2px; }
+  button:active { transform:translateY(1px); }
   #hud {
     width:min(96vw,720px); display:flex; justify-content:center; gap:clamp(12px,5vw,40px);
     padding:3px 4px 8px; color:var(--muted); font-size:11px; letter-spacing:1px;
@@ -46,34 +48,39 @@
   }
   .choice {
     flex:1; min-width:0; max-width:155px; min-height:76px;
-    border:2px solid var(--line); background:#111832; border-radius:12px;
+    border:1px solid var(--neon-purple); background:rgba(185,103,255,0.08); border-radius:12px;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
     font-size:13px;
   }
   .choice .icon { font-size:30px; line-height:1; }
-  .choice:hover { border-color:var(--cyan); box-shadow:0 0 14px #4dc9ff33; }
+  .choice:hover { border-color:var(--neon-cyan); box-shadow:0 0 14px rgba(5,217,232,0.3); }
   .choice:disabled { opacity:.45; cursor:not-allowed; }
   #message { min-height:20px; text-align:center; color:var(--muted); font-size:12px; letter-spacing:1px; }
 
-  #modal {
-    position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
-    padding:16px; background:#02040dcc;
+  /* ================= Scanlines CRT (sutil, canon compartido) ================= */
+  .scanlines {
+    position:fixed; inset:0; pointer-events:none; z-index:5;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0 1px, transparent 1px 4px);
   }
-  #modal[hidden] { display:none; }
-  .modal-card {
-    width:min(92vw,410px); background:var(--panel); border:2px solid var(--line);
-    border-radius:14px; padding:16px; box-shadow:0 0 35px #4dc9ff22;
+
+  /* ================= Modal de opciones ================= */
+  dialog {
+    width:min(92vw,410px); padding:16px;
+    color:var(--text); background:var(--panel);
+    border:1px solid var(--neon-purple); border-radius:14px;
+    box-shadow:0 0 30px rgba(185,103,255,0.4);
   }
+  dialog::backdrop { background:rgba(0,0,0,0.72); }
   .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:13px; }
-  .modal-head h2 { margin:0; font-size:16px; color:var(--cyan); letter-spacing:2px; }
-  .modal-card ul { list-style:none; padding:0; margin:0 0 14px; display:grid; gap:8px; }
-  .modal-card li {
+  .modal-head h2 { margin:0; font-size:16px; color:var(--neon-cyan); letter-spacing:2px; text-shadow:0 0 8px rgba(5,217,232,0.7); }
+  dialog ul { list-style:none; padding:0; margin:0 0 14px; display:grid; gap:8px; }
+  dialog li {
     display:flex; justify-content:space-between; gap:10px; padding:9px 11px;
-    border:1px solid var(--line); border-radius:8px; background:#090e23; font-size:13px;
+    border:1px solid var(--line); border-radius:8px; background:#12052e; font-size:13px;
   }
   .soon { color:var(--muted); font-style:italic; }
   .instructions { border-top:1px dashed var(--line); padding-top:10px; color:var(--muted); font-size:12px; line-height:1.55; }
-  .instructions h3 { margin:0 0 5px; color:var(--green); font-size:13px; letter-spacing:2px; }
+  .instructions h3 { margin:0 0 5px; color:var(--neon-green); font-size:13px; letter-spacing:2px; }
   .instructions p { margin:5px 0; }
   .instructions strong { color:var(--text); }
 </style>
@@ -106,8 +113,7 @@
   </div>
 </main>
 
-<div id="modal" hidden>
-  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="options-title">
+<dialog id="options" aria-labelledby="options-title">
     <div class="modal-head">
       <h2 id="options-title">OPCIONES</h2>
       <button id="close-options" type="button" aria-label="Cerrar">✕</button>
@@ -116,6 +122,7 @@
       <li><span>Música</span><span class="soon">Próximamente</span></li>
       <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
       <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+      <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
     </ul>
     <div class="instructions">
       <h3>REGLAS Y CONTROLES</h3>
@@ -123,8 +130,9 @@
       <p><strong>Teclado:</strong> 1 = piedra, 2 = papel, 3 = tijeras. P o ESC = pausa.</p>
       <p><strong>Móvil:</strong> toca una de las tres opciones.</p>
     </div>
-  </section>
-</div>
+</dialog>
+
+<div class="scanlines" aria-hidden="true"></div>
 
 <script>
 'use strict';
@@ -140,7 +148,7 @@ const ctx = canvas.getContext('2d');
 const stage = document.getElementById('stage');
 const messageEl = document.getElementById('message');
 const choiceButtons = [...document.querySelectorAll('.choice')];
-const modal = document.getElementById('modal');
+const optionsDialog = document.getElementById('options');
 
 let state = 'start'; // start, playing, paused, victory, gameover
 let playerScore = 0;
@@ -160,12 +168,29 @@ const stars = Array.from({length:42}, () => ({
   size:0.7+Math.random()*1.4, alpha:0.12+Math.random()*0.35
 }));
 
+const RECORD_KEY = 'piedras-papel-tijeras_best_v1';
+const LEGACY_RECORD_KEYS = ['ppt_neon_record'];
+
+function migrateRecordKey() {
+  try {
+    if (localStorage.getItem(RECORD_KEY) == null) {
+      for (const oldKey of LEGACY_RECORD_KEYS) {
+        const legacy = localStorage.getItem(oldKey);
+        if (legacy != null) { localStorage.setItem(RECORD_KEY, legacy); localStorage.removeItem(oldKey); break; }
+      }
+    } else {
+      for (const oldKey of LEGACY_RECORD_KEYS) { if (localStorage.getItem(oldKey) != null) localStorage.removeItem(oldKey); }
+    }
+  } catch (_) { /* localStorage puede estar deshabilitado */ }
+}
+migrateRecordKey(); // conserva el récord con la clave nueva
+
 function loadRecord() {
-  try { record = Number(localStorage.getItem('ppt_neon_record')) || 0; }
+  try { record = Number(localStorage.getItem(RECORD_KEY)) || 0; }
   catch (_) { record = 0; }
 }
 function saveRecord() {
-  try { localStorage.setItem('ppt_neon_record', String(record)); }
+  try { localStorage.setItem(RECORD_KEY, String(record)); }
   catch (_) { /* localStorage puede estar deshabilitado */ }
 }
 function updateHud() {
@@ -267,32 +292,32 @@ function roundedRect(x,y,w,h,r) {
 function drawButton(id,cx,cy,w,h,label,primary=false) {
   const x=cx-w/2, y=cy-h/2;
   roundedRect(x,y,w,h,10);
-  ctx.fillStyle=primary?'#3b1729':'#121a38';
+  ctx.fillStyle=primary?'#3d0f24':'#1a1033';
   ctx.fill();
   ctx.lineWidth=2;
-  ctx.strokeStyle=primary?'#ff4d6d':'#4dc9ff';
+  ctx.strokeStyle=primary?'#ff2a6d':'#05d9e8';
   ctx.shadowColor=ctx.strokeStyle;
   ctx.shadowBlur=9;
   ctx.stroke();
   ctx.shadowBlur=0;
-  drawText(label,cx,cy,16,'#eff3ff');
+  drawText(label,cx,cy,16,'#eaeaea');
   buttons.push({id,x,y,w,h});
 }
 function drawBackground() {
-  ctx.fillStyle='#080d22';
+  ctx.fillStyle='#0a0328';
   ctx.fillRect(0,0,W,H);
   for (const star of stars) {
     ctx.globalAlpha=star.alpha;
-    ctx.fillStyle='#e1eaff';
+    ctx.fillStyle='#eaeaea';
     ctx.fillRect(star.x,star.y,star.size,star.size);
   }
   ctx.globalAlpha=1;
-  ctx.strokeStyle='rgba(77,201,255,.25)';
+  ctx.strokeStyle='rgba(5,217,232,.25)';
   ctx.lineWidth=1;
   ctx.strokeRect(8,8,W-16,H-16);
 
   ctx.setLineDash([7,9]);
-  ctx.strokeStyle='#344064';
+  ctx.strokeStyle='#3b2a5e';
   ctx.beginPath();
   ctx.moveTo(W/2,24);
   ctx.lineTo(W/2,H-24);
@@ -301,36 +326,36 @@ function drawBackground() {
 }
 function drawArena() {
   drawBackground();
-  drawText('JUGADOR',W*0.25,42,15,'#4dc9ff');
-  drawText('CPU',W*0.75,42,15,'#ff4d6d');
-  drawText(String(playerScore),W*0.25,90,42,'#eff3ff');
-  drawText(String(cpuScore),W*0.75,90,42,'#eff3ff');
+  drawText('JUGADOR',W*0.25,42,15,'#05d9e8');
+  drawText('CPU',W*0.75,42,15,'#ff2a6d');
+  drawText(String(playerScore),W*0.25,90,42,'#eaeaea');
+  drawText(String(cpuScore),W*0.75,90,42,'#eaeaea');
 
   if (roundPlayer && roundCpu) {
-    drawText(icons[roundPlayer],W*0.25,H*0.58,72,'#eff3ff');
-    drawText('VS',W/2,H*0.58,18,'#9ba8cf');
-    drawText(icons[roundCpu],W*0.75,H*0.58,72,'#eff3ff');
-    drawText(roundPlayer.toUpperCase(),W*0.25,H*0.82,12,'#4dc9ff');
-    drawText(roundCpu.toUpperCase(),W*0.75,H*0.82,12,'#ff4d6d');
+    drawText(icons[roundPlayer],W*0.25,H*0.58,72,'#eaeaea');
+    drawText('VS',W/2,H*0.58,18,'#9b8fb8');
+    drawText(icons[roundCpu],W*0.75,H*0.58,72,'#eaeaea');
+    drawText(roundPlayer.toUpperCase(),W*0.25,H*0.82,12,'#05d9e8');
+    drawText(roundCpu.toUpperCase(),W*0.75,H*0.82,12,'#ff2a6d');
 
-    const color = roundResult==='jugador' ? '#6eeb83' : roundResult==='cpu' ? '#ff4d6d' : '#ffe74c';
+    const color = roundResult==='jugador' ? '#39ff14' : roundResult==='cpu' ? '#ff2a6d' : '#ffd60a';
     const label = roundResult==='jugador' ? 'GANAS LA RONDA' : roundResult==='cpu' ? 'GANA LA CPU' : 'EMPATE';
     drawText(label,W/2,H-26,13,color);
   } else {
-    drawText('✊',W*0.25,H*0.58,62,'#4dc9ff');
-    drawText('?',W/2,H*0.58,30,'#9ba8cf');
-    drawText('✊',W*0.75,H*0.58,62,'#ff4d6d');
-    drawText('ELIGE TU JUGADA',W/2,H-27,13,'#9ba8cf');
+    drawText('✊',W*0.25,H*0.58,62,'#05d9e8');
+    drawText('?',W/2,H*0.58,30,'#9b8fb8');
+    drawText('✊',W*0.75,H*0.58,62,'#ff2a6d');
+    drawText('ELIGE TU JUGADA',W/2,H-27,13,'#9b8fb8');
   }
 }
 function drawOverlay(title,color,subtitle,primaryLabel) {
-  ctx.fillStyle='rgba(3,5,17,.86)';
+  ctx.fillStyle='rgba(5,2,20,.86)';
   ctx.fillRect(0,0,W,H);
   ctx.shadowColor=color;
   ctx.shadowBlur=18;
   drawText(title,W/2,H*0.31,36,color);
   ctx.shadowBlur=0;
-  drawText(subtitle,W/2,H*0.44,14,'#c5cce4','normal');
+  drawText(subtitle,W/2,H*0.44,14,'#cfc7e2','normal');
   drawButton('start',W/2,H*0.61,220,44,primaryLabel,true);
   if (state !== 'start') drawButton('menu',W/2,H*0.80,180,40,'MENÚ');
 }
@@ -340,16 +365,16 @@ function render() {
   drawArena();
 
   if (state==='start') {
-    drawOverlay('PIEDRA, PAPEL, TIJERAS','#ffe74c',`Primero en llegar a ${TARGET_SCORE} puntos gana`,'JUGAR');
-    drawText('PRESIONA ENTER O TOCA JUGAR',W/2,H*0.94,11,'#9ba8cf','normal');
+    drawOverlay('PIEDRA, PAPEL, TIJERAS','#ffd60a',`Primero en llegar a ${TARGET_SCORE} puntos gana`,'JUGAR');
+    drawText('PRESIONA ENTER O TOCA JUGAR',W/2,H*0.94,11,'#9b8fb8','normal');
   } else if (state==='paused') {
-    drawOverlay('PAUSA','#4dc9ff','La partida está en pausa.','REANUDAR');
+    drawOverlay('PAUSA','#05d9e8','La partida está en pausa.','REANUDAR');
     buttons[0].id='resume';
   } else if (state==='victory') {
-    drawOverlay('¡VICTORIA!','#6eeb83',`Marcador final: ${playerScore} — ${cpuScore}`,'JUGAR DE NUEVO');
+    drawOverlay('¡VICTORIA!','#39ff14',`Marcador final: ${playerScore} — ${cpuScore}`,'JUGAR DE NUEVO');
     buttons[0].id='restart';
   } else if (state==='gameover') {
-    drawOverlay('GAME OVER','#ff4d6d',`Marcador final: ${playerScore} — ${cpuScore}`,'INTENTAR DE NUEVO');
+    drawOverlay('GAME OVER','#ff2a6d',`Marcador final: ${playerScore} — ${cpuScore}`,'INTENTAR DE NUEVO');
     buttons[0].id='restart';
   }
 }
@@ -388,9 +413,8 @@ window.addEventListener('keydown',event => {
   if (key==='2') playRound('papel');
   if (key==='3') playRound('tijeras');
 
-  if (key==='escape' && !modal.hidden) {
-    closeOptions();
-    return;
+  if (key==='escape' && optionsDialog.open) {
+    return; // el dialog cierra con ESC de forma nativa
   }
   if (key==='p' || key==='escape') {
     if (state==='playing' || state==='paused') togglePause();
@@ -400,19 +424,19 @@ window.addEventListener('keydown',event => {
   }
 });
 
-function closeOptions() {
-  modal.hidden=true;
+/* Opciones */
+optionsDialog.addEventListener('close', () => {
   if (modalPausedGame && state==='paused') togglePause();
   modalPausedGame=false;
-}
+});
 document.getElementById('options-button').addEventListener('click',() => {
   modalPausedGame=state==='playing';
   if (modalPausedGame) togglePause();
-  modal.hidden=false;
+  optionsDialog.showModal();
 });
-document.getElementById('close-options').addEventListener('click',closeOptions);
-modal.addEventListener('click',event => {
-  if (event.target===modal) closeOptions();
+document.getElementById('close-options').addEventListener('click',() => optionsDialog.close());
+optionsDialog.addEventListener('click',event => {
+  if (event.target===optionsDialog) optionsDialog.close(); // clic en el backdrop
 });
 
 document.addEventListener('visibilitychange',() => {

@@ -63,8 +63,9 @@ hace falta suspender el AudioContext).
 
 ## Persistencia
 
-Clave `pixelpool_records_v1` en `localStorage`: `{ "best": puntuación }`.
-Sin servidores ni almacenamiento externo.
+Clave `pool_best_v1` en `localStorage`: `{ "best": puntuación }`. La clave
+antigua `pixelpool_records_v1` se migra automáticamente la primera vez que se
+abre el juego. Sin servidores ni almacenamiento externo.
 
 ## Estructura del proyecto
 

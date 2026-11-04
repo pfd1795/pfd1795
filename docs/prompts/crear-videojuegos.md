@@ -182,9 +182,8 @@ Reglas de la carpeta de un juego:
 - No debe cargar recursos externos, CDNs, fuentes remotas ni APIs.
 - Los assets opcionales (sprites, sonidos) deben vivir dentro de la misma carpeta.
 
-> La copia dentro del portafolio es estática. El directorio externo
-> `/home/gris/Documentos/juegos` es la fuente de desarrollo: si un juego cambia allí, hay que
-> volver a copiarlo a `juegos/<slug>/` y actualizar su `README-juego.md`.
+> Los juegos son estáticos y autocontenidos: todo el código vive en `juegos/<slug>/index.html`
+> dentro de este repositorio; no hay directorio externo de desarrollo.
 
 ---
 

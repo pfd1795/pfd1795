@@ -58,8 +58,9 @@ anticipación (lookahead de 0,28 s) sincronizado al reloj de audio.
 
 ## Persistencia
 
-Clave `pixelriff_records_v1` en `localStorage`: un objeto JSON con el récord
-de cada canción (puntuación, precisión y rango). Sin servidores ni
+Clave `ritmo_best_v1` en `localStorage`: un objeto JSON con el récord de cada
+canción (puntuación, precisión y rango). La clave antigua `pixelriff_records_v1`
+se migra automáticamente la primera vez que se abre el juego. Sin servidores ni
 almacenamiento externo.
 
 ## Estructura del proyecto

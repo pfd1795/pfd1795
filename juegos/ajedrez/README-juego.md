@@ -58,9 +58,11 @@ Todo vive en `index.html`, organizado en secciones:
 
 ## Persistencia
 
-`localStorage` (clave `ajedrez-arcade-v1`) guarda: victorias, derrotas, tablas,
-racha actual, mejor racha y los ajustes del menú (modo, dificultad y color). Si el
-almacenamiento no está disponible, el juego funciona igualmente sin récord.
+`localStorage` (clave `ajedrez_best_v1`) guarda: victorias, derrotas, tablas,
+racha actual, mejor racha y los ajustes del menú (modo, dificultad y color). La
+clave antigua `ajedrez-arcade-v1` se migra automáticamente a la nueva la primera
+vez que se abre el juego. Si el almacenamiento no está disponible, el juego
+funciona igualmente sin récord.
 
 ## Posibles Mejoras
 

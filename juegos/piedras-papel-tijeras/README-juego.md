@@ -25,7 +25,8 @@ neón. Gana quien llegue primero a 5 puntos.
 - HTML5, CSS3, JavaScript Vanilla y Canvas 2D.
 - Sin frameworks, bibliotecas, CDNs ni recursos externos.
 - Funciona localmente y adapta el tablero a escritorio y móvil.
-- El récord se guarda en `localStorage`, con la clave `ppt_neon_record`.
+- El récord se guarda en `localStorage`, con la clave `piedras-papel-tijeras_best_v1`
+  (la clave antigua `ppt_neon_record` se migra automáticamente).
 
 ## Archivos
 

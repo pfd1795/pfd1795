@@ -40,8 +40,9 @@ bucle principal usa `requestAnimationFrame`.
 
 ## Persistencia
 
-`localStorage` guarda el total de victorias en la clave `tateti_neon_record`.
-Si el almacenamiento no está disponible, el juego sigue funcionando.
+`localStorage` guarda el total de victorias en la clave `ta-te-ti_best_v1` (la
+clave antigua `tateti_neon_record` se migra automáticamente). Si el
+almacenamiento no está disponible, el juego sigue funcionando.
 
 ## Posibles Mejoras
 

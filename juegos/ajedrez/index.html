@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0f0f1a">
+<meta name="theme-color" content="#0d0221">
 <link rel="icon" href="data:,">
 <title>Ajedrez Arcade</title>
 <style>
@@ -11,16 +11,17 @@
    AJEDREZ ARCADE — Estilos (Retro / Pixel / Dark Theme)
    ============================================================ */
 :root{
-  --bg:#0f0f1a;
-  --panel:#16162a;
-  --panel-2:#1d1d36;
-  --text:#eef0ff;
-  --muted:#9aa0c0;
-  --accent:#2de2e6;
+  --bg:#0d0221;
+  --panel:#1a1033;
+  --panel-2:#241747;
+  --text:#eaeaea;
+  --muted:#9b8fb8;
+  --accent:#05d9e8;
   --accent-2:#ff2a6d;
-  --gold:#f6d743;
-  --green:#3ee68a;
-  --border:#2b2b4a;
+  --gold:#ffd60a;
+  --green:#39ff14;
+  --border:rgba(185,103,255,0.4);
+  --neon-green:#39ff14; --neon-pink:#ff2a6d; --neon-cyan:#05d9e8; --neon-yellow:#ffd60a; --neon-purple:#b967ff;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -43,18 +44,18 @@ body{
 }
 #topbar h1{
   font-size:1.05rem;letter-spacing:4px;text-transform:uppercase;
-  color:var(--accent);
-  text-shadow:0 0 8px color-mix(in srgb,var(--accent) 60%,transparent);
+  color:var(--neon-green);
+  text-shadow:0 0 8px rgba(57,255,20,0.8);
 }
 button{
   font-family:inherit;font-weight:bold;
-  background:var(--panel-2);color:var(--text);
-  border:2px solid var(--border);
+  background:transparent;color:var(--neon-cyan);
+  border:1px solid var(--neon-cyan);
   padding:8px 14px;cursor:pointer;
   text-transform:uppercase;letter-spacing:1px;
   transition:border-color .15s,box-shadow .15s,transform .05s;
 }
-button:hover{border-color:var(--accent);box-shadow:0 0 8px color-mix(in srgb,var(--accent) 40%,transparent)}
+button:hover{border-color:var(--neon-cyan);box-shadow:0 0 10px rgba(5,217,232,0.5);background:rgba(5,217,232,0.12)}
 button:active{transform:scale(.97)}
 button:disabled{opacity:.4;cursor:default;box-shadow:none;border-color:var(--border)}
 /* ---------- Barra secundaria ---------- */
@@ -78,7 +79,7 @@ button:disabled{opacity:.4;cursor:default;box-shadow:none;border-color:var(--bor
 #stage{
   flex:1;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at center,#191932 0%,#0d0d18 100%);
+  background:radial-gradient(ellipse at center,#1a1033 0%,#0d0221 100%);
 }
 canvas#game{
   display:block;
@@ -117,7 +118,7 @@ canvas#game{
 .panel .score-line b{color:var(--gold)}
 .seg{display:flex;justify-content:center;gap:6px;margin:8px 0}
 .seg button{flex:1;padding:7px 8px;font-size:.72rem}
-.seg button.on{border-color:var(--gold);color:var(--gold);box-shadow:0 0 8px rgba(246,215,67,.35)}
+.seg button.on{border-color:var(--gold);color:var(--gold);box-shadow:0 0 8px rgba(255,214,10,.35)}
 .btn-primary{
   display:block;width:100%;margin:16px 0 10px;padding:12px;
   font-size:1rem;letter-spacing:3px;
@@ -127,28 +128,28 @@ canvas#game{
 .btn-row{display:flex;gap:8px;margin-top:8px}
 .btn-row button{flex:1;font-size:.75rem}
 .hint{color:var(--muted);font-size:.68rem;margin-top:10px;letter-spacing:1px}
-/* ---------- Modal de opciones ---------- */
-.modal{
-  position:fixed;inset:0;z-index:50;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(5,5,12,.8);
+/* ================= Scanlines CRT (sutil, canon compartido) ================= */
+.scanlines{
+  position:fixed;inset:0;pointer-events:none;z-index:5;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.15) 0 1px,transparent 1px 4px);
 }
-.modal.hidden{display:none}
-.modal-card{
-  background:var(--panel);border:2px solid var(--gold);
-  box-shadow:0 0 24px rgba(246,215,67,.2);
+/* ---------- Modal de opciones ---------- */
+dialog{
+  background:var(--panel);border:1px solid var(--neon-purple);
+  box-shadow:0 0 30px rgba(185,103,255,0.4);
   padding:22px 26px;width:340px;max-width:92vw;
   max-height:86vh;overflow:auto;
 }
-.modal-card h3{color:var(--gold);letter-spacing:4px;margin-bottom:14px;text-align:center}
-.modal-card h4{color:var(--accent);font-size:.75rem;letter-spacing:2px;margin:16px 0 6px}
+dialog::backdrop{background:rgba(0,0,0,0.72)}
+dialog h3{color:var(--neon-cyan);letter-spacing:4px;margin-bottom:14px;text-align:center;text-shadow:0 0 8px rgba(5,217,232,0.7)}
+dialog h4{color:var(--neon-cyan);font-size:.75rem;letter-spacing:2px;margin:16px 0 6px}
 .opt-row{
   display:flex;justify-content:space-between;align-items:center;
   padding:8px 2px;border-bottom:1px solid var(--border);font-size:.8rem;
 }
 .opt-row .soon{color:var(--muted);font-size:.7rem;font-style:italic}
-.modal-card p{font-size:.72rem;color:var(--muted);margin:4px 0;line-height:1.5}
-.modal-card p b{color:var(--text)}
+dialog p{font-size:.72rem;color:var(--muted);margin:4px 0;line-height:1.5}
+dialog p b{color:var(--text)}
 #btnCloseOptions{display:block;width:100%;margin-top:18px}
 /* ---------- Responsive ---------- */
 @media (max-width:560px){
@@ -240,9 +241,8 @@ canvas#game{
 </main>
 
 <!-- Modal de opciones -->
-<div class="modal hidden" id="modalOptions">
-  <div class="modal-card">
-    <h3>OPCIONES</h3>
+<dialog id="options" aria-labelledby="options-title">
+    <h3 id="options-title">OPCIONES</h3>
     <div class="opt-row"><span>Música</span><span class="soon">Próximamente</span></div>
     <div class="opt-row"><span>Efectos de sonido</span><span class="soon">Próximamente</span></div>
     <div class="opt-row"><span>Dificultad</span><span class="soon">Próximamente</span></div>
@@ -251,8 +251,9 @@ canvas#game{
     <p><b>Escritorio:</b> clic para seleccionar y mover · <b>U</b> deshacer · <b>Esc</b> pausa · <b>Enter</b> confirmar / reanudar</p>
     <p><b>Móvil:</b> toca una pieza y luego el destino · botones ⏸ (pausa) y ↶ (deshacer) en la barra</p>
     <button id="btnCloseOptions">Cerrar</button>
-  </div>
-</div>
+</dialog>
+
+<div class="scanlines" aria-hidden="true"></div>
 
 <script>
 'use strict';
@@ -271,10 +272,10 @@ const GLYPH_B = {p:'\u265F',n:'\u265E',b:'\u265D',r:'\u265C',q:'\u265B',k:'\u265
 const FILES = ['a','b','c','d','e','f','g','h'];
 
 const SQ_LIGHT='#aeb9dd', SQ_DARK='#5d6b9e';
-const COL_LAST='rgba(45,226,230,0.30)';
-const COL_SEL ='rgba(246,215,67,0.40)';
+const COL_LAST='rgba(5,217,232,0.30)';
+const COL_SEL ='rgba(255,214,10,0.40)';
 const COL_CHK ='rgba(255,51,85,0.50)';
-const COL_DOT ='rgba(62,230,138,0.85)';
+const COL_DOT ='rgba(57,255,20,0.85)';
 const COL_RING='rgba(255,42,109,0.90)';
 
 const DEPTHS = {easy:1, normal:2, hard:3};
@@ -651,10 +652,21 @@ function aiBestMove(depth,jitter){
    PERSISTENCIA — localStorage (récord + ajustes)
    ============================================================ */
 const store={
-  key:'ajedrez-arcade-v1',
+  key:'ajedrez_best_v1',
+  legacy:'ajedrez-arcade-v1',
   data:{wins:0,losses:0,draws:0,streak:0,bestStreak:0,
         settings:{mode:'1p',diff:'normal',color:'w'}},
+  migrate(){
+    try{
+      if(localStorage.getItem(this.key)==null){
+        const raw=localStorage.getItem(this.legacy);
+        if(raw!=null)localStorage.setItem(this.key,raw); // conserva el récord con la clave nueva
+      }
+      if(localStorage.getItem(this.legacy)!=null)localStorage.removeItem(this.legacy);
+    }catch(err){/* almacenamiento no disponible */}
+  },
   load(){
+    this.migrate();
     try{
       const raw=localStorage.getItem(this.key);
       if(raw){const d=JSON.parse(raw);Object.assign(this.data,d);}
@@ -987,18 +999,15 @@ $('btnPromoCancel').addEventListener('click',()=>{
   promoPending=null;selection=-1;showPanel(null);
 });
 /* ---------- Modal de opciones ---------- */
-const modalOptions=$('modalOptions');
-$('btnOptions').addEventListener('click',()=>modalOptions.classList.remove('hidden'));
-$('btnCloseOptions').addEventListener('click',()=>modalOptions.classList.add('hidden'));
-modalOptions.addEventListener('click',e=>{
-  if(e.target===modalOptions)modalOptions.classList.add('hidden');
+const optionsDialog=$('options');
+$('btnOptions').addEventListener('click',()=>optionsDialog.showModal());
+$('btnCloseOptions').addEventListener('click',()=>optionsDialog.close());
+optionsDialog.addEventListener('click',e=>{
+  if(e.target===optionsDialog)optionsDialog.close(); // clic en el backdrop
 });
 /* ---------- Teclado ---------- */
 window.addEventListener('keydown',e=>{
-  if(!modalOptions.classList.contains('hidden')){
-    if(e.key==='Escape')modalOptions.classList.add('hidden');
-    return;
-  }
+  if(optionsDialog.open) return; // ESC cierra el dialog de forma nativa
   if(state==='menu'&&!e.repeat&&e.key!=='Tab')startGame();
   else if(state==='playing'){
     if(e.key==='Escape')pauseGame();

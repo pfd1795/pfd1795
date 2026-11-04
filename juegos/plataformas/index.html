@@ -119,26 +119,29 @@
       .touchpad { display: flex; }
     }
 
+        /* ================= Scanlines CRT (sutil, canon compartido) ================= */
+    .scanlines {
+      position: fixed; inset: 0; pointer-events: none; z-index: 5;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0 1px, transparent 1px 4px);
+    }
+
     /* ================= Modal de opciones ================= */
-    .modal-backdrop {
-      position: fixed; inset: 0; z-index: 10;
-      background: rgba(0, 0, 0, 0.72);
-      display: flex; align-items: center; justify-content: center;
-      padding: 16px;
-    }
-    .modal {
-      width: 100%; max-width: 460px;
+    dialog {
+      width: min(92vw, 460px);
+      padding: 0 0 18px;
+      color: var(--text);
       background: var(--panel);
-      border: 1px solid var(--neon-purple); border-radius: 10px;
+      border: 1px solid var(--neon-purple);
+      border-radius: 10px;
       box-shadow: 0 0 30px rgba(185, 103, 255, 0.4);
-      padding-bottom: 18px;
     }
-    .modal > header {
+    dialog::backdrop { background: rgba(0, 0, 0, 0.72); }
+    dialog > header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 14px 16px;
       border-bottom: 1px solid rgba(185, 103, 255, 0.3);
     }
-    .modal h2 {
+    dialog h2 {
       margin: 0; font-size: 1.05rem; letter-spacing: 2px;
       color: var(--neon-cyan);
       text-shadow: 0 0 8px rgba(5, 217, 232, 0.7);
@@ -190,8 +193,7 @@
     </div>
 
     <!-- Modal de opciones -->
-    <div class="modal-backdrop" id="modalBackdrop" hidden>
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <dialog id="options" aria-labelledby="modalTitle">
         <header>
           <h2 id="modalTitle">Opciones</h2>
           <button id="btnCloseModal" aria-label="Cerrar">✕</button>
@@ -207,9 +209,10 @@
           <p><strong>Escritorio:</strong> ← → o A/D: moverte · Espacio / ↑ / W: saltar (mantén para salto alto) · X o J: shuriken · P o Escape: pausa · Enter: jugar</p>
           <p><strong>Móvil:</strong> ◀ ▶ para moverte · SALTAR y SHURIKEN a la derecha · Toca la pantalla para jugar y pausar</p>
         </section>
-      </div>
-    </div>
+    </dialog>
   </div>
+
+  <div class="scanlines" aria-hidden="true"></div>
 
   <script>
     (() => {
@@ -224,7 +227,22 @@
       const COYOTE = 0.09;        // gracia para saltar tras dejar el suelo (s)
       const SHURIKEN_CD = 280;    // ms entre disparos
       const SHURIKEN_MAX = 3;
-      const BEST_KEY = 'ninja_best_v1';
+      const BEST_KEY = 'plataformas_best_v1';
+      const LEGACY_BEST_KEYS = ['ninja_best_v1'];
+
+      function migrateBestKey() {
+        try {
+          if (localStorage.getItem(BEST_KEY) == null) {
+            for (const oldKey of LEGACY_BEST_KEYS) {
+              const legacy = localStorage.getItem(oldKey);
+              if (legacy != null) { localStorage.setItem(BEST_KEY, legacy); localStorage.removeItem(oldKey); break; }
+            }
+          } else {
+            for (const oldKey of LEGACY_BEST_KEYS) { if (localStorage.getItem(oldKey) != null) localStorage.removeItem(oldKey); }
+          }
+        } catch (err) { /* almacenamiento no disponible */ }
+      }
+      migrateBestKey(); // conserva el récord con la clave nueva
 
       const State = { START: 'start', LEVEL: 'level', PLAYING: 'playing', PAUSED: 'paused', OVER: 'over', WIN: 'win' };
       const STATUS_TEXT = { start: 'En inicio', level: 'Nivel', playing: 'Jugando', paused: 'Pausa', over: 'Game Over', win: '¡Victoria!' };
@@ -329,7 +347,7 @@
       const livesEl = document.getElementById('lives');
       const statusEl = document.getElementById('status');
       const btnOptions = document.getElementById('btnOptions');
-      const modalBackdrop = document.getElementById('modalBackdrop');
+      const optionsDialog = document.getElementById('options');
       const btnCloseModal = document.getElementById('btnCloseModal');
 
       const DPR = Math.min(window.devicePixelRatio || 1, 2);
@@ -999,10 +1017,7 @@
       const MOVE_KEYS = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
 
       document.addEventListener('keydown', (e) => {
-        if (!modalBackdrop.hidden) {
-          if (e.code === 'Escape') closeModal();
-          return;
-        }
+        if (optionsDialog.open) return;
         if (e.code === 'Escape' || e.code === 'KeyP') { e.preventDefault(); togglePause(); return; }
         if (JUMP_KEYS.includes(e.code)) {
           e.preventDefault();
@@ -1061,14 +1076,14 @@
       /* ================= Modal de opciones ================= */
       function openModal() {
         if (game.state === State.PLAYING) togglePause(); // abrir opciones pausa la partida
-        modalBackdrop.hidden = false;
+        optionsDialog.showModal();
       }
-      function closeModal() { modalBackdrop.hidden = true; }
+      function closeModal() { optionsDialog.close(); }
 
       btnOptions.addEventListener('click', openModal);
       btnCloseModal.addEventListener('click', closeModal);
-      modalBackdrop.addEventListener('click', (e) => {
-        if (e.target === modalBackdrop) closeModal();
+      optionsDialog.addEventListener('click', (e) => {
+        if (e.target === optionsDialog) closeModal(); // clic en el backdrop
       });
 
       // Evita que los botones retengan el foco y capturen Space/Enter

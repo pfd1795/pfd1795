@@ -7,32 +7,35 @@
 <title>Pixel Riff — Juego de ritmo</title>
 <style>
   :root{
-    --bg:#0b0b14; --panel:#12122a; --line:#23234a;
-    --text:#e8e8f4; --muted:#9a9ab8;
-    --green:#39ff8b; --pink:#ff4d6d; --yellow:#ffd23f; --blue:#4dc9ff;
+    --bg:#0d0221; --panel:#1a1033; --line:rgba(185,103,255,0.4);
+    --text:#eaeaea; --muted:#9b8fb8;
+    --neon-green:#39ff14; --neon-pink:#ff2a6d; --neon-cyan:#05d9e8; --neon-yellow:#ffd60a; --neon-purple:#b967ff;
+    --green:var(--neon-green); --pink:var(--neon-pink); --yellow:var(--neon-yellow); --blue:var(--neon-cyan);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{background:var(--bg);color:var(--text);font-family:"Courier New",ui-monospace,monospace;touch-action:manipulation}
 
   /* Barra superior */
-  #topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:2px solid var(--line)}
-  #topbar h1{font-size:18px;letter-spacing:3px;color:var(--green);text-shadow:0 0 8px rgba(57,255,139,.5)}
+  #topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+  #topbar h1{font-size:18px;letter-spacing:3px;color:var(--neon-green);text-shadow:0 0 8px rgba(57,255,20,.8)}
   .top-actions{display:flex;gap:8px}
   button{font-family:inherit;cursor:pointer;background:transparent;letter-spacing:2px;font-weight:bold}
-  #btnOptions{border:2px solid var(--yellow);color:var(--yellow);padding:6px 12px;font-size:12px}
-  #btnOptions:hover{background:rgba(255,210,63,.12)}
-  #btnPause{display:none;border:2px solid var(--pink);color:var(--pink);padding:6px 12px;font-size:12px}
+  #btnOptions{border:1px solid var(--neon-cyan);color:var(--neon-cyan);padding:6px 12px;font-size:12px}
+  #btnOptions:hover{background:rgba(5,217,232,.12);box-shadow:0 0 10px rgba(5,217,232,.5)}
+  #btnPause{display:none;border:1px solid var(--neon-pink);color:var(--neon-pink);padding:6px 12px;font-size:12px}
   body[data-state="playing"] #btnPause{display:inline-block}
 
   /* Barra secundaria informativa */
-  #infobar{display:flex;flex-wrap:wrap;gap:6px 18px;padding:8px 14px;font-size:12px;letter-spacing:1px;color:var(--muted);background:#0e0e1e;border-bottom:2px solid var(--line)}
+  #infobar{display:flex;flex-wrap:wrap;gap:6px 18px;padding:8px 14px;font-size:12px;letter-spacing:1px;color:var(--muted);background:#160b33;border-bottom:1px solid var(--line)}
   #infobar b{color:var(--text);font-size:14px;margin-left:4px}
 
   /* Escenario */
   #stage{position:relative;width:min(100vw,460px);margin:0 auto}
   #game{display:block;width:100%;height:auto;background:var(--bg);touch-action:none}
-  #scanlines{position:absolute;inset:0;pointer-events:none;
-    background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 4px)}
+
+  /* ================= Scanlines CRT (sutil, canon compartido) ================= */
+  .scanlines{position:fixed;inset:0;pointer-events:none;z-index:5;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0 1px,transparent 1px 4px)}
 
   /* Controles táctiles */
   #touchbar{display:none;gap:8px;padding:8px;width:min(100vw,460px);margin:0 auto}
@@ -45,13 +48,12 @@
   .pad:nth-child(3){border-color:var(--yellow)}
   .pad:nth-child(4){border-color:var(--blue)}
 
-  /* Modal de opciones */
-  #modal{position:fixed;inset:0;background:rgba(4,4,12,.82);display:flex;align-items:center;justify-content:center;z-index:10}
-  #modal.hidden{display:none}
-  .modal-box{background:var(--panel);border:2px solid var(--green);max-width:430px;width:92%;max-height:86vh;overflow:auto;padding:18px 20px}
-  .modal-box h2{color:var(--green);letter-spacing:3px;font-size:18px;margin-bottom:10px}
-  .modal-box h3{color:var(--yellow);letter-spacing:2px;font-size:14px;margin:14px 0 6px}
-  .modal-box h4{font-size:12px;color:var(--text);margin-bottom:2px}
+  /* ================= Modal de opciones ================= */
+  dialog{background:var(--panel);border:1px solid var(--neon-purple);max-width:430px;width:92%;max-height:86vh;overflow:auto;padding:18px 20px;box-shadow:0 0 30px rgba(185,103,255,0.4)}
+  dialog::backdrop{background:rgba(0,0,0,0.72)}
+  dialog h2{color:var(--neon-cyan);letter-spacing:3px;font-size:18px;margin-bottom:10px;text-shadow:0 0 8px rgba(5,217,232,0.7)}
+  dialog h3{color:var(--neon-yellow);letter-spacing:2px;font-size:14px;margin:14px 0 6px}
+  dialog h4{font-size:12px;color:var(--text);margin-bottom:2px}
   .opts{list-style:none}
   .opts li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
   .soon{color:var(--muted);font-style:italic}
@@ -60,10 +62,10 @@
   .ctrl-cols p{font-size:12px;color:var(--muted);margin-bottom:4px}
   #modalActions{display:none;margin-top:14px}
   body[data-state="playing"] #modalActions,body[data-state="paused"] #modalActions{display:block}
-  #modalActions button,#mClose{display:block;width:100%;padding:9px;margin-top:8px;font-size:12px;border:2px solid}
-  #mResume{border-color:var(--green);color:var(--green)}
-  #mRestart{border-color:var(--yellow);color:var(--yellow)}
-  #mExit{border-color:var(--pink);color:var(--pink)}
+  #modalActions button,#mClose{display:block;width:100%;padding:9px;margin-top:8px;font-size:12px;border:1px solid}
+  #mResume{border-color:var(--neon-green);color:var(--neon-green)}
+  #mRestart{border-color:var(--neon-yellow);color:var(--neon-yellow)}
+  #mExit{border-color:var(--neon-pink);color:var(--neon-pink)}
   #mClose{border-color:var(--muted);color:var(--muted)}
 </style>
 </head>
@@ -87,7 +89,6 @@
 
 <main id="stage">
   <canvas id="game" width="480" height="720"></canvas>
-  <div id="scanlines"></div>
 </main>
 
 <div id="touchbar">
@@ -97,9 +98,8 @@
   <button class="pad" data-lane="3" type="button">K</button>
 </div>
 
-<div id="modal" class="hidden" role="dialog" aria-modal="true" aria-label="Opciones">
-  <div class="modal-box">
-    <h2>OPCIONES</h2>
+<dialog id="options" aria-labelledby="options-title">
+    <h2 id="options-title">OPCIONES</h2>
     <ul class="opts">
       <li><span>Música</span><span class="soon">Próximamente</span></li>
       <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
@@ -126,8 +126,9 @@
       <button id="mExit" type="button">SALIR AL MENÚ</button>
     </div>
     <button id="mClose" type="button">CERRAR</button>
-  </div>
-</div>
+</dialog>
+
+<div class="scanlines" aria-hidden="true"></div>
 
 <script>
 'use strict';
@@ -137,10 +138,10 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const W=480,H=720,LANES=4,LANE_W=W/LANES;
 const HIT_Y=600,NOTE_H=30,APPROACH=1.8,SPEED=(HIT_Y+60)/APPROACH;
 const PERFECT_WIN=0.05,GOOD_WIN=0.10,COUNT_IN=4; // ventanas en segundos
-const LANE_COLORS=['#39ff8b','#ff4d6d','#ffd23f','#4dc9ff'];
+const LANE_COLORS=['#39ff14','#ff2a6d','#ffd60a','#05d9e8'];
 const PAD_KEYS=['D','F','J','K'];
 const KEYMAP={KeyD:0,KeyF:1,KeyJ:2,KeyK:3,ArrowLeft:0,ArrowDown:1,ArrowUp:2,ArrowRight:3};
-const RANK_COLORS={S:'#ffd23f',A:'#39ff8b',B:'#4dc9ff',C:'#ff4d6d',D:'#9a9ab8'};
+const RANK_COLORS={S:'#ffd60a',A:'#39ff14',B:'#05d9e8',C:'#ff2a6d',D:'#9b8fb8'};
 
 /* ===================== 2. CANCIONES (dominio público) ===================== */
 /* Cada nota: [pulso, nota MIDI, duración en pulsos]. El carril se asigna
@@ -271,8 +272,18 @@ const audio=new AudioEngine();
 
 /* ===================== 4. PERSISTENCIA (localStorage) ===================== */
 const store={
-  KEY:'pixelriff_records_v1',
-  all(){try{return JSON.parse(localStorage.getItem(store.KEY))||{}}catch(e){return{}}},
+  KEY:'ritmo_best_v1',
+  LEGACY:'pixelriff_records_v1',
+  all(){
+    try{
+      if(localStorage.getItem(store.KEY)==null){
+        const legacy=localStorage.getItem(store.LEGACY);
+        if(legacy!=null)localStorage.setItem(store.KEY,legacy); // conserva los récords con la clave nueva
+      }
+      if(localStorage.getItem(store.LEGACY)!=null)localStorage.removeItem(store.LEGACY);
+      return JSON.parse(localStorage.getItem(store.KEY))||{}
+    }catch(e){return{}}
+  },
   get(id){return store.all()[id]||null},
   save(id,rec){const a=store.all();a[id]=rec;
     try{localStorage.setItem(store.KEY,JSON.stringify(a))}catch(e){}}
@@ -325,7 +336,7 @@ function onLanePress(lane){
   game.score+=(perfect?100:50)*game.mult;
   if(perfect)game.perfects++;else game.goods++;
   audio.melody(best.midi,best.dur);
-  addFloat(perfect?'¡PERFECTO!':'BIEN',perfect?'#ffd23f':'#39ff8b');
+  addFloat(perfect?'¡PERFECTO!':'BIEN',perfect?'#ffd60a':'#39ff14');
   spawnParticles(lane);
 }
 function addFloat(text,color){game.floats.push({text,color,y:540,life:0.6});}
@@ -436,24 +447,24 @@ function updateDemo(dt){
   }
 }
 function renderTitle(ts){
-  g.fillStyle='#0b0b14';g.fillRect(0,0,W,H);
+  g.fillStyle='#0d0221';g.fillRect(0,0,W,H);
   for(const d of demoNotes){
     g.globalAlpha=0.22;g.fillStyle=LANE_COLORS[d.lane];
     g.fillRect(d.lane*LANE_W+34,d.y,LANE_W-68,26);g.globalAlpha=1;
   }
-  txt('PIXEL',240,210,72,'#39ff8b');
-  txt('RIFF',240,285,72,'#ff4d6d');
+  txt('PIXEL',240,210,72,'#39ff14');
+  txt('RIFF',240,285,72,'#ff2a6d');
   txt('JUEGO DE RITMO · CHIPTUNE 8-BIT',240,340,15,'rgba(255,255,255,0.55)');
   g.globalAlpha=0.75+0.25*Math.sin(ts/300);
-  g.strokeStyle='#ffd23f';g.lineWidth=3;g.strokeRect(150,420,180,56);
-  txt('JUGAR',240,448,24,'#ffd23f');g.globalAlpha=1;
+  g.strokeStyle='#ffd60a';g.lineWidth=3;g.strokeRect(150,420,180,56);
+  txt('JUGAR',240,448,24,'#ffd60a');g.globalAlpha=1;
   if(Math.sin(ts/400)>-0.2)txt('PULSA UNA TECLA O TOCA LA PANTALLA',240,530,14,'rgba(255,255,255,0.7)');
   txt('3 CANCIONES · SIN DEPENDENCIAS',240,680,12,'rgba(255,255,255,0.35)');
 }
 const rowBox=i=>({x:28,y:130+i*130,w:424,h:104});
 function renderSelect(){
-  g.fillStyle='#0b0b14';g.fillRect(0,0,W,H);
-  txt('SELECCIONA UNA CANCIÓN',240,64,22,'#ffd23f');
+  g.fillStyle='#0d0221';g.fillRect(0,0,W,H);
+  txt('SELECCIONA UNA CANCIÓN',240,64,22,'#ffd60a');
   txt('↑ ↓ PARA ELEGIR · ENTER PARA TOCAR',240,96,13,'rgba(255,255,255,0.5)');
   for(let i=0;i<SONGS.length;i++){
     const b=rowBox(i),s=SONGS[i],sel=i===game.sel,rec=store.get(s.id);
@@ -464,13 +475,13 @@ function renderSelect(){
     txt(s.title,b.x+50,b.y+30,19,sel?'#ffffff':'#d8d8ea','left');
     txt(s.desc+' · '+s.bpm+' BPM',b.x+50,b.y+56,13,'rgba(255,255,255,0.5)','left');
     txt(rec?'RÉCORD '+rec.score+' · '+rec.acc+'% ('+rec.rank+')':'SIN RÉCORD AÚN',
-        b.x+50,b.y+82,13,rec?'#ffd23f':'rgba(255,255,255,0.35)','left');
+        b.x+50,b.y+82,13,rec?'#ffd60a':'rgba(255,255,255,0.35)','left');
   }
   txt('OPCIONES: BOTÓN ARRIBA A LA DERECHA',240,660,12,'rgba(255,255,255,0.35)');
 }
 function renderPlaying(){
   const now=songTime(),c=game.chart;
-  g.fillStyle='#0b0b14';g.fillRect(0,0,W,H);
+  g.fillStyle='#0d0221';g.fillRect(0,0,W,H);
   for(let i=0;i<LANES;i++)if(i%2===0){
     g.fillStyle='rgba(255,255,255,0.022)';g.fillRect(i*LANE_W,0,LANE_W,H);
   }
@@ -483,7 +494,7 @@ function renderPlaying(){
     if(y>0&&y<H){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke();}
   }
   // Progreso y título de la canción
-  g.fillStyle='#ff4d6d';g.fillRect(0,0,W*clamp(now/c.duration,0,1),4);
+  g.fillStyle='#ff2a6d';g.fillRect(0,0,W*clamp(now/c.duration,0,1),4);
   txt('♪ '+c.song.title,12,24,13,'rgba(255,255,255,0.55)','left');
   // Notas
   for(const n of c.notes){
@@ -498,7 +509,7 @@ function renderPlaying(){
       g.fillRect(x+8,yTop-tailH,w-16,tailH-2);g.globalAlpha=1;
     }
     g.fillStyle=col;g.fillRect(x,yTop,w,NOTE_H);
-    g.strokeStyle='#0b0b14';g.lineWidth=2;g.strokeRect(x,yTop,w,NOTE_H);
+    g.strokeStyle='#0d0221';g.lineWidth=2;g.strokeRect(x,yTop,w,NOTE_H);
     g.fillStyle='rgba(255,255,255,0.35)';g.fillRect(x+5,yTop+4,w-10,5);
   }
   // Línea de impacto y pads
@@ -523,12 +534,12 @@ function renderPlaying(){
   if(game.combo>=2){
     txt(String(game.combo),240,290,56,'#ffffff');
     txt('COMBO',240,326,15,'rgba(255,255,255,0.6)');
-    txt('x'+game.mult,240,356,22,['rgba(255,255,255,0.7)','#ffd23f','#ff9f1c','#ff4d6d'][game.mult-1]);
+    txt('x'+game.mult,240,356,22,['rgba(255,255,255,0.7)','#ffd60a','#ff9f1c','#ff2a6d'][game.mult-1]);
   }
   // Cuenta atrás durante la entrada
   if(now<COUNT_IN*c.spb){
     const v=clamp(Math.ceil((COUNT_IN*c.spb-now)/c.spb),1,COUNT_IN);
-    g.globalAlpha=0.85;txt(String(v),240,470,68,'#ffd23f');g.globalAlpha=1;
+    g.globalAlpha=0.85;txt(String(v),240,470,68,'#ffd60a');g.globalAlpha=1;
   }
   // Juicios flotantes
   for(const f of game.floats){
@@ -539,23 +550,23 @@ function renderPlaying(){
 }
 function renderPauseOverlay(){
   g.fillStyle='rgba(5,5,15,0.75)';g.fillRect(0,0,W,H);
-  txt('PAUSA',240,320,44,'#4dc9ff');
+  txt('PAUSA',240,320,44,'#05d9e8');
   txt('ESC / P O TOCA PARA CONTINUAR',240,380,14,'rgba(255,255,255,0.6)');
 }
 const RESULT_BTNS=[
-  {x:52,y:560,w:180,h:56,label:'OTRA VEZ',col:'#39ff8b',action:()=>startSong(game.songIndex)},
-  {x:248,y:560,w:180,h:56,label:'MENÚ',col:'#ff4d6d',action:()=>exitToMenu()}
+  {x:52,y:560,w:180,h:56,label:'OTRA VEZ',col:'#39ff14',action:()=>startSong(game.songIndex)},
+  {x:248,y:560,w:180,h:56,label:'MENÚ',col:'#ff2a6d',action:()=>exitToMenu()}
 ];
 function renderResults(ts){
-  g.fillStyle='#0b0b14';g.fillRect(0,0,W,H);
-  txt('¡CANCIÓN COMPLETADA!',240,80,24,'#ff4d6d');
+  g.fillStyle='#0d0221';g.fillRect(0,0,W,H);
+  txt('¡CANCIÓN COMPLETADA!',240,80,24,'#ff2a6d');
   txt(game.chart.song.title,240,116,16,'rgba(255,255,255,0.55)');
   const rc=RANK_COLORS[game.rank];
   txt(game.rank,240,225,110,rc);
   g.strokeStyle=rc;g.lineWidth=3;g.strokeRect(170,160,140,130);
   txt('PUNTUACIÓN',240,320,14,'rgba(255,255,255,0.6)');
   txt(String(game.score),240,352,34,'#ffffff');
-  if(game.newRecord&&Math.sin(ts/250)>-0.3)txt('¡NUEVO RÉCORD!',240,394,17,'#ffd23f');
+  if(game.newRecord&&Math.sin(ts/250)>-0.3)txt('¡NUEVO RÉCORD!',240,394,17,'#ffd60a');
   txt('RÉCORD: '+game.record,240,426,14,'rgba(255,255,255,0.55)');
   txt('PERFECTOS '+game.perfects+' · BIEN '+game.goods+' · FALLOS '+game.misses,240,462,13,'rgba(255,255,255,0.55)');
   txt('PRECISIÓN '+Math.round(game.acc)+'% · COMBO MÁX '+game.maxCombo,240,486,13,'rgba(255,255,255,0.55)');
@@ -576,18 +587,18 @@ function render(ts){
 }
 
 /* ===================== 11. ENTRADA ===================== */
-const modal=$('#modal');
-function openModal(){if(game.state==='playing')pauseGame();modal.classList.remove('hidden');}
-function closeModal(){modal.classList.add('hidden');}
+const optionsDialog=$('#options');
+function openModal(){if(game.state==='playing')pauseGame();optionsDialog.showModal();}
+function closeModal(){if(optionsDialog.open)optionsDialog.close();}
 
 window.addEventListener('keydown',e=>{
   if(e.repeat)return;
   const code=e.code;
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(code))e.preventDefault();
   ensureAudio();
-  if(!modal.classList.contains('hidden')){
-    if(code==='Escape'||code==='Enter'){closeModal();if(game.state==='paused')resumeGame();}
-    return;
+  if(optionsDialog.open){
+    if(code==='Enter'){closeModal();if(game.state==='paused')resumeGame();}
+    return; // ESC cierra el dialog de forma nativa
   }
   switch(game.state){
     case 'title':goSelect();break;
@@ -651,7 +662,7 @@ $('#mResume').addEventListener('click',()=>{closeModal();resumeGame();});
 $('#mRestart').addEventListener('click',()=>startSong(game.songIndex));
 $('#mExit').addEventListener('click',()=>{closeModal();exitToMenu();});
 $('#mClose').addEventListener('click',closeModal);
-modal.addEventListener('pointerdown',e=>{if(e.target===modal)closeModal();});
+optionsDialog.addEventListener('click',e=>{if(e.target===optionsDialog)closeModal();}); // clic en el backdrop
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden&&game.state==='playing')pauseGame();
 });

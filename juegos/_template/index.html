@@ -44,24 +44,32 @@
       justify-content: space-between;
       gap: 1rem;
       padding: 0.75rem 1rem;
-      border-bottom: 2px solid var(--panel);
+      background: var(--panel);
+      border-bottom: 1px solid rgba(185, 103, 255, 0.4);
     }
-    .topbar h1 { margin: 0; font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .topbar h1 {
+      margin: 0; font-size: 1.25rem; letter-spacing: 3px;
+      color: var(--neon-green);
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.8);
+      text-transform: uppercase;
+    }
     .topbar button,
     .touch-controls button,
     .modal-actions button {
-      background: var(--panel);
-      color: var(--text);
-      border: 2px solid var(--neon-cyan);
+      font: inherit; font-size: 0.9rem; cursor: pointer;
+      background: transparent; color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
       border-radius: 0.4rem;
       padding: 0.5rem 0.9rem;
-      font: inherit;
       font-weight: 700;
-      cursor: pointer;
+      transition: box-shadow 0.15s, background 0.15s;
     }
     .topbar button:hover,
     .touch-controls button:hover,
-    .modal-actions button:hover { background: #241747; }
+    .modal-actions button:hover {
+      background: rgba(5, 217, 232, 0.12);
+      box-shadow: 0 0 10px rgba(5, 217, 232, 0.5);
+    }
 
     /* ================= HUD ================= */
     .hud {
@@ -116,6 +124,12 @@
     }
     .touch-controls button[data-action] { border-color: var(--neon-green); }
 
+    /* ================= Scanlines CRT (canon compartido) ================= */
+    .scanlines {
+      position: fixed; inset: 0; pointer-events: none; z-index: 5;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0 1px, transparent 1px 4px);
+    }
+
     @media (hover: hover) and (pointer: fine) {
       .touch-controls { opacity: 0.55; }
     }
@@ -126,8 +140,9 @@
       padding: 0;
       color: var(--text);
       background: var(--panel);
-      border: 2px solid var(--neon-cyan);
+      border: 1px solid var(--neon-purple);
       border-radius: 0.75rem;
+      box-shadow: 0 0 30px rgba(185, 103, 255, 0.4);
     }
     dialog::backdrop { background: rgb(0 0 0 / 0.7); }
     .modal-body { padding: 1.25rem; }
@@ -185,6 +200,8 @@
       </div>
     </div>
   </dialog>
+
+  <div class="scanlines" aria-hidden="true"></div>
 
   <script>
     (function () {
@@ -393,6 +410,17 @@
       }
 
       /* ================= Dibujo ================= */
+      function neonText(text, x, y, size, color, glow) {
+        ctx.save();
+        ctx.font = 'bold ' + size + 'px "Courier New", monospace';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = color;
+        ctx.shadowBlur = glow || 18;
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+        ctx.restore();
+      }
+
       function draw() {
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -421,24 +449,18 @@
           ctx.textAlign = 'center';
 
           if (game.state === STATE.START) {
-            ctx.fillStyle = '#ffd60a';
-            ctx.font = 'bold 34px "Courier New", monospace';
-            ctx.fillText('NOMBRE DEL JUEGO', WIDTH / 2, HEIGHT / 2 - 30);
+            neonText('NOMBRE DEL JUEGO', WIDTH / 2, HEIGHT / 2 - 30, 34, '#ffd60a');
             ctx.fillStyle = '#eaeaea';
             ctx.font = '18px "Courier New", monospace';
             ctx.fillText('Pulsa Enter o Jugar', WIDTH / 2, HEIGHT / 2 + 20);
           }
 
           if (game.state === STATE.PAUSED) {
-            ctx.fillStyle = '#05d9e8';
-            ctx.font = 'bold 34px "Courier New", monospace';
-            ctx.fillText('PAUSA', WIDTH / 2, HEIGHT / 2);
+            neonText('PAUSA', WIDTH / 2, HEIGHT / 2, 34, '#05d9e8');
           }
 
           if (game.state === STATE.OVER) {
-            ctx.fillStyle = '#ff2a6d';
-            ctx.font = 'bold 34px "Courier New", monospace';
-            ctx.fillText('GAME OVER', WIDTH / 2, HEIGHT / 2 - 40);
+            neonText('GAME OVER', WIDTH / 2, HEIGHT / 2 - 40, 34, '#ff2a6d');
             ctx.fillStyle = '#eaeaea';
             ctx.font = '18px "Courier New", monospace';
             ctx.fillText(`Puntuación: ${game.score}`, WIDTH / 2, HEIGHT / 2 + 5);

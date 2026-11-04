@@ -67,8 +67,10 @@ renderizado (Canvas 2D con DOM solo para cabecera, HUD y modal), entrada
 
 `localStorage` (con try/catch por si está bloqueado):
 
-- `ark_record`: récord de puntuación.
-- `ark_bestlevel`: nivel máximo alcanzado.
+- `arkanoid_best_v1`: objeto JSON `{ record, bestLevel }` con el récord de
+  puntuación y el nivel máximo alcanzado. Las claves antiguas `ark_record` y
+  `ark_bestlevel` se migran automáticamente a esta clave la primera vez que se
+  abre el juego.
 
 Se guarda al terminar partidas, superar niveles, cambiar de pestaña y cerrar.
 

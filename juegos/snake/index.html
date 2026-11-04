@@ -108,26 +108,29 @@
       .dpad { display: grid; }
     }
 
+    /* ================= Scanlines CRT (sutil, canon compartido) ================= */
+    .scanlines {
+      position: fixed; inset: 0; pointer-events: none; z-index: 5;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0 1px, transparent 1px 4px);
+    }
+
     /* ================= Modal de opciones ================= */
-    .modal-backdrop {
-      position: fixed; inset: 0; z-index: 10;
-      background: rgba(0, 0, 0, 0.72);
-      display: flex; align-items: center; justify-content: center;
-      padding: 16px;
-    }
-    .modal {
-      width: 100%; max-width: 420px;
+    dialog {
+      width: min(92vw, 420px);
+      padding: 0 0 18px;
+      color: var(--text);
       background: var(--panel);
-      border: 1px solid var(--neon-purple); border-radius: 10px;
+      border: 1px solid var(--neon-purple);
+      border-radius: 10px;
       box-shadow: 0 0 30px rgba(185, 103, 255, 0.4);
-      padding-bottom: 18px;
     }
-    .modal > header {
+    dialog::backdrop { background: rgba(0, 0, 0, 0.72); }
+    dialog > header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 14px 16px;
       border-bottom: 1px solid rgba(185, 103, 255, 0.3);
     }
-    .modal h2 {
+    dialog h2 {
       margin: 0; font-size: 1.05rem; letter-spacing: 2px;
       color: var(--neon-cyan);
       text-shadow: 0 0 8px rgba(5, 217, 232, 0.7);
@@ -174,26 +177,26 @@
     </div>
 
     <!-- Modal de opciones -->
-    <div class="modal-backdrop" id="modalBackdrop" hidden>
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <header>
-          <h2 id="modalTitle">Opciones</h2>
-          <button id="btnCloseModal" aria-label="Cerrar">✕</button>
-        </header>
-        <ul class="options-list">
-          <li><span>Música</span><span class="soon">Próximamente</span></li>
-          <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
-          <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
-          <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
-        </ul>
-        <section class="controls-info">
-          <h3>Controles</h3>
-          <p><strong>Escritorio:</strong> Flechas o WASD para moverte · Espacio o P: pausa · Enter: jugar / reiniciar</p>
-          <p><strong>Móvil:</strong> D-pad táctil para moverte · Toca la pantalla para jugar y pausar</p>
-        </section>
-      </div>
-    </div>
+    <dialog id="options" aria-labelledby="modalTitle">
+      <header>
+        <h2 id="modalTitle">Opciones</h2>
+        <button id="btnCloseModal" aria-label="Cerrar">✕</button>
+      </header>
+      <ul class="options-list">
+        <li><span>Música</span><span class="soon">Próximamente</span></li>
+        <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
+        <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+        <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
+      </ul>
+      <section class="controls-info">
+        <h3>Controles</h3>
+        <p><strong>Escritorio:</strong> Flechas o WASD para moverte · Espacio o P: pausa · Enter: jugar / reiniciar</p>
+        <p><strong>Móvil:</strong> D-pad táctil para moverte · Toca la pantalla para jugar y pausar</p>
+      </section>
+    </dialog>
   </div>
+
+  <div class="scanlines" aria-hidden="true"></div>
 
   <script>
     (() => {
@@ -218,7 +221,7 @@
       const speedEl = document.getElementById('speed');
       const statusEl = document.getElementById('status');
       const btnOptions = document.getElementById('btnOptions');
-      const modalBackdrop = document.getElementById('modalBackdrop');
+      const optionsDialog = document.getElementById('options');
       const btnCloseModal = document.getElementById('btnCloseModal');
       const dpad = document.getElementById('dpad');
 
@@ -501,11 +504,8 @@
       };
 
       document.addEventListener('keydown', (e) => {
-        // Modal abierto: solo Escape cierra
-        if (!modalBackdrop.hidden) {
-          if (e.code === 'Escape') closeModal();
-          return;
-        }
+        // El dialog capturing ESC nativamente; con modal abierto no hay controles de juego
+        if (optionsDialog.open) return;
         if (e.code === 'Escape' || e.code === 'KeyP') { togglePause(); return; }
         if (e.code === 'Space') {
           e.preventDefault();
@@ -547,14 +547,14 @@
       /* ================= Modal de opciones ================= */
       function openModal() {
         if (game.state === State.PLAYING) togglePause(); // abrir opciones pausa la partida
-        modalBackdrop.hidden = false;
+        optionsDialog.showModal();
       }
-      function closeModal() { modalBackdrop.hidden = true; }
+      function closeModal() { optionsDialog.close(); }
 
       btnOptions.addEventListener('click', openModal);
       btnCloseModal.addEventListener('click', closeModal);
-      modalBackdrop.addEventListener('click', (e) => {
-        if (e.target === modalBackdrop) closeModal();
+      optionsDialog.addEventListener('click', (e) => {
+        if (e.target === optionsDialog) closeModal(); // clic en el backdrop
       });
 
       // Evita que los botones retengan el foco y capturen Space/Enter

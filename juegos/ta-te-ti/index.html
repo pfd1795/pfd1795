@@ -6,15 +6,16 @@
 <title>Ta Te Ti — 3 en Raya · Arcade Neón</title>
 <style>
   :root {
-    --bg:#070a18; --panel:#101630; --line:#28345d;
-    --text:#eff3ff; --muted:#9ba8cf; --cyan:#4dc9ff;
-    --pink:#ff4d6d; --yellow:#ffe74c; --green:#6eeb83;
+    --bg:#0d0221; --panel:#1a1033; --line:rgba(185,103,255,0.4);
+    --text:#eaeaea; --muted:#9b8fb8;
+    --neon-green:#39ff14; --neon-pink:#ff2a6d; --neon-cyan:#05d9e8; --neon-yellow:#ffd60a; --neon-purple:#b967ff;
+    --cyan:var(--neon-cyan); --pink:var(--neon-pink); --yellow:var(--neon-yellow); --green:var(--neon-green);
   }
   * { box-sizing:border-box; }
   html,body { width:100%; height:100%; margin:0; overflow:hidden; }
   body {
     display:flex; flex-direction:column; align-items:center;
-    background:radial-gradient(ellipse at 50% 0%,#172047 0%,var(--bg) 68%);
+    background:var(--bg);
     color:var(--text); font-family:"Courier New",monospace;
     user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
   }
@@ -23,16 +24,17 @@
     padding:10px 4px 6px;
   }
   h1 {
-    margin:0; color:var(--yellow); font-size:clamp(15px,4vw,21px);
-    letter-spacing:2px; text-shadow:0 0 10px #ffe74c66;
+    margin:0; color:var(--neon-green); font-size:clamp(15px,4vw,21px);
+    letter-spacing:2px; text-shadow:0 0 8px rgba(57,255,20,0.8);
   }
   button {
-    color:var(--text); font-family:inherit; font-weight:bold; letter-spacing:1px;
-    background:#151d3b; border:2px solid var(--line); border-radius:9px;
-    padding:8px 12px; cursor:pointer;
+    color:var(--neon-cyan); font-family:inherit; font-weight:bold; letter-spacing:1px;
+    background:transparent; border:1px solid var(--neon-cyan); border-radius:9px;
+    padding:8px 12px; cursor:pointer; transition:box-shadow 0.15s, background 0.15s;
   }
-  button:focus-visible { outline:3px solid var(--yellow); outline-offset:2px; }
-  button:active { transform:translateY(1px); border-color:var(--yellow); }
+  button:hover { background:rgba(5,217,232,0.12); box-shadow:0 0 10px rgba(5,217,232,0.5); }
+  button:focus-visible { outline:3px solid var(--neon-yellow); outline-offset:2px; }
+  button:active { transform:translateY(1px); }
   #hud {
     width:min(96vw,720px); display:flex; justify-content:center; gap:clamp(12px,5vw,40px);
     padding:3px 4px 8px; color:var(--muted); font-size:11px; letter-spacing:1px;
@@ -41,25 +43,30 @@
   main { flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; padding:4px 8px 12px; }
   canvas { display:block; border-radius:14px; touch-action:none; }
 
-  #modal {
-    position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
-    padding:16px; background:#02040dcc;
+  /* ================= Scanlines CRT (sutil, canon compartido) ================= */
+  .scanlines {
+    position:fixed; inset:0; pointer-events:none; z-index:5;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0 1px, transparent 1px 4px);
   }
-  #modal[hidden] { display:none; }
-  .modal-card {
-    width:min(92vw,410px); background:var(--panel); border:2px solid var(--line);
-    border-radius:14px; padding:16px; box-shadow:0 0 35px #4dc9ff22;
+
+  /* ================= Modal de opciones ================= */
+  dialog {
+    width:min(92vw,410px); padding:16px;
+    color:var(--text); background:var(--panel);
+    border:1px solid var(--neon-purple); border-radius:14px;
+    box-shadow:0 0 30px rgba(185,103,255,0.4);
   }
+  dialog::backdrop { background:rgba(0,0,0,0.72); }
   .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:13px; }
-  .modal-head h2 { margin:0; font-size:16px; color:var(--cyan); letter-spacing:2px; }
-  .modal-card ul { list-style:none; padding:0; margin:0 0 14px; display:grid; gap:8px; }
-  .modal-card li {
+  .modal-head h2 { margin:0; font-size:16px; color:var(--neon-cyan); letter-spacing:2px; text-shadow:0 0 8px rgba(5,217,232,0.7); }
+  dialog ul { list-style:none; padding:0; margin:0 0 14px; display:grid; gap:8px; }
+  dialog li {
     display:flex; justify-content:space-between; gap:10px; padding:9px 11px;
-    border:1px solid var(--line); border-radius:8px; background:#090e23; font-size:13px;
+    border:1px solid var(--line); border-radius:8px; background:#12052e; font-size:13px;
   }
   .soon { color:var(--muted); font-style:italic; }
   .instructions { border-top:1px dashed var(--line); padding-top:10px; color:var(--muted); font-size:12px; line-height:1.55; }
-  .instructions h3 { margin:0 0 5px; color:var(--green); font-size:13px; letter-spacing:2px; }
+  .instructions h3 { margin:0 0 5px; color:var(--neon-green); font-size:13px; letter-spacing:2px; }
   .instructions p { margin:5px 0; }
   .instructions strong { color:var(--text); }
 </style>
@@ -78,8 +85,7 @@
 
 <main id="stage"><canvas id="game" aria-label="Tablero de Ta Te Ti"></canvas></main>
 
-<div id="modal" hidden>
-  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="options-title">
+<dialog id="options" aria-labelledby="options-title">
     <div class="modal-head">
       <h2 id="options-title">OPCIONES</h2>
       <button id="close-options" type="button" aria-label="Cerrar">✕</button>
@@ -96,8 +102,9 @@
       <p><strong>Teclado:</strong> teclas 1 a 9 para elegir casilla (como el teclado numérico: 1 arriba-izquierda, 9 abajo-derecha). Enter inicia o reinicia. P o ESC = pausa.</p>
       <p><strong>Móvil:</strong> toca la casilla donde quieras colocar tu X.</p>
     </div>
-  </section>
-</div>
+</dialog>
+
+<div class="scanlines" aria-hidden="true"></div>
 
 <script>
 'use strict';
@@ -117,7 +124,7 @@ const COMBOS = [
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const stage = document.getElementById('stage');
-const modal = document.getElementById('modal');
+const optionsDialog = document.getElementById('options');
 
 let state = 'start'; // start, playing, paused, victory, gameover, draw
 let board = Array(9).fill('');
@@ -136,12 +143,29 @@ const stars = Array.from({length:46}, () => ({
   size:0.7+Math.random()*1.4, alpha:0.12+Math.random()*0.35
 }));
 
+const RECORD_KEY = 'ta-te-ti_best_v1';
+const LEGACY_RECORD_KEYS = ['tateti_neon_record'];
+
+function migrateRecordKey() {
+  try {
+    if (localStorage.getItem(RECORD_KEY) == null) {
+      for (const oldKey of LEGACY_RECORD_KEYS) {
+        const legacy = localStorage.getItem(oldKey);
+        if (legacy != null) { localStorage.setItem(RECORD_KEY, legacy); localStorage.removeItem(oldKey); break; }
+      }
+    } else {
+      for (const oldKey of LEGACY_RECORD_KEYS) { if (localStorage.getItem(oldKey) != null) localStorage.removeItem(oldKey); }
+    }
+  } catch (_) { /* localStorage puede estar deshabilitado */ }
+}
+migrateRecordKey(); // conserva el récord con la clave nueva
+
 function loadRecord() {
-  try { totalWins = Number(localStorage.getItem('tateti_neon_record')) || 0; }
+  try { totalWins = Number(localStorage.getItem(RECORD_KEY)) || 0; }
   catch (_) { totalWins = 0; }
 }
 function saveRecord() {
-  try { localStorage.setItem('tateti_neon_record', String(totalWins)); }
+  try { localStorage.setItem(RECORD_KEY, String(totalWins)); }
   catch (_) { /* localStorage puede estar deshabilitado */ }
 }
 function updateHud() {
@@ -248,15 +272,15 @@ function drawButton(id,cx,cy,w,h,label,primary=false) {
   const x=cx-w/2, y=cy-h/2;
   ctx.beginPath();
   ctx.roundRect(x,y,w,h,10);
-  ctx.fillStyle = primary ? '#3b1729' : '#121a38';
+  ctx.fillStyle = primary ? '#3d0f24' : '#1a1033';
   ctx.fill();
   ctx.lineWidth = 2;
-  ctx.strokeStyle = primary ? '#ff4d6d' : '#4dc9ff';
+  ctx.strokeStyle = primary ? '#ff2a6d' : '#05d9e8';
   ctx.shadowColor = ctx.strokeStyle;
   ctx.shadowBlur = 9;
   ctx.stroke();
   ctx.shadowBlur = 0;
-  drawText(label,cx,cy,16,'#eff3ff');
+  drawText(label,cx,cy,16,'#eaeaea');
   buttons.push({id,x,y,w,h});
 }
 function cellCenter(index) {
@@ -267,10 +291,10 @@ function cellCenter(index) {
 function drawX(cx,cy) {
   const s = CELL*0.30;
   ctx.save();
-  ctx.strokeStyle = '#4dc9ff';
+  ctx.strokeStyle = '#05d9e8';
   ctx.lineWidth = 8;
   ctx.lineCap = 'round';
-  ctx.shadowColor = '#4dc9ff';
+  ctx.shadowColor = '#05d9e8';
   ctx.shadowBlur = 14;
   ctx.beginPath();
   ctx.moveTo(cx-s,cy-s); ctx.lineTo(cx+s,cy+s);
@@ -281,9 +305,9 @@ function drawX(cx,cy) {
 function drawO(cx,cy) {
   const s = CELL*0.29;
   ctx.save();
-  ctx.strokeStyle = '#ff4d6d';
+  ctx.strokeStyle = '#ff2a6d';
   ctx.lineWidth = 8;
-  ctx.shadowColor = '#ff4d6d';
+  ctx.shadowColor = '#ff2a6d';
   ctx.shadowBlur = 14;
   ctx.beginPath();
   ctx.arc(cx,cy,s,0,Math.PI*2);
@@ -291,36 +315,36 @@ function drawO(cx,cy) {
   ctx.restore();
 }
 function drawBackground() {
-  ctx.fillStyle = '#080d22';
+  ctx.fillStyle = '#0a0328';
   ctx.fillRect(0,0,W,H);
   for (const star of stars) {
     ctx.globalAlpha = star.alpha;
-    ctx.fillStyle = '#e1eaff';
+    ctx.fillStyle = '#eaeaea';
     ctx.fillRect(star.x,star.y,star.size,star.size);
   }
   ctx.globalAlpha = 1;
-  ctx.strokeStyle = 'rgba(77,201,255,.25)';
+  ctx.strokeStyle = 'rgba(5,217,232,.25)';
   ctx.lineWidth = 1;
   ctx.strokeRect(8,8,W-16,H-16);
 }
 function drawArena() {
   drawBackground();
 
-  drawText('JUGADOR (X)',140,32,13,'#4dc9ff');
-  drawText(String(sessionWins),140,64,30,'#eff3ff');
-  drawText('CPU (O)',420,32,13,'#ff4d6d');
-  drawText(String(sessionLosses),420,64,30,'#eff3ff');
-  drawText('VS',W/2,50,15,'#9ba8cf');
+  drawText('JUGADOR (X)',140,32,13,'#05d9e8');
+  drawText(String(sessionWins),140,64,30,'#eaeaea');
+  drawText('CPU (O)',420,32,13,'#ff2a6d');
+  drawText(String(sessionLosses),420,64,30,'#eaeaea');
+  drawText('VS',W/2,50,15,'#9b8fb8');
 
   // Resaltado de casilla al pasar el cursor.
   if (hoverCell >= 0 && state==='playing' && turn==='player' && !board[hoverCell]) {
     const col = hoverCell%3, row = Math.floor(hoverCell/3);
-    ctx.fillStyle = 'rgba(77,201,255,.10)';
+    ctx.fillStyle = 'rgba(5,217,232,.10)';
     ctx.fillRect(BOARD_X+col*CELL,BOARD_Y+row*CELL,CELL,CELL);
   }
 
   // Rejilla.
-  ctx.strokeStyle = '#344064';
+  ctx.strokeStyle = '#3b2a5e';
   ctx.lineWidth = 3;
   ctx.lineCap = 'round';
   for (let i=1;i<=2;i++) {
@@ -333,7 +357,7 @@ function drawArena() {
     ctx.lineTo(BOARD_X+BOARD_SIZE-6,BOARD_Y+i*CELL);
     ctx.stroke();
   }
-  ctx.strokeStyle = 'rgba(77,201,255,.35)';
+  ctx.strokeStyle = 'rgba(5,217,232,.35)';
   ctx.strokeRect(BOARD_X-4,BOARD_Y-4,BOARD_SIZE+8,BOARD_SIZE+8);
 
   // Marcas.
@@ -348,10 +372,10 @@ function drawArena() {
     const a = cellCenter(winInfo.combo[0]);
     const b = cellCenter(winInfo.combo[2]);
     ctx.save();
-    ctx.strokeStyle = '#ffe74c';
+    ctx.strokeStyle = '#ffd60a';
     ctx.lineWidth = 7;
     ctx.lineCap = 'round';
-    ctx.shadowColor = '#ffe74c';
+    ctx.shadowColor = '#ffd60a';
     ctx.shadowBlur = 16;
     ctx.beginPath();
     ctx.moveTo(a.x,a.y);
@@ -362,18 +386,18 @@ function drawArena() {
 
   // Estado de turno.
   if (state==='playing') {
-    if (turn==='player') drawText('TU TURNO — ELIGE UNA CASILLA',W/2,BOARD_Y+BOARD_SIZE+28,13,'#4dc9ff');
-    else drawText('TURNO DE LA CPU…',W/2,BOARD_Y+BOARD_SIZE+28,13,'#ff4d6d');
+    if (turn==='player') drawText('TU TURNO — ELIGE UNA CASILLA',W/2,BOARD_Y+BOARD_SIZE+28,13,'#05d9e8');
+    else drawText('TURNO DE LA CPU…',W/2,BOARD_Y+BOARD_SIZE+28,13,'#ff2a6d');
   }
 }
 function drawOverlay(title,color,subtitle,primaryId,primaryLabel) {
-  ctx.fillStyle = 'rgba(3,5,17,.86)';
+  ctx.fillStyle = 'rgba(5,2,20,.86)';
   ctx.fillRect(0,0,W,H);
   ctx.shadowColor = color;
   ctx.shadowBlur = 18;
   drawText(title,W/2,H*0.31,34,color);
   ctx.shadowBlur = 0;
-  drawText(subtitle,W/2,H*0.44,14,'#c5cce4','normal');
+  drawText(subtitle,W/2,H*0.44,14,'#cfc7e2','normal');
   drawButton(primaryId,W/2,H*0.61,230,44,primaryLabel,true);
   drawButton('menu',W/2,H*0.80,180,40,'MENÚ');
 }
@@ -383,23 +407,23 @@ function render() {
   drawArena();
 
   if (state==='start') {
-    drawOverlay('TA TE TI','#ffe74c','Tú eres X. Gana quien alinee tres marcas.','start','JUGAR');
+    drawOverlay('TA TE TI','#ffd60a','Tú eres X. Gana quien alinee tres marcas.','start','JUGAR');
   } else if (state==='paused') {
-    ctx.fillStyle = 'rgba(3,5,17,.86)';
+    ctx.fillStyle = 'rgba(5,2,20,.86)';
     ctx.fillRect(0,0,W,H);
-    ctx.shadowColor = '#4dc9ff';
+    ctx.shadowColor = '#05d9e8';
     ctx.shadowBlur = 18;
-    drawText('PAUSA',W/2,H*0.26,34,'#4dc9ff');
+    drawText('PAUSA',W/2,H*0.26,34,'#05d9e8');
     ctx.shadowBlur = 0;
     drawButton('resume',W/2,H*0.45,230,44,'REANUDAR',true);
     drawButton('restart',W/2,H*0.60,230,44,'REINICIAR');
     drawButton('menu',W/2,H*0.75,230,44,'MENÚ');
   } else if (state==='victory') {
-    drawOverlay('¡VICTORIA!','#6eeb83',`Marcador: TÚ ${sessionWins} — CPU ${sessionLosses}`,'restart','JUGAR OTRA VEZ');
+    drawOverlay('¡VICTORIA!','#39ff14',`Marcador: TÚ ${sessionWins} — CPU ${sessionLosses}`,'restart','JUGAR OTRA VEZ');
   } else if (state==='gameover') {
-    drawOverlay('GAME OVER','#ff4d6d',`Marcador: TÚ ${sessionWins} — CPU ${sessionLosses}`,'restart','INTENTAR DE NUEVO');
+    drawOverlay('GAME OVER','#ff2a6d',`Marcador: TÚ ${sessionWins} — CPU ${sessionLosses}`,'restart','INTENTAR DE NUEVO');
   } else if (state==='draw') {
-    drawOverlay('EMPATE','#ffe74c','Nadie logró alinear tres en raya.','restart','JUGAR OTRA VEZ');
+    drawOverlay('EMPATE','#ffd60a','Nadie logró alinear tres en raya.','restart','JUGAR OTRA VEZ');
   }
 }
 function handleCanvasClick(x,y) {
@@ -455,9 +479,8 @@ window.addEventListener('keydown', event => {
     playerMove(Number(key)-1);
     return;
   }
-  if (key==='escape' && !modal.hidden) {
-    closeOptions();
-    return;
+  if (key==='escape' && optionsDialog.open) {
+    return; // el dialog cierra con ESC de forma nativa
   }
   if (key==='p' || key==='escape') {
     if (state==='playing') pauseGame();
@@ -476,19 +499,18 @@ document.addEventListener('visibilitychange', () => {
 });
 
 /* Opciones */
-function closeOptions() {
-  modal.hidden = true;
+optionsDialog.addEventListener('close', () => {
   if (modalPausedGame && state==='paused') resumeGame();
   modalPausedGame = false;
-}
+});
 document.getElementById('options-button').addEventListener('click', () => {
   modalPausedGame = state==='playing';
   if (modalPausedGame) pauseGame();
-  modal.hidden = false;
+  optionsDialog.showModal();
 });
-document.getElementById('close-options').addEventListener('click', closeOptions);
-modal.addEventListener('click', event => {
-  if (event.target===modal) closeOptions();
+document.getElementById('close-options').addEventListener('click', () => optionsDialog.close());
+optionsDialog.addEventListener('click', event => {
+  if (event.target===optionsDialog) optionsDialog.close(); // clic en el backdrop
 });
 
 /* Bucle principal */

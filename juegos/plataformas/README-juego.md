@@ -45,7 +45,8 @@ Archivo único `index.html` con tres bloques:
 
 ## Persistencia
 
-- `localStorage` con clave `ninja_best_v1` guarda el récord.
+- `localStorage` con clave `plataformas_best_v1` guarda el récord (la clave
+  antigua `ninja_best_v1` se migra automáticamente).
 - Acceso envuelto en try/catch para navegadores con almacenamiento bloqueado.
 - Sin servidores ni almacenamiento externo.
 

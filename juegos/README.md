@@ -32,9 +32,8 @@ Reglas de la carpeta de un juego:
 - No debe cargar recursos externos, CDNs, fuentes remotas ni APIs.
 - Los assets opcionales (sprites, sonidos) deben vivir dentro de la misma carpeta.
 
-> La copia dentro del portafolio es estática. El directorio externo
-> `/home/gris/Documentos/juegos` es la fuente de desarrollo: si un juego cambia allí, hay que
-> volver a copiarlo a `juegos/<slug>/` y actualizar su `README-juego.md`.
+> Los juegos son estáticos y autocontenidos: todo el código vive en `juegos/<slug>/index.html`
+> dentro de este repositorio; no hay directorio externo de desarrollo.
 
 ---
 
@@ -178,6 +177,81 @@ Notas:
 - [ ] Tiene su `README-juego.md` con descripción, mecánicas, controles, arquitectura,
       persistencia y posibles mejoras.
 - [ ] Está añadido al manifiesto y probado por HTTP.
+- [ ] Sigue el canon visual retro-arcade (sección siguiente): paleta neón oscura, modal de
+      opciones con `<dialog>`, scanlines CRT y clave de récord `<slug>_best_v1`.
+
+---
+
+## Canon visual retro-arcade
+
+Todos los juegos comparten el mismo aspecto: pixel-art neón sobre fondo oscuro, tipografía
+`"Courier New", monospace` y el mismo "chrome" (barra superior, HUD, estados y modal). Un juego
+nuevo debe copiarlo de [`_template/index.html`](./_template/index.html) o de
+[`snake/index.html`](./snake/index.html) (referencia canónica).
+
+### Paleta (familia A)
+
+Definida como variables CSS en `:root` de cada juego:
+
+| Variable | Valor | Uso |
+| --- | --- | --- |
+| `--bg` | `#0d0221` | Fondo de página |
+| `--panel` | `#1a1033` | Paneles, topbar y modal |
+| `--text` | `#eaeaea` | Texto principal |
+| `--muted` | `#9b8fb8` | Texto secundario |
+| `--neon-green` | `#39ff14` | Título `h1` y acentos positivos |
+| `--neon-pink` | `#ff2a6d` | Pausa / salir / peligro |
+| `--neon-cyan` | `#05d9e8` | Botones y títulos del modal |
+| `--neon-yellow` | `#ffd60a` | Reiniciar / avisos |
+| `--neon-purple` | `#b967ff` | Bordes del modal y líneas |
+
+- El `h1` usa siempre `color:var(--neon-green)` con `text-shadow:0 0 8px rgba(57,255,20,0.8)`.
+- Los botones usan el estilo cian transparente (`background:transparent`, borde y texto cian,
+  hover con `rgba(5,217,232,0.12)` + glow). Los botones semánticos (pausa=reinit,
+  reanudar=verde, reiniciar=amarillo, salir/rosa, cerrar/apagado) mantienen su color propio
+  apuntando a los neones canon.
+- Los colores de dibujo dentro del `<canvas>` usan los mismos valores neón; el arte propio de
+  cada juego (tablero de ajedrez, tapete del billar, degradados de ladrillos) se conserva.
+
+### Modal de opciones
+
+Nativo `<dialog id="options" aria-labelledby="options-title">`:
+
+- Se abre con `showModal()` y se cierra con `close()`, con el botón ✕, con ESC (nativo) y con
+  clic en el backdrop (`if (e.target === dialog) dialog.close()`).
+- Las opciones no implementadas (Música, Efectos de sonido, Dificultad, Temas visuales) se
+  muestran como "Próximamente".
+- El guard de teclado del juego es `if (optionsDialog.open) return;`.
+
+### Scanlines CRT
+
+Overlay sutil global: `<div class="scanlines" aria-hidden="true"></div>` justo antes de
+`</body>`, con `position:fixed;inset:0;pointer-events:none;z-index:5` y un
+`repeating-linear-gradient` de líneas horizontales.
+
+### Claves de récord
+
+Cada juego guarda su récord en `localStorage` con la clave `<slug>_best_v1`. Los juegos que
+antes usaban otra clave la migran automáticamente (copian el valor a la clave nueva y borran la
+antigua la primera vez que se abre el juego), así que ningún jugador pierde su récord:
+
+| Juego | Clave actual | Clave(s) antigua(s) migrada(s) |
+| --- | --- | --- |
+| snake | `snake_best_v1` | — |
+| space-invaders | `space-invaders_best_v1` | `invaders_best_v1` |
+| ajedrez | `ajedrez_best_v1` | `ajedrez-arcade-v1` |
+| damas | `damas_best_v1` | `damas-arcade-v1` |
+| dungeon-crawler | `dungeon-crawler_best_v1` | `dungeon_best_v1` |
+| neon-racer | `neon-racer_best_v1` | `racer_best_v1` |
+| plataformas | `plataformas_best_v1` | `ninja_best_v1` |
+| tower-defense | `tower-defense_best_v1` | `tower_best_v1` |
+| match-3 | `match-3_best_v1` | `de_record` + `de_bestlevel` (fusionados en un JSON) |
+| arkanoid | `arkanoid_best_v1` | `ark_record` + `ark_bestlevel` (fusionados en un JSON) |
+| ritmo | `ritmo_best_v1` | `pixelriff_records_v1` |
+| pong | `pong_best_v1` | `pong_neon_best` |
+| piedras-papel-tijeras | `piedras-papel-tijeras_best_v1` | `ppt_neon_record` |
+| pool | `pool_best_v1` | `pixelpool_records_v1` |
+| ta-te-ti | `ta-te-ti_best_v1` | `tateti_neon_record` |
 
 ---
 
