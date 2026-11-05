@@ -18,6 +18,10 @@
       --neon-cyan: #05d9e8;
       --neon-yellow: #ffd60a;
       --neon-purple: #b967ff;
+
+      /* Dimensionado del escenario (canon compartido) */
+      --game-max: 900px;
+      --game-chrome: 220px;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -38,7 +42,7 @@
     /* ================= Barra superior ================= */
     .topbar {
       width: 100%;
-      max-width: 560px;
+      max-width: var(--game-max);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -74,7 +78,7 @@
     /* ================= HUD ================= */
     .hud {
       width: 100%;
-      max-width: 560px;
+      max-width: var(--game-max);
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem 1.25rem;
@@ -90,16 +94,17 @@
     /* ================= Escenario ================= */
     .stage {
       width: 100%;
-      max-width: 560px;
       display: flex;
       justify-content: center;
-      padding: 0 1rem;
     }
     canvas {
       display: block;
-      width: 100%;
-      max-width: 480px;
-      height: auto;
+      width: min(
+        calc(100vw - 16px),
+        var(--game-max),
+        calc(var(--game-max) * 3 / 4),
+        calc((100dvh - var(--game-chrome)) * 3 / 4)
+      );
       aspect-ratio: 3 / 4;
       background: #07010f;
       border: 2px solid var(--panel);
@@ -110,7 +115,7 @@
     /* ================= Controles táctiles ================= */
     .touch-controls {
       width: 100%;
-      max-width: 560px;
+      max-width: var(--game-max);
       display: flex;
       justify-content: space-between;
       gap: 0.75rem;
@@ -132,6 +137,9 @@
 
     @media (hover: hover) and (pointer: fine) {
       .touch-controls { opacity: 0.55; }
+    }
+    @media (max-width: 600px) {
+      :root { --game-chrome: 260px; }
     }
 
     /* ================= Modal ================= */
@@ -222,6 +230,24 @@
       const bestLabel = document.getElementById('best');
       const stateLabel = document.getElementById('state-label');
       const optionsDialog = document.getElementById('options');
+
+      /* ================= Lienzo nítido y adaptable ================= */
+      let renderScale = 1;
+
+      /* Renderiza a la resolución visible (o por encima de la lógica en
+         móvil) para mantener la nitidez cuando el marco es mayor. */
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const cssWidth = rect.width || WIDTH;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        renderScale = Math.max(1, cssWidth / WIDTH) * dpr;
+        canvas.width = Math.round(WIDTH * renderScale);
+        canvas.height = Math.round(HEIGHT * renderScale);
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
 
       /* ================= Estado ================= */
       const STATE = {
@@ -422,6 +448,7 @@
       }
 
       function draw() {
+        ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
         ctx.strokeStyle = 'rgba(185, 103, 255, 0.15)';
@@ -472,7 +499,7 @@
 
       /* ================= Bucle ================= */
       function loop(timestamp) {
-        const dt = Math.min(0.05, (timestamp - game.lastTime) / 1000 || 0);
+        const dt = Math.max(0, Math.min(0.05, (timestamp - game.lastTime) / 1000 || 0));
         game.lastTime = timestamp;
 
         update(dt);

@@ -179,6 +179,8 @@ Notas:
 - [ ] Está añadido al manifiesto y probado por HTTP.
 - [ ] Sigue el canon visual retro-arcade (sección siguiente): paleta neón oscura, modal de
       opciones con `<dialog>`, scanlines CRT y clave de récord `<slug>_best_v1`.
+- [ ] Usa el dimensionado del canon (sección "Dimensionado del canvas"): regla de `width: min()`
+      con `--game-max`/`--game-chrome` y buffer nítido con `renderScale`.
 
 ---
 
@@ -212,6 +214,42 @@ Definida como variables CSS en `:root` de cada juego:
   apuntando a los neones canon.
 - Los colores de dibujo dentro del `<canvas>` usan los mismos valores neón; el arte propio de
   cada juego (tablero de ajedrez, tapete del billar, degradados de ladrillos) se conserva.
+
+### Dimensionado del canvas (marco común)
+
+El escenario comparte un mismo criterio de tamaño: un **marco máximo de 900×900 px CSS**, que
+respeta la proporción lógica de cada juego y renderiza el buffer a la resolución visible. La
+referencia es [`_template/index.html`](./_template/index.html); los juegos de marco pequeño
+(actualmente snake, space-invaders, neon-racer, plataformas, dungeon-crawler y tower-defense)
+lo siguen.
+
+- Variables en `:root` de cada juego:
+  - `--game-max: 900px` — tope de ancho **y** de alto del marco.
+  - `--game-chrome` — altura reservada para topbar, HUD y controles; tiene un valor de
+    escritorio y otro mayor dentro del media query táctil/móvil
+    `(hover: none) and (pointer: coarse), (max-width: 600px)`.
+- Regla de tamaño del canvas:
+
+```css
+canvas {
+  width: min(
+    calc(100vw - 16px),                             /* móvil: todo el ancho útil */
+    var(--game-max),                                /* tope de ancho */
+    calc(var(--game-max) * W / H),                  /* tope de alto = 900px */
+    calc((100dvh - var(--game-chrome)) * W / H)     /* alto disponible real */
+  );
+  aspect-ratio: W / H;
+}
+```
+
+- Buffer nítido y adaptable: en la carga y en `resize` se recalcula
+  `let renderScale = Math.max(1, cssWidth / W) * Math.min(devicePixelRatio, 2)` y
+  `canvas.width/height = Math.round(W/H * renderScale)`; en el `draw()` se usa
+  `ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0)`. Así el buffer iguala el tamaño
+  visible × DPR en escritorio y no baja de la resolución lógica en móvil.
+- No se cambia la resolución lógica ni la lógica del juego para ajustar el tamaño: solo el
+  dimensionado (CSS + `renderScale`). Ajustar el marco es cambiar `--game-max` y la reserva
+  `--game-chrome` de cada juego.
 
 ### Modal de opciones
 

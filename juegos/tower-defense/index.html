@@ -18,6 +18,10 @@
       --neon-yellow: #ffd60a;
       --neon-purple: #b967ff;
       --neon-orange: #ffb703;
+
+      /* Dimensionado del escenario (canon compartido) */
+      --game-max: 900px;
+      --game-chrome: 280px;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -76,7 +80,12 @@
     .stage { position: relative; }
     canvas {
       display: block;
-      width: min(94vw, 660px, calc((100dvh - 268px) * 4 / 3));
+      width: min(
+        calc(100vw - 16px),
+        var(--game-max),
+        calc(var(--game-max) * 4 / 3),
+        calc((100dvh - var(--game-chrome)) * 4 / 3)
+      );
       aspect-ratio: 4 / 3;
       margin: 4px 0;
       border: 2px solid var(--neon-purple);
@@ -108,7 +117,7 @@
     /* ================= Barra de control ================= */
     .controlbar {
       display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
-      gap: 8px; width: min(94vw, 660px); margin: 8px 0 4px;
+      gap: 8px; width: min(94vw, var(--game-max)); margin: 8px 0 4px;
     }
     .cbtn {
       font: inherit; font-size: 0.8rem; cursor: pointer;
@@ -133,6 +142,9 @@
       min-height: 1.2em; margin: 2px 0 18px;
       font-size: 0.78rem; color: var(--muted); text-align: center;
       padding: 0 12px;
+    }
+    @media (hover: none) and (pointer: coarse), (max-width: 600px) {
+      :root { --game-chrome: 340px; }
     }
 
         /* ================= Scanlines CRT (sutil, canon compartido) ================= */
@@ -368,9 +380,23 @@
       const optionsDialog = document.getElementById('options');
       const btnCloseModal = document.getElementById('btnCloseModal');
 
-      const DPR = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = VIEW_W * DPR;
-      canvas.height = VIEW_H * DPR;
+      /* ================= Lienzo nítido y adaptable ================= */
+      let renderScale = 1;
+
+      /* Renderiza a la resolución visible (o por encima de la lógica en
+         móvil) para mantener la nitidez cuando el marco es mayor. */
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const cssWidth = rect.width || VIEW_W;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        renderScale = Math.max(1, cssWidth / VIEW_W) * dpr;
+        canvas.width = Math.round(VIEW_W * renderScale);
+        canvas.height = Math.round(VIEW_H * renderScale);
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
 
       /* ================= Estado del juego ================= */
       const game = {
@@ -778,7 +804,7 @@
 
       /* ================= Dibujo ================= */
       function draw(t) {
-        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
         ctx.fillStyle = '#0d0221';
         ctx.fillRect(0, 0, VIEW_W, VIEW_H);
         drawStars(t);
@@ -1131,7 +1157,7 @@
       /* ================= Bucle principal ================= */
       let lastTime = performance.now();
       function loop(t) {
-        const dt = Math.min(t - lastTime, 50);
+        const dt = Math.max(0, Math.min(t - lastTime, 50));
         lastTime = t;
         update(dt);
         draw(t);

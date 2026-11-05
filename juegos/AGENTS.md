@@ -24,6 +24,10 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
    plantilla [`_template/index.html`](./_template/index.html); la especificación completa está en
    [`README.md` (sección "Canon visual retro-arcade")](./README.md#canon-visual-retro-arcade).
    Un juego nuevo debe copiar ese chrome; no introducir paletas ni modales propios.
+   El escenario comparte además el dimensionado canónico (marco máximo 900×900 px CSS con
+   `--game-max`/`--game-chrome` y buffer nítido vía `renderScale`), definido en
+   [`README.md` (sección "Dimensionado del canvas")](./README.md#dimensionado-del-canvas-marco-común);
+   un juego nuevo no cambia la resolución lógica para achicar o agrandar el marco.
 3. **El `slug` es el identificador**: carpeta en kebab-case, entrada en el manifiesto y clave de
    récord `<slug>_best_v1` en `localStorage`. No renombrar slugs publicados sin actualizar los
    tres. Si un juego cambia de clave de récord, debe migrar la clave antigua automáticamente
@@ -55,3 +59,7 @@ Específico de esta carpeta, tras cualquier cambio:
    glow, botones cian transparente, modal `<dialog id="options">` (abre/cierra con ✕, ESC y clic
    en el backdrop) y overlay `.scanlines`. El récord anterior se conserva tras la migración de
    clave (probar con una clave antigua pre-cargada si se cambió la clave).
+6. Si se tocó el dimensionado, comprobar en escritorio (1920×1080) y móvil (390×844) que no hay
+   scroll, que los controles táctiles siguen visibles y que el buffer del canvas iguala el
+   tamaño visible × DPR (mínimo la resolución lógica; ver la sección "Dimensionado del canvas"
+   del README).

@@ -17,6 +17,10 @@
       --neon-cyan: #05d9e8;
       --neon-yellow: #ffd60a;
       --neon-purple: #b967ff;
+
+      /* Dimensionado del escenario (canon compartido) */
+      --game-max: 900px;
+      --game-chrome: 130px;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -74,7 +78,12 @@
     /* ================= Canvas ================= */
     canvas {
       display: block;
-      width: min(94vw, 640px, calc((100dvh - 250px) * 4 / 3));
+      width: min(
+        calc(100vw - 16px),
+        var(--game-max),
+        calc(var(--game-max) * 4 / 3),
+        calc((100dvh - var(--game-chrome)) * 4 / 3)
+      );
       aspect-ratio: 4 / 3;
       margin: 4px 0;
       border: 2px solid var(--neon-purple);
@@ -88,7 +97,7 @@
     .touchpad {
       display: none;
       justify-content: space-between; align-items: center;
-      width: min(94vw, 640px);
+      width: min(94vw, var(--game-max));
       margin: 10px 0 22px;
     }
     .dpad {
@@ -119,6 +128,7 @@
       font-size: 0.85rem; letter-spacing: 1px;
     }
     @media (hover: none) and (pointer: coarse), (max-width: 600px) {
+      :root { --game-chrome: 350px; }
       .touchpad { display: flex; }
     }
 
@@ -379,9 +389,23 @@
       const optionsDialog = document.getElementById('options');
       const btnCloseModal = document.getElementById('btnCloseModal');
 
-      const DPR = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = VIEW_W * DPR;
-      canvas.height = VIEW_H * DPR;
+      /* ================= Lienzo nítido y adaptable ================= */
+      let renderScale = 1;
+
+      /* Renderiza a la resolución visible (o por encima de la lógica en
+         móvil) para mantener la nitidez cuando el marco es mayor. */
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const cssWidth = rect.width || VIEW_W;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        renderScale = Math.max(1, cssWidth / VIEW_W) * dpr;
+        canvas.width = Math.round(VIEW_W * renderScale);
+        canvas.height = Math.round(VIEW_H * renderScale);
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
 
       // Lienzo fuera de pantalla para la capa de oscuridad
       const darkCanvas = document.createElement('canvas');
@@ -916,7 +940,7 @@
 
       /* ================= Dibujo ================= */
       function draw(t) {
-        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
         ctx.fillStyle = '#0d0221';
         ctx.fillRect(0, 0, VIEW_W, VIEW_H);
         drawStars(t);
@@ -1350,7 +1374,7 @@
       /* ================= Bucle principal ================= */
       let lastTime = performance.now();
       function loop(t) {
-        const dt = Math.min(t - lastTime, 50);
+        const dt = Math.max(0, Math.min(t - lastTime, 50));
         lastTime = t;
         update(dt);
         draw(t);

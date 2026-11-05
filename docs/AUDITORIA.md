@@ -46,6 +46,9 @@ python -m http.server 8000
 
 - [ ] 15 entradas con `status: "published"`; `slug` válido; campos ES/EN completos
       (`title`, `description`, `genre`; `controls` recomendado).
+- [ ] `--game-max`/`--game-chrome` y buffer nítido (`renderScale`) en los juegos del canon de
+      dimensionado (plantilla y los 6 de marco pequeño): a 1920×1080 y 390×844 sin scroll y con
+      el buffer igualando el tamaño visible × DPR (mínimo la resolución lógica).
 - [ ] Clave raíz `version` presente; rutas del campo `covers` relativas a `juegos/index.html` y
       cargan por HTTP.
 - [ ] Cada juego: `index.html` autocontenido (sin CDNs ni recursos externos), récord en
