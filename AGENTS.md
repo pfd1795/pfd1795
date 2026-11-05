@@ -278,7 +278,11 @@ del manifiesto (ver Arquitectura CSS).
 
 - **Sistema de diseño**: tokens definidos en la sección `:root` de `stylesheets/base.css` — neutros (`--n100…--n900`, `--dn100…--dn900`), superficies (`--color-background`, `--color-surface`, `--color-border`), texto (`--color-text`, `--color-text-secondary`), acentos en trío (`--<color>-claro/-normal/-oscuro`), tipografía (`--text-*`, `--font-*`), radios, sombras (`--shadow-sm…--shadow-xl`) y bordes (`--border-thin/-normal/-thick`).
 - **Hojas CSS**: `stylesheets/base.css` contiene todo lo compartido (reset, variables, estilos globales, `.main-content`, modal, componentes, navbar y sidebar); `portada.css`, `enciclopedia.css` y `juegos.css` solo añaden lo específico de cada página. Cada HTML carga siempre `base.css` primero y después la hoja de su página, sin `@import`; un cambio compartido se hace una sola vez en `base.css`.
-- **Alias de compatibilidad**: los tokens antiguos (`--color-dark`, `--color-light`, …) están definidos y apuntan al sistema nuevo.
+- **Alias de compatibilidad**: el único alias que queda definido y con uso real es
+  `--color-white` (→ `--n100`). Tras la auditoría H-15 se purgaron los ~44 tokens sin
+  referencias (toda la familia `--color-blue/-dark/…` y los semánticos
+  `--color-success/warning/error/info`, `--color-background-neutral`, `--color-border-light`,
+  `--color-separator`); reflotar un alias solo al aparecer su primer uso real.
 - **Temas de color**: el acento activo se expone como `--theme-color` (variante oscura) y `--theme-color-soft` (variante clara). `controllers/sidebar/fnThemeColor.js` los sobreescribe a partir de `utils/themeColors.js` (fuente única de las 6 opciones).
 - **Temas de fondo (degradados)**: el fondo de página se controla con `--page-background`, `--page-gradient`, `--page-scrim`, `--page-background-size`, `--page-background-repeat` y `--page-animation`, consumidos por `.body-container`. `utils/themeBackgrounds.js` define los 10 temas (default + 8 colores, incluido violeta, + multicolor), las 7 direcciones (4 lineales, 2 radiales y color sólido) y las 3 velocidades. El degradado usa los tokens `--<color>-oscuro` y `--neutral-background-soft`, este último redefinido en modo oscuro. El modo `multicolor` usa un arcoíris animado con `@keyframes page-rainbow` (180s lento / 30s normal / 10s rápido) que se anula con `prefers-reduced-motion`. En modo claro, `html.has-page-theme` aplica un velo neutro (`--page-scrim`) y oscurece el texto secundario para mantener el contraste.
 - **Tamaño de fuente**: `html` usa `font-size: calc(16px * var(--font-scale, 1))`; el modal fija `--font-scale` en 0.85, 1 o 1.15, por lo que escala toda la tipografía basada en `rem` sin tocar los breakpoints en `px`.
@@ -324,7 +328,11 @@ del manifiesto (ver Arquitectura CSS).
 ### Internacionalización
 
 - La interfaz tiene traducciones ES/EN, pero el contenido de la enciclopedia (`mis-estudios/`) y el de los juegos (`juegos/<slug>/`) está solo en español. Las tarjetas de la grilla de juegos sí se traducen desde el manifiesto.
-- `applyTranslations()` busca claves en `page`, `introSection`, `home` y `header`; una clave nueva debe colocarse en una de esas secciones.
+- `applyTranslations()` busca claves en `page`, `introSection`, `home` y `header`; una clave
+  nueva debe colocarse en una de esas secciones. El espacio de claves es **único entre esas 4
+  secciones** (H-08): reutilizar el mismo nombre con otro texto puede resolver al valor de una
+  sección anterior del orden de búsqueda. La clave `name` no se traduce: `applyTranslations()`
+  la saltea a propósito porque es un nombre propio.
 - Las cadenas que se renderizan desde JavaScript se traducen al generarse (por ejemplo, `GridProjects()` toma `viewProject` de `translations.introSection[lang]`, y `GridGames()` toma las etiquetas de `translations.page[lang]`), no vía `data-lang`.
 - Al cambiar de idioma se re-renderizan la portada y la grilla de juegos (`reloadHomeContent()` de `controllers/home/fnHome.js` y `reloadGamesContent()` de `controllers/juegos/fnJuegos.js`); ambas no hacen nada si su contenedor no existe.
 - Cuidar el orden entre `applyTranslations()` y las funciones que regeneran HTML (`GridWorkExperience`, `GridProjects`) al tocar idioma: las cadenas renderizadas en JS deben traducirse al generarse.
@@ -336,6 +344,10 @@ del manifiesto (ver Arquitectura CSS).
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
 - **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `javascripts/data/juegos.json`.
 - El correo que copia `utils/copyEmail.js` está fijado en el código. Si cambia, hay que actualizarlo ahí y en la información de contacto.
+- **`assets/files/PabloDiazCV.pdf`** (238 KB) se mantiene en el repositorio sin enlazar por
+  decisión del desarrollador (2026-11-05, hallazgo H-14): es material para reenlazar el CV desde
+  el sidebar o el modal si se recupera el botón de descarga. Hasta entonces, ninguna página lo
+  referencia y así debe quedar.
 
 ### Deuda técnica
 

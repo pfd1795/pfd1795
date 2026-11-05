@@ -109,7 +109,7 @@
 </div>
 <div id="progress"><div id="progress-fill"></div></div>
 
-<main id="stage"><canvas id="game"></canvas></main>
+<main id="stage"><canvas id="game" aria-label="Tablero del juego de caramelos"></canvas></main>
 
 <dialog id="options" aria-labelledby="options-title">
     <div class="modal-head">
@@ -225,6 +225,7 @@ function saveStore(){
 const canvas = $('game'), ctx = canvas.getContext('2d');
 let state = 'start';        // start | playing | paused | over | victory
 let phase = 'idle';         // idle | swap | revert | clear | fall | shuffle
+let needsRealign = false;   // resize() aplazó el snapCells() hasta volver a idle
 let grid = [];
 let cellSize = 48, pad = 14, boardW = 420, boardH = 420, dpr = 1;
 let score = 0, totalScore = 0, level = 1, moves = MOVES_PER_LEVEL, target = targetForLevel(1);
@@ -270,7 +271,10 @@ function resize(){
   canvas.style.width = boardW + 'px';
   canvas.style.height = boardH + 'px';
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  snapCells();
+  /* Si hay tweens en vuelo (swap/clear/fall) recalcular px/py ahora rompería
+     la interpolación: el re-anclaje se aplaza hasta que el tablero vuelva a idle. */
+  if(phase === 'idle') snapCells();
+  else needsRealign = true;
 }
 
 /* ---------- Tablero: creación y búsquedas ---------- */
@@ -283,7 +287,6 @@ function initBoard(){
   grid = [];
   for(let r=0;r<ROWS;r++){
     const row = [];
-    grid.push(row);
     for(let c=0;c<COLS;c++){
       let color;
       do{ color = rand(COLORS.length); }while(createsRun(r,c,color));
@@ -1030,7 +1033,7 @@ canvas.addEventListener('pointerdown', e => {
   e.preventDefault();
   const p = canvasPos(e);
   resetIdle();
-  if(state === 'start'){ startGame(); return; }
+  if(state === 'start'){ overlayClick(p.x, p.y); if(state === 'start') startGame(); return; }
   if(state === 'paused' || state === 'over' || state === 'victory'){ overlayClick(p.x,p.y); return; }
   if(state !== 'playing' || phase !== 'idle') return;
   const cellPos = posFromPixel(p.x,p.y);
@@ -1151,6 +1154,7 @@ function loop(now){
   lastT = now;
   if(state !== 'paused'){
     time += dt;
+    if(needsRealign && phase === 'idle'){ needsRealign = false; snapCells(); }
     updateTweens(dt);
     updateFx(dt);
     if(state === 'start') updateBgGems(dt);

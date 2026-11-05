@@ -63,6 +63,8 @@ python -m http.server 8000
       sidebar y el modal del portafolio, con rutas ajustadas (`../` o `../../`).
 - [ ] Al abrir el menú el fondo queda `inert` y el foco entra al botón de cierre; al cerrarlo
       se devuelve el foco al botón que lo abrió.
+- [ ] Al volver a una sección padre (Inicio) el submenú se repliega (decisión del hallazgo
+      H-07: solo queda abierto mientras una sección hija es la activa).
 
 ### 5. Temas y configuración
 

@@ -1,11 +1,15 @@
 import { currentLanguage } from "../../lang/translations.config.js";
 import translations from "../../lang/translations.json" with { type: "json" };
-import { getThemeMode, setThemeMode } from "../../utils/storage.js";
+import {
+  getThemeMode,
+  setThemeMode,
+  STORAGE_KEY_THEME_MODE
+} from "../../utils/storage.js";
 import { ICONS_URL } from "../../utils/assets.js";
 
 let currentMode = "dark";
 
-function applyTheme(mode) {
+function applyTheme(mode, { persist = true } = {}) {
   currentMode = mode;
 
   /* El portafolio aplica `.dark`/`.light` en <body>; la enciclopedia lo
@@ -31,7 +35,11 @@ function applyTheme(mode) {
 
   updateModeText();
 
-  setThemeMode(mode);
+  /* Si el modo llegó desde el evento storage (otra pestaña) no se reescribe:
+     evita un write circular innecesario en localStorage. */
+  if (persist) {
+    setThemeMode(mode);
+  }
 }
 
 function toggleMode() {
@@ -54,6 +62,16 @@ export default function themeMode() {
     if (event.target.closest(".switch-input")) {
       toggleMode();
     }
+  });
+
+  /* Sincronización entre pestañas: si otra pestaña del sitio cambia el modo,
+     se reaplica sobre el <html>/<body> y la UI del modal. */
+  window.addEventListener("storage", (event) => {
+    if (event.key !== STORAGE_KEY_THEME_MODE) return;
+    if (event.newValue !== "dark" && event.newValue !== "light") return;
+    if (event.newValue === currentMode) return;
+
+    applyTheme(event.newValue, { persist: false });
   });
 
   applyTheme(getThemeMode());

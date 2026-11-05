@@ -88,7 +88,7 @@
 </div>
 
 <main id="stage">
-  <canvas id="game" width="480" height="720"></canvas>
+  <canvas id="game" width="480" height="720" aria-label="Escenario del juego de ritmo"></canvas>
 </main>
 
 <div id="touchbar">
@@ -269,6 +269,7 @@ class AudioEngine{
   }
 }
 const audio=new AudioEngine();
+let audioFail=false; /* true si el navegador no soporta Web Audio */
 
 /* ===================== 4. PERSISTENCIA (localStorage) ===================== */
 const store={
@@ -402,6 +403,9 @@ function ensureAudio(){audio.init();if(game.state!=='paused')audio.resume();}
 function goSelect(){game.state='select';syncBody();audio.tick();}
 function startSong(i){
   ensureAudio();
+  /* Sin AudioContext no hay reloj ni agenda de notas: no arrancar (evita el
+     TypeError de audio.ctx.currentTime) y avisar en la pantalla de selección. */
+  if(!audio.ctx){audioFail=true;return;}
   game.sel=i;game.songIndex=i;game.chart=buildChart(SONGS[i]);
   game.backingIdx=0;game.score=0;game.combo=0;game.maxCombo=0;game.mult=1;
   game.perfects=0;game.goods=0;game.misses=0;game.acc=0;
@@ -466,6 +470,7 @@ function renderSelect(){
   g.fillStyle='#0d0221';g.fillRect(0,0,W,H);
   txt('SELECCIONA UNA CANCIÓN',240,64,22,'#ffd60a');
   txt('↑ ↓ PARA ELEGIR · ENTER PARA TOCAR',240,96,13,'rgba(255,255,255,0.5)');
+  if(audioFail)txt('AUDIO NO DISPONIBLE EN ESTE NAVEGADOR',240,126,13,'#ff5a7a');
   for(let i=0;i<SONGS.length;i++){
     const b=rowBox(i),s=SONGS[i],sel=i===game.sel,rec=store.get(s.id);
     g.fillStyle='rgba(255,255,255,0.03)';g.fillRect(b.x,b.y,b.w,b.h);
@@ -601,7 +606,11 @@ window.addEventListener('keydown',e=>{
     return; // ESC cierra el dialog de forma nativa
   }
   switch(game.state){
-    case 'title':goSelect();break;
+    case 'title':
+      /* Lista blanca: solo teclas imprimibles, Espacio o Enter avanzan de
+         pantalla. F5, F12, Alt+Tab, etc. no tocan el estado del juego. */
+      if(code.length===1||code==='Enter'||code==='Space')goSelect();
+      break;
     case 'select':
       if(code==='ArrowUp'||code==='KeyW'){game.sel=(game.sel+SONGS.length-1)%SONGS.length;audio.tick();}
       else if(code==='ArrowDown'||code==='KeyS'){game.sel=(game.sel+1)%SONGS.length;audio.tick();}

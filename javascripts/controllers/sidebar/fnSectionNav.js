@@ -26,6 +26,11 @@ export default function sectionNav() {
     if (isChildActive && submenu) {
       submenu.classList.add("is-open");
       expand?.setAttribute("aria-expanded", "true");
+    } else {
+      /* Al volver a una sección padre (Inicio, …) el submenú se repliega:
+         se mantiene cerrado salvo que otra hija vuelva a ser visible. */
+      submenu?.classList.remove("is-open");
+      expand?.setAttribute("aria-expanded", "false");
     }
   };
 

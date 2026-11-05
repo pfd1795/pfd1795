@@ -325,3 +325,35 @@ Fin del informe. Para corregir: priorizar H-01 → H-04 (bugs), luego H-05/H-06/
 desarrollador para H-14 y para el recorte de tokens). Toda corrección termina con la
 verificación manual del `AGENTS.md` raíz (servir por HTTP y remarcar las páginas
 afectadas por la tabla de la sección «Páginas a cargar según lo modificado»).
+
+---
+
+## Resolución (2026-11-05)
+
+Corrección aplicada de los 17 hallazgos el mismo día de la auditoría, tras revistar el propio
+informe contra el código. La evidencia original de este informe se conserva intacta: la
+corrección del hallazgo equivocado (H-08) se documenta en la tabla, no reescribiendo el
+catálogo. Verificación: sintaxis JS validada con `node --check`, todas las páginas y módulos
+responden 200 por HTTP (`python3 -m http.server`), sin referencias restantes a claves de
+traducción ni tokens CSS purgados. Queda pendiente de consola de DevTools y prueba manual de
+temas/idioma/sync entre pestañas (checklist de `AGENTS.md`).
+
+| ID | Estado | Corrección aplicada |
+| --- | --- | --- |
+| H-01 | Resuelto | `base.css`: `color: var(--enc-accent, var(--theme-color))` (opción de una línea) |
+| H-02 | Resuelto | `match-3`: eliminado el `grid.push(row)` duplicado |
+| H-03 | Resuelto | `fnHome.js`: `join("")` en la lista de habilidades del modal |
+| H-04 | Resuelto | `ritmo`: guard temprano en `startSong` si no hay `AudioContext` + aviso "AUDIO NO DISPONIBLE" en la pantalla de selección (opción mínima, partida sin Web Audio no arranca) |
+| H-05 | Resuelto | `changeLanguage(lang, { rerender })`; el arranque restaura el idioma con `rerender: false`, sin doble render |
+| H-06 | Resuelto | Listeners `storage` en `fnThemeMode` (reaplica modo sobre `body`/UI del modal, `persist: false`) y en `fnChangeLanguage` (restaura idioma y re-renderiza grillas). `AUDITORIA.md` §5 queda como estaba prometido |
+| H-07 | Resuelto | `fnSectionNav`: rama `else` que repliega el submenú cuando la activa es la sección padre (decisión documentada en `AUDITORIA.md` §4) |
+| H-08 | Resuelto | **Corrección del informe:** el detalle original era impreciso. A nivel de secciones reales, la única clave compartida es `technologiesLabel` (`page` + `home`, con el mismo propósito); `workplace` y `title` no chocan. El riesgo real se reduce a cero con el recorte de H-13 (desaparecen `workplace`, `technologies` y `description` de `header`). Convención "espacio único de claves" documentada en `AGENTS.md` |
+| H-13 | Resuelto | Eliminadas las 23 claves muertas (22 de `header` + `introSection.role` ES/EN, incluida la errata "aplicaiones"). `header` queda con `experienceTitle`, `studiesTitle` y `copyNotification` |
+| H-14 | Resuelto (mantener) | Decisión del desarrollador: `assets/files/PabloDiazCV.pdf` **no se borra**; se mantiene sin enlazar como material para reenlazar el CV. Anotado en `AGENTS.md` (Contenido y assets) |
+| H-15 | Resuelto | Purgados los ~44 tokens sin referencias (41 alias + 3 semánticos). Queda `--color-white` como único alias con uso real; comentario actualizado en `base.css` y `AGENTS.md` |
+| H-16 | Resuelto | `aria-label` en los 6 canvas (`ajedrez`, `arkanoid`, `damas`, `match-3`, `pool`, `ritmo`); checklist de `juegos/README.md` ahora lo exige para juegos nuevos |
+| H-17 | Resuelto | Comentario en `applyTranslations()` que documenta el skip de `name` (nombre propio, sin traducción) |
+
+Sin cambios estructurales: no se tocaron `theme-init.js`, `mis-estudios/js/tema.js` ni el
+inventario de claves de `localStorage` (ninguna clave del sitio cambió de nombre ni de valor
+por defecto; solo se exportaron las constantes ya existentes de `utils/storage.js`).

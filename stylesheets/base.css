@@ -189,41 +189,10 @@ code {
    --bg-theme-*, --neutral-background-soft y --works-collapsed. */
 :root {
   /* --- Alias de compatibilidad (legacy: no usar en CSS nuevo) --- */
+  /* El único alias con uso real es --color-white. Los demás tokens de
+     compatibilidad se purgaron en la auditoría H-15; reflotar uno solo al
+     aparecer su primer uso, junto con su variante oscura si la necesitara. */
   --color-white: var(--n100);
-  --color-light: var(--n200);
-  --color-light-dark: var(--n300);
-  --color-black: var(--n900);
-  --color-dark: var(--dn200);
-  --color-dark-light: var(--dn300);
-  --color-gray: var(--n600);
-  --color-blue-light: var(--blue-claro);
-  --color-blue: var(--blue-normal);
-  --color-blue-dark: var(--blue-oscuro);
-  --color-green-light: var(--green-claro);
-  --color-green: var(--green-normal);
-  --color-green-dark: var(--green-oscuro);
-  --color-red-light: var(--red-claro);
-  --color-red: var(--red-normal);
-  --color-red-dark: var(--red-oscuro);
-  --color-yellow-light: var(--amber-claro);
-  --color-yellow: var(--amber-normal);
-  --color-yellow-dark: var(--amber-oscuro);
-  --color-purple-light: var(--violet-claro);
-  --color-purple: var(--violet-normal);
-  --color-purple-dark: var(--violet-oscuro);
-  --color-pink-light: var(--pink-claro);
-  --color-pink: var(--pink-normal);
-  --color-pink-dark: var(--pink-oscuro);
-  --color-orange-light: var(--orange-claro);
-  --color-orange: var(--orange-normal);
-  --color-orange-dark: var(--orange-oscuro);
-  --color-cyan-light: var(--cyan-claro);
-  --color-cyan: var(--cyan-normal);
-  --color-cyan-dark: var(--cyan-oscuro);
-  --color-success: var(--green-oscuro);
-  --color-warning: var(--amber-oscuro);
-  --color-error: var(--red-oscuro);
-  --color-info: var(--cyan-oscuro);
 
   /* --- Acento activo (lo sobrescribe fnThemeColor.js) --- */
   --theme-color: hsl(210 75% 28%);
@@ -355,12 +324,9 @@ code {
 
   /* --- Superficies, bordes y texto --- */
   --color-background: var(--n200);
-  --color-background-neutral: var(--n200);
   --color-surface: var(--n100);
   --color-surface-raised: var(--n100);
   --color-border: var(--n300);
-  --color-border-light: var(--n200);
-  --color-separator: var(--n300);
   --color-overlay: hsl(0 0% 0% / 0.3);
   --color-overlay-dark: hsl(0 0% 0% / 0.6);
   --color-text: hsl(0 0% 2%);
@@ -406,12 +372,9 @@ code {
 body.dark,
 html.dark {
   --color-background: var(--dn100);
-  --color-background-neutral: var(--dn100);
   --color-surface: var(--dn200);
   --color-surface-raised: var(--dn300);
   --color-border: var(--dn300);
-  --color-border-light: var(--dn200);
-  --color-separator: var(--dn300);
   --color-text: var(--dn900);
   --color-text-secondary: var(--dn700);
   --color-text-disabled: var(--dn600);
@@ -736,7 +699,10 @@ body.modal-open {
   opacity: .8;
   width: 1.5em;
 }
-body:not(.dark) .modal-dialog .settings .settings-icon {
+/* El modo se pre-pinta en <html> (theme-init.js / tema.js), así que la regla
+   se escribe contra ese nodo: `body:not(.dark)` dejaría una ventana entre el
+   primer pintado y DOMContentLoaded donde el invert se activa en modo oscuro. */
+html:not(.dark) .modal-dialog .settings .settings-icon {
   filter: invert(1);
 }
 .modal-dialog .settings .settings-label {
@@ -1026,7 +992,7 @@ body:not(.dark) .modal-dialog .settings .settings-icon {
   z-index: calc(var(--z-index-navbar) + 1);
   padding: var(--space-2) var(--space-4);
   background-color: var(--color-surface);
-  color: var(--enc-accent);
+  color: var(--enc-accent, var(--theme-color));
   border: var(--border-normal) solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);

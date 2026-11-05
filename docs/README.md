@@ -17,6 +17,7 @@ mantenerlos sincronizados con el código es parte del mantenimiento (ver `AGENTS
   - [`juegos/AGENTS.md`](../juegos/AGENTS.md) — reglas de la grilla y de los juegos integrados.
   - [`mis-estudios/AGENTS.md`](../mis-estudios/AGENTS.md) — reglas de la enciclopedia.
 - [`AUDITORIA.md`](./AUDITORIA.md) — hoja de verificación para auditar el proyecto.
+- [`HALLAZGOS.md`](./HALLAZGOS.md) — informe de auditoría (2026-11-05) y su resolución.
 
 ## Juegos
 

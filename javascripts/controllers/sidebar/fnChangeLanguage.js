@@ -1,6 +1,6 @@
 import { setCurrentLanguage, currentLanguage } from "../../lang/translations.config.js";
 import translations from "../../lang/translations.json" with { type: "json" };
-import { getLanguage, setLanguage } from "../../utils/storage.js";
+import { getLanguage, setLanguage, STORAGE_KEY_LANGUAGE } from "../../utils/storage.js";
 import { updateModeText } from "./fnThemeMode.js";
 import { reloadHomeContent } from "../home/fnHome.js";
 import { reloadGamesContent } from "../juegos/fnJuegos.js";
@@ -27,6 +27,8 @@ export function applyTranslations() {
   document.querySelectorAll("[data-lang]").forEach((element) => {
     const key = element.getAttribute("data-lang");
 
+    /* El nombre "Pablo" no se traduce: es un nombre propio y debe quedar
+       literal en todos los idiomas, por eso se saltea esta clave. */
     if (key === "name") {
       return;
     }
@@ -58,7 +60,11 @@ export function applyTranslations() {
   });
 }
 
-function changeLanguage(lang) {
+/* `rerender` controla si se vuelve a renderizar la portada y la grilla de
+   juegos. En el arranque se restaura el idioma guardado ANTES de que
+   HomeController/JuegosController monten las grillas, así que ahí se pasa
+   `rerender: false` para no renderizar la misma pantalla dos veces. */
+function changeLanguage(lang, { rerender = true } = {}) {
   if (!VALID_LANGUAGES.includes(lang)) {
     console.warn("Invalid language:", lang);
     return;
@@ -72,8 +78,11 @@ function changeLanguage(lang) {
   applyTranslations();
 
   updateModeText();
-  reloadHomeContent();
-  reloadGamesContent();
+
+  if (rerender) {
+    reloadHomeContent();
+    reloadGamesContent();
+  }
 }
 
 export default function sectionLanguage() {
@@ -91,9 +100,23 @@ export default function sectionLanguage() {
     });
   });
 
+  /* Sincronización entre pestañas: si otra pestaña del sitio cambia el
+     idioma, se re-aplica el estado y se re-renderizan las grillas aquí. */
+  window.addEventListener("storage", (event) => {
+    if (event.key !== STORAGE_KEY_LANGUAGE) return;
+    if (!VALID_LANGUAGES.includes(event.newValue)) return;
+    if (event.newValue === currentLanguage) return;
+
+    changeLanguage(event.newValue);
+
+    document.querySelectorAll(".segment[data-lang-value]").forEach((option) => {
+      option.classList.toggle("active", option.dataset.langValue === event.newValue);
+    });
+  });
+
   const savedLanguage = getLanguage();
 
   if (document.documentElement.lang !== savedLanguage) {
-    changeLanguage(savedLanguage);
+    changeLanguage(savedLanguage, { rerender: false });
   }
 }

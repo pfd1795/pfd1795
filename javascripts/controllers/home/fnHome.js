@@ -107,7 +107,7 @@ function ModalEducation(idEducation = 0) {
   const selectedEducation = translations.educations.find(edu => edu.id === idEducation);
 
   if (selectedEducation) {
-    const skillsList = selectedEducation.skills.map(skill => `<li>${skill}</li>`).join(", ");
+    const skillsList = selectedEducation.skills.map(skill => `<li>${skill}</li>`).join("");
     const lang = currentLanguage;
     const homeTexts = translations.home[lang];
 

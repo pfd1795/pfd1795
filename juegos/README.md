@@ -166,6 +166,8 @@ Notas:
 
 - [ ] Todo el código está en un único `index.html` (salvo assets propios).
 - [ ] La jugabilidad se renderiza en `<canvas>`; el DOM solo se usa para HUD, botones y modales.
+- [ ] El `<canvas>` tiene `aria-label` descriptivo (p. ej. "Tablero de ajedrez",
+      "Escenario del juego de ritmo").
 - [ ] Incluye pantalla de inicio, estados de jugando, pausa, reanudar y Game Over.
 - [ ] Incluye botón **Opciones** con un modal (las opciones no implementadas se marcan como
       "Próximamente").
