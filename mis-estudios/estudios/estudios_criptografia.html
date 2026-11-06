@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Criptografía básica — Estudios de informática</title>
+  <meta name="description" content="Criptografía para programadores: hash, cifrado simétrico y asimétrico, firmas digitales, hashing de contraseñas y gestión de secretos.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Seguridad</p>
+          <h1>Criptografía básica</h1>
+          <p class="entrada">
+            La criptografía deja los datos ininteligibles para quien no tenga la clave. Como
+            programador no vas a inventar algoritmos —y conviene que no lo intentes—, pero sí
+            necesitas saber <strong>qué herramienta elegir en cada caso</strong>: hash para
+            verificar, cifrado para ocultar, firma para autenticar.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#hash-vs-cifrado">Hash y cifrado: no es lo mismo</a></li>
+            <li><a href="#hash">Funciones hash</a></li>
+            <li><a href="#contrasenas">Guardar contraseñas</a></li>
+            <li><a href="#simetrico">Cifrado simétrico</a></li>
+            <li><a href="#asimetrico">Cifrado asimétrico</a></li>
+            <li><a href="#firmas">Firmas digitales</a></li>
+            <li><a href="#secretos">Gestión de secretos</a></li>
+            <li><a href="#comandos">Comandos de verificación</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="hash-vs-cifrado" aria-labelledby="hash-vs-cifrado-titulo">
+          <h2 id="hash-vs-cifrado-titulo">Hash y cifrado: no es lo mismo</h2>
+          <p>La confusión más común en seguridad. Sirven a objetivos opuestos:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Característica</th>
+                <th scope="col">Hash</th>
+                <th scope="col">Cifrado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Es reversible</td><td>No: de ida y vuelta imposible (funciona en una sola dirección)</td><td>Sí: con la clave se descifra</td></tr>
+              <tr><td>Devuelve</td><td>Una «huella» de tamaño fijo</td><td>El mismo tamaño aprox. del original</td></tr>
+              <tr><td>Objetivo</td><td><strong>Verificar</strong> integridad o identidad</td><td><strong>Ocultar</strong> el contenido</td></tr>
+              <tr><td>Usa clave</td><td>No (en su uso básico)</td><td>Siempre</td></tr>
+              <tr><td>Ejemplo de uso</td><td>Contraseñas, checksums, deduplicación</td><td>TLS, discos, bases de datos cifradas</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            «Cifrar las contraseñas» es un error clásico: si el servidor tiene la clave, el atacante
+            que la roba descifra todas. Las contraseñas se <strong>hashean con sal</strong>. (Vea
+            <a href="#contrasenas">Guardar contraseñas</a>.)
+          </p>
+        </section>
+
+        <section id="hash" aria-labelledby="hash-titulo">
+          <h2 id="hash-titulo">Funciones hash</h2>
+          <p>
+            Un hash convierte cualquier entrada en una cadena de longitud fija, de forma
+            determinista: la misma entrada da siempre la misma salida, pero de la salida no se puede
+            deducir la entrada. Cambiar un solo bit del original cambia totalmente el hash
+            <em>(efecto avalancha)</em>.
+          </p>
+          <ul>
+            <li><strong>SHA-256 / SHA-3</strong>: los recomendables hoy.</li>
+            <li><strong>MD5 y SHA-1</strong>: rotos para seguridad (solo sirven para checksums de compatibilidad).</li>
+            <li>El choque (dos entradas distintas, mismo hash) es teóricamente posible; en SHA-256 es computacionalmente inviable.</li>
+          </ul>
+          <pre><code>echo -n "pfd1795" | sha256sum
+  # b94d5a...  (64 caracteres hexadecimales = 256 bits)</code></pre>
+          <p>Uso típico: comparar si un archivo descargado es idéntico al original:</p>
+          <pre><code>sha256sum ubuntu.iso
+  # compara el resultado con el valor que publica el proveedor</code></pre>
+        </section>
+
+        <section id="contrasenas" aria-labelledby="contrasenas-titulo">
+          <h2 id="contrasenas-titulo">Guardar contraseñas</h2>
+          <p>
+            Una base de datos de usuarios no debe guardar contraseñas ni siquiera hasheadas con
+            SHA-256 «a pelo»: son tan rápidas que un atacante prueba miles de millones de
+            contraseñas por segundo con tarjetas de video. Se necesitan hashes
+            <strong>deliberadamente lentos y con sal</strong>:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Algoritmo</th>
+                <th scope="col">Comentario</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>bcrypt</td><td>Muy extendido; incorpora sal y un factor de coste ajustable.</td></tr>
+              <tr><td>argon2id</td><td>Ganador del concurso "Password Hashing"; opción recomendada hoy.</td></tr>
+              <tr><td>scrypt</td><td>Similar, pensado para resistir hardware especializado (GPU/ASIC).</td></tr>
+              <tr><td>PBKDF2</td><td>Aceptable, aunque el de menor protección de la lista.</td></tr>
+              <tr><td>MD5 / SHA-1 / SHA-256 solos</td><td><strong>Nunca</strong> para contraseñas.</td></tr>
+            </tbody>
+          </table>
+          <pre><code>// bcrypt: el «cost factor» hace el hash 2^coste veces más lento
+  import bcrypt from 'bcryptjs';
+
+  const hash = await bcrypt.hash(contrasena, 12);      // al registrar
+  const ok = await bcrypt.compare(contrasena, hash);   // al iniciar sesión</code></pre>
+          <p>El hash resultante ya incluye la sal embebida:</p>
+          <pre><code>$2a$12$R9h/cIPz0gi.URNNX3BkhO0qEHdZ8mG6bI7j1tXnSjW09pSmH8ED6
+   |   |  |                       |
+   |   |  |                       └ hash (con la sal dentro)
+   |   |  └ cost factor (2^12 iteraciones)
+   |   └ algoritmo bcrypt
+   └ prefijo de formato</code></pre>
+          <p class="nota">
+            La <strong>sal</strong> es un valor aleatorio que se mezcla con la contraseña antes de
+            hashear. Evita que dos usuarios con la misma contraseña compartan hash, y que el atacante
+            use tablas precalculadas (rainbow tables).
+          </p>
+        </section>
+
+        <section id="simetrico" aria-labelledby="simetrico-titulo">
+          <h2 id="simetrico-titulo">Cifrado simétrico</h2>
+          <p>
+            La misma clave cifra y descifra. Es <strong>rápido</strong> y sirve para cualquier
+            volumen de datos, pero hay un problema logístico: ¿cómo hace llegar la clave al
+            destinatario sin que nadie la intercepte?
+          </p>
+          <ul>
+            <li><strong>AES</strong>: el estándar vigente (AES-128 o AES-256).</li>
+            <li><strong>ChaCha20-Poly1305</strong>: preferible en móviles por su eficiencia (lo usa TLS 1.3 también).</li>
+            <li>Antiguos (DES, 3DES, RC4): sustituidos, no usar en proyectos nuevos.</li>
+          </ul>
+          <pre><code>openssl enc -aes-256-cbc -salt -in secreto.txt -out secreto.enc
+  openssl enc -d -aes-256-cbc -in secreto.enc -out secreto.txt</code></pre>
+          <p class="nota">
+            El modo importa tanto como el algoritmo: <strong>GCM</strong> (autenticado) es la opción
+            por defecto; los modos CBC sin MAC quedan vulnerables a manipulación. En la práctica, usa
+            librerías verificadas y deja que ellas elijan modo y relleno.
+          </p>
+        </section>
+
+        <section id="asimetrico" aria-labelledby="asimetrico-titulo">
+          <h2 id="asimetrico-titulo">Cifrado asimétrico</h2>
+          <p>
+            Resuelve el problema logístico del simétrico con un <strong>par de claves</strong>:
+            lo que cifra una, lo descifra solo la otra. Reparte la pública a todo el mundo; la
+            privada jamás sale de tu equipo.
+          </p>
+          <ul>
+            <li>Para <strong>recibir</strong> mensajes: cualquiera cifra con tu pública; solo tú descifras con la privada.</li>
+            <li>Para <strong>demostrar identidad</strong>: la clave privada firma; cualquiera verifica con la pública.</li>
+            <li>Algoritmos actuales: RSA (2048 bits mínimo), ECDSA, Ed25519, X25519.</li>
+          </ul>
+          <pre><code># Generar un par SSH (type ed25519, moderno)
+  ssh-keygen -t ed25519 -C "tu@correo.com"
+  # id_ed25519     → clave privada (no la compartas nunca)
+  # id_ed25519.pub → clave pública (la publicas en GitHub / servidores)</code></pre>
+          <p>
+            En la web, HTTPS usa asimétrico solo para <em>establecer</em> la conexión (intercambiar o
+            acordar una clave), y entonces cifra todo el resto con simétrico, mucho más rápido. Más
+            detalles en <a href="estudios_tls.html">Ciberseguridad · TLS y certificados</a>.
+          </p>
+        </section>
+
+        <section id="firmas" aria-labelledby="firmas-titulo">
+          <h2 id="firmas-titulo">Firmas digitales</h2>
+          <p>
+            Una firma prueba <strong>quién</strong> emitió el dato y que <strong>no cambió</strong>
+            desde entonces. Se firma con la clave privada; cualquiera puede verificar con la pública:
+          </p>
+          <ol>
+            <li>Se calcula el hash del documento.</li>
+            <li>Se cifra el hash con la clave privada → la firma.</li>
+            <li>Quien recibe recalcula el hash y descifra la firma con la pública: si coincide, es auténtico e íntegro.</li>
+          </ol>
+          <p>Uso real: actualizaciones de software (el sistema operativo verifica la firma del
+          paquete), paquetes firmados, JWT (el servidor firma el token y así detecta
+          modificaciones), certificados TLS y commits de Git:</p>
+          <pre><code># Firmar commits verificables en GitHub
+  git commit -S -m "Cambio"
+  git log --show-signature</code></pre>
+          <p class="nota">
+            Cifrar <strong>o</strong> firmar son cosas distintas: cifrar protege la confidencialidad;
+            firmar protege la autenticidad e integridad. Se pueden combinar: firma y luego cifra.
+          </p>
+        </section>
+
+        <section id="secretos" aria-labelledby="secretos-titulo">
+          <h2 id="secretos-titulo">Gestión de secretos</h2>
+          <p>
+            Una clave criptográfica no protege nada si vive en el repositorio. Reglas elementales:
+          </p>
+          <ul>
+            <li>Nada de credenciales en el código fuente — usa variables de entorno o un gestor</li>
+            <li>Autorotación de clave: planifica qué hacer cuando (no «si») se filtra una</li>
+            <li>El <code>.env</code> se ignora en Git (<code>.gitignore</code>) y se documenta un
+            <code>.env.example</code> sin valores reales.</li>
+            <li>Los secretos de producción no comparten valores con desarrollo.</li>
+          </ul>
+          <pre><code># Comprobar si una clave quedó pegada en la historia de Git
+  git log --all -S 'AKIA' --oneline     # AWS acceso
+  git log --all -S 'API_KEY' --oneline</code></pre>
+        </section>
+
+        <section id="comandos" aria-labelledby="comandos-titulo">
+          <h2 id="comandos-titulo">Comandos de verificación</h2>
+          <p>Herramientas que ya tienes instaladas para trabajar con hash y claves:</p>
+          <pre><code># Verificar la integridad de un archivo descargado
+  sha256sum archivo.iso
+
+# Generar una sal o aleatorio criptográfico (para seeds, IDs de sesión)
+  openssl rand -hex 32
+  openssl rand -base64 24
+
+# Generar una clave de API fuerte para tus proyectos
+  openssl rand -hex 32 | cut -c1-32
+
+# Comprobar qué hash usa un archivo de contraseñas de sistema Linux
+  sudo cat /etc/shadow | head -1   # $6$ = SHA-512 con sal; $y$ = yescrypt</code></pre>
+          <p>Y para la conexión HTTPS, sigue en
+          <a href="estudios_tls.html#comandos">Ciberseguridad · Verificar certificados TLS</a>.</p>
+          <p class="nota">
+            Prueba solo herramientas de evaluación sobre tus propios sistemas o con autorización
+            explícita. Más comprobaciones del lado web en
+            <a href="estudios_seguridad_web.html#comprobaciones">Seguridad · Comprobar tu propia web</a>.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>No inventes esquemas criptográficos: usa libs revisadas como <code>crypto</code>, <code>openssl</code> o <code>sodium</code>.</li>
+            <li>Contraseñas: bcrypt o argon2id con sal y factor de coste generoso.</li>
+            <li>Distingue objetivos: hash para verificar, cifrado para ocultar, firma para autenticar.</li>
+            <li>AES con modo GCM (autenticado) si toca cifrar con librerías propias.</li>
+            <li>Claves de 2048+ bits en RSA, preferible Ed25519 para uso nuevo.</li>
+            <li>Los secretos fuera del repo; rota lo que se haya filtrado, no «borres» en el próximo commit.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_tls.html">Ciberseguridad · TLS y certificados</a>: la criptografía en acción en cada conexión HTTPS.</li>
+            <li><a href="estudios_seguridad_web.html">Ciberseguridad · Aplicaciones web</a>: qué amenazas rodean todo esto.</li>
+            <li><a href="estudios_git.html">Git</a>: <code>git commit -S</code> y la firma de historias.</li>
+            <li><a href="estudios_terminal.html#referencia">Terminal · Referencia rápida</a>: <code>sha256sum</code> y uso general de <code>openssl</code>.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

@@ -6,10 +6,14 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
 ## Qué es esta carpeta
 
 - `index.html`: índice de la enciclopedia con buscador y categorías.
-- `estudios/*.html`: artículos educativos estáticos (HTML, Git, Terminal, JavaScript, Redes, CSS).
-  Varios temarios siguen pendientes de desarrollo ("Próximamente").
+- `estudios/*.html`: artículos educativos estáticos (HTML, Git, Terminal, JavaScript, Redes, CSS,
+  HTTP y navegador, Cliente-servidor y APIs, SQL, Seguridad web, Criptografía, TLS). Varios temarios
+  siguen pendientes de desarrollo ("Próximamente").
 - `js/tema.js`: pre-pintado del tema (script clásico síncrono).
 - `js/buscador.js`: filtro de tarjetas del índice (script clásico con `defer`).
+- `js/copiar.js`: botón «Copiar» sobre los bloques de código de los artículos (script clásico con
+  `defer`, solo en las páginas de estudio). Copia con `navigator.clipboard` y respaldo con
+  `execCommand`, dedentando la sangría del código antes de copiar.
 
 ## Reglas para agentes
 
@@ -32,7 +36,10 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
 6. **Buscador**: `buscador.js` opera solo si existen `#buscador`, `.estudio-card` y las categorías;
    sus avisos usan `#contador` y `#sin-resultados`. No acoplarlo a módulos ES.
 7. **Contenido educativo**: nuevo material se agrega como un `estudios/<tema>.html` siguiendo la
-   estructura de los existentes y enlazándolo desde `index.html` con su categoría.
+   estructura de los existentes y enlazándolo desde `index.html` con su categoría. Los artículos
+   nuevos cargan además `../js/copiar.js`, añaden su caja «En 5 puntos» (`.tl-dr`) y —si ayudan—
+   diagramas SVG inline con las clases de `enciclopedia.css` (`.diagrama`); nada de imágenes
+   remotas ni librerías externas.
 
 ## Verificación local
 
@@ -46,3 +53,5 @@ Específico de esta carpeta, tras cualquier cambio:
 4. El buscador filtra por término, actualiza `#contador` y muestra/oculta `#sin-resultados`.
 5. En `estudios/*.html`: enlaces de vuelta correctos (`../index.html`, `../../index.html`) y el
    submenú del sidebar apunta a las secciones de la portada con la profundidad de rutas correcta.
+6. El botón «Copiar» aparece sobre los bloques de código de cada artículo, copia el código sin la
+   sangría del HTML y confirma con «Copiado» (o aviso si falla).

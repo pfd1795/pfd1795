@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seguridad en redes y TLS — Estudios de informática</title>
+  <meta name="description" content="Cifrado en tránsito: cómo funciona TLS, la cadena de certificados, el handshake, HTTPS en el navegador y cómo verificar tu propia conexión.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Redes</p>
+          <h1>Seguridad en redes y TLS</h1>
+          <p class="entrada">
+            Por las redes de Internet viajan paquetes que cualquiera intermedio puede leer o
+            manipular. TLS (Transport Layer Security) les añade confidencialidad, integridad y
+            autenticidad: es la «S» de HTTPS y también protege SMTP, SSH y otros protocolos.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-resuelve">Qué problemas resuelve TLS</a></li>
+            <li><a href="#handshake">El handshake: cómo se acuerda la conexión</a></li>
+            <li><a href="#certificados">Certificados y cadenas de confianza</a></li>
+            <li><a href="#https-cliente">HTTPS desde el punto de vista del cliente</a></li>
+            <li><a href="#hsts">HSTS: olvidarse del HTTP</a></li>
+            <li><a href="#otros-protocolos">TLS en otros protocolos</a></li>
+            <li><a href="#comandos">Verificar certificados y conexiones</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-resuelve" aria-labelledby="que-resuelve-titulo">
+          <h2 id="que-resuelve-titulo">Qué problemas resuelve TLS</h2>
+          <p>
+            Sin TLS, quien controla la ruta (un Wi-Fi compartido, un router de tu ISP, un
+            proxy corporativo) puede <strong>leer</strong> el tráfico y <strong>modificarlo</strong> en
+            vuelo. TLS apunta a las tres garantías básicas:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Propiedad</th>
+                <th scope="col">Sin TLS</th>
+                <th scope="col">Con TLS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Confidencialidad</td><td>Cualquiera en la ruta lee los datos</td><td>Cifrado simétrico con claves de sesión</td></tr>
+              <tr><td>Integridad</td><td>Los paquetes se podían alterar en silencio</td><td>MAC por registro: cambio = conexión rota</td></tr>
+              <tr><td>Autenticidad</td><td>Un impostor se hace pasar por el servidor</td><td>El servidor demuestra su identidad con un certificado</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            TLS protege el <em>tránsito</em>; no dice nada de cómo se guardan los datos al llegar.
+            Para los datos en reposo están el cifrado a disco y las buenas prácticas de
+            <a href="estudios_seguridad_web.html">Seguridad · Aplicaciones web</a>, y los algoritmos
+            concretos se explican en <a href="estudios_criptografia.html">Criptografía básica</a>.
+          </p>
+        </section>
+
+        <section id="handshake" aria-labelledby="handshake-titulo">
+          <h2 id="handshake-titulo">El handshake: cómo se acuerda la conexión</h2>
+          <p>
+            Antes de enviar un solo byte de HTTP, cliente y servidor negocian los algoritmos e
+            intercambian material criptográfico. Resumen del flujo en TLS 1.3 (el actual):
+          </p>
+          <ol>
+            <li><strong>ClientHello</strong>: el cliente ofrece las suites de cifrado que soporta y su intercambio de claves (por ejemplo X25519).</li>
+            <li><strong>ServerHello + Certificate</strong>: el servidor elige suite, entrega su certificado y su parte del intercambio.</li>
+            <li><strong>Verificación</strong>: el cliente valida el certificado (que firma una CA conocida, que el dominio coincide y que no está caducado).</li>
+            <li><strong>Claves de sesión</strong>: ambas partes derivan la misma clave simétrica sin que viaje por la red.</li>
+            <li><strong>Application Data</strong>: todo lo demás va cifrado y autenticado.</li>
+          </ol>
+          <pre><code># Versión y suite pactadas (salida de dos handshake 1.3 y 1.2)
+  TLSv1.3  TLS_AES_256_GCM_SHA384     # intercambio X25519, AES-256-GCM
+  TLSv1.2  ECDHE-RSA-AES128-GCM-SHA256</code></pre>
+          <p>
+            En TLS 1.3 el handshake ocupa un solo viaje de ida y vuelta (en 1.2 eran dos) y solo
+            garantiza confidencialidad hacia delante (<em>forward secrecy</em>): si roban la
+            clave privada del servidor mañana, no descifran sesiones de hoy grabadas.
+          </p>
+        </section>
+
+        <section id="certificados" aria-labelledby="certificados-titulo">
+          <h2 id="certificados-titulo">Certificados y cadenas de confianza</h2>
+          <p>
+            Un certificado X.509 liga un nombre de dominio con una clave pública, firmado por una
+            <em>autoridad certificadora</em> (CA). El navegador ya trae preinstaladas las CAs raíz en
+            las que confía; tu certificado lo firma una CA, y esta a su vez se encadena hasta una raíz.
+          </p>
+          <pre><code>Root CA (raíz, preinstalada en tu SO/navegador)
+   └─ Intermediate CA (intermedia, firmada por la raíz)
+         └─ server.ejemplo.com (tu certificado, firmado por la intermedia)</code></pre>
+          <p>Campos a revisar en un certificado:</p>
+          <ul>
+            <li><strong>CN / SAN</strong>: para qué dominios es válido (SAN incluye todos; CN ya es histórico).</li>
+            <li><strong>Validez</strong>: fecha de emisión y caducidad. Hoy la duración estándar se acorta (~90 días en Let's Encrypt).</li>
+            <li><strong>Algoritmos</strong>: firma (SHA-256+) y tipo de clave (RSA≥2048, ECDSA, Ed25519).</li>
+          </ul>
+          <p class="nota">
+            La confianza se demuestra, no se promete: el navegador comprueba la cadena, la caducidad y
+            la revocación. Un certificado mal instalado (falta la intermedia) funciona para ti pero
+            falla en otros navegadores: tu servidor debe servir la <em>cadena completa</em>.
+          </p>
+        </section>
+
+        <section id="https-cliente" aria-labelledby="https-cliente-titulo">
+          <h2 id="https-cliente-titulo">HTTPS desde el punto de vista del cliente</h2>
+          <p>
+            Para el usuario, todo esto se reduce a detalles visibles del navegador; para ti en tanto
+            que desarrollador, tiene consecuencias concretas:
+          </p>
+          <ul>
+            <li><strong>Candado cerrado</strong>: TLS correcto. El candado no certifica que el sitio sea honesto, solo que el dominio es quien dice.</li>
+            <li><strong>Aviso de riesgo</strong>: certificado caducado, autogenerado no confiable, dominio distinto… el navegador bloquea el acceso en vez de dejar pasar igual.</li>
+            <li><strong>Candado tachado / «No es seguro»</strong>: HTTPS con contenido cargado por HTTP interno (<em>mixed content</em>). Los navegadores marcan la página como parcialmente insegura, y bloquean los scripts activos directamente.</li>
+            <li>Las cookies marcadas <code>Secure</code> no viajan por HTTP: si tu web pide una API HTTP, se rompe en producción.</li>
+          </ul>
+          <pre><code><!-- peligro de mixed content: dentro de una página HTTPS -->
+  &lt;img src="http://cdn.ejemplo/imagen.jpg"&gt;      <!-- ⚠ pasivo -->
+  &lt;script src="http://cdn.ejemplo/lib.js"&gt;&lt;/script&gt; <!-- 🚫 bloqueado --></code></pre>
+        </section>
+
+        <section id="hsts" aria-labelledby="hsts-titulo">
+          <h2 id="hsts-titulo">HSTS: olvidarse del HTTP</h2>
+          <p>
+            HTTP Strict Transport Security es la cabecera que instruye al navegador para que, después
+            de la primera visita, solo hable con tu dominio por HTTPS, incluso si el usuario teclea
+            <code>http://</code> o un enlace lo enlaza. Evita fácilmente un downgrade en la primera
+            petición.
+          </p>
+          <pre><code>Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</code></pre>
+          <ul>
+            <li><code>max-age</code>: cuántos segundos dura el compromiso del navegador.</li>
+            <li><code>includeSubDomains</code>: extiende la obligación a todos los subdominios.</li>
+            <li><code>preload</code>: incluye tu dominio en las listas precargadas de los navegadores (primero asegúrate de poder mantener HTTPS siempre).</li>
+          </ul>
+          <p class="nota">
+            HSTS es de sentido único: si activas <code>includeSubDomains</code> o <code>preload</code>
+            sin tener HTTPS en TODOS los subdominios, bloqueas partes de tu propia web (imposible
+            revertir rápido, el navegador lo guarda meses). Empieza sin <code>preload</code> y pruébalo.
+          </p>
+        </section>
+
+        <section id="otros-protocolos" aria-labelledby="otros-protocolos-titulo">
+          <h2 id="otros-protocolos-titulo">TLS en otros protocolos</h2>
+          <p>
+            El mismo esquema protege más que web; hay variantes de «STARTTLS» que suben sobre el
+            protocolo ya abierto:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Servicio</th>
+                <th scope="col">Con TLS</th>
+                <th scope="col">Comentario</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>HTTPS (HTTP)</td><td>Puerto 443</td><td>El caso al que dedicamos el artículo</td></tr>
+              <tr><td>SMTP / IMAP / POP3</td><td>465 / 993 / 995 (implícito) o STARTTLS</td><td>El correo, o todo sale en claro</td></tr>
+              <tr><td>FTP→FTPS / SSH / SFTP</td><td>990 / 22</td><td><code>scp</code> y <code>sftp</code> usan SSH, no TLS</td></tr>
+              <tr><td>PostgreSQL / MySQL</td><td>5432 / 3306 (opcional con TLS)</td><td>Usa <code>sslmode=verify-full</code>: comprueba que lo activas</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="comandos" aria-labelledby="comandos-titulo">
+          <h2 id="comandos-titulo">Verificar certificados y conexiones</h2>
+          <p>Herramientas de línea de comandos para inspeccionar tus propios despliegues:</p>
+          <pre><code># Ver el certificado que sirve un dominio (emisor, validez, algoritmos)
+  openssl s_client -connect pfd1795.github.io:443 -servername pfd1795.github.io </dev/null 2>/dev/null \
+    | openssl x509 -noout -subject -dates -issuer
+
+# La conectividad completa, suite pactada y cadena
+  openssl s_client -connect pfd1795.github.io:443 -servername pfd1795.github.io -brief </dev/null
+
+# Comprobar la caducidad de un archivo local
+  openssl x509 -in cert.pem -noout -dates
+
+# Desde curl: cabeceras y detalle del apretón de manos
+  curl -vI https://pfd1795.github.io/ | head -25
+
+# ¿Hay HSTS y HTTPS obligatorio tras redirección?
+  curl -sI http://pfd1795.github.io/ | grep -iE 'location|strict-transport'</code></pre>
+          <p class="nota">
+            Estos comandos son introspección legítima de tus servicios. El escaneo de terceros es otro
+            asunto: hazlo solo con autorización. Más comprobaciones web en
+            <a href="estudios_seguridad_web.html#comprobaciones">Seguridad · Comprobar tu propia web</a>.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>HTTPS en producción siempre; renueva los certificados con automatización (certbot, Caddy o el CI de tu hosting).</li>
+            <li>Sirve la cadena completa de certificados, no solo el de tu dominio.</li>
+            <li>Deshabilita TLS 1.0/1.1: quedan solo 1.2 y 1.3.</li>
+            <li>Redirige toda petición HTTP a HTTPS <em>y</em> añade Strict-Transport-Security.</li>
+            <li>No mezcles contenido HTTP dentro de páginas HTTPS: sube los recursos o sirve datos relativos.</li>
+            <li>Monitoriza la caducidad: una alarma ante un certificado que expira evita a los usuarios un día de pánico.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_redes.html">Redes · Fundamentos</a>: capas, puertos y los protocolos sobre los que vive TLS.</li>
+            <li><a href="estudios_criptografia.html">Ciberseguridad · Criptografía básica</a>: simétrico, asimétrico y firmas explicados aparte.</li>
+            <li><a href="estudios_seguridad_web.html#cabeceras">Seguridad · Cabeceras de seguridad</a>: HSTS en el contexto de las demás cabeceras.</li>
+            <li><a href="estudios_terminal.html#referencia">Terminal · Referencia rápida</a>: <code>curl</code> y <code>openssl</code> en la práctica diaria.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cliente-servidor y APIs — Estudios de informática</title>
+  <meta name="description" content="Arquitectura cliente-servidor, APIs REST, JSON, sesiones, JWT y OAuth2 explicados para programadores web.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Arquitectura y diseño de software</p>
+          <h1>Cliente-servidor y APIs</h1>
+          <p class="entrada">
+            Toda aplicación web moderna habla —de un modo u otro— con un backend vía HTTP. Aquí se
+            explica el modelo cliente-servidor (quién hace qué), cómo diseñar una API REST legible y
+            cómo demuestran su identidad los clientes: sesiones, tokens JWT y OAuth2.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>El cliente manda peticiones; el servidor responde. Todo lo demás (estado de la sesión, caché) vive <em>entre ambas</em>.</li>
+            <li>Una API REST expone <strong>recursos</strong> en URLs («sustantivos») y usa métodos HTTP como verbos: GET/POST/PUT/PATCH/DELETE.</li>
+            <li><strong>Sin estado</strong> (stateless): cada petición lleva todo lo necesario para entenderse, por eso se necesita un mecanismo de autenticación.</li>
+            <li>Tres formas de autenticar: <strong>sesión + cookie</strong>, <strong>token JWT</strong> o delegar en un servicio (OAuth2/OIDC).</li>
+            <li>El contrato con clientes externos se documenta y versiona; los códigos de error son parte del contrato.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#modelo">El modelo cliente-servidor</a></li>
+            <li><a href="#rest">APIs REST: recursos y métodos</a></li>
+            <li><a href="#json">JSON: el formato de intercambio</a></li>
+            <li><a href="#errores">Códigos de estado y gestión de errores</a></li>
+            <li><a href="#autenticacion">Autenticación: sesión, JWT y OAuth2</a></li>
+            <li><a href="#jwt">JWT por dentro</a></li>
+            <li><a href="#diseno">Elegir la pieza correcta</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="modelo" aria-labelledby="modelo-titulo">
+          <h2 id="modelo-titulo">El modelo cliente-servidor</h2>
+          <p>
+            El <strong>cliente</strong> pide algo (una página, un dato, una acción) y el
+            <strong>servidor</strong> aporta la respuesta con la lógica, los datos y las garantías
+            (persistencia, integridad). Hablan por el protocolo que elijas, casi siempre HTTP sobre TLS:
+          </p>
+          <figure class="diagrama" aria-labelledby="fig-modelo-titulo">
+            <figcaption id="fig-modelo-titulo">Flujo típico de una aplicación web con backend.</figcaption>
+            <svg viewBox="0 0 640 300" role="img" aria-labelledby="fig-modelo-titulo">
+              <rect class="caja-destacada" x="30" y="120" width="130" height="60" rx="8"></rect>
+              <text class="texto" x="95" y="145" text-anchor="middle">Cliente</text>
+              <text class="texto-secundario" x="95" y="163" text-anchor="middle">HTML/CSS/JS</text>
+              <rect class="caja-destacada" x="260" y="120" width="120" height="60" rx="8"></rect>
+              <text class="texto" x="320" y="145" text-anchor="middle">API / servidor</text>
+              <text class="texto-secundario" x="320" y="163" text-anchor="middle">lógica de negocio</text>
+              <rect class="caja" x="480" y="120" width="130" height="60" rx="8"></rect>
+              <text class="texto" x="545" y="145" text-anchor="middle">Base de datos</text>
+              <text class="texto-secundario" x="545" y="163" text-anchor="middle">estado persistente</text>
+              <path class="flecha" d="M165 145 L255 145"></path>
+              <polygon class="flecha" points="255,145 245,139 245,151"></polygon>
+              <text class="texto-secundario" x="210" y="136" text-anchor="middle">HTTP</text>
+              <path class="flecha" d="M385 145 L475 145"></path>
+              <polygon class="flecha" points="475,145 465,139 465,151"></polygon>
+              <text class="texto-secundario" x="430" y="136" text-anchor="middle">SQL / ORM</text>
+              <path class="flecha" d="M195 200 L165 188"></path>
+              <text class="texto-secundario" x="320" y="230" text-anchor="middle">Sin estado: cada petición es autocontenida</text>
+              <text class="texto-secundario" x="320" y="250" text-anchor="middle">(los tokens viajan en ella, no se « recuerdan» en el servidor)</text>
+            </svg>
+          </figure>
+          <p class="nota">
+            «Sin estado» no significa «sin memoria»: significa que no se guarda en el servidor la
+            <em>conversación</em>. Lo que necesite persistir se guarda en la BD; lo que identifique al
+            usuario viaja en cada petición (cookie o token).
+          </p>
+        </section>
+
+        <section id="rest" aria-labelledby="rest-titulo">
+          <h2 id="rest-titulo">APIs REST: recursos y métodos</h2>
+          <p>
+            REST es un estilo de arquitectura: cada concepto de negocio es un <strong>recurso</strong>
+            identificado con una URL estable, y los métodos HTTP expresan las operaciones:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Recurso</th>
+                <th scope="col">Operación</th>
+                <th scope="col">Método · ruta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Listar artículos</td><td>Lectura de la colección</td><td><code>GET /api/articulos</code></td></tr>
+              <tr><td>Detalle de un artículo</td><td>Lectura puntual</td><td><code>GET /api/articulos/42</code></td></tr>
+              <tr><td>Crear artículo</td><td>Creación</td><td><code>POST /api/articulos</code></td></tr>
+              <tr><td>Reemplazar artículo</td><td>Actualización completa</td><td><code>PUT /api/articulos/42</code></td></tr>
+              <tr><td>Actualizar parte del artículo</td><td>Actualización parcial</td><td><code>PATCH /api/articulos/42</code></td></tr>
+              <tr><td>Eliminar artículo</td><td>Borrado</td><td><code>DELETE /api/articulos/42</code></td></tr>
+              <tr><td>Acción con semántica propia</td><td>Comando, no recurso</td><td><code>POST /api/articulos/42/publicar</code> (aceptable como excepción)</td></tr>
+            </tbody>
+          </table>
+          <ul>
+            <li>Nombres en plural, minúsculas y sin verbos en la ruta; con <code>/</code> como separador jerárquico.</li>
+            <li>Los <strong>verbos van en el método</strong>, no en la URL: <code>GET /api/borrarArticulo?id=42</code> es una señal de diseño impropia.</li>
+            <li>Los filtros, paginación y orden van en el query string: <code>?page=2&limit=20&sort=-fecha</code>.</li>
+            <li>Las búsquedas complejas se modelan como sus propios recursos (<code>GET /api/arts/busqueda?q=…</code>) o como POST a un endpoint de consulta.</li>
+          </ul>
+          <pre><code># Prueba manual de una API con curl (el cliente la llamaría con fetch)
+  curl -s https://api.ejemplo.dev/api/articulos?limit=2 \
+    -H 'Accept: application/json'
+
+  curl -s -X POST https://api.ejemplo.dev/api/articulos \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer eyJhbGci...' \
+    -d '{"titulo":"Nuevo artículo","cuerpo":"..."}'</code></pre>
+        </section>
+
+        <section id="json" aria-labelledby="json-titulo">
+          <h2 id="json-titulo">JSON: el formato de intercambio</h2>
+          <p>
+            JSON es texto estructurado: objetos entre llaves, listas entre corchetes, y valores que
+            pueden ser cadena, número, booleano, <code>null</code> u otra estructura anidada:
+          </p>
+          <pre><code>{
+    "page": 1, "limit": 20, "total": 143,
+    "items": [
+      { "id": 42, "titulo": "HTTP y navegador web", "tags": ["http", "web"] }
+    ]
+  }</code></pre>
+          <ul>
+            <li>Las claves suelen ir en <strong>camelCase</strong> (o snake_case, elige un estilo y sé coherente en toda la API).</li>
+            <li>Las fechas se mandan como ISO 8601: <code>"2026-11-06T10:30:00Z"</code> (UTC y con zona explícita).</li>
+            <li>Mapeo JS ofrecido de fábrica en <code>JSON.parse</code> y <code>JSON.stringify</code>; <code>fetch</code> ya trae <code>.json()</code>.</li>
+            <li>Cuidado con los <em>valores tipo money</em> en floats: si la precisión importa, usa enteros en unidades menores (céntimos).</li>
+          </ul>
+          <pre><code>const respuesta = await fetch('/api/articulos?limit=20');
+  if (!respuesta.ok) {
+    throw new Error('HTTP ' + respuesta.status);
+  }
+  const { page, total, items } = await respuesta.json();</code></pre>
+        </section>
+
+        <section id="errores" aria-labelledby="errores-titulo">
+          <h2 id="errores-titulo">Códigos de estado y gestión de errores</h2>
+          <p>
+            Códigos significativos para una API (resumidos de
+            <a href="estudios_redes.html#http">Redes · HTTP</a>):
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Cuándo usarlo en una API</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>200 OK</code></td><td>Éxito en GET/PUT/PATCH/DELETE</td></tr>
+              <tr><td><code>201 Created</code></td><td>Recurso creado por POST; <code>Location</code> apunta al nuevo recurso</td></tr>
+              <tr><td><code>204 No Content</code></td><td>Éxito sin cuerpo que devolver (DELETE)</td></tr>
+              <tr><td><code>400 Bad Request</code></td><td>Petición mal formada o campos inválidos</td></tr>
+              <tr><td><code>401 Unauthorized</code></td><td>Sin autenticar (falta un credencial o ya no es válido)</td></tr>
+              <tr><td><code>403 Forbidden</code></td><td>Autenticado, pero sin permiso</td></tr>
+              <tr><td><code>404 Not Found</code></td><td>El recurso no existe (o no se revela por seguridad)</td></tr>
+              <tr><td><code>409 Conflict</code></td><td>Choque de estado (email ya registrado)</td></tr>
+              <tr><td><code>422 Unprocessable Entity</code></td><td>Sintaxis válida pero semánticamente rechazable (campos vacíos)</td></tr>
+              <tr><td><code>429 Too Many Requests</code></td><td>Rate limit</td></tr>
+              <tr><td><code>500</code></td><td>Error no controlado; no debe estar en producción con detalles</td></tr>
+            </tbody>
+          </table>
+          <p>
+            El cuerpo del error debería ser predecible; la propuesta común es RFC 9457
+            (<em>Problem Details</em>): <code>type</code>, <code>title</code>, <code>status</code>,
+            <code>detail</code>. Al menos, incluye un identificador de trazabilidad.
+          </p>
+          <p class="nota">
+            <code>403</code> vs <code>404</code>: si revelar la existencia del recurso es un dato sensible
+            (organizaciones privadas), contesta <code>404</code>.
+          </p>
+        </section>
+
+        <section id="autenticacion" aria-labelledby="autenticacion-titulo">
+          <h2 id="autenticacion-titulo">Autenticación: sesión, JWT y OAuth2</h2>
+          <p>Quién es el usuario que hace la petición; tres enfoques dominantes:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mecanismo</th>
+                <th scope="col">Cómo funciona</th>
+                <th scope="col">Cuándo conviene</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sesión + cookie</td>
+                <td>El servidor guarda estado («sesión n.º 15») y entrega una cookie; el cliente la reenvía automáticamente</td>
+                <td>Sitios con front y back en el mismo proyecto; máxima capacidad de revocación</td>
+              </tr>
+              <tr>
+                <td>Token JWT</td>
+                <td>El servidor firma un token auto-verificable; el cliente lo envía en <code>Authorization: Bearer …</code> en cada petición</td>
+                <td>APIs públicas, móvil, servicios entre sí; identidad sin estado del servidor</td>
+              </tr>
+              <tr>
+                <td>OAuth2 / OIDC</td>
+                <td>Delega la autenticación a un proveedor (Google, GitHub): el servidor se fía del token emitido por él</td>
+                <td>“Iniciar sesión con…”, integraciones entre organizaciones, SSO</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            La autenticación responde «¿quién eres?». La <strong>autorización</strong> responde
+            «¿qué puedes hacer?» (roles, permisos por recurso). Ambas se necesitan.
+          </p>
+        </section>
+
+        <section id="jwt" aria-labelledby="jwt-titulo">
+          <h2 id="jwt-titulo">JWT por dentro</h2>
+          <p>
+            Un JSON Web Token es una cadena <code>cabecera.payload.firma</code>, cada parte
+            en Base64URL:
+          </p>
+          <pre><code>eyJhbGciOiJIUzI1NiJ9 . eyJzdWIiOiIxNSIsInJvbCI6IkFETUlOIn0 . 1b4ad1c5
+    { "alg": "HS256" }     { "sub": "15", "rol": "ADMIN" }   HMAC-SHA256(key, cabecera+payload)</code></pre>
+          <ul>
+            <li><strong>Cabecera</strong>: algoritmo de firma.</li>
+            <li><strong>Payload</strong>: <em>claims</em> (subject, expiration, roles). Se puede <strong>leer sin clave</strong>; no viaja nada secreto dentro.</li>
+            <li><strong>Firma</strong>: el servidor la verifica con su clave privada/ el secreto compartido; cualquier modificación del payload la rompe.</li>
+          </ul>
+          <p class="nota">
+            El payload «expira» en el claim <code>exp</code>, pero eso no era magia: el servidor
+            comprueba el dato al validar. Para <strong>revocar</strong> un token es necesario mantener
+            una lista de revocación de tokens (por ejemplo, por sesión) o usar expiraciones cortas
+            + <em>refresh token</em>.
+          </p>
+          <pre><code># Decodificar el payload de un JWT (no verifica firmas: solo interpreta)
+  echo 'eyJzdWIi...payload...' | base64 --decode</code></pre>
+        </section>
+
+        <section id="diseno" aria-labelledby="diseno-titulo">
+          <h2 id="diseno-titulo">Elegir la pieza correcta</h2>
+          <p>
+            Antes de diseñar tu backend e integrares, responde en orden:
+          </p>
+          <ol>
+            <li>¿Qué <strong>recursos</strong> existen y quién lee/edita cada uno?</li>
+            <li>¿Quién es el cliente (tu propio frontend, apps, terceros)? Eso condiciona CORS, auth y versionado.</li>
+            <li>¿Necesitas <strong>tiempo real</strong>? (WebSockets y SSE son otra familia de protocolos por encima de HTTP.)</li>
+            <li>¿Qué dominio de negocio se entienden intuitivamente y qué flujo se documenta en cada endpoint? (contrato y ejemplos).</li>
+          </ol>
+          <p class="nota">
+            Un buen predictor de sistemas sencillos: cada endpoint responde <em>una intención</em>;
+            los clientes lo reproducen sin sorpresas. La base de tu API son las reglas de negocio, no
+            la tecnología elegida.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Devuelve códigos de estado correctos: son contrato, no decoración.</li>
+            <li>No expongas claves ni IDs internos que no deban viajar; valida y sanitiza en el servidor (<a href="estudios_seguridad_web.html">Seguridad</a>).</li>
+            <li>Paginación siempre en la colección, desde el día uno (la lista de 10 registros crecerá).</li>
+            <li>Idempotencia de PUT/DELETE: repetir la misma petición no duplica efectos.</li>
+            <li>Versiona la API en la ruta (<code>/v1/</code>) si hay clientes externos que van a depender de ella.</li>
+            <li>Nunca registres credenciales en los logs: ningún filtro posterior justifica lo que ya se filtró.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_http.html">HTTP y navegador web</a>: cómo llega la petición y qué hace el browser.</li>
+            <li><a href="estudios_redes.html#http">Redes · HTTP sobre TCP</a>: sintaxis, métodos y códigos.</li>
+            <li><a href="estudios_javascript.html#asincronia">JavaScript · Asincronía</a>: consumir la API con <code>fetch</code>.</li>
+            <li><a href="estudios_seguridad_web.html#cookies-sesiones">Seguridad · Cookies de sesión</a> y <a href="estudios_criptografia.html#firmas">Criptografía · Firmas digitales</a>: los mecanismos que sustentan JWT.</li>
+            <li><a href="estudios_sql.html">SQL y bases de datos relacionales</a>: dónde vive el estado del servidor.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

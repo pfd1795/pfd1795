@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL y bases de datos relacionales — Estudios de informática</title>
+  <meta name="description" content="SQL y bases de datos relacionales: tablas, claves, consultas, JOIN, agregaciones, índices y transacciones.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Bases de datos</p>
+          <h1>SQL y bases de datos relacionales</h1>
+          <p class="entrada">
+            Una base relacional guarda los datos en <strong>tablas</strong> que se relacionan entre sí
+            por claves. SQL es el lenguaje estándar para consultar y modificar esos datos, y sigue siendo
+            una de las piezas más rentables de aprender: SQLite, PostgreSQL y MySQL hablan casi el mismo
+            dialecto.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>Todo son <strong>tablas</strong> (filas × columnas); las relaciones se expresan con claves primarias (PK) y externas (FK).</li>
+            <li><code>SELECT –FROM –WHERE –GROUP BY –HAVING –ORDER BY</code>: ese es el esqueleto del 90 % de las consultas.</li>
+            <li><strong>JOIN</strong> combina tablas por sus claves; <em>INNER</em> solo filas que coinciden, <em>LEFT</em> conserva todo lo de la izquierda.</li>
+            <li>Los <strong>índices</strong> aceleran las búsquedas al coste de escritura y espacio: se crean para lo que consultas más, no «por si acaso».</li>
+            <li>Las <strong>transacciones</strong> agrupan operaciones en bloque: o se cumplen todas (commit) o no se cumple ninguna (rollback).</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#tablas">Tablas, claves y relaciones</a></li>
+            <li><a href="#consultas">Consultas básicas: SELECT y WHERE</a></li>
+            <li><a href="#joins">JOIN: combinar tablas</a></li>
+            <li><a href="#agregacion">Agregaciones: GROUP BY</a></li>
+            <li><a href="#modificar">INSERT, UPDATE, DELETE</a></li>
+            <li><a href="#indices">Índices</a></li>
+            <li><a href="#transacciones">Transacciones y ACID</a></li>
+            <li><a href="#comandos">Comandos útiles</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="tablas" aria-labelledby="tablas-titulo">
+          <h2 id="tablas-titulo">Tablas, claves y relaciones</h2>
+          <p>
+            Cada tabla modela un tipo de entidad. Las columnas tienen un <strong>tipo</strong>
+            (entero, texto, fecha…) y cada fila es un registro único identificado por su
+            <strong>clave primaria</strong>.
+          </p>
+          <pre><code>CREATE TABLE autores (
+    id          INTEGER PRIMARY KEY,
+    nombre      TEXT NOT NULL
+  );
+
+  CREATE TABLE articulos (
+    id           INTEGER PRIMARY KEY,
+    titulo       TEXT NOT NULL,
+    autor_id     INTEGER REFERENCES autores(id),  -- clave externa: FK
+    publicado    DATE,
+    vistas       INTEGER DEFAULT 0
+  );</code></pre>
+          <p>
+            La relación «un autor escribe muchos artículos» (1‑N) se refleja llevando
+            <code>autor_id</code> en la tabla hija. Para las «varios a varios» (N‑M) es necesaria una
+            tabla intermedia:
+          </p>
+          <pre><code>CREATE TABLE articulo_etiquetas (
+    articulo_id  INTEGER REFERENCES articulos(id),
+    etiqueta_id  INTEGER REFERENCES etiquetas(id),
+    PRIMARY KEY (articulo_id, etiqueta_id)
+  );</code></pre>
+          <figure class="diagrama" aria-labelledby="fig-relacion-titulo">
+            <figcaption id="fig-relacion-titulo">Dos tablas relacionadas por una clave externa.</figcaption>
+            <svg viewBox="0 0 640 220" role="img" aria-labelledby="fig-relacion-titulo">
+              <rect class="caja" x="40" y="40" width="200" height="130" rx="8"></rect>
+              <text class="texto-acentuado" x="140" y="64" text-anchor="middle">autores</text>
+              <line class="flecha" x1="60" y1="78" x2="220" y2="78"></line>
+              <text class="texto-secundario" x="60" y="98">id (PK)</text>
+              <text class="texto-secundario" x="60" y="120">nombre</text>
+              <rect class="caja" x="400" y="40" width="200" height="150" rx="8"></rect>
+              <text class="texto-acentuado" x="500" y="64" text-anchor="middle">articulos</text>
+              <line class="flecha" x1="420" y1="78" x2="580" y2="78"></line>
+              <text class="texto-secundario" x="420" y="98">id (PK)</text>
+              <text class="texto-secundario" x="420" y="120">titulo</text>
+              <text class="texto" x="420" y="142">autor_id (FK) →</text>
+              <text class="texto-secundario" x="420" y="164">vistas</text>
+              <path class="flecha-acentuada" d="M245 105 L400 118"></path>
+              <polygon class="flecha-acentuada" points="400,118 388,113 390,125"></polygon>
+              <text class="texto-secundario" x="322" y="95" text-anchor="middle">1 ── N</text>
+            </svg>
+          </figure>
+        </section>
+
+        <section id="consultas" aria-labelledby="consultas-titulo">
+          <h2 id="consultas-titulo">Consultas básicas: SELECT y WHERE</h2>
+          <pre><code>SELECT titulo, vistas
+    FROM articulos
+    WHERE vistas > 100 AND publicado IS NOT NULL
+    ORDER BY vistas DESC
+    LIMIT 10 OFFSET 0;</code></pre>
+          <ul>
+            <li><code>WHERE</code> filtra filas; no confundir con <code>HAVING</code>, que filtra tras agrupar.</li>
+            <li><code>NULL</code> nunca es igual a nada: para él, usa <code>IS NULL</code> / <code>IS NOT NULL</code>.</li>
+            <li><code>LIKE 'a%'</code> busca por prefijo (puede usar un índice); el <code>%</code> al inicio (<code>LIKE '%a'</code>) hace lento el escaneo completo porque anula el índice.</li>
+            <li>El orden estándar de las cláusulas no es opcional: <code>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</code>.</li>
+          </ul>
+        </section>
+
+        <section id="joins" aria-labelledby="joins-titulo">
+          <h2 id="joins-titulo">JOIN: combinar tablas</h2>
+          <pre><code>SELECT a.titulo, au.nombre AS autor
+    FROM articulos a
+    INNER JOIN autores au ON au.id = a.autor_id
+    WHERE a.vistas > 100;</code></pre>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Tipo</th>
+                <th scope="col">Qué devuelve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>INNER JOIN</code></td><td>Solo filas que coinciden en ambas tablas.</td></tr>
+              <tr><td><code>LEFT JOIN</code></td><td>Todas las de la izquierda; si no hay pareja, columnas derechas = <code>NULL</code>.</td></tr>
+              <tr><td><code>RIGHT JOIN</code></td><td>La simétrica del LEFT (menos común; se reordena y suele usar LEFT).</td></tr>
+              <tr><td><code>FULL OUTER JOIN</code></td><td>Todo de ambos lados, con <code>NULL</code> donde falte pareja.</td></tr>
+            </tbody>
+          </table>
+          <p>Uso típico de LEFT JOIN: «todos los autores, incluso los que aún no tienen artículos»:</p>
+          <pre><code>SELECT au.nombre, COUNT(a.id) AS total
+    FROM autores au
+    LEFT JOIN articulos a ON a.autor_id = au.id
+    GROUP BY au.id;</code></pre>
+          <p class="nota">
+            La <em>consulta triangular</em>: JOIN demasiado grande con WHERE sobre columnas sin índice.
+            Si algo «se cuelga», casi siempre es un JOIN sin índice o con <code>SELECT *</code> sobre
+            millones de filas: mide con <code>EXPLAIN</code>.
+          </p>
+        </section>
+
+        <section id="agregacion" aria-labelledby="agregacion-titulo">
+          <h2 id="agregacion-titulo">Agregaciones: GROUP BY</h2>
+          <pre><code>SELECT au.nombre,
+           COUNT(*)            AS articulos,
+           AVG(a.vistas)       AS vistas_medias,
+           MAX(a.publicado)    AS ultimo
+    FROM articulos a
+    INNER JOIN autores au ON au.id = a.autor_id
+    GROUP BY au.id
+    HAVING COUNT(*) >= 3
+    ORDER BY vistas_medias DESC;</code></pre>
+          <ul>
+            <li>Funciones habituales: <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code>.</li>
+            <li>En SQL estricto, toda columna del <code>SELECT</code> fuera de una función debe estar en <code>GROUP BY</code> — o ser la clave de agrupación.</li>
+            <li><code>HAVING</code> filtra grupos ya computados; <code>WHERE</code> filtra filas antes de agrupar (y es más barato).</li>
+          </ul>
+        </section>
+
+        <section id="modificar" aria-labelledby="modificar-titulo">
+          <h2 id="modificar-titulo">INSERT, UPDATE, DELETE</h2>
+          <pre><code>INSERT INTO articulos (titulo, autor_id)
+    VALUES ('SQL básico', 7)
+    RETURNING id;                 -- PostgreSQL/SQLite: devuelve la fila nueva
+
+  UPDATE articulos SET vistas = vistas + 1 WHERE id = 42;
+
+  DELETE FROM articulos WHERE id = 42 AND autor_id = 7;</code></pre>
+          <p class="aviso">
+            Un <code>UPDATE</code> o <code>DELETE</code> sin <code>WHERE</code> afecta a
+            <strong>todas las filas de la tabla</strong>. Antes de ejecutarlo sobre producción, corre la
+            versión <code>SELECT</code> con la misma condición:
+          </p>
+          <pre><code>-- Comprueba qué fila(s) tocarías…
+  SELECT id, titulo FROM articulos WHERE id = 42 AND autor_id = 7;
+  -- …y solo entonces cambia el SELECT por UPDATE / DELETE.</code></pre>
+          <p class="nota">
+            Los INSERT/UPDATE/DELETE, siempre con <strong>consultas preparadas</strong> desde tu
+            código (parámetros, jamás concatenación). El porqué está en
+            <a href="estudios_seguridad_web.html#sql">Seguridad · Inyección SQL</a>.
+          </p>
+        </section>
+
+        <section id="indices" aria-labelledby="indices-titulo">
+          <h2 id="indices-titulo">Índices</h2>
+          <p>
+            Un índice es una estructura ordenada (un B‑tree) que permite encontrar filas sin recorrer
+            la tabla entera: es como el índice de un libro:
+          </p>
+          <pre><code>CREATE INDEX articulos_autor_idx ON articulos (autor_id);
+  CREATE INDEX articulos_vistas_idx ON articulos (vistas DESC);
+
+  UNIQUE  INDEX articulos_titulo_uq  ON articulos (titulo);  -- también garantiza» unicidad</code></pre>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">A favor</th>
+                <th scope="col">En contra</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Búsquedas, JOIN y ORDER BY por esas columnas, muchísimo más rápidos</td><td>Cada INSERT/UPDATE/DELETE debe actualizarlo</td></tr>
+              <tr><td>Los índices de FK y UNIQUE crean uno por defecto</td><td>Ocupan espacio en disco</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Índice para joins sobre FK, para lo que hace <code>ORDER BY</code> o <code>GROUP BY</code>
+            frecuente, y para columnas de pocos valores distintos (estado, tipo). No indexes columnas
+            que casi se consultan en bloque completo o con <code>LIKE '%…%'</code>.
+          </p>
+          <pre><code>-- PostgreSQL: el «plan» de ejecución de la consulta
+  EXPLAIN ANALYZE
+    SELECT * FROM articulos WHERE autor_id = 7;
+
+  -- Ver los índices existentes
+  \di articulos        -- psql
+  .indexes articulos   -- sqlite3</code></pre>
+        </section>
+
+        <section id="transacciones" aria-labelledby="transacciones-titulo">
+          <h2 id="transacciones-titulo">Transacciones y ACID</h2>
+          <p>
+            Una transacción agrupa operaciones para que sean indivisibles. Si algo falla a mitad de
+            camino, se deshace todo lo anterior (rollback):
+          </p>
+          <pre><code>BEGIN;
+    UPDATE cuentas SET saldo = saldo - 100 WHERE id = 1;
+    UPDATE cuentas SET saldo = saldo + 100 WHERE id = 2;
+    COMMIT;        -- solo si ambos pasos fueron bien
+    -- en caso de excepción: ROLLBACK;</code></pre>
+          <p>Las cuatro garantías que definen los sistemas de bases de datos convencionales (<em>ACID</em>):</p>
+          <ul>
+            <li><strong>Atomicidad</strong> — todo o nada.</li>
+            <li><strong>Consistencia</strong> — las reglas (FK, tipos, restricciones UNIQUE) no se violan jamás.</li>
+            <li><strong>Aislamiento</strong> — dos transacciones concurrentes no ven estados a medias.</li>
+            <li><strong>Durabilidad</strong> — una confirmación (commit) sobrevive a un reinicio o corte de alimentación.</li>
+          </ul>
+          <p class="nota">
+            El aislamiento tiene niveles (READ UNCOMMITTED → SERIALIZABLE). El extensible
+            <code>REPEATABLE READ</code> evita que dos lecturas de la misma transacción den resultados
+            distintos; se ajusta con <code>SET TRANSACTION ISOLATION LEVEL …</code>. Pregúntate si
+           distinto nivel es necesario (casi siempre el por defecto vale).
+          </p>
+        </section>
+
+        <section id="comandos" aria-labelledby="comandos-titulo">
+          <h2 id="comandos-titulo">Comandos útiles</h2>
+          <pre><code># Modelo cliente ligero para pruebas rápidas (SQLite viene sin servidor)
+  sqlite3 test.db
+    .tables             -- listar tablas
+    .schema articulos   -- ver el CREATE TABLE
+    .headers on         -- mostrar los nombres de columna
+    .mode column        -- salida por columnas legible
+
+  # PostgreSQL desde psql
+  psql -U usuario -d base
+    \dt                 -- tablas
+    \d  articulos       -- estructura + índices
+    \di articulos       -- solo índices
+
+  # Copia de seguridad / restauración (PostgreSQL)
+  pg_dump base > backup.sql
+  psql base < backup.sql</code></pre>
+          <p class="nota">
+            Los comandos de cliente varían entre motores (\di solo en psql, .indexes solo en SQLite);
+            lo único invariante es SQL estándar: SELECT, INSERT, UPDATE, DELETE, CREATE TABLE.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Deja que las columnas se llamen igual en todo el proyecto (escoge <code>snake_case</code> y no lo cambies).</li>
+            <li>Nada de <code>SELECT *</code> en producción: pide las columnas que usarás; además facilita que la consulta resuelva de un índice (covering).</li>
+            <li>Nunca interpolares valores del usuario en una consulta: siempre consultas preparadas.</li>
+            <li>Refuerza las restricciones: FK, NOT NULL, UNIQUE… para que el motor defienda la integridad, no tu código.</li>
+            <li>Medición antes de índices: mira los planes con <code>EXPLAIN</code> y crea solo los evidenciados.</li>
+            <li>Migraciones versionadas (archivos .sql en el repo) y nada de modificar tablas a mano en producción.</li>
+            <li>Respaldo (backup) automático programado: la base de la tranquilidad de un programador.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_apis.html">Cliente-servidor y APIs</a>: qué consultas dispara la API y cómo se expone.</li>
+            <li><a href="estudios_seguridad_web.html#sql">Seguridad · Inyección SQL</a>: consultas preparadas y amenazas.</li>
+            <li><a href="estudios_terminal.html">Terminal y línea de comandos</a>: el entorno donde viven sqlite3 y psql.</li>
+            <li><a href="estudios_html.html">HTML</a>: los formularios de donde llegan los datos a la BD.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

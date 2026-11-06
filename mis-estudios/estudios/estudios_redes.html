@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
   <script src="../js/tema.js"></script>
   <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
 </head>
 <body id="HomePage" class="body-container">
   <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
@@ -214,7 +215,7 @@
         <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
           <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
           <ul>
-            <li>Usa siempre HTTPS en producción; nunca sirvas credenciales por HTTP.</li>
+            <li>Usa siempre HTTPS en producción; nunca sirvas credenciales por HTTP. El porqué lo explica <a href="estudios_tls.html">Seguridad en redes y TLS</a>.</li>
             <li>No expongas bases de datos ni servicios internos a Internet: mantenlos en la red privada.</li>
             <li>Devuelve el código de estado HTTP correcto: no todo es <code>200</code>.</li>
             <li>Reutiliza conexiones y usa caché (<code>Cache-Control</code>, <code>ETag</code>).</li>
@@ -225,6 +226,8 @@
         <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
           <h2 id="ver-tambien-titulo">Ver también</h2>
           <ul class="ver-tambien">
+            <li><a href="estudios_tls.html">Seguridad en redes y TLS</a>: qué ocurre cuando la conexión es HTTPS.</li>
+            <li><a href="estudios_seguridad_web.html">Seguridad en aplicaciones web</a>: las amenazas que atraviesan ese canal.</li>
             <li><a href="estudios_terminal.html#referencia">Terminal · Referencia rápida</a>: <code>curl</code>, <code>ping</code> y otros comandos de red.</li>
             <li><a href="estudios_javascript.html#asincronia">JavaScript · Asincronía</a>: peticiones <code>fetch</code> sobre HTTP.</li>
             <li><a href="estudios_html.html#estructura">HTML · Estructura mínima</a>: el documento que viaja en la respuesta HTTP.</li>
