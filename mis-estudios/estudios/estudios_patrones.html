@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Patrones de diseño — Estudios de informática</title>
+  <meta name="description" content="Patrones de diseño: soluciones reutilizables creacionales, estructurales y de comportamiento.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Arquitectura y diseño de software</p>
+          <h1>Patrones de diseño</h1>
+          <p class="entrada">
+            Un patrón de diseño es una solución reutilizable a un problema que aparece una y otra vez
+            al diseñar software. No es código copiable ni un framework: es un nombre y una estructura
+            que los desarrolladores reconocen. Usarlos bien mejora la comunicación y la mantenibilidad;
+            usarlos por moda, la empeora.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>Un patrón describe <strong>problema + solución + consecuencias</strong>, no implementación.</li>
+            <li>Se agrupan en <strong>creacionales</strong> (cómo se crean objetos), <strong>estructurales</strong> (cómo se componen) y <strong>de comportamiento</strong> (cómo interactúan).</li>
+            <li>Los más usados: Factory, Adapter, Decorator, Observer, Strategy, Facade.</li>
+            <li>Un patrón es bueno cuando <strong>resuelve un problema real</strong>; aplicado sin necesidad es sobre-ingeniería.</li>
+            <li>Los patrones se combinan con los principios SOLID y con la composición.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es un patrón?</a></li>
+            <li><a href="#creacionales">Patrones creacionales</a></li>
+            <li><a href="#estructurales">Patrones estructurales</a></li>
+            <li><a href="#comportamiento">Patrones de comportamiento</a></li>
+            <li><a href="#tabla">Tabla: problema → patrón</a></li>
+            <li><a href="#cuando-no">Cuándo NO usarlos</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es un patrón?</h2>
+          <p>
+            Popularizados por el libro «Design Patterns» (Gang of Four, 1994), los patrones describen
+            soluciones probadas a problemas recurrentes de diseño orientado a objetos. Cada patrón
+            incluye: nombre, problema, solución, estructura y consecuencias. No son algoritmos ni
+            bibliotecas; son vocabulario compartido («usa un Observer aquí»).
+          </p>
+          <p class="nota">
+            Los patrones no son exclusivos de OOP; también existen en funcional (functors, monads) y
+            en arquitectura (MVC, CQRS). Aquí nos centramos en los clásicos de OOP.
+          </p>
+        </section>
+
+        <section id="creacionales" aria-labelledby="creacionales-titulo">
+          <h2 id="creacionales-titulo">Patrones creacionales</h2>
+          <p>Controlan cómo se crean los objetos, desacoplando la creación del uso.</p>
+
+          <h3>Factory Method</h3>
+          <p>Delega la creación a subclases o funciones, para que el cliente no dependa de la clase concreta.</p>
+          <pre><code>function crearLogger(tipo) {
+  if (tipo === 'archivo') return new FileLogger();
+  if (tipo === 'consola') return new ConsoleLogger();
+  throw new Error('Tipo desconocido');
+}
+const log = crearLogger('consola');
+log.info('hola');</code></pre>
+
+          <h3>Builder</h3>
+          <p>Construye objetos complejos paso a paso, útil cuando hay muchos parámetros opcionales.</p>
+          <pre><code>class PizzaBuilder {
+  constructor() { this.ingredientes = []; }
+  conQueso() { this.ingredientes.push('queso'); return this; }
+  conPepperoni() { this.ingredientes.push('pepperoni'); return this; }
+  build() { return new Pizza(this.ingredientes); }
+}
+const pizza = new PizzaBuilder().conQueso().conPepperoni().build();</code></pre>
+
+          <h3>Singleton (con reservas)</h3>
+          <p>Garantiza una única instancia. Útil para configuración o pools, pero dificulta tests y oculta dependencias. Preferir inyección de dependencias.</p>
+        </section>
+
+        <section id="estructurales" aria-labelledby="estructurales-titulo">
+          <h2 id="estructurales-titulo">Patrones estructurales</h2>
+          <p>Componen clases y objetos para formar estructuras mayores.</p>
+
+          <h3>Adapter</h3>
+          <p>Convierte la interfaz de una clase en otra que el cliente espera. Útil para integrar librerías externas.</p>
+          <pre><code>class ApiVieja { obtenerUsuario(id) { /* ... */ } }
+class UsuarioAdapter {
+  constructor(api) { this.api = api; }
+  get(id) { return this.api.obtenerUsuario(id); } // nueva interfaz
+}</code></pre>
+
+          <h3>Decorator</h3>
+          <p>Añade responsabilidades a un objeto dinámicamente, sin subclases. Ejemplo: añadir logging a una función.</p>
+          <pre><code>function conLog(fn) {
+  return function (...args) {
+    console.log('llamando con', args);
+    return fn(...args);
+  };
+}
+const sumarLog = conLog((a, b) => a + b);</code></pre>
+
+          <h3>Facade</h3>
+          <p>Provee una interfaz simple a un subsistema complejo (p. ej. un módulo que oculta varios servicios).</p>
+        </section>
+
+        <section id="comportamiento" aria-labelledby="comportamiento-titulo">
+          <h2 id="comportamiento-titulo">Patrones de comportamiento</h2>
+          <p>Definen cómo se asignan responsabilidades y se comunican los objetos.</p>
+
+          <h3>Observer</h3>
+          <p>Un sujeto notifica a sus observadores cuando cambia su estado. Base de eventos y reactividad.</p>
+          <pre><code>class EventEmitter {
+  constructor() { this.listeners = {}; }
+  on(evento, cb) { (this.listeners[evento] ||= []).push(cb); }
+  emit(evento, data) { (this.listeners[evento] || []).forEach(cb => cb(data)); }
+}
+const bus = new EventEmitter();
+bus.on('msg', (m) => console.log('recibido', m));
+bus.emit('msg', 'hola');</code></pre>
+
+          <h3>Strategy</h3>
+          <p>Define una familia de algoritmos intercambiables. Evita switch gigantes.</p>
+          <pre><code>const estrategias = {
+  rapido: (a, b) => a + b,
+  seguro: (a, b) => a + b + validacion(a, b),
+};
+function calcular(a, b, modo) {
+  return estrategias[modo](a, b);
+}</code></pre>
+
+          <h3>Command</h3>
+          <p>Encapsula una petición como objeto, permitiendo deshacer/rehacer y colas de ejecución.</p>
+        </section>
+
+        <section id="tabla" aria-labelledby="tabla-titulo">
+          <h2 id="tabla-titulo">Tabla: problema → patrón</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Problema</th>
+                <th scope="col">Patrón</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Crear objetos sin acoplar a la clase concreta</td><td>Factory Method</td></tr>
+              <tr><td>Construir objetos con muchos parámetros opcionales</td><td>Builder</td></tr>
+              <tr><td>Adaptar una interfaz incompatible</td><td>Adapter</td></tr>
+              <tr><td>Añadir comportamiento dinámicamente</td><td>Decorator</td></tr>
+              <tr><td>Simplificar un subsistema complejo</td><td>Facade</td></tr>
+              <tr><td>Notificar cambios a varios interesados</td><td>Observer</td></tr>
+              <tr><td>Intercambiar algoritmos en tiempo de ejecución</td><td>Strategy</td></tr>
+              <tr><td>Deshacer/rehacer o encolar acciones</td><td>Command</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="cuando-no" aria-labelledby="cuando-no-titulo">
+          <h2 id="cuando-no-titulo">Cuándo NO usarlos</h2>
+          <ul>
+            <li>Cuando el problema no existe aún: no anticipes abstracciones.</li>
+            <li>Cuando una función o composición simple resuelve el caso.</li>
+            <li>Cuando el equipo no conoce el patrón: el código se vuelve opaco.</li>
+            <li>Cuando el patrón añade más indirección que valor.</li>
+          </ul>
+          <p class="nota">
+            «Design Patterns» advierte: los patrones describen cómo resolver, no cuándo. La decisión
+            de aplicarlos es de diseño, no de catálogo.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Empieza con el problema, no con el patrón.</li>
+            <li>Prefiere composición sobre herencia.</li>
+            <li>Usa patrones como vocabulario en revisiones y documentación.</li>
+            <li>Mantén los patrones pequeños y testeables.</li>
+            <li>Combina patrones con SOLID y con inyección de dependencias.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué está mal</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Aplicar patrones «porque sí»</td>
+                <td>Sobre-ingeniería: más clases, más indirección, menos claridad.</td>
+                <td>Justifica cada patrón con un problema real.</td>
+              </tr>
+              <tr>
+                <td>Singleton para todo</td>
+                <td>Estado global oculto, difícil de testear.</td>
+                <td>Inyecta dependencias; reserva Singleton para recursos únicos.</td>
+              </tr>
+              <tr>
+                <td>Herencia profunda de patrones</td>
+                <td>Acoplamiento frágil.</td>
+                <td>Prefiere composición y delegación.</td>
+              </tr>
+              <tr>
+                <td>Confundir patrón con framework</td>
+                <td>Se espera infraestructura que no existe.</td>
+                <td>Un patrón es una idea, no una librería.</td>
+              </tr>
+              <tr>
+                <td>No documentar la intención</td>
+                <td>El código parece arbitrario.</td>
+                <td>Nombra el patrón en comentarios/PRs cuando aporte.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Patrón</th>
+                <th scope="col">Categoría</th>
+                <th scope="col">Idea clave</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Factory Method</td><td>Creacional</td><td>Delegar la creación.</td></tr>
+              <tr><td>Builder</td><td>Creacional</td><td>Construcción paso a paso.</td></tr>
+              <tr><td>Singleton</td><td>Creacional</td><td>Una única instancia.</td></tr>
+              <tr><td>Adapter</td><td>Estructural</td><td>Convertir interfaces.</td></tr>
+              <tr><td>Decorator</td><td>Estructural</td><td>Añadir comportamiento.</td></tr>
+              <tr><td>Facade</td><td>Estructural</td><td>Interfaz simple a subsistema.</td></tr>
+              <tr><td>Observer</td><td>Comportamiento</td><td>Notificar cambios.</td></tr>
+              <tr><td>Strategy</td><td>Comportamiento</td><td>Intercambiar algoritmos.</td></tr>
+              <tr><td>Command</td><td>Comportamiento</td><td>Encapsular acciones.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_paradigmas.html">Paradigmas de programación</a>: los patrones se apoyan en OOP y composición.</li>
+            <li><a href="estudios_apis.html">Cliente-servidor y APIs</a>: muchos patrones aparecen en el diseño de servicios.</li>
+            <li><a href="estudios_javascript.html">JavaScript</a>: ejemplos del artículo en JS.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>
+EOF

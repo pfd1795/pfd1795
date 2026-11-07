@@ -7,8 +7,10 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
 
 - `index.html`: índice de la enciclopedia con buscador y categorías.
 - `estudios/*.html`: artículos educativos estáticos (HTML, Git, Terminal, JavaScript, Redes, CSS,
-  HTTP y navegador, Cliente-servidor y APIs, SQL, Seguridad web, Criptografía, TLS). Varios temarios
-  siguen pendientes de desarrollo ("Próximamente").
+  HTTP y navegador, Cliente-servidor y APIs, SQL, Seguridad web, Criptografía, TLS, Sistemas
+  operativos, Modelado de datos y normalización, Paradigmas de programación, Sistemas numéricos
+  y representación de datos, Python, Patrones de diseño). Varios temarios siguen pendientes de
+  desarrollo ("Próximamente").
 - `js/tema.js`: pre-pintado del tema (script clásico síncrono).
 - `js/buscador.js`: filtro de tarjetas del índice (script clásico con `defer`).
 - `js/copiar.js`: botón «Copiar» sobre los bloques de código de los artículos (script clásico con

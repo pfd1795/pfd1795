@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python — Estudios de informática</title>
+  <meta name="description" content="Python: sintaxis, estructuras de datos, funciones, módulos y estilo.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Lenguajes de programación</p>
+          <h1>Python</h1>
+          <p class="entrada">
+            Python es un lenguaje de alto nivel, interpretado y multiparadigma, famoso por su sintaxis
+            legible y su enorme ecosistema. Se usa en scripting, automatización, ciencia de datos,
+            machine learning, backend web y herramientas de sistema. Su filosofía («The Zen of Python»)
+            prioriza la legibilidad sobre la cleverness.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>Python es <strong>interpretado</strong> y de tipado dinámico; no se compila a binario nativo (CPython bytecode).</li>
+            <li>La <strong>indentación</strong> es parte de la sintaxis: define bloques en lugar de llaves.</li>
+            <li>Sus estructuras de datos (listas, tuplas, dicts, sets) están en la biblioteca estándar y son muy expresivas.</li>
+            <li>El ecosistema se gestiona con <strong>pip</strong> y entornos virtuales (<code>venv</code>).</li>
+            <li>Es multiparadigma: soporta imperativo, OOP y funcional; brilla en scripting y datos.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es Python y cuándo usarlo?</a></li>
+            <li><a href="#sintaxis">Sintaxis básica</a></li>
+            <li><a href="#estructuras">Estructuras de datos</a></li>
+            <li><a href="#funciones">Funciones y módulos</a></li>
+            <li><a href="#entorno">Entorno y dependencias</a></li>
+            <li><a href="#estilo">Estilo y tipado</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es Python y cuándo usarlo?</h2>
+          <p>
+            Creado por Guido van Rossum (1991), Python prioriza la productividad del desarrollador.
+            Casos típicos:
+          </p>
+          <ul>
+            <li><strong>Scripting y automatización</strong>: tareas del sistema, ETL, scraping.</li>
+            <li><strong>Ciencia de datos / ML</strong>: NumPy, pandas, scikit-learn, PyTorch.</li>
+            <li><strong>Backend web</strong>: Django, FastAPI, Flask.</li>
+            <li><strong>Herramientas CLI</strong> y bots.</li>
+          </ul>
+          <p class="nota">
+            Python no es el más rápido en ejecución pura. Si el cuello de botella es CPU, se recurre a
+            C/C++/Rust (extensiones), PyPy, o a paralelismo con multiprocessing.
+          </p>
+        </section>
+
+        <section id="sintaxis" aria-labelledby="sintaxis-titulo">
+          <h2 id="sintaxis-titulo">Sintaxis básica</h2>
+          <pre><code># Comentario de línea
+"""Docstring de varias líneas."""
+
+x = 10          # int
+y = 3.14        # float
+nombre = "Ana"  # str
+activo = True   # bool (mayúscula)
+
+# Control de flujo
+if x > 5:
+    print("grande")
+elif x == 5:
+    print("igual")
+else:
+    print("pequeño")
+
+# Bucles
+for i in range(5):
+    print(i)
+
+while x > 0:
+    x -= 1
+
+# Función
+def saludar(nombre: str) -> str:
+    return f"Hola, {nombre}"</code></pre>
+          <p>
+            La indentación (convención: 4 espacios) define bloques; mezclar espacios y tabuladores da
+            error. Las f-strings (<code>f"..."</code>) permiten interpolar expresiones.
+          </p>
+        </section>
+
+        <section id="estructuras" aria-labelledby="estructuras-titulo">
+          <h2 id="estructuras-titulo">Estructuras de datos</h2>
+          <pre><code># Lista (mutable, ordenada)
+frutas = ["manzana", "pera"]
+frutas.append("uva")
+frutas[0]            # "manzana"
+
+# Tupla (inmutable)
+punto = (3, 4)
+
+# Diccionario (clave-valor)
+usuario = {"nombre": "Ana", "edad": 30}
+usuario["email"] = "ana@mail.com"
+usuario.get("tel", "n/a")
+
+# Conjunto (sin duplicados)
+tags = {"js", "python", "js"}  # {"js", "python"}
+
+# Comprensiones
+cuadrados = [n*n for n in range(5)]          # [0,1,4,9,16]
+pares = {n for n in range(10) if n % 2 == 0}</code></pre>
+          <p>
+            Las comprensiones son la forma «pythónica» de transformar colecciones; preferibles a
+            bucles explícitos cuando la lógica es simple. Para transformaciones complejas, usa bucles
+            con nombres claros.
+          </p>
+        </section>
+
+        <section id="funciones" aria-labelledby="funciones-titulo">
+          <h2 id="funciones-titulo">Funciones y módulos</h2>
+          <pre><code>def sumar(a: int, b: int) -> int:
+    """Devuelve la suma de a y b."""
+    return a + b
+
+# Argumentos con valor por defecto y *args/**kwargs
+def registrar(nombre, *, rol="user", **extra):
+    print(nombre, rol, extra)
+
+# Funciones de orden superior
+def aplicar(fn, valor):
+    return fn(valor)
+
+# Módulos: importar desde la biblioteca estándar
+import os
+from pathlib import Path
+from collections import Counter
+
+# Crear un paquete propio: carpeta con __init__.py</code></pre>
+          <p class="nota">
+            Las funciones son objetos de primera clase: se pueden pasar como argumentos, guardar en
+            variables y devolver. Eso habilita el estilo funcional (map/filter/reduce vía
+            <code>functools</code>).
+          </p>
+        </section>
+
+        <section id="entorno" aria-labelledby="entorno-titulo">
+          <h2 id="entorno-titulo">Entorno y dependencias</h2>
+          <pre><code># Crear y activar un entorno virtual
+python -m venv .venv
+source .venv/bin/activate   # Linux/macOS
+.venv\Scripts\activate      # Windows
+
+# Instalar dependencias
+pip install requests
+
+# Fijar dependencias
+pip freeze > requirements.txt
+pip install -r requirements.txt</code></pre>
+          <p class="nota">
+            Nunca instales dependencias en el Python del sistema para un proyecto; usa siempre un
+            entorno virtual. Para proyectos modernos, considera <code>pyproject.toml</code> y
+            herramientas como <code>uv</code> o <code>poetry</code>.
+          </p>
+        </section>
+
+        <section id="estilo" aria-labelledby="estilo-titulo">
+          <h2 id="estilo-titulo">Estilo y tipado</h2>
+          <ul>
+            <li><strong>PEP 8</strong>: 4 espacios, nombres <code>snake_case</code>, clases <code>PascalCase</code>.</li>
+            <li><strong>Anotaciones de tipo</strong> (PEP 484): opcionales en runtime, útiles con <code>mypy</code>/<code>pyright</code>.</li>
+            <li><strong>Docstrings</strong> (PEP 257): documenta módulos, clases y funciones.</li>
+            <li><strong>Formateadores</strong>: <code>black</code>, <code>ruff</code>.</li>
+          </ul>
+          <pre><code>from typing import List, Optional
+
+def buscar(items: List[str], clave: str) -> Optional[int]:
+    """Devuelve el índice de clave o None si no existe."""
+    try:
+        return items.index(clave)
+    except ValueError:
+        return None</code></pre>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Usa entornos virtuales por proyecto.</li>
+            <li>Escribe funciones pequeñas con un solo propósito.</li>
+            <li>Prefiere comprensiones simples; bucles explícitos si la lógica es compleja.</li>
+            <li>Maneja errores con <code>try/except</code> específicos, no <code>except:</code> a secas.</li>
+            <li>Tipa el código público y valídalo con un checker.</li>
+            <li>Lee y sigue PEP 8; automatiza con formateadores.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué está mal</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Argumento mutable por defecto (<code>def f(x=[])</code>)</td>
+                <td>La lista se comparte entre llamadas.</td>
+                <td>Usa <code>None</code> y crea la lista dentro.</td>
+              </tr>
+              <tr>
+                <td>Comparar con <code>== None</code></td>
+                <td>Funciona pero no es idiomático ni seguro con <code>__eq__</code>.</td>
+                <td>Usa <code>is None</code>.</td>
+              </tr>
+              <tr>
+                <td>Modificar una lista mientras se itera</td>
+                <td>Salta elementos o lanza errores.</td>
+                <td>Itera sobre una copia o construye una nueva lista.</td>
+              </tr>
+              <tr>
+                <td>Olvidar activar el entorno virtual</td>
+                <td>Se instala en el Python del sistema; conflictos.</td>
+                <td>Verifica <code>which python</code> antes de instalar.</td>
+              </tr>
+              <tr>
+                <td>Usar <code>except:</code> a secas</td>
+                <td>Oculta errores (incluido Ctrl+C).</td>
+                <td>Captura excepciones específicas.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concepto</th>
+                <th scope="col">Clave</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Lista</td><td>Mutable y ordenada: <code>[]</code>.</td></tr>
+              <tr><td>Tupla</td><td>Inmutable: <code>()</code>.</td></tr>
+              <tr><td>Dict</td><td>Clave-valor: <code>{}</code>.</td></tr>
+              <tr><td>Set</td><td>Sin duplicados: <code>{a, b}</code>.</td></tr>
+              <tr><td>Comprensión</td><td><code>[expr for x in iterable if cond]</code>.</td></tr>
+              <tr><td>venv</td><td>Entorno virtual aislado.</td></tr>
+              <tr><td>pip</td><td>Gestor de paquetes.</td></tr>
+              <tr><td>PEP 8</td><td>Guía de estilo oficial.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_paradigmas.html">Paradigmas de programación</a>: Python es multiparadigma.</li>
+            <li><a href="estudios_javascript.html">JavaScript</a>: comparación de sintaxis y ecosistema.</li>
+            <li><a href="estudios_sql.html">SQL y bases de datos relacionales</a>: acceso a datos desde Python.</li>
+            <li><a href="estudios_sistemas_operativos.html">Sistemas operativos</a>: scripting y automatización.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>
+EOF

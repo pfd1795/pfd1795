@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modelado de datos y normalización — Estudios de informática</title>
+  <meta name="description" content="Modelado de datos y normalización: entidades, relaciones, claves y formas normales.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Bases de datos</p>
+          <h1>Modelado de datos y normalización</h1>
+          <p class="entrada">
+            Antes de escribir <code>CREATE TABLE</code>, hay que decidir qué entidades existen, qué
+            atributos tienen y cómo se relacionan. Un buen modelo evita datos duplicados, inconsistencias
+            y anomalías al insertar, actualizar o borrar. La normalización es el proceso sistemático
+            para llegar a ese modelo.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>Modelar es <strong>describir la realidad</strong> como entidades, atributos y relaciones, no como tablas desde el principio.</li>
+            <li>La <strong>redundancia</strong> causa anomalías: un mismo dato repetido se desincroniza al actualizar.</li>
+            <li>Las <strong>claves</strong> (primaria, foránea) identifican filas y conectan tablas.</li>
+            <li>Las <strong>formas normales</strong> (1NF, 2NF, 3NF, BCNF) eliminan dependencias parciales y transitivas.</li>
+            <li>Desnormalizar a propósito puede mejorar el rendimiento de lectura, pero con coste de mantenimiento.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es modelar datos?</a></li>
+            <li><a href="#anomalias">Anomalías y redundancia</a></li>
+            <li><a href="#claves">Claves</a></li>
+            <li><a href="#formas-normales">Formas normales</a></li>
+            <li><a href="#desnormalizar">Cuándo desnormalizar</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es modelar datos?</h2>
+          <p>
+            Un modelo de datos describe la información que maneja un sistema y sus reglas. Se parte de
+            la realidad (clientes, pedidos, productos) y se llega a un esquema de tablas. Los conceptos
+            básicos:
+          </p>
+          <ul>
+            <li><strong>Entidad</strong>: cosa u objeto del dominio (Cliente, Pedido).</li>
+            <li><strong>Atributo</strong>: propiedad de la entidad (nombre, fecha, precio).</li>
+            <li><strong>Relación</strong>: vínculo entre entidades (un cliente hace muchos pedidos).</li>
+            <li><strong>Cardinalidad</strong>: cuántas instancias participan (1:1, 1:N, N:M).</li>
+          </ul>
+          <figure class="diagrama" aria-labelledby="diagrama-er-titulo">
+            <figcaption id="diagrama-er-titulo">Modelo entidad-relación simplificado.</figcaption>
+            <svg viewBox="0 0 640 180" role="img" aria-labelledby="diagrama-er-titulo">
+              <rect class="caja-destacada" x="40" y="60" width="120" height="60" rx="8"></rect>
+              <text class="texto" x="100" y="85" text-anchor="middle">Cliente</text>
+              <text class="texto-secundario" x="100" y="105" text-anchor="middle">id, nombre, email</text>
+
+              <rect class="caja-destacada" x="260" y="60" width="120" height="60" rx="8"></rect>
+              <text class="texto" x="320" y="85" text-anchor="middle">Pedido</text>
+              <text class="texto-secundario" x="320" y="105" text-anchor="middle">id, fecha, total</text>
+
+              <rect class="caja-destacada" x="480" y="60" width="120" height="60" rx="8"></rect>
+              <text class="texto" x="540" y="85" text-anchor="middle">Producto</text>
+              <text class="texto-secundario" x="540" y="105" text-anchor="middle">id, nombre, precio</text>
+
+              <path class="flecha-acentuada" d="M160 90 L255 90"></path>
+              <polygon class="flecha-acentuada" points="255,90 245,84 245,96"></polygon>
+              <text class="texto-secundario" x="207" y="82" text-anchor="middle">1:N</text>
+
+              <path class="flecha-acentuada" d="M380 90 L475 90"></path>
+              <polygon class="flecha-acentuada" points="475,90 465,84 465,96"></polygon>
+              <text class="texto-secundario" x="427" y="82" text-anchor="middle">N:M</text>
+            </svg>
+          </figure>
+          <p>
+            Una relación N:M (pedido-producto) se resuelve con una tabla intermedia (pedido_producto)
+            que contiene las claves foráneas de ambas. Ese paso es esencial antes de crear tablas.
+          </p>
+        </section>
+
+        <section id="anomalias" aria-labelledby="anomalias-titulo">
+          <h2 id="anomalias-titulo">Anomalías y redundancia</h2>
+          <p>
+            Imagina una sola tabla <code>pedidos</code> que repite los datos del cliente en cada fila:
+          </p>
+          <pre><code>pedido_id | cliente_nombre | cliente_email | producto | cantidad
+1         | Ana            | ana@mail.com  | Libro    | 2
+2         | Ana            | ana@mail.com  | Lápiz    | 5</code></pre>
+          <p>
+            Si Ana cambia de correo, hay que actualizar todas sus filas; si se olvida una, quedan dos
+            correos distintos para el mismo cliente. Eso es una <strong>anomalía de actualización</strong>.
+            También hay anomalías de <strong>inserción</strong> (no puedes registrar un cliente sin
+            pedido) y de <strong>borrado</strong> (borrar el último pedido borra también al cliente).
+            La causa común es la <strong>redundancia</strong>: el mismo dato almacenado varias veces.
+          </p>
+        </section>
+
+        <section id="claves" aria-labelledby="claves-titulo">
+          <h2 id="claves-titulo">Claves</h2>
+          <ul>
+            <li><strong>Clave primaria (PK)</strong>: identifica de forma única cada fila. No nula y sin duplicados.</li>
+            <li><strong>Clave foránea (FK)</strong>: columna que referencia la PK de otra tabla; mantiene la integridad referencial.</li>
+            <li><strong>Clave candidata</strong>: cualquier conjunto de columnas que podría ser PK; se elige una como primaria.</li>
+            <li><strong>Clave compuesta</strong>: PK formada por varias columnas (p. ej. línea de pedido).</li>
+            <li><strong>Clave sustituta (surrogate)</strong>: identificador artificial (autoincremental/UUID) cuando no hay clave natural estable.</li>
+          </ul>
+          <p class="nota">
+            Prefiere claves sustitutas para las PK internas y claves naturales (email, DNI) como
+            restricciones únicas adicionales. Las FK deben tener índices para acelerar JOIN y cascadas.
+          </p>
+        </section>
+
+        <section id="formas-normales" aria-labelledby="formas-normales-titulo">
+          <h2 id="formas-normales-titulo">Formas normales</h2>
+          <p>
+            La normalización aplica reglas progresivas. Cada forma normal (FN) elimina un tipo de
+            dependencia problemática.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Forma normal</th>
+                <th scope="col">Regla</th>
+                <th scope="col">Qué elimina</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1NF</td><td>Valores atómicos; sin grupos repetidos; cada fila única.</td><td>Listas dentro de una celda; filas duplicadas.</td></tr>
+              <tr><td>2NF</td><td>1NF + ningún atributo no clave depende de parte de una PK compuesta.</td><td>Dependencias parciales.</td></tr>
+              <tr><td>3NF</td><td>2NF + ningún atributo no clave depende de otro atributo no clave.</td><td>Dependencias transitivas.</td></tr>
+              <tr><td>BCNF</td><td>Toda dependencia funcional X→Y implica que X es clave candidata.</td><td>Casos límite que 3NF no cubre.</td></tr>
+            </tbody>
+          </table>
+          <h3>Ejemplo: de tabla única a 3NF</h3>
+          <p>Tabla original (desnormalizada):</p>
+          <pre><code>pedido (pedido_id, cliente_nombre, cliente_email, producto_nombre, precio, cantidad)</code></pre>
+          <p>Pasos:</p>
+          <ol>
+            <li><strong>1NF</strong>: ya tiene valores atómicos; separar la línea de pedido si un pedido tiene varios productos.</li>
+            <li><strong>2NF</strong>: <code>cliente_nombre</code> y <code>cliente_email</code> dependen solo de <code>pedido_id</code> (no de la PK compuesta pedido_id+producto). Se mueven a <code>cliente</code>.</li>
+            <li><strong>3NF</strong>: <code>precio</code> depende de <code>producto</code>, no del pedido. Se mueve a <code>producto</code>.</li>
+          </ol>
+          <p>Resultado:</p>
+          <pre><code>cliente (cliente_id, nombre, email)
+pedido (pedido_id, cliente_id, fecha)
+producto (producto_id, nombre, precio)
+pedido_producto (pedido_id, producto_id, cantidad)</code></pre>
+        </section>
+
+        <section id="desnormalizar" aria-labelledby="desnormalizar-titulo">
+          <h2 id="desnormalizar-titulo">Cuándo desnormalizar</h2>
+          <p>
+            La normalización optimiza la escritura y la consistencia. Pero las consultas de lectura
+            (informes, dashboards) pueden requerir muchos JOIN. En esos casos se desnormaliza a propósito:
+            se duplica un campo calculado o se crea una tabla agregada. Siempre con un proceso que
+            mantenga la copia sincronizada (triggers, jobs, o recomputación).
+          </p>
+          <p class="nota">
+            Regla práctica: normaliza primero; mide; desnormaliza solo donde el JOIN sea el cuello de
+            botella real y documenta la fuente de verdad.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Empieza con un modelo conceptual (entidades/relaciones) y luego pásalo a tablas.</li>
+            <li>Usa nombres claros y consistentes (singular o plural, pero uno solo).</li>
+            <li>Define PK y FK desde el principio; añade restricciones <code>NOT NULL</code> y <code>UNIQUE</code>.</li>
+            <li>Normaliza hasta 3NF por defecto; justifica cualquier desviación.</li>
+            <li>Versiona el esquema (migraciones) y documenta los cambios.</li>
+            <li>Indexa las columnas usadas en JOIN, WHERE y ORDER BY.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué está mal</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Guardar listas en una columna (CSV)</td>
+                <td>Viola 1NF; no se puede consultar ni indexar bien.</td>
+                <td>Crea una tabla hija con una fila por elemento.</td>
+              </tr>
+              <tr>
+                <td>Repetir datos del cliente en cada pedido</td>
+                <td>Anomalías de actualización e inconsistencias.</td>
+                <td>Separa en tabla <code>cliente</code> con FK.</td>
+              </tr>
+              <tr>
+                <td>No definir claves foráneas</td>
+                <td>Datos huérfanos e integridad rota.</td>
+                <td>Declara FK y decide ON DELETE/UPDATE.</td>
+              </tr>
+              <tr>
+                <td>Sobre-normalizar (decenas de tablas para todo)</td>
+                <td>Consultas complejas y lentas; mantenimiento costoso.</td>
+                <td>Equilibra con casos de uso reales y desnormaliza si hace falta.</td>
+              </tr>
+              <tr>
+                <td>Usar datos mutables como PK</td>
+                <td>Cambiar la PK obliga a cascadas masivas.</td>
+                <td>Usa clave sustituta (id) y restricción única sobre el dato natural.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concepto</th>
+                <th scope="col">Clave</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Entidad</td><td>Objeto del dominio con identidad propia.</td></tr>
+              <tr><td>Atributo</td><td>Propiedad de una entidad.</td></tr>
+              <tr><td>Relación</td><td>Vínculo entre entidades (1:1, 1:N, N:M).</td></tr>
+              <tr><td>PK</td><td>Identifica de forma única una fila.</td></tr>
+              <tr><td>FK</td><td>Referencia la PK de otra tabla.</td></tr>
+              <tr><td>1NF</td><td>Valores atómicos, sin grupos repetidos.</td></tr>
+              <tr><td>3NF</td><td>Sin dependencias transitivas entre no claves.</td></tr>
+              <tr><td>BCNF</td><td>Toda dependencia funcional parte de una clave candidata.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_sql.html">SQL y bases de datos relacionales</a>: cómo consultar el modelo una vez creado.</li>
+            <li><a href="estudios_apis.html">Cliente-servidor y APIs</a>: cómo exponer los datos mediante endpoints.</li>
+            <li><a href="estudios_seguridad_web.html">Seguridad en aplicaciones web</a>: inyección SQL y validación.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>
+EOF

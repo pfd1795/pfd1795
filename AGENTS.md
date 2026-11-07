@@ -6,7 +6,7 @@ Portafolio web personal desarrollado con HTML, CSS y JavaScript vanilla. Sitio e
 
 **URL de producción:** https://pfd1795.github.io/pfd1795/
 
-**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `AGENTS.md` locales en `juegos/` y `mis-estudios/` (reglas propias de cada carpeta; los agentes los combinan con el de la raíz), `docs/README.md` (índice de la documentación), `docs/AUDITORIA.md` (hoja de verificación para auditorías) y `juegos/README.md` (cómo agregar y documentar juegos). `docs/prompts/` contiene herramientas para desarrolladores: solo leerlas cuando se pida explícitamente. No hay fases, tareas, auditorías ni informes activos en el repositorio; el estado real está en el código y en esta guía.
+**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `AGENTS.md` locales en `juegos/` y `mis-estudios/` (reglas propias de cada carpeta; los agentes los combinan con el de la raíz), `docs/README.md` (índice de la documentación) y `juegos/README.md` (cómo agregar y documentar juegos). `docs/prompts/` contiene herramientas para desarrolladores: solo leerlas cuando se pida explícitamente. No hay fases, tareas, auditorías ni informes activos en el repositorio; el estado real está en el código y en esta guía.
 
 ---
 
@@ -69,7 +69,6 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 ├── AGENTS.md               # Guía técnica para agentes
 ├── docs/                   # Documentación organizada
 │   ├── README.md           # Índice de la documentación
-│   ├── AUDITORIA.md        # Hoja de verificación para auditorías
 │   └── prompts/            # Herramientas de desarrollo (leer solo a pedido)
 │       ├── crear-videojuegos.md    # Prompt para crear juegos integrados
 │       └── portadas-juegos.md      # Guía para generar portadas de la grilla
@@ -164,6 +163,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | `javascripts/lang/translations.json` | datos JSON | Claves de la UI (`page`, `introSection`, `home`, `header`, …). |
 | `mis-estudios/js/tema.js` | IIFE clásica (no módulo) | Pre-pintado del tema en `mis-estudios/`: duplica la lógica de `theme-init.js` con las mismas claves. |
 | `mis-estudios/js/buscador.js` | IIFE clásica (no módulo) | Filtra `.estudio-card` del término de búsqueda y gestiona contador y mensaje vacío. |
+| `mis-estudios/js/copiar.js` | IIFE clásica (no módulo) | Botón “Copiar” sobre los bloques de código de los artículos: copia con `navigator.clipboard` (respaldo `execCommand`), dedentando la sangría. Solo en páginas de estudio. |
 
 ### Inventario de claves de `localStorage`
 
@@ -279,7 +279,7 @@ del manifiesto (ver Arquitectura CSS).
 - **Sistema de diseño**: tokens definidos en la sección `:root` de `stylesheets/base.css` — neutros (`--n100…--n900`, `--dn100…--dn900`), superficies (`--color-background`, `--color-surface`, `--color-border`), texto (`--color-text`, `--color-text-secondary`), acentos en trío (`--<color>-claro/-normal/-oscuro`), tipografía (`--text-*`, `--font-*`), radios, sombras (`--shadow-sm…--shadow-xl`) y bordes (`--border-thin/-normal/-thick`).
 - **Hojas CSS**: `stylesheets/base.css` contiene todo lo compartido (reset, variables, estilos globales, `.main-content`, modal, componentes, navbar y sidebar); `portada.css`, `enciclopedia.css` y `juegos.css` solo añaden lo específico de cada página. Cada HTML carga siempre `base.css` primero y después la hoja de su página, sin `@import`; un cambio compartido se hace una sola vez en `base.css`.
 - **Alias de compatibilidad**: el único alias que queda definido y con uso real es
-  `--color-white` (→ `--n100`). Tras la auditoría H-15 se purgaron los ~44 tokens sin
+  `--color-white` (→ `--n100`). Tras la última auditoría se purgaron los ~44 tokens sin
   referencias (toda la familia `--color-blue/-dark/…` y los semánticos
   `--color-success/warning/error/info`, `--color-background-neutral`, `--color-border-light`,
   `--color-separator`); reflotar un alias solo al aparecer su primer uso real.
@@ -330,7 +330,7 @@ del manifiesto (ver Arquitectura CSS).
 - La interfaz tiene traducciones ES/EN, pero el contenido de la enciclopedia (`mis-estudios/`) y el de los juegos (`juegos/<slug>/`) está solo en español. Las tarjetas de la grilla de juegos sí se traducen desde el manifiesto.
 - `applyTranslations()` busca claves en `page`, `introSection`, `home` y `header`; una clave
   nueva debe colocarse en una de esas secciones. El espacio de claves es **único entre esas 4
-  secciones** (H-08): reutilizar el mismo nombre con otro texto puede resolver al valor de una
+  secciones): reutilizar el mismo nombre con otro texto puede resolver al valor de una
   sección anterior del orden de búsqueda. La clave `name` no se traduce: `applyTranslations()`
   la saltea a propósito porque es un nombre propio.
 - Las cadenas que se renderizan desde JavaScript se traducen al generarse (por ejemplo, `GridProjects()` toma `viewProject` de `translations.introSection[lang]`, y `GridGames()` toma las etiquetas de `translations.page[lang]`), no vía `data-lang`.
@@ -339,13 +339,13 @@ del manifiesto (ver Arquitectura CSS).
 
 ### Contenido y assets
 
-- Varias tarjetas de la enciclopedia están marcadas como "Próximamente"; no todo el temario está desarrollado.
+- La enciclopedia cuenta con 18 artículos publicados y varias tarjetas marcadas como "Próximamente"; no todo el temario está desarrollado.
 - La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
 - **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `javascripts/data/juegos.json`.
 - El correo que copia `utils/copyEmail.js` está fijado en el código. Si cambia, hay que actualizarlo ahí y en la información de contacto.
 - **`assets/files/PabloDiazCV.pdf`** (238 KB) se mantiene en el repositorio sin enlazar por
-  decisión del desarrollador (2026-11-05, hallazgo H-14): es material para reenlazar el CV desde
+  decisión del desarrollador (2026-11-05): es material para reenlazar el CV desde
   el sidebar o el modal si se recupera el botón de descarga. Hasta entonces, ninguna página lo
   referencia y así debe quedar.
 

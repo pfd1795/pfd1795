@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sistemas operativos — Estudios de informática</title>
+  <meta name="description" content="Sistemas operativos: procesos, hilos, planificación, memoria virtual, sistema de archivos y concurrencia.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Fundamentos de computación</p>
+          <h1>Sistemas operativos</h1>
+          <p class="entrada">
+            Un sistema operativo (SO) es el programa que se ejecuta siempre que el ordenador está
+            encendido. Gestiona el hardware, reparte los recursos entre los programas y ofrece una
+            interfaz para que las aplicaciones pidan lo que necesitan sin tocar el hardware
+            directamente. Entender cómo lo hace explica por qué un proceso se bloquea, por qué la
+            memoria «se acaba» o por qué un programa no puede abrir un archivo.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>El SO es un <strong>intermediario</strong>: las apps no acceden al hardware; piden servicios al kernel mediante llamadas al sistema.</li>
+            <li>Un <strong>proceso</strong> es un programa en ejecución con su propio espacio de memoria; un hilo es una unidad de ejecución dentro de él.</li>
+            <li>La <strong>CPU</strong> se reparte con un planificador (Round Robin, prioridades…); el cambio de contexto guarda y restaura el estado.</li>
+            <li>La <strong>memoria virtual</strong> da a cada proceso la ilusión de tener toda la RAM para sí; el SO traduce direcciones y pagina a disco.</li>
+            <li>La <strong>concurrencia</strong> exige sincronización (mutex, semáforos) para evitar carreras y bloqueos (deadlock).</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es un sistema operativo?</a></li>
+            <li><a href="#procesos">Procesos y hilos</a></li>
+            <li><a href="#planificacion">Planificación de la CPU</a></li>
+            <li><a href="#memoria">Memoria virtual</a></li>
+            <li><a href="#archivos">Sistema de archivos</a></li>
+            <li><a href="#syscalls">Llamadas al sistema y modos</a></li>
+            <li><a href="#concurrencia">Concurrencia y sincronización</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es un sistema operativo?</h2>
+          <p>El SO cumple tres funciones principales:</p>
+          <ul>
+            <li><strong>Abstracción del hardware</strong>: ofrece archivos, procesos, sockets y memoria virtual en lugar de puertos, registros y sectores de disco.</li>
+            <li><strong>Gestión de recursos</strong>: decide quién usa la CPU, la RAM, el disco y la red, y en qué orden.</li>
+            <li><strong>Aislamiento y protección</strong>: un proceso no puede leer la memoria de otro ni acceder a archivos sin permiso.</li>
+          </ul>
+          <p>
+            La parte central es el <strong>kernel</strong>, que se ejecuta en modo privilegiado. El resto
+            (shell, servicios, aplicaciones) corre en modo usuario. Esta separación es la base de la
+            seguridad y la estabilidad: si una app falla, el kernel sigue vivo.
+          </p>
+          <p class="nota">
+            El SO no es solo la interfaz gráfica. En un servidor Linux sin entorno gráfico, el SO sigue
+            siendo completo: kernel + servicios + shell.
+          </p>
+        </section>
+
+        <section id="procesos" aria-labelledby="procesos-titulo">
+          <h2 id="procesos-titulo">Procesos y hilos</h2>
+          <p>
+            Un <strong>proceso</strong> es un programa en ejecución: código, datos, pila, registros y
+            un bloque de control (PCB) con su estado. Cada proceso tiene su propio espacio de direcciones
+            virtual, por lo que un fallo en uno no corrompe a los demás.
+          </p>
+          <p>
+            Un <strong>hilo</strong> (thread) es una unidad de ejecución dentro de un proceso. Varios
+            hilos comparten el código y la memoria del proceso, pero cada uno tiene su propia pila y
+            registros. Crear un hilo es más barato que crear un proceso.
+          </p>
+          <figure class="diagrama" aria-labelledby="diagrama-procesos-titulo">
+            <figcaption id="diagrama-procesos-titulo">Ciclo de vida de un proceso.</figcaption>
+            <svg viewBox="0 0 640 200" role="img" aria-labelledby="diagrama-procesos-titulo">
+              <rect class="caja" x="20" y="80" width="110" height="40" rx="6"></rect>
+              <text class="texto" x="75" y="105" text-anchor="middle">Nuevo</text>
+              <path class="flecha" d="M130 100 L180 100"></path>
+              <polygon class="flecha" points="180,100 170,94 170,106"></polygon>
+              <rect class="caja-destacada" x="185" y="80" width="110" height="40" rx="6"></rect>
+              <text class="texto" x="240" y="105" text-anchor="middle">Listo</text>
+              <path class="flecha" d="M295 100 L345 100"></path>
+              <polygon class="flecha" points="345,100 335,94 335,106"></polygon>
+              <rect class="caja-destacada" x="350" y="80" width="120" height="40" rx="6"></rect>
+              <text class="texto" x="410" y="105" text-anchor="middle">En ejecución</text>
+              <path class="flecha" d="M470 100 L520 100"></path>
+              <polygon class="flecha" points="520,100 510,94 510,106"></polygon>
+              <rect class="caja" x="525" y="80" width="95" height="40" rx="6"></rect>
+              <text class="texto" x="572" y="105" text-anchor="middle">Terminado</text>
+              <path class="flecha" d="M410 120 L410 160 L240 160 L240 120"></path>
+              <polygon class="flecha" points="240,120 234,130 246,130"></polygon>
+              <text class="texto-secundario" x="325" y="175" text-anchor="middle">E/S o espera → Bloqueado → Listo</text>
+            </svg>
+          </figure>
+          <p>
+            Estados típicos: <strong>Nuevo</strong>, <strong>Listo</strong>, <strong>En ejecución</strong>,
+            <strong>Bloqueado</strong> (esperando E/S o un recurso) y <strong>Terminado</strong>. El
+            planificador mueve procesos entre Listo y En ejecución.
+          </p>
+        </section>
+
+        <section id="planificacion" aria-labelledby="planificacion-titulo">
+          <h2 id="planificacion-titulo">Planificación de la CPU</h2>
+          <p>
+            Con una sola CPU (o pocos núcleos) y muchos procesos listos, el SO decide el orden y el
+            tiempo de ejecución. Objetivos: equidad, tiempo de respuesta, rendimiento y uso de CPU.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Algoritmo</th>
+                <th scope="col">Idea</th>
+                <th scope="col">Ventaja / inconveniente</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>FIFO (FCFS)</td><td>El primero en llegar se ejecuta hasta terminar.</td><td>Simple; sufre el efecto convoy (un proceso largo bloquea a los cortos).</td></tr>
+              <tr><td>SJF</td><td>El más corto primero.</td><td>Minimiza tiempo de espera; requiere conocer la duración (no siempre posible).</td></tr>
+              <tr><td>Round Robin</td><td>Turnos de tiempo fijo (quantum) a cada proceso.</td><td>Buen tiempo de respuesta; mucho cambio de contexto si el quantum es pequeño.</td></tr>
+              <tr><td>Prioridades</td><td>El de mayor prioridad ejecuta primero.</td><td>Flexible; riesgo de inanición (starvation) de los de baja prioridad.</td></tr>
+              <tr><td>Multinivel</td><td>Varias colas con políticas distintas.</td><td>Equilibra interactivos y por lotes; más complejo de ajustar.</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            En sistemas interactivos (escritorio, web) se busca baja latencia de respuesta; en por
+            lotes (batch), máximo rendimiento. Linux combina CFS (Completely Fair Scheduler) con
+            prioridades dinámicas.
+          </p>
+        </section>
+
+        <section id="memoria" aria-labelledby="memoria-titulo">
+          <h2 id="memoria-titulo">Memoria virtual</h2>
+          <p>
+            Cada proceso ve un espacio de direcciones virtual grande y contiguo, aunque la RAM física
+            sea pequeña y compartida. El SO traduce direcciones virtuales a físicas mediante tablas de
+            páginas; las páginas que no caben en RAM se guardan en disco (swap).
+          </p>
+          <ul>
+            <li><strong>Paginación</strong>: la memoria se divide en páginas (virtual) y marcos (físico), del mismo tamaño (p. ej. 4 KiB).</li>
+            <li><strong>TLB</strong>: caché de traducciones para no consultar la tabla de páginas en cada acceso.</li>
+            <li><strong>Page fault</strong>: acceso a una página no presente en RAM; el SO la carga desde disco (costoso).</li>
+            <li><strong>Thrashing</strong>: si faltan páginas constantemente, el sistema pasa más tiempo paginando que ejecutando.</li>
+          </ul>
+          <p class="nota">
+            La memoria virtual también da aislamiento: un proceso no puede acceder a la memoria de otro
+            porque sus tablas de páginas son distintas. Por eso un puntero «válido» en un proceso no
+            sirve en otro.
+          </p>
+        </section>
+
+        <section id="archivos" aria-labelledby="archivos-titulo">
+          <h2 id="archivos-titulo">Sistema de archivos</h2>
+          <p>
+            El SO organiza los datos en archivos y directorios, con metadatos (permisos, tamaño,
+            fechas). Internamente suele usar inodos (metadatos) y bloques de datos; los directorios
+            son archivos especiales que mapean nombres a inodos.
+          </p>
+          <ul>
+            <li><strong>Permisos</strong>: lectura/escritura/ejecución para propietario, grupo y otros (modelo Unix: rwx).</li>
+            <li><strong>Journaling</strong>: registro de cambios antes de aplicarlos, para recuperarse tras un corte de luz.</li>
+            <li><strong>Enlaces</strong>: duros (mismo inodo, otro nombre) y simbólicos (archivo que apunta a una ruta).</li>
+            <li><strong>Montaje</strong>: un sistema de archivos se «monta» en un directorio y pasa a formar parte del árbol.</li>
+          </ul>
+        </section>
+
+        <section id="syscalls" aria-labelledby="syscalls-titulo">
+          <h2 id="syscalls-titulo">Llamadas al sistema y modos</h2>
+          <p>
+            Una llamada al sistema (syscall) es el mecanismo por el que un programa en modo usuario
+            pide un servicio al kernel: abrir un archivo, crear un proceso, enviar datos por red. El
+            hardware cambia a modo privilegiado, ejecuta el servicio y devuelve el control.
+          </p>
+          <pre><code>// Ejemplo conceptual en C/POSIX
+int fd = open("datos.txt", O_RDONLY);   // syscall
+char buf[1024];
+ssize_t n = read(fd, buf, sizeof(buf)); // syscall
+close(fd);                              // syscall</code></pre>
+          <p class="nota">
+            Cada syscall tiene coste (cambio de modo y validaciones). Por eso las bibliotecas agrupan
+            lecturas pequeñas en buffers (stdio) y los servidores usan E/S no bloqueante o asíncrona.
+          </p>
+        </section>
+
+        <section id="concurrencia" aria-labelledby="concurrencia-titulo">
+          <h2 id="concurrencia-titulo">Concurrencia y sincronización</h2>
+          <p>
+            Cuando varios hilos o procesos acceden a datos compartidos, pueden interferir (condición de
+            carrera). La sincronización coordina el acceso:
+          </p>
+          <ul>
+            <li><strong>Mutex</strong>: bloqueo mutuamente excluyente; solo un hilo entra a la sección crítica.</li>
+            <li><strong>Semáforo</strong>: contador que permite hasta N hilos simultáneos; útil para pools de recursos.</li>
+            <li><strong>Variable de condición</strong>: espera a que se cumpla una condición (p. ej. «hay datos en la cola»).</li>
+            <li><strong>Deadlock</strong>: dos o más procesos se esperan mutuamente. Condiciones necesarias (Coffman): exclusión mutua, posesión y espera, no apropiación y espera circular.</li>
+          </ul>
+          <pre><code>// Patrón productor-consumidor (pseudocódigo)
+mutex.lock();
+while (cola.vacia()) condicion.wait(mutex);
+item = cola.sacar();
+mutex.unlock();
+procesar(item);</code></pre>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Usa procesos/hilos con propósito claro; no crees hilos «por si acaso».</li>
+            <li>Protege todo dato compartido con la sincronización adecuada; minimiza la sección crítica.</li>
+            <li>Prefiere estructuras sin bloqueo cuando sea posible (colas concurrentes, canales).</li>
+            <li>Cierra descriptores de archivo y libera memoria; evita fugas de recursos.</li>
+            <li>Maneja señales y códigos de error de las syscalls; no ignores <code>EINTR</code> ni <code>ENOMEM</code>.</li>
+            <li>Para E/S intensiva, considera E/S no bloqueante o asíncrona en lugar de un hilo por conexión.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué está mal</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Acceder a datos compartidos sin sincronización</td>
+                <td>Carreras de datos: resultados inconsistentes y difíciles de reproducir.</td>
+                <td>Protege con mutex/semáforo; usa herramientas de detección (ThreadSanitizer).</td>
+              </tr>
+              <tr>
+                <td>Bloquear con un mutex y luego esperar otro recurso</td>
+                <td>Puede generar deadlock si otro hilo hace lo inverso.</td>
+                <td>Orden fijo de adquisición de bloqueos; o usa <code>trylock</code> con reintento.</td>
+              </tr>
+              <tr>
+                <td>Crear un hilo por cada conexión de red</td>
+                <td>Agota memoria y tiempo de CPU en cambios de contexto.</td>
+                <td>Usa pools de hilos o E/S asíncrona (epoll/kqueue/io_uring).</td>
+              </tr>
+              <tr>
+                <td>Ignorar el valor de retorno de syscalls</td>
+                <td>Errores silenciosos (disco lleno, permisos) que corrompen datos.</td>
+                <td>Comprueba siempre el retorno y registra el error (errno).</td>
+              </tr>
+              <tr>
+                <td>Asumir que la memoria virtual es «gratis»</td>
+                <td>Page faults y swap degradan el rendimiento (thrashing).</td>
+                <td>Mide el uso real; evita patrones de acceso aleatorio masivo.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concepto</th>
+                <th scope="col">Clave</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Proceso</td><td>Programa en ejecución con espacio de memoria propio.</td></tr>
+              <tr><td>Hilo</td><td>Unidad de ejecución dentro de un proceso; comparte memoria.</td></tr>
+              <tr><td>PCB</td><td>Bloque de control con estado, registros y recursos del proceso.</td></tr>
+              <tr><td>Syscall</td><td>Puerta de entrada del modo usuario al kernel.</td></tr>
+              <tr><td>Página / marco</td><td>Unidad de memoria virtual / física (típ. 4 KiB).</td></tr>
+              <tr><td>Page fault</td><td>Acceso a página no presente en RAM.</td></tr>
+              <tr><td>Mutex</td><td>Bloqueo de exclusión mutua para secciones críticas.</td></tr>
+              <tr><td>Deadlock</td><td>Espera circular entre procesos por recursos.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_terminal.html">Terminal y línea de comandos</a>: cómo interactuar con el SO desde la shell.</li>
+            <li><a href="estudios_redes.html">Redes: fundamentos</a>: sockets, puertos y cómo el SO gestiona la red.</li>
+            <li><a href="estudios_seguridad_web.html">Seguridad en aplicaciones web</a>: aislamiento, permisos y procesos.</li>
+            <li><a href="estudios_criptografia.html">Criptografía básica</a>: entropía y generación de números aleatorios del SO.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>
+EOF
