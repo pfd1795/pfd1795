@@ -57,7 +57,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    - Idioma ES/EN: la portada y la grilla de juegos se re-renderizan con las cadenas correctas (las cadenas generadas en JS no usan `data-lang`).
    - Tema sin parpadeo: tras recarga dura, el fondo y el acento correctos se pintan antes del primer frame (lo aplica `theme-init.js` / `tema.js`).
    - En `juegos/`: las tarjetas del manifiesto se renderizan, las portadas cargan y los lanzamientos abren pestaña nueva con `rel="noopener noreferrer"`.
-   - En `mis-estudios/`: el tema del portafolio se respeta y el buscador filtra y vacía el contador correctamente.
+   - En `mis-estudios/`: el tema del portafolio se respeta y el buscador filtra, actualiza el conteo del placeholder y muestra/oculta `#sin-resultados`.
 4. **Registros en consola permitidos:** los avisos de `utils/storage.js` y `theme-init.js` cuando `localStorage` está bloqueado (modo privado) son esperables; cualquier otro error sí es un problema.
 
 ---
@@ -339,7 +339,7 @@ del manifiesto (ver Arquitectura CSS).
 
 ### Contenido y assets
 
-- La enciclopedia cuenta con 18 artículos publicados y varias tarjetas marcadas como "Próximamente"; no todo el temario está desarrollado.
+- La enciclopedia cuenta con 21 artículos publicados y varias tarjetas marcadas como "Próximamente"; no todo el temario está desarrollado.
 - La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
 - **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `javascripts/data/juegos.json`.

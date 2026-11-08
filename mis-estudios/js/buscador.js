@@ -24,7 +24,6 @@
       return;
     }
 
-    var contador = document.getElementById('contador');
     var mensaje = document.getElementById('sin-resultados');
 
     /* Evita que pulsar Intro recargue la página con ?q=... en la URL. */
@@ -69,9 +68,7 @@
         categoria.hidden = !visible;
       });
 
-      if (contador) {
-        contador.textContent = 'Mostrando ' + visibles + ' de ' + total + ' estudios.';
-      }
+      campo.placeholder = 'buscador estudios: titulo, descripcion o palabra clave (' + visibles + ' de ' + total + ' estudios)';
 
       if (mensaje) {
         mensaje.hidden = visibles !== 0;

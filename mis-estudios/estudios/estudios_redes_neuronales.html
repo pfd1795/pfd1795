@@ -17,24 +17,17 @@
 
   <nav class="navbar">
     <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
-      <h1>Nombre del autor</h1>
+      <h1>Pablo Diaz</h1>
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
     <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
       <span data-lang="menu">Menú</span>
-      <img src="../../assets/icons/menu.svg" alt="">
+      <img src="../../assets/icons/menu.svg" alt="" />
     </button>
   </nav>
 
   <div class="main-content">
-    <header class="cabecera">
-      <div class="contenedor cabecera__interior">
-        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
-        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
-      </div>
-    </header>
-
     <main id="contenido" class="contenedor lectura">
       <p class="volver"><a href="../index.html">← Volver al índice</a></p>
 
@@ -47,8 +40,8 @@
           </p>
         </header>
 
-        <div class="tl-dr">
-          <h2 class="tl-dr__titulo">En 5 puntos</h2>
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
           <ul>
             <li>Una red neuronal es un modelo formado por unidades (neuronas artificiales) organizadas en capas que transforman los datos.</li>
             <li>Cada neurona calcula una suma ponderada de sus entradas, añade un sesgo y aplica una función de activación.</li>
@@ -56,7 +49,7 @@
             <li>El entrenamiento ajusta pesos y sesgos con retropropagación y descenso de gradiente, midiendo el error con una función de pérdida.</li>
             <li>El aprendizaje profundo usa redes con muchas capas; más capas no garantiza mejores resultados.</li>
           </ul>
-        </div>
+        </aside>
 
         <nav class="tabla-contenido" aria-labelledby="toc-titulo">
           <h2 id="toc-titulo">Contenido</h2>
@@ -450,7 +443,7 @@ for paso in range(3):
           <ul class="ver-tambien">
             <li><a href="estudios_aprendizaje_automatico.html">Aprendizaje automático</a>: dónde encaja este modelo y cómo se entrena y evalúa.</li>
             <li><a href="estudios_inteligencia_artificial.html">Inteligencia artificial</a>: panorama general del campo y sus límites.</li>
-            <li><a href="estudios_python.html">Python</a>: pendiente de crear.</li>
+            <li><a href="estudios_python.html">Python</a>: lenguaje usado en los ejemplos.</li>
           </ul>
         </section>
       </article>
@@ -458,12 +451,7 @@ for paso in range(3):
       <p class="volver"><a href="../index.html">← Volver al índice</a></p>
     </main>
 
-    <footer class="pie">
-      <div class="contenedor">
-        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
       </div>
-    </footer>
-  </div>
 
   <div class="sidebar-overlay"></div>
 
@@ -472,44 +460,44 @@ for paso in range(3):
       <h2 data-lang="menu">Menú</h2>
       <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
         <span data-lang="close">Cerrar</span>
-        <img src="../../assets/icons/close.svg" alt="">
+        <img src="../../assets/icons/close.svg" alt="" />
       </button>
     </header>
 
     <nav class="sidebar-menu">
       <div class="sidebar-item--group">
         <a class="sidebar-item" href="../../index.html#inicio">
-          <img src="../../assets/icons/home.svg" alt="">
+          <img src="../../assets/icons/home.svg" alt="" />
           <span data-lang="home">Inicio</span>
         </a>
         <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
           title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
-          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
         </button>
       </div>
 
       <div class="sidebar-submenu" id="sidebar-secciones">
         <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
-          <img src="../../assets/icons/docs.svg" alt="">
+          <img src="../../assets/icons/docs.svg" alt="" />
           <span data-lang="experienceTitle">Experiencia Laboral</span>
         </a>
         <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
-          <img src="../../assets/icons/school.svg" alt="">
+          <img src="../../assets/icons/school.svg" alt="" />
           <span data-lang="studiesTitle">Estudios | Cursos</span>
         </a>
         <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
-          <img src="../../assets/icons/code.svg" alt="">
+          <img src="../../assets/icons/code.svg" alt="" />
           <span data-lang="projects">Proyectos</span>
         </a>
       </div>
 
       <a class="sidebar-item active" href="../index.html">
-        <img src="../../assets/icons/menu_book.svg" alt="">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
         <span data-lang="my-studies">Mis estudios</span>
       </a>
 
       <a class="sidebar-item" href="../../juegos/index.html">
-        <img src="../../assets/icons/gamepad.svg" alt="">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
         <span data-lang="games">Juegos</span>
       </a>
     </nav>
@@ -517,7 +505,7 @@ for paso in range(3):
     <footer class="sidebar-footer">
       <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
         <span data-lang="settings">Configuración</span>
-        <img src="../../assets/icons/setting.svg" alt="">
+        <img src="../../assets/icons/setting.svg" alt="" />
       </button>
     </footer>
   </aside>

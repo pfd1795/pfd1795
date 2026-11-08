@@ -17,24 +17,17 @@
 
   <nav class="navbar">
     <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
-      <h1>Nombre del autor</h1>
+      <h1>Pablo Diaz</h1>
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
     <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
       <span data-lang="menu">Menú</span>
-      <img src="../../assets/icons/menu.svg" alt="">
+      <img src="../../assets/icons/menu.svg" alt="" />
     </button>
   </nav>
 
   <div class="main-content">
-    <header class="cabecera">
-      <div class="contenedor cabecera__interior">
-        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
-        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
-      </div>
-    </header>
-
     <main id="contenido" class="contenedor lectura">
       <p class="volver"><a href="../index.html">← Volver al índice</a></p>
 
@@ -47,8 +40,8 @@
           </p>
         </header>
 
-        <div class="tl-dr">
-          <h2 class="tl-dr__titulo">En 5 puntos</h2>
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
           <ul>
             <li>La IA es un campo amplio; el aprendizaje automático es una de sus áreas.</li>
             <li>Un modelo aprende patrones a partir de datos y los utiliza para producir resultados.</li>
@@ -56,7 +49,7 @@
             <li>La calidad de los datos y la evaluación influyen en la utilidad del sistema.</li>
             <li>Las salidas de IA pueden ser inexactas, sesgadas o inadecuadas para el contexto.</li>
           </ul>
-        </div>
+        </aside>
 
         <nav class="tabla-contenido" aria-labelledby="toc-titulo">
           <h2 id="toc-titulo">Contenido</h2>
@@ -289,9 +282,9 @@ print("Evaluación:", len(datos_evaluacion))</code></pre>
         <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
           <h2 id="ver-tambien-titulo">Ver también</h2>
           <ul class="ver-tambien">
-            <li><a href="estudios_aprendizaje_automatico.html">Aprendizaje automático</a>: pendiente de crear.</li>
-            <li><a href="estudios_redes_neuronales.html">Redes neuronales</a>: pendiente de crear.</li>
-            <li><a href="estudios_python.html">Python</a>: pendiente de crear.</li>
+            <li><a href="estudios_aprendizaje_automatico.html">Aprendizaje automático</a>: tipos de aprendizaje, entrenamiento y evaluación.</li>
+            <li><a href="estudios_redes_neuronales.html">Redes neuronales</a>: neuronas, capas y retropropagación.</li>
+            <li><a href="estudios_python.html">Python</a>: lenguaje usado en los ejemplos.</li>
           </ul>
         </section>
       </article>
@@ -299,12 +292,7 @@ print("Evaluación:", len(datos_evaluacion))</code></pre>
       <p class="volver"><a href="../index.html">← Volver al índice</a></p>
     </main>
 
-    <footer class="pie">
-      <div class="contenedor">
-        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
       </div>
-    </footer>
-  </div>
 
   <div class="sidebar-overlay"></div>
 
@@ -313,44 +301,44 @@ print("Evaluación:", len(datos_evaluacion))</code></pre>
       <h2 data-lang="menu">Menú</h2>
       <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
         <span data-lang="close">Cerrar</span>
-        <img src="../../assets/icons/close.svg" alt="">
+        <img src="../../assets/icons/close.svg" alt="" />
       </button>
     </header>
 
     <nav class="sidebar-menu">
       <div class="sidebar-item--group">
         <a class="sidebar-item" href="../../index.html#inicio">
-          <img src="../../assets/icons/home.svg" alt="">
+          <img src="../../assets/icons/home.svg" alt="" />
           <span data-lang="home">Inicio</span>
         </a>
         <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
           title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
-          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
         </button>
       </div>
 
       <div class="sidebar-submenu" id="sidebar-secciones">
         <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
-          <img src="../../assets/icons/docs.svg" alt="">
+          <img src="../../assets/icons/docs.svg" alt="" />
           <span data-lang="experienceTitle">Experiencia Laboral</span>
         </a>
         <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
-          <img src="../../assets/icons/school.svg" alt="">
+          <img src="../../assets/icons/school.svg" alt="" />
           <span data-lang="studiesTitle">Estudios | Cursos</span>
         </a>
         <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
-          <img src="../../assets/icons/code.svg" alt="">
+          <img src="../../assets/icons/code.svg" alt="" />
           <span data-lang="projects">Proyectos</span>
         </a>
       </div>
 
       <a class="sidebar-item active" href="../index.html">
-        <img src="../../assets/icons/menu_book.svg" alt="">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
         <span data-lang="my-studies">Mis estudios</span>
       </a>
 
       <a class="sidebar-item" href="../../juegos/index.html">
-        <img src="../../assets/icons/gamepad.svg" alt="">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
         <span data-lang="games">Juegos</span>
       </a>
     </nav>
@@ -358,7 +346,7 @@ print("Evaluación:", len(datos_evaluacion))</code></pre>
     <footer class="sidebar-footer">
       <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
         <span data-lang="settings">Configuración</span>
-        <img src="../../assets/icons/setting.svg" alt="">
+        <img src="../../assets/icons/setting.svg" alt="" />
       </button>
     </footer>
   </aside>

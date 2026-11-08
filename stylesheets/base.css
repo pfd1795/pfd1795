@@ -734,6 +734,9 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   display: grid;
   gap: var(--space-2);
   grid-template-columns: repeat(6, 1fr);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  padding: 6px;
 }
 .modal-dialog .settings .color-option {
   aspect-ratio: 1;
@@ -743,17 +746,21 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   transition: transform var(--transition-fast) var(--ease-in-out),
     box-shadow var(--transition-fast) var(--ease-in-out);
   width: 100%;
+  will-change: transform;
   &:hover {
-    transform: scale(1.12);
+    transform: scale(1.06);
   }
   &.selected {
-    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--theme-color);
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 2px var(--theme-color);
   }
 }
 .modal-dialog .settings .theme-options {
   display: grid;
   gap: var(--space-2);
   grid-template-columns: repeat(5, 1fr);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  padding: 6px;
 }
 .modal-dialog .settings .theme-option {
   aspect-ratio: 1;
@@ -764,11 +771,12 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   transition: transform var(--transition-fast) var(--ease-in-out),
     box-shadow var(--transition-fast) var(--ease-in-out);
   width: 100%;
+  will-change: transform;
   &:hover {
-    transform: scale(1.12);
+    transform: scale(1.06);
   }
   &.selected {
-    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--theme-color);
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 2px var(--theme-color);
   }
 }
 .modal-dialog .settings .settings-row--direction,
@@ -854,7 +862,8 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   }
 }
 .modal-dialog .settings .is-hidden {
-  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
 }
 .modal-dialog .segmented {
   background-color: var(--color-border);

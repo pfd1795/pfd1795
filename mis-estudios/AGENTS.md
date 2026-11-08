@@ -9,7 +9,8 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
 - `estudios/*.html`: artículos educativos estáticos (HTML, Git, Terminal, JavaScript, Redes, CSS,
   HTTP y navegador, Cliente-servidor y APIs, SQL, Seguridad web, Criptografía, TLS, Sistemas
   operativos, Modelado de datos y normalización, Paradigmas de programación, Sistemas numéricos
-  y representación de datos, Python, Patrones de diseño). Varios temarios siguen pendientes de
+  y representación de datos, Python, Patrones de diseño, Inteligencia artificial, Aprendizaje
+  automático, Redes neuronales). Varios temarios siguen pendientes de
   desarrollo ("Próximamente").
 - `js/tema.js`: pre-pintado del tema (script clásico síncrono).
 - `js/buscador.js`: filtro de tarjetas del índice (script clásico con `defer`).
@@ -36,7 +37,8 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
 5. **Rutas relativas**: despliegue en subruta de GitHub Pages; ninguna ruta absoluta (`/images/…`,
    `/stylesheets/…`).
 6. **Buscador**: `buscador.js` opera solo si existen `#buscador`, `.estudio-card` y las categorías;
-   sus avisos usan `#contador` y `#sin-resultados`. No acoplarlo a módulos ES.
+   muestra el conteo filtrado en el `placeholder` del input y usa `#sin-resultados`. No acoplarlo a
+   módulos ES.
 7. **Contenido educativo**: nuevo material se agrega como un `estudios/<tema>.html` siguiendo la
    estructura de los existentes y enlazándolo desde `index.html` con su categoría. Los artículos
    nuevos cargan además `../js/copiar.js`, añaden su caja «En 5 puntos» (`.tl-dr`) y —si ayudan—
