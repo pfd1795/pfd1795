@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redes neuronales — Estudios de informática</title>
+  <meta name="description" content="Introducción a las redes neuronales: qué es una neurona artificial, cómo se organizan en capas, cómo aprenden con retropropagación y descenso de gradiente, y qué buenas prácticas conviene seguir.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Nombre del autor</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="">
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Inteligencia artificial</p>
+          <h1>Redes neuronales</h1>
+          <p class="entrada">
+            Una red neuronal es un modelo de aprendizaje automático formado por unidades conectadas que combinan entradas con pesos y aplican funciones de activación. En este artículo verás cómo funciona una neurona, cómo se organizan en capas, cómo aprende la red mediante retropropagación y qué conviene tener en cuenta para entrenarla bien.
+          </p>
+        </header>
+
+        <div class="tl-dr">
+          <h2 class="tl-dr__titulo">En 5 puntos</h2>
+          <ul>
+            <li>Una red neuronal es un modelo formado por unidades (neuronas artificiales) organizadas en capas que transforman los datos.</li>
+            <li>Cada neurona calcula una suma ponderada de sus entradas, añade un sesgo y aplica una función de activación.</li>
+            <li>La información circula de la capa de entrada a la de salida en el pase hacia adelante.</li>
+            <li>El entrenamiento ajusta pesos y sesgos con retropropagación y descenso de gradiente, midiendo el error con una función de pérdida.</li>
+            <li>El aprendizaje profundo usa redes con muchas capas; más capas no garantiza mejores resultados.</li>
+          </ul>
+        </div>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es una red neuronal?</a></li>
+            <li><a href="#conceptos">Conceptos clave</a></li>
+            <li><a href="#como-funciona">Cómo funciona una red</a></li>
+            <li><a href="#entrenamiento">Cómo aprende: pérdida y retropropagación</a></li>
+            <li><a href="#arquitecturas">Arquitecturas habituales</a></li>
+            <li><a href="#ejemplos">Ejemplos ilustrativos</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es una red neuronal?</h2>
+          <p>
+            Una <strong>red neuronal</strong> es un modelo matemático formado por unidades de cálculo llamadas <strong>neuronas artificiales</strong>, conectadas entre sí y organizadas en capas. Cada conexión tiene un <strong>peso</strong> ajustable, y el entrenamiento consiste en modificar esos pesos para que la red produzca salidas útiles a partir de las entradas.
+          </p>
+          <p>
+            Las redes neuronales son una familia de modelos dentro del <a href="estudios_aprendizaje_automatico.html">aprendizaje automático</a>. Cuando una red tiene muchas capas ocultas se habla de <strong>aprendizaje profundo</strong> (<em>deep learning</em>), que es la base de muchas aplicaciones actuales de reconocimiento de imágenes, voz y generación de texto.
+          </p>
+          <p>
+            El nombre y el dibujo habitual —unidades conectadas— recuerdan a las neuronas biológicas, pero la analogía es muy limitada: una neurona artificial es simplemente una función que suma, escala y transforma números.
+          </p>
+          <p class="nota">
+            <strong>Idea clave:</strong> una red neuronal no «piensa» ni funciona como un cerebro. Es un modelo matemático con parámetros que se ajustan a partir de datos.
+          </p>
+        </section>
+
+        <section id="conceptos" aria-labelledby="conceptos-titulo">
+          <h2 id="conceptos-titulo">Conceptos clave</h2>
+          <ul>
+            <li>
+              <strong>Neurona artificial:</strong> unidad que calcula una suma ponderada de sus entradas, añade un sesgo y aplica una función de activación.
+            </li>
+            <li>
+              <strong>Peso:</strong> parámetro que multiplica a una entrada; indica cuánta influencia tiene esa entrada sobre la neurona.
+            </li>
+            <li>
+              <strong>Sesgo (<em>bias</em>):</strong> valor constante que se suma a la combinación ponderada y desplaza la salida de la neurona.
+            </li>
+            <li>
+              <strong>Función de activación:</strong> función no lineal aplicada a la salida de la neurona, como <code>sigmoide</code>, <code>tanh</code> o <code>ReLU</code>.
+            </li>
+            <li>
+              <strong>Capa:</strong> conjunto de neuronas que reciben las mismas entradas. Se distinguen la capa de entrada, las capas ocultas y la capa de salida.
+            </li>
+            <li>
+              <strong>Red profunda:</strong> red con varias capas ocultas entre la entrada y la salida.
+            </li>
+            <li>
+              <strong>Pase hacia adelante (<em>forward pass</em>):</strong> flujo de cálculo desde la entrada hasta la salida, capa a capa.
+            </li>
+            <li>
+              <strong>Función de pérdida:</strong> medida del error entre la salida de la red y el valor esperado; el entrenamiento busca reducirla.
+            </li>
+            <li>
+              <strong>Retropropagación (<em>backpropagation</em>):</strong> algoritmo que calcula cuánto contribuye cada peso al error, aplicando la regla de la cadena de atrás hacia adelante.
+            </li>
+            <li>
+              <strong>Descenso de gradiente:</strong> método de optimización que actualiza los parámetros en la dirección que reduce la pérdida.
+            </li>
+            <li>
+              <strong>Tasa de aprendizaje:</strong> tamaño del paso con el que se actualizan los parámetros en cada iteración.
+            </li>
+            <li>
+              <strong>Época y lote (<em>batch</em>):</strong> una época es una pasada completa por los datos de entrenamiento; un lote es el subconjunto de ejemplos usado en cada actualización.
+            </li>
+          </ul>
+        </section>
+
+        <section id="como-funciona" aria-labelledby="como-funciona-titulo">
+          <h2 id="como-funciona-titulo">Cómo funciona una red</h2>
+
+          <h3>La neurona: suma ponderada y activación</h3>
+          <p>
+            Cada neurona recibe valores de entrada <code>x1, x2, …, xn</code>, los multiplica por sus pesos y suma un sesgo: <code>z = w1·x1 + w2·x2 + … + wn·xn + b</code>. Después aplica una <strong>función de activación</strong> <code>f(z)</code>, cuya no linealidad permite a la red representar relaciones que no son ni proporcionales ni aditivas. Sin activación no lineal, apilar capas sería equivalente a una única transformación lineal.
+          </p>
+          <p>
+            Dos activaciones habituales como punto de partida son la <strong>sigmoide</strong>, que comprime cualquier valor al intervalo (0, 1) y se usa en salidas binarias, y <strong>ReLU</strong> (<em>rectified linear unit</em>), que devuelve cero para valores negativos y el propio valor para los positivos, y es la opción más común en capas ocultas.
+          </p>
+
+          <h3>De la capa de entrada a la de salida</h3>
+          <p>
+            Las neuronas se agrupan en capas: la capa de <strong>entrada</strong> recibe las características del ejemplo, una o varias capas <strong>ocultas</strong> transforman esa información y la capa de <strong>salida</strong> produce la predicción. Cada capa conecta con la siguiente mediante pesos, y cada conexión representa un parámetro ajustable durante el entrenamiento.
+          </p>
+
+          <figure class="diagrama">
+            <svg role="img" aria-label="Diagrama de una red neuronal con una capa de entrada de tres neuronas, una capa oculta de cuatro neuronas y una capa de salida de dos neuronas, con líneas que representan las conexiones entre capas." viewBox="0 0 640 300" style="width:100%;height:auto;max-width:640px;">
+              <g stroke="currentColor" stroke-opacity="0.35" stroke-width="1">
+                <line x1="90" y1="60" x2="320" y2="40"/><line x1="90" y1="60" x2="320" y2="113"/><line x1="90" y1="60" x2="320" y2="187"/><line x1="90" y1="60" x2="320" y2="260"/>
+                <line x1="90" y1="150" x2="320" y2="40"/><line x1="90" y1="150" x2="320" y2="113"/><line x1="90" y1="150" x2="320" y2="187"/><line x1="90" y1="150" x2="320" y2="260"/>
+                <line x1="90" y1="240" x2="320" y2="40"/><line x1="90" y1="240" x2="320" y2="113"/><line x1="90" y1="240" x2="320" y2="187"/><line x1="90" y1="240" x2="320" y2="260"/>
+                <line x1="320" y1="40" x2="550" y2="100"/><line x1="320" y1="40" x2="550" y2="200"/>
+                <line x1="320" y1="113" x2="550" y2="100"/><line x1="320" y1="113" x2="550" y2="200"/>
+                <line x1="320" y1="187" x2="550" y2="100"/><line x1="320" y1="187" x2="550" y2="200"/>
+                <line x1="320" y1="260" x2="550" y2="100"/><line x1="320" y1="260" x2="550" y2="200"/>
+              </g>
+              <g fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="90" cy="60" r="18"/><circle cx="90" cy="150" r="18"/><circle cx="90" cy="240" r="18"/>
+                <circle cx="320" cy="40" r="18"/><circle cx="320" cy="113" r="18"/><circle cx="320" cy="187" r="18"/><circle cx="320" cy="260" r="18"/>
+                <circle cx="550" cy="100" r="18"/><circle cx="550" cy="200" r="18"/>
+              </g>
+              <g fill="currentColor" font-size="14" text-anchor="middle">
+                <text x="90" y="292">Entrada</text>
+                <text x="320" y="292">Capa oculta</text>
+                <text x="550" y="292">Salida</text>
+              </g>
+            </svg>
+            <figcaption>Red con una capa oculta. Cada línea representa un peso ajustable; cada capa aplica su propia suma ponderada y activación.</figcaption>
+          </figure>
+
+          <p>
+            En tareas de reconocimiento, las primeras capas tienden a representar patrones sencillos y las capas siguientes combinan esos patrones en representaciones más abstractas. Qué representa exactamente cada capa depende de los datos y de la tarea, y no viene fijado de antemano.
+          </p>
+          <p class="aviso">
+            Sin funciones de activación no lineales entre las capas, la red completa se reduce a una única transformación lineal, por muchas capas que tenga: la profundidad perdería todo su efecto.
+          </p>
+        </section>
+
+        <section id="entrenamiento" aria-labelledby="entrenamiento-titulo">
+          <h2 id="entrenamiento-titulo">Cómo aprende: pérdida y retropropagación</h2>
+          <p>
+            Al comenzar el entrenamiento, los pesos se inicializan con valores aleatorios pequeños y la red produce salidas poco útiles. El aprendizaje consiste en repetir un ciclo de corrección hasta que la <strong>función de pérdida</strong> sea suficientemente baja en datos que la red no vio durante el ajuste.
+          </p>
+          <ol>
+            <li><strong>Inicializar:</strong> asignar valores iniciales a pesos y sesgos.</li>
+            <li><strong>Pase hacia adelante:</strong> calcular la predicción de la red para un lote de ejemplos.</li>
+            <li><strong>Medir la pérdida:</strong> comparar la predicción con los valores esperados.</li>
+            <li><strong>Retropropagar:</strong> calcular el gradiente de la pérdida respecto a cada peso, propagando el error de atrás hacia adelante.</li>
+            <li><strong>Actualizar:</strong> mover cada parámetro en contra de su gradiente, escalado por la tasa de aprendizaje.</li>
+            <li><strong>Repetir:</strong> recorrer los datos por lotes durante varias épocas, vigilando el comportamiento en datos de evaluación.</li>
+          </ol>
+          <p>
+            La <strong>retropropagación</strong> no es un método de aprendizaje distinto, sino la forma eficiente de aplicar la regla de la cadena para obtener el gradiente de cada parámetro en redes con muchas capas. Con esos gradientes, el <strong>descenso de gradiente</strong> actualiza los parámetros igual que en cualquier modelo del <a href="estudios_aprendizaje_automatico.html">aprendizaje automático</a>.
+          </p>
+          <p class="aviso">
+            La tasa de aprendizaje es delicada: un valor demasiado grande hace que la pérdida oscile o crezca, y uno demasiado pequeño vuelve el entrenamiento extremadamente lento. Conviene probar valores en potencias de diez y observar la curva de pérdida.
+          </p>
+        </section>
+
+        <section id="arquitecturas" aria-labelledby="arquitecturas-titulo">
+          <h2 id="arquitecturas-titulo">Arquitecturas habituales</h2>
+          <p>
+            La forma de conectar las capas define la <strong>arquitectura</strong> de la red. La elección depende del tipo de datos y de la tarea: no conviene usar la misma estructura para una tabla, una imagen o una secuencia de texto.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Arquitectura</th>
+                <th scope="col">Idea central</th>
+                <th scope="col">Usos típicos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Perceptrón multicapa (<code>MLP</code>)</td>
+                <td>Capas densas: cada neurona se conecta con todas las de la capa anterior.</td>
+                <td>Datos tabulares, clasificación y regresión básicas.</td>
+              </tr>
+              <tr>
+                <td>Redes convolucionales (<code>CNN</code>)</td>
+                <td>Filtros que recorren los datos compartiendo pesos y detectan patrones locales.</td>
+                <td>Imágenes y señales con estructura espacial.</td>
+              </tr>
+              <tr>
+                <td>Redes recurrentes (<code>RNN</code>, <code>LSTM</code>)</td>
+                <td>Mantienen un estado que se actualiza paso a paso a lo largo de la secuencia.</td>
+                <td>Series temporales, texto, audio.</td>
+              </tr>
+              <tr>
+                <td>Transformers</td>
+                <td>Mecanismo de atención que relaciona entre sí todas las posiciones de la entrada.</td>
+                <td>Modelos de lenguaje, traducción, generación de contenido.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            Las arquitecturas no sustituyen al proceso de entrenamiento: todas se ajustan con pases hacia adelante, pérdida, retropropagación y descenso de gradiente. Lo que cambia es cómo se organizan las conexiones y qué suposiciones se incorporan sobre los datos.
+          </p>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">Ejemplos ilustrativos</h2>
+          <p>
+            Estos ejemplos usan Python básico, sin bibliotecas de aprendizaje automático, para mostrar el cálculo de fondo. En proyectos reales se emplean bibliotecas como <code>PyTorch</code> o <code>TensorFlow</code>, que calculan gradientes automáticamente.
+          </p>
+
+          <h3>Una neurona: suma ponderada, sesgo y activación</h3>
+          <p>
+            El cálculo de una neurona se reduce a tres operaciones: multiplicar entradas por pesos, sumar el sesgo y aplicar la activación.
+          </p>
+          <pre><code>import math
+
+# Una neurona: suma ponderada + sesgo + activación.
+entradas = [0.5, 1.0, 2.0]
+pesos = [0.4, -0.2, 0.1]
+sesgo = 0.05
+
+z = sum(x * w for x, w in zip(entradas, pesos)) + sesgo
+# z = 0.2 - 0.2 + 0.2 + 0.05 = 0.25
+
+def sigmoide(z):
+    return 1 / (1 + math.exp(-z))
+
+def relu(z):
+    return max(0.0, z)
+
+print(z)             # 0.25
+print(sigmoide(z))   # ≈ 0.562
+print(relu(z))       # 0.25</code></pre>
+
+          <h3>Pase hacia adelante en una red pequeña</h3>
+          <p>
+            Una red completa encadena ese cálculo por capas: la salida de cada capa se convierte en la entrada de la siguiente.
+          </p>
+          <pre><code># Red mínima: 2 entradas → capa oculta (2 neuronas con ReLU) → salida con sigmoide.
+import math
+
+def sigmoide(z):
+    return 1 / (1 + math.exp(-z))
+
+def relu(z):
+    return max(0.0, z)
+
+entradas = [1.0, 2.0]
+
+# Cada neurona oculta se describe con sus pesos y su sesgo: [w1, w2, b].
+capa_oculta = [
+    [0.5, -0.1, 0.2],   # neurona 1
+    [0.2, 0.4, -0.1],   # neurona 2
+]
+
+ocultas = []
+for w1, w2, b in capa_oculta:
+    z = entradas[0] * w1 + entradas[1] * w2 + b
+    ocultas.append(relu(z))
+
+# La neurona de salida combina las activaciones ocultas.
+pesos_salida = [0.7, 0.6]
+sesgo_salida = -0.2
+z_salida = sum(h * w for h, w in zip(ocultas, pesos_salida)) + sesgo_salida
+salida = sigmoide(z_salida)
+
+print(ocultas)   # [0.5, 0.9]
+print(salida)    # ≈ 0.666</code></pre>
+
+          <h3>La idea del entrenamiento: bajar la pérdida ajustando pesos</h3>
+          <p>
+            La retropropagación calcula gradientes en redes grandes; en un modelo de un solo peso se puede calcular a mano. El ejemplo muestra cómo el descenso de gradiente acerca el peso al valor ideal paso a paso.
+          </p>
+          <pre><code># Modelo mínimo: y = w * x. Si la entrada es x=2, la salida deseada es 10.
+# El valor ideal del peso es 5.0. Empezamos con un valor arbitrario.
+x, y = 2.0, 10.0
+w = 0.0        # valor inicial del peso
+tasa = 0.1     # tasa de aprendizaje
+
+for paso in range(3):
+    prediccion = w * x
+    error = prediccion - y
+    perdida = error ** 2
+    gradiente = 2 * error * x        # derivada de la pérdida respecto a w
+    w = w - tasa * gradiente         # moverse en contra del gradiente
+    print(f"paso {paso}: pérdida {perdida:.2f}, w {w:.2f}")
+
+# Con más pasos, w se acerca al valor ideal 5.0.</code></pre>
+          <p class="nota">
+            En una red real hay miles o millones de pesos, y la retropropagación obtiene todos los gradientes de una pasada hacia atrás reutilizando cálculos intermedios del pase hacia adelante. La idea, sin embargo, es exactamente la de este ejemplo.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Empezar con redes pequeñas y una línea base sencilla antes de aumentar capas o neuronas.</li>
+            <li>Escalar las entradas para que tengan rangos o distribuciones comparables entre sí.</li>
+            <li>Usar una activación no lineal en las capas ocultas; <code>ReLU</code> es un punto de partida habitual.</li>
+            <li>Reservar datos de evaluación que no participen en el entrenamiento y no ajustar con ellos.</li>
+            <li>Vigilar las curvas de pérdida de entrenamiento y evaluación para detectar sobreajuste a tiempo.</li>
+            <li>Probar la tasa de aprendizaje en potencias de diez en lugar de ajustarla a ciegas.</li>
+            <li>Fijar las semillas aleatorias y registrar la configuración para poder reproducir los resultados.</li>
+            <li>En proyectos reales, usar bibliotecas mantenidas en lugar de implementar la retropropagación a mano.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué es un problema</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tomar al pie de la letra la analogía con el cerebro</td>
+                <td>Lleva a expectativas irreales sobre cómo funciona y qué comprende la red.</td>
+                <td>Entenderla como un modelo matemático con parámetros ajustables.</td>
+              </tr>
+              <tr>
+                <td>Omitir la activación no lineal</td>
+                <td>La red completa se reduce a una transformación lineal, aunque tenga muchas capas.</td>
+                <td>Aplicar una activación no lineal en las capas ocultas.</td>
+              </tr>
+              <tr>
+                <td>No escalar las entradas</td>
+                <td>Las magnitudes muy distintas ralentizan o desestabilizan el descenso de gradiente.</td>
+                <td>Normalizar o estandarizar las características antes de entrenar.</td>
+              </tr>
+              <tr>
+                <td>Usar una tasa de aprendizaje inadecuada</td>
+                <td>Demasiado grande: la pérdida no converge. Demasiado pequeña: el entrenamiento tarda muchísimo.</td>
+                <td>Probar potencias de diez y observar la curva de pérdida.</td>
+              </tr>
+              <tr>
+                <td>Usar una red enorme con pocos datos</td>
+                <td>La red memoriza los ejemplos y generaliza mal.</td>
+                <td>Empezar pequeño, regularizar y conseguir más datos si es posible.</td>
+              </tr>
+              <tr>
+                <td>Juzgar solo por la pérdida de entrenamiento</td>
+                <td>Puede ocultar que la red no generaliza a ejemplos nuevos.</td>
+                <td>Medir en datos reservados y analizar los errores concretos.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Término</th>
+                <th scope="col">Significado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>neurona</code></td>
+                <td>Unidad que calcula una suma ponderada de sus entradas, suma un sesgo y aplica una activación.</td>
+              </tr>
+              <tr>
+                <td><code>peso</code></td>
+                <td>Parámetro que multiplica a una entrada y se ajusta durante el entrenamiento.</td>
+              </tr>
+              <tr>
+                <td><code>sesgo</code></td>
+                <td>Constante sumada a la combinación ponderada que desplaza la salida.</td>
+              </tr>
+              <tr>
+                <td><code>función de activación</code></td>
+                <td>No linealidad aplicada a la salida de una neurona, como <code>ReLU</code> o <code>sigmoide</code>.</td>
+              </tr>
+              <tr>
+                <td><code>capa oculta</code></td>
+                <td>Capa intermedia entre la entrada y la salida que transforma las representaciones.</td>
+              </tr>
+              <tr>
+                <td><code>pase hacia adelante</code></td>
+                <td>Cálculo de la salida de la red a partir de una entrada, capa a capa.</td>
+              </tr>
+              <tr>
+                <td><code>retropropagación</code></td>
+                <td>Algoritmo que calcula el gradiente de la pérdida respecto a cada parámetro.</td>
+              </tr>
+              <tr>
+                <td><code>descenso de gradiente</code></td>
+                <td>Actualización de los parámetros en contra de su gradiente para reducir la pérdida.</td>
+              </tr>
+              <tr>
+                <td><code>tasa de aprendizaje</code></td>
+                <td>Tamaño del paso de cada actualización de parámetros.</td>
+              </tr>
+              <tr>
+                <td><code>época</code></td>
+                <td>Una pasada completa por los datos de entrenamiento.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_aprendizaje_automatico.html">Aprendizaje automático</a>: dónde encaja este modelo y cómo se entrena y evalúa.</li>
+            <li><a href="estudios_inteligencia_artificial.html">Inteligencia artificial</a>: panorama general del campo y sus límites.</li>
+            <li><a href="estudios_python.html">Python</a>: pendiente de crear.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="">
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="">
+          <span data-lang="home">Inicio</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="">
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="">
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="">
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="">
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="">
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="">
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="">
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

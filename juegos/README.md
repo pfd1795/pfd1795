@@ -159,6 +159,11 @@ Notas:
 | Piedra, Papel o Tijeras | [`piedras-papel-tijeras/`](./piedras-papel-tijeras/) | Casual · arcade | Publicado |
 | Pixel Pool 8 | [`pool/`](./pool/) | Billar · física | Publicado |
 | Ta Te Ti | [`ta-te-ti/`](./ta-te-ti/) | Tablero · casual | Publicado |
+| Card Match | [`card-match/`](./card-match/) | Puzzle · memoria | Publicado |
+| Dodge Arena | [`dodge-arena/`](./dodge-arena/) | Acción · supervivencia | Publicado |
+| Neon Maze | [`neon-maze/`](./neon-maze/) | Aventura · laberinto | Publicado |
+| Neon Retro Rally | [`neon-rally/`](./neon-rally/) | Carreras · arcade | Publicado |
+| Tetris | [`tetris/`](./tetris/) | Puzzle · clásico | Publicado |
 
 ---
 

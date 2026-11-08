@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0d0221" />
+  <title>Neon Retro Rally — Retro Arcade</title>
+  <style>
+    :root {
+      --bg: #0d0221;
+      --panel: #1a1033;
+      --text: #eaeaea;
+      --muted: #9b8fb8;
+      --neon-green: #39ff14;
+      --neon-pink: #ff2a6d;
+      --neon-cyan: #05d9e8;
+      --neon-yellow: #ffd60a;
+      --neon-purple: #b967ff;
+
+      --game-max: 900px;
+      --game-chrome: 260px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", ui-monospace, Menlo, monospace;
+      overscroll-behavior: none;
+    }
+
+    .topbar {
+      width: 100%;
+      max-width: var(--game-max);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--panel);
+      border-bottom: 1px solid rgba(185, 103, 255, 0.4);
+    }
+    .topbar h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: 3px;
+      color: var(--neon-green);
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.8);
+      text-transform: uppercase;
+    }
+    .topbar button,
+    .touch-controls button,
+    .modal-actions button {
+      font: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background: transparent;
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+      border-radius: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      font-weight: 700;
+      transition: box-shadow 0.15s, background 0.15s;
+    }
+    .topbar button:hover,
+    .touch-controls button:hover,
+    .modal-actions button:hover {
+      background: rgba(5, 217, 232, 0.12);
+      box-shadow: 0 0 10px rgba(5, 217, 232, 0.5);
+    }
+
+    .hud {
+      width: 100%;
+      max-width: var(--game-max);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.1rem;
+      justify-content: space-between;
+      padding: 0.7rem 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hud strong { color: var(--neon-yellow); }
+
+    .stage {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    canvas {
+      display: block;
+      width: min(
+        calc(100vw - 16px),
+        var(--game-max),
+        calc((100dvh - var(--game-chrome)) * 4 / 3)
+      );
+      aspect-ratio: 4 / 3;
+      background: #07010f;
+      border: 2px solid var(--panel);
+      border-radius: 0.5rem;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .touch-controls {
+      width: 100%;
+      max-width: var(--game-max);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem 1rem 1.3rem;
+    }
+    .pad { display: flex; gap: 0.6rem; align-items: center; }
+    .pad.steer button { width: 4.6rem; height: 4.4rem; font-size: 1.5rem; padding: 0; }
+    .pad.actions { flex-direction: column; align-items: stretch; gap: 0.45rem; }
+    .pad.actions button { min-height: 2.6rem; padding: 0.3rem 0.9rem; font-size: 0.85rem; letter-spacing: 0.08em; }
+    .pad.steer button { border-color: var(--neon-purple); color: var(--neon-purple); }
+    .touch-controls [data-btn="gas"]   { border-color: var(--neon-green);  color: var(--neon-green); }
+    .touch-controls [data-btn="brake"] { border-color: var(--neon-pink);   color: var(--neon-pink); }
+    .touch-controls [data-btn="turbo"] { border-color: var(--neon-yellow); color: var(--neon-yellow); }
+    .touch-controls button {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0 1px, transparent 1px 4px);
+    }
+
+    @media (hover: none) and (pointer: coarse), (max-width: 600px) {
+      :root { --game-chrome: 410px; }
+      .pad.steer button { width: 4.9rem; height: 4.6rem; }
+    }
+
+    dialog {
+      width: min(92vw, 26rem);
+      padding: 0;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--neon-purple);
+      border-radius: 0.75rem;
+      box-shadow: 0 0 30px rgba(185, 103, 255, 0.4);
+    }
+    dialog::backdrop { background: rgb(0 0 0 / 0.7); }
+    .modal-body { padding: 1.25rem; }
+    .modal-body h2 { margin: 0 0 1rem; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .modal-body h3 { margin: 1rem 0 0.5rem; font-size: 0.85rem; color: var(--neon-cyan); text-transform: uppercase; }
+    .modal-body ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.9rem; }
+    .modal-body li { margin: 0.25rem 0; }
+    .modal-actions { display: flex; justify-content: flex-end; margin-top: 1.25rem; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Neon Retro Rally</h1>
+    <button type="button" id="btn-options">Opciones</button>
+  </header>
+
+  <section class="hud" aria-live="polite">
+    <span>Puntuación: <strong id="score">0</strong></span>
+    <span>Récord: <strong id="best">0</strong></span>
+    <span>Vuelta: <strong id="lap">—</strong></span>
+    <span>Posición: <strong id="pos">—</strong></span>
+    <span>Tiempo: <strong id="time">—</strong></span>
+    <span>Mejor vuelta: <strong id="bestlap">—</strong></span>
+    <span>Turbo: <strong id="turbo">×1</strong></span>
+    <span id="state-label">Inicio</span>
+  </section>
+
+  <main class="stage">
+    <canvas id="game" width="640" height="480" aria-label="Área de juego de Neon Retro Rally"></canvas>
+  </main>
+
+  <div class="touch-controls" aria-label="Controles táctiles">
+    <div class="pad steer" aria-label="Dirección">
+      <button type="button" data-btn="left" aria-label="Girar a la izquierda">◀</button>
+      <button type="button" data-btn="right" aria-label="Girar a la derecha">▶</button>
+    </div>
+    <div class="pad actions" aria-label="Acciones">
+      <button type="button" id="btn-play">Jugar</button>
+      <button type="button" data-btn="turbo">TURBO</button>
+      <button type="button" data-btn="gas">GAS</button>
+      <button type="button" data-btn="brake">FRENO</button>
+    </div>
+  </div>
+
+  <dialog id="options" aria-labelledby="options-title">
+    <div class="modal-body">
+      <h2 id="options-title">Opciones</h2>
+
+      <h3>Próximamente</h3>
+      <ul>
+        <li>Música</li>
+        <li>Efectos de sonido</li>
+        <li>Dificultad</li>
+        <li>Temas visuales</li>
+      </ul>
+
+      <h3>Controles</h3>
+      <ul>
+        <li>Escritorio: WASD o flechas para conducir · SPACE suelta el turbo · P o Esc pausa · Enter jugar.</li>
+        <li>Derrape: mantén FRENO a alta velocidad en curva para deslizar y sumar puntos.</li>
+        <li>Móvil: botones ◀ ▶ de dirección y GAS, FRENO y TURBO.</li>
+      </ul>
+
+      <div class="modal-actions">
+        <button type="button" id="btn-close-options">Cerrar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // ============================================================
+      // Constantes
+      // ============================================================
+      const BEST_KEY = 'neon-rally_best_v1';
+      const W = 640;
+      const H = 480;
+      const ROAD_HALF = 45;       // semiancho de la pista (px)
+      const STEP = 8;             // separación del remuestreo del circuito (px)
+      const LAPS_TOTAL = 3;
+
+      const MAX_FWD = 470;        // velocidad punta normal (px/s)
+      const MAX_BOOST = 665;      // velocidad punta con turbo
+      const ACCEL = 540;
+      const BOOST_ACCEL = 940;
+      const BRAKE_DEC = 840;
+      const REV_MAX = 190;
+      const TURN_RATE = 3.0;      // rad/s máximos
+      const GRIP = 8.5;           // agarre lateral normal
+      const GRIP_DRIFT = 2.1;     // agarre al derrapar (freno a alta velocidad)
+      const GRIP_OFF = 3.2;       // agarre fuera de pista
+      const DRIFT_LAT = 85;       // velocidad lateral para considerar derrape
+
+      const STATE = { START:'start', COUNT:'count', RACE:'race', PAUSE:'pause', END:'end' };
+
+      const AI_DEFS = [
+        { name:'NEXO', color:'#ff2a6d', base:328, lane:-16, ph:0.0 },
+        { name:'VOLT', color:'#ffd60a', base:348, lane:0,   ph:2.1 },
+        { name:'KIRA', color:'#05d9e8', base:368, lane:16,  ph:4.2 }
+      ];
+      const FIN_BONUS = [3000, 1500, 750, 300];
+
+      const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+      function circDist(a, b, n) { const d = Math.abs(a - b) % n; return Math.min(d, n - d); }
+      function fmtTime(ms) {
+        if (!ms || ms <= 0) return '—';
+        const m = Math.floor(ms / 60000);
+        const s = Math.floor((ms % 60000) / 1000);
+        const c = Math.floor((ms % 1000) / 10);
+        return m + ':' + String(s).padStart(2, '0') + '.' + String(c).padStart(2, '0');
+      }
+      function mix(c1, c2, t) {
+        const r = Math.round(c1[0] + (c2[0] - c1[0]) * t);
+        const g = Math.round(c1[1] + (c2[1] - c1[1]) * t);
+        const b = Math.round(c1[2] + (c2[2] - c1[2]) * t);
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+      }
+      const GREEN = [57, 255, 20], YELLOW = [255, 214, 10], PINK = [255, 42, 109];
+
+      // ============================================================
+      // Referencias DOM y escalado del lienzo
+      // ============================================================
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const elScore = document.getElementById('score');
+      const elBest = document.getElementById('best');
+      const elLap = document.getElementById('lap');
+      const elPos = document.getElementById('pos');
+      const elTime = document.getElementById('time');
+      const elBestLap = document.getElementById('bestlap');
+      const elTurbo = document.getElementById('turbo');
+      const elState = document.getElementById('state-label');
+      const btnPlay = document.getElementById('btn-play');
+      const optionsDialog = document.getElementById('options');
+
+      let renderScale = 1;
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const cssWidth = rect.width || W;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        renderScale = Math.max(1, cssWidth / W) * dpr;
+        canvas.width = Math.round(W * renderScale);
+        canvas.height = Math.round(H * renderScale);
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('orientationchange', resizeCanvas);
+
+      // ============================================================
+      // Persistencia (récord)
+      // ============================================================
+      function loadBest() {
+        try { return Number(localStorage.getItem(BEST_KEY)) || 0; }
+        catch (error) { return 0; }
+      }
+      function saveBest(value) {
+        try { localStorage.setItem(BEST_KEY, String(value)); }
+        catch (error) { /* Almacenamiento no disponible. */ }
+      }
+
+      // ============================================================
+      // Estado global
+      // ============================================================
+      const game = {
+        state: STATE.START,
+        score: 0, best: loadBest(), newRecord: false,
+        lap: 1, cp: 1, idx: 0, progress: 0, rank: 4, finBonus: 0,
+        time: 0, lapT: 0, bestLapMs: 0,
+        turbo: 1, boosting: 0, driftAcc: 0,
+        countT: 0, last: 0,
+        popups: [], particles: [], skids: [],
+        cam: { x: 0, y: 0, shake: 0 }
+      };
+
+      const player = {
+        x: 0, y: 0, vx: 0, vy: 0, a: 0,
+        invuln: 0, offroad: false, drifting: false, skidPrev: null
+      };
+
+      const ais = AI_DEFS.map((d) => ({
+        name: d.name, color: d.color, base: d.base, lane: d.lane, ph: d.ph,
+        s: 0, lap: -1, curSpeed: 0, x: 0, y: 0, a: 0
+      }));
+
+      let track = null;
+
+      const input = { left: false, right: false, gas: false, brake: false };
+      let turboBuf = false;
+      function releaseInputs() {
+        input.left = input.right = input.gas = input.brake = false;
+        turboBuf = false;
+      }
+
+      // ============================================================
+      // HUD
+      // ============================================================
+      const hudCache = {};
+      function setText(label, key, value) {
+        if (hudCache[key] !== value) {
+          hudCache[key] = value;
+          label.textContent = value;
+        }
+      }
+
+      function updateHud() {
+        setText(elScore, 'score', String(game.score));
+        setText(elBest, 'best', String(game.best));
+        setText(elLap, 'lap', game.state === STATE.START ? '—' : Math.min(game.lap, LAPS_TOTAL) + '/' + LAPS_TOTAL);
+        setText(elPos, 'pos', game.state === STATE.START ? '—' : 'P' + game.rank);
+        const showTime = game.state === STATE.RACE || game.state === STATE.PAUSE || game.state === STATE.END;
+        setText(elTime, 'time', showTime ? fmtTime(game.time * 1000) : '—');
+        setText(elBestLap, 'bestlap', fmtTime(game.bestLapMs));
+        setText(elTurbo, 'turbo', '×' + game.turbo);
+        setText(elState, 'state', {
+          start: 'Inicio', count: 'Cuenta atrás', race: 'Carrera',
+          pause: 'Pausa', end: 'Final'
+        }[game.state]);
+        setText(btnPlay, 'play', {
+          start: 'Jugar', count: '…', race: 'Pausa', pause: 'Seguir', end: 'Otra vez'
+        }[game.state]);
+      }
+
+      function addScore(n) {
+        game.score += n;
+        if (game.score > game.best) {
+          game.best = game.score;
+          game.newRecord = true;
+          saveBest(game.best);
+        }
+      }
+
+      function popup(textStr, color, x, y, ms) {
+        game.popups.push({ text: textStr, color, x, y, t: 0, dur: ms / 1000 });
+        if (game.popups.length > 24) game.popups.shift();
+      }
+
+      // ============================================================
+      // Generación del circuito
+      // ============================================================
+      function buildTrack() {
+        // Puntos de control alrededor del centro (circuito siempre cerrado).
+        const n = 14 + Math.floor(Math.random() * 5);
+        const ctrl = [];
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2 - Math.PI / 2 + (Math.random() - 0.5) * 0.16;
+          const r = 640 + Math.random() * 330;
+          ctrl.push([Math.cos(a) * r, Math.sin(a) * r]);
+        }
+
+        // Spline Catmull-Rom cerrada (muestreo denso).
+        const raw = [];
+        const SEG = 26;
+        for (let i = 0; i < n; i++) {
+          const p0 = ctrl[(i - 1 + n) % n], p1 = ctrl[i], p2 = ctrl[(i + 1) % n], p3 = ctrl[(i + 2) % n];
+          for (let j = 0; j < SEG; j++) {
+            const t = j / SEG, t2 = t * t, t3 = t2 * t;
+            const x = 0.5 * (2 * p1[0] + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3);
+            const y = 0.5 * (2 * p1[1] + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3);
+            raw.push([x, y]);
+          }
+        }
+
+        // Remuestreo a distancia de arco uniforme.
+        let total = 0;
+        const cum = [0];
+        for (let i = 0; i < raw.length; i++) {
+          const a = raw[i], b = raw[(i + 1) % raw.length];
+          total += Math.hypot(b[0] - a[0], b[1] - a[1]);
+          cum.push(total);
+        }
+        const N = Math.max(120, Math.round(total / STEP));
+        const pts = [];
+        let ri = 0;
+        for (let k = 0; k < N; k++) {
+          const d = total * k / N;
+          while (ri < raw.length - 1 && cum[ri + 1] < d) ri++;
+          const a = raw[ri], b = raw[(ri + 1) % raw.length];
+          const seg = (cum[ri + 1] - cum[ri]) || 1;
+          const t = (d - cum[ri]) / seg;
+          pts.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+        }
+
+        // Direcciones, normales y curvatura suavizada.
+        const dirs = [], norms = [], curv = [];
+        for (let k = 0; k < N; k++) {
+          const p = pts[(k + 1) % N], q = pts[(k - 1 + N) % N];
+          let dx = p[0] - q[0], dy = p[1] - q[1];
+          const len = Math.hypot(dx, dy) || 1;
+          dx /= len; dy /= len;
+          dirs.push([dx, dy]);
+          norms.push([-dy, dx]);
+        }
+        for (let k = 0; k < N; k++) {
+          const a = dirs[k], b = dirs[(k + 1) % N];
+          curv.push(Math.abs(Math.atan2(a[0] * b[1] - a[1] * b[0], a[0] * b[0] + a[1] * b[1])));
+        }
+        const curvS = new Array(N);
+        for (let k = 0; k < N; k++) {
+          let s = 0;
+          for (let o = -6; o <= 6; o++) s += curv[(k + o + N) % N];
+          curvS[k] = s / 13;
+        }
+
+        track = {
+          N, pts, dirs, norms, curvS,
+          total: N * STEP,
+          cps: [Math.round(N / 3), Math.round(2 * N / 3), 0],
+          pads: [], pickups: []
+        };
+
+        // Path2D reutilizables para el asfalto y los bordes neón.
+        const center = new Path2D();
+        pts.forEach((p, i) => { if (i) center.lineTo(p[0], p[1]); else center.moveTo(p[0], p[1]); });
+        center.closePath();
+        track.centerPath = center;
+
+        const eA = new Path2D(), eB = new Path2D();
+        for (let k = 0; k < N; k++) {
+          const p = pts[k], nn = norms[k];
+          const ax = p[0] + nn[0] * ROAD_HALF, ay = p[1] + nn[1] * ROAD_HALF;
+          const bx = p[0] - nn[0] * ROAD_HALF, by = p[1] - nn[1] * ROAD_HALF;
+          if (k) { eA.lineTo(ax, ay); eB.lineTo(bx, by); }
+          else { eA.moveTo(ax, ay); eB.moveTo(bx, by); }
+        }
+        eA.closePath(); eB.closePath();
+        track.edgeA = eA;
+        track.edgeB = eB;
+
+        // Pads de aceleración (lejos de meta y checkpoints).
+        for (let k = 1; k <= 10 && track.pads.length < 7; k++) {
+          const idx = Math.round(N * k / 11) % N;
+          if (track.cps.some((c) => circDist(idx, c, N) < 16)) continue;
+          track.pads.push({ idx, lane: track.pads.length % 2 ? 18 : -18, cool: 0 });
+        }
+
+        // Pickups de turbo (regeneran a los 8 s).
+        for (let k = 0; k < 5; k++) {
+          let idx = Math.round(N * (k + 0.6) / 6) % N;
+          if (track.cps.some((c) => circDist(idx, c, N) < 16)) idx = (idx + 26) % N;
+          track.pickups.push({ idx, lane: Math.random() * 44 - 22, taken: false, respawn: 0 });
+        }
+
+        // Caja del minimapa.
+        let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
+        for (const p of pts) {
+          if (p[0] < minx) minx = p[0];
+          if (p[0] > maxx) maxx = p[0];
+          if (p[1] < miny) miny = p[1];
+          if (p[1] > maxy) maxy = p[1];
+        }
+        const bw = 134 - 18, bh = 104 - 18;
+        const scale = Math.min(bw / (maxx - minx), bh / (maxy - miny));
+        track.map = {
+          minx, miny, scale,
+          ox: (134 - (maxx - minx) * scale) / 2,
+          oy: (104 - (maxy - miny) * scale) / 2
+        };
+      }
+
+      // ============================================================
+      // Construcción de carrera
+      // ============================================================
+      function buildRace() {
+        buildTrack();
+        game.lap = 1; game.cp = 1; game.idx = 0; game.progress = 0;
+        game.rank = 4; game.finBonus = 0;
+        game.time = 0; game.lapT = 0; game.bestLapMs = 0;
+        game.turbo = 1; game.boosting = 0; game.driftAcc = 0;
+        game.newRecord = false;
+        game.popups.length = 0;
+        game.particles.length = 0;
+        game.skids.length = 0;
+
+        player.x = track.pts[0][0];
+        player.y = track.pts[0][1];
+        player.a = Math.atan2(track.dirs[0][1], track.dirs[0][0]);
+        player.vx = 0; player.vy = 0;
+        player.invuln = 0; player.offroad = false;
+        player.drifting = false; player.skidPrev = null;
+
+        ais.forEach((ai, i) => {
+          ai.s = track.total - 46 * (i + 1);
+          ai.lap = -1;
+          ai.curSpeed = 0;
+          aiPose(ai);
+        });
+
+        game.cam.x = player.x;
+        game.cam.y = player.y;
+        game.cam.shake = 0;
+      }
+
+      function beginRace() {
+        buildRace();
+        game.state = STATE.COUNT;
+        game.countT = 3.0;
+        releaseInputs();
+        updateHud();
+      }
+
+      function finishRace() {
+        game.finBonus = FIN_BONUS[game.rank - 1] || 300;
+        addScore(game.finBonus);
+        popup('+' + game.finBonus + ' P' + game.rank, '#39ff14', player.x, player.y - 30, 1500);
+        game.state = STATE.END;
+        releaseInputs();
+        updateHud();
+      }
+
+      function togglePause() {
+        if (game.state === STATE.RACE) {
+          game.state = STATE.PAUSE;
+          releaseInputs();
+        } else if (game.state === STATE.PAUSE) {
+          game.state = STATE.RACE;
+        }
+        updateHud();
+      }
+
+      // ============================================================
+      // Jugador: progreso sobre el circuito
+      // ============================================================
+      function updatePlayerIdx() {
+        const N = track.N;
+        let bi = game.idx, bd = Infinity;
+        for (let o = -34; o <= 34; o++) {
+          const i = (game.idx + o + N) % N;
+          const p = track.pts[i];
+          const d = (player.x - p[0]) * (player.x - p[0]) + (player.y - p[1]) * (player.y - p[1]);
+          if (d < bd) { bd = d; bi = i; }
+        }
+        if (bd > (ROAD_HALF * 3.6) * (ROAD_HALF * 3.6)) {
+          // Muy lejos: búsqueda completa y recolocación.
+          for (let i = 0; i < N; i++) {
+            const p = track.pts[i];
+            const d = (player.x - p[0]) * (player.x - p[0]) + (player.y - p[1]) * (player.y - p[1]);
+            if (d < bd) { bd = d; bi = i; }
+          }
+          if (bd > (ROAD_HALF * 3.6) * (ROAD_HALF * 3.6)) {
+            const p = track.pts[bi], d = track.dirs[bi];
+            player.x = p[0]; player.y = p[1];
+            player.vx = d[0] * 120; player.vy = d[1] * 120;
+            player.a = Math.atan2(d[1], d[0]);
+            player.invuln = 1; player.skidPrev = null;
+            popup('¡RECOLOCACIÓN!', '#ff2a6d', player.x, player.y - 24, 1000);
+            game.idx = bi;
+            player.offroad = false;
+            return;
+          }
+        }
+        game.idx = bi;
+        player.offroad = bd > (ROAD_HALF + 2) * (ROAD_HALF + 2);
+      }
+
+      // ============================================================
+      // Jugador: física arcade con derrape
+      // ============================================================
+      function updatePlayer(dt) {
+        updatePlayerIdx();
+
+        if (turboBuf) {
+          turboBuf = false;
+          if (game.turbo > 0 && game.boosting <= 0.05) {
+            game.turbo--;
+            game.boosting = 1.35;
+            popup('¡TURBO!', '#ffd60a', player.x, player.y - 24, 900);
+          }
+        }
+        game.boosting = Math.max(0, game.boosting - dt);
+
+        const steering = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+        const dirX0 = Math.cos(player.a), dirY0 = Math.sin(player.a);
+        const perpX0 = -dirY0, perpY0 = dirX0;
+        let f = player.vx * dirX0 + player.vy * dirY0;
+        let l = player.vx * perpX0 + player.vy * perpY0;
+
+        const offroad = player.offroad;
+        const boosting = game.boosting > 0;
+        let maxF = boosting ? MAX_BOOST : MAX_FWD;
+        let acc = boosting ? BOOST_ACCEL : ACCEL;
+        if (offroad) { maxF *= 0.45; acc *= 0.55; }
+
+        if (input.gas) f += acc * dt;
+        if (input.brake) { if (f > 30) f -= BRAKE_DEC * dt; else f -= 300 * dt; }
+        if (f > maxF) f -= (f - maxF) * Math.min(1, 3.5 * dt);
+        if (f < -REV_MAX) f = -REV_MAX;
+        const roll = offroad ? 2.2 : 0.55;
+        f *= Math.exp(-roll * dt);
+        if (!input.gas && !input.brake && Math.abs(f) < 12) f = 0;
+
+        const spd = Math.abs(f);
+        const steerPow = TURN_RATE * Math.min(1, spd / 150) * (1 / (1 + spd / 560)) * (f < 0 ? -1 : 1);
+        player.a += steering * steerPow * dt;
+
+        // El freno a alta velocidad reduce el agarre lateral: derrape.
+        const handbrake = input.brake && spd > 150;
+        const gripRate = offroad ? GRIP_OFF : (handbrake ? GRIP_DRIFT : GRIP);
+        l *= Math.exp(-gripRate * dt);
+        player.drifting = Math.abs(l) > DRIFT_LAT && spd > 120;
+
+        const dirX = Math.cos(player.a), dirY = Math.sin(player.a);
+        player.vx = dirX * f + (-dirY) * l;
+        player.vy = dirY * f + dirX * l;
+        player.x += player.vx * dt;
+        player.y += player.vy * dt;
+
+        // Puntos de derrape.
+        if (player.drifting) {
+          game.driftAcc += dt * 110;
+          if (game.driftAcc >= 100) {
+            game.driftAcc -= 100;
+            addScore(100);
+            popup('+100 DERRAPE', '#ff2a6d', player.x, player.y - 20, 800);
+          }
+        } else {
+          game.driftAcc = 0;
+        }
+
+        // Marcas y chispas.
+        const rearX = player.x - dirX * 9, rearY = player.y - dirY * 9;
+        const skidding = player.drifting || (input.brake && spd > 200);
+        if (skidding) {
+          if (player.skidPrev) {
+            const dx = rearX - player.skidPrev.x, dy = rearY - player.skidPrev.y;
+            if (dx * dx + dy * dy > 9) {
+              game.skids.push({ x1: player.skidPrev.x, y1: player.skidPrev.y, x2: rearX, y2: rearY, life: 1 });
+            }
+          }
+          player.skidPrev = { x: rearX, y: rearY };
+          if (Math.random() < 0.6) {
+            game.particles.push({
+              x: rearX, y: rearY,
+              vx: (Math.random() - 0.5) * 90, vy: (Math.random() - 0.5) * 90,
+              life: 0.3, max: 0.3, color: '#ff9f1c', size: 3
+            });
+          }
+        } else {
+          player.skidPrev = null;
+        }
+        if (offroad && spd > 90 && Math.random() < 0.7) {
+          game.particles.push({
+            x: rearX, y: rearY,
+            vx: (Math.random() - 0.5) * 70, vy: (Math.random() - 0.5) * 70,
+            life: 0.5, max: 0.5, color: '#7a5cff', size: 4
+          });
+        }
+        if (boosting) {
+          for (let i = 0; i < 2; i++) {
+            game.particles.push({
+              x: rearX, y: rearY,
+              vx: -dirX * 130 + (Math.random() - 0.5) * 60,
+              vy: -dirY * 130 + (Math.random() - 0.5) * 60,
+              life: 0.3, max: 0.3,
+              color: Math.random() < 0.5 ? '#ffd60a' : '#ff9f1c', size: 4
+            });
+          }
+        }
+        if (player.invuln > 0) player.invuln -= dt;
+
+        // Pads de aceleración y pickups de turbo.
+        const cp = track.pts[game.idx], cn = track.norms[game.idx];
+        const lane = (player.x - cp[0]) * cn[0] + (player.y - cp[1]) * cn[1];
+        for (const pad of track.pads) {
+          if (pad.cool > 0) { pad.cool -= dt; continue; }
+          if (circDist(game.idx, pad.idx, track.N) < 4 && Math.abs(lane - pad.lane) < 26) {
+            pad.cool = 2;
+            game.boosting = Math.max(game.boosting, 0.85);
+            addScore(25);
+            popup('+25', '#05d9e8', player.x, player.y - 16, 700);
+          }
+        }
+        for (const pk of track.pickups) {
+          if (pk.taken) {
+            pk.respawn -= dt;
+            if (pk.respawn <= 0) pk.taken = false;
+            continue;
+          }
+          if (circDist(game.idx, pk.idx, track.N) < 4 && Math.abs(lane - pk.lane) < 28) {
+            pk.taken = true;
+            pk.respawn = 8;
+            game.turbo = Math.min(2, game.turbo + 1);
+            addScore(150);
+            popup('+150 TURBO', '#ffd60a', player.x, player.y - 26, 900);
+          }
+        }
+      }
+
+      // ============================================================
+      // Vueltas y checkpoints (anti-atajo)
+      // ============================================================
+      function updateLaps() {
+        const N = track.N;
+        const target = track.cps[game.cp - 1];
+        if (circDist(game.idx, target, N) >= 10) return;
+
+        if (game.cp < 3) { game.cp++; return; }
+
+        const lapMs = game.lapT * 1000;
+        let msg = 'VUELTA ' + game.lap + ' +1000';
+        addScore(1000);
+        if ((!game.bestLapMs || lapMs < game.bestLapMs) && game.lap > 1) {
+          game.bestLapMs = lapMs;
+          addScore(500);
+          msg = 'MEJOR VUELTA +1500';
+        } else if (!game.bestLapMs) {
+          game.bestLapMs = lapMs;
+        }
+        popup(msg, '#39ff14', player.x, player.y - 28, 1400);
+
+        game.lap++;
+        game.lapT = 0;
+        if (game.lap > LAPS_TOTAL) { finishRace(); return; }
+        game.cp = 1;
+      }
+
+      // ============================================================
+      // Rivales (IA sobre la trazada)
+      // ============================================================
+      function aiPose(ai) {
+        const N = track.N;
+        const i = Math.floor(ai.s / STEP) % N;
+        const wander = Math.sin(performance.now() / 700 + ai.ph) * 5;
+        const lane = clamp(ai.lane + wander, -(ROAD_HALF - 16), ROAD_HALF - 16);
+        const p = track.pts[i], n = track.norms[i], d = track.dirs[i];
+        ai.x = p[0] + n[0] * lane;
+        ai.y = p[1] + n[1] * lane;
+        ai.a = Math.atan2(d[1], d[0]);
+      }
+
+      function updateAi(ai, dt) {
+        const N = track.N;
+        const si = Math.floor(ai.s / STEP) % N;
+
+        // Frena según la curvatura que tiene por delante.
+        let maxCurv = 0;
+        for (let o = 2; o < 18; o++) {
+          const c = track.curvS[(si + o) % N];
+          if (c > maxCurv) maxCurv = c;
+        }
+        const corner = clamp(1 - maxCurv * 2.1, 0.42, 1);
+
+        // Goma elástica suave para mantener la carrera reñida.
+        const diff = game.progress - (ai.lap * track.total + ai.s);
+        const rubber = clamp(1 + diff * 0.00045, 0.88, 1.14);
+
+        const target = ai.base * corner * rubber;
+        ai.curSpeed += (target - ai.curSpeed) * Math.min(1, dt * 2.5);
+        ai.s += ai.curSpeed * dt;
+        if (ai.s >= track.total) { ai.s -= track.total; ai.lap++; }
+        aiPose(ai);
+      }
+
+      function collideCars() {
+        for (const ai of ais) {
+          const dx = player.x - ai.x, dy = player.y - ai.y;
+          const d = Math.hypot(dx, dy);
+          if (d < 26 && d > 0.001) {
+            const nx = dx / d, ny = dy / d;
+            player.x = ai.x + nx * 26;
+            player.y = ai.y + ny * 26;
+            const along = player.vx * nx + player.vy * ny;
+            if (along < 0) { player.vx -= nx * along * 1.5; player.vy -= ny * along * 1.5; }
+            player.vx *= 0.92; player.vy *= 0.92;
+            ai.curSpeed *= 0.985;
+          }
+        }
+      }
+
+      // ============================================================
+      // Lógica por frame
+      // ============================================================
+      function updateRace(dt) {
+        game.time += dt;
+        game.lapT += dt;
+
+        updatePlayer(dt);
+        if (game.state !== STATE.RACE) return;
+
+        updateLaps();
+        if (game.state !== STATE.RACE) return;
+
+        game.progress = (game.lap - 1) * track.total + game.idx * STEP;
+
+        for (const ai of ais) updateAi(ai, dt);
+        collideCars();
+
+        let r = 1;
+        for (const ai of ais) {
+          if (ai.lap * track.total + ai.s > game.progress) r++;
+        }
+        game.rank = r;
+      }
+
+      function updateCosmetics(dt) {
+        for (const p of game.popups) p.t += dt;
+        game.popups = game.popups.filter((p) => p.t < p.dur);
+
+        for (const p of game.particles) {
+          p.x += p.vx * dt; p.y += p.vy * dt;
+          p.vx *= Math.exp(-2.5 * dt); p.vy *= Math.exp(-2.5 * dt);
+          p.life -= dt;
+        }
+        game.particles = game.particles.filter((p) => p.life > 0);
+        if (game.particles.length > 300) game.particles.splice(0, game.particles.length - 300);
+
+        for (const s of game.skids) s.life -= dt / 3.2;
+        game.skids = game.skids.filter((s) => s.life > 0);
+        if (game.skids.length > 420) game.skids.splice(0, game.skids.length - 420);
+      }
+
+      function updateCam(dt) {
+        if (game.state !== STATE.END) {
+          const tx = player.x + player.vx * 0.3;
+          const ty = player.y + player.vy * 0.3;
+          const k = Math.min(1, dt * 4.2);
+          game.cam.x += (tx - game.cam.x) * k;
+          game.cam.y += (ty - game.cam.y) * k;
+        }
+        const target = player.offroad ? 3 : (game.boosting > 0 ? 1.6 : 0);
+        game.cam.shake += (target - game.cam.shake) * Math.min(1, dt * 8);
+      }
+
+      // ============================================================
+      // Entrada: teclado
+      // ============================================================
+      document.addEventListener('keydown', (event) => {
+        if (optionsDialog.open) return;
+
+        const code = event.code;
+        const handled = [
+          'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space',
+          'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyP', 'Enter', 'Escape'
+        ].includes(code);
+        if (handled) event.preventDefault();
+
+        if (code === 'Enter') {
+          if (game.state === STATE.START || game.state === STATE.END) beginRace();
+          else if (game.state === STATE.PAUSE) togglePause();
+          return;
+        }
+        if (code === 'Space') {
+          if (game.state === STATE.START || game.state === STATE.END) beginRace();
+          else if (game.state === STATE.RACE) turboBuf = true;
+          return;
+        }
+        if (code === 'KeyP' || code === 'Escape') {
+          if (!event.repeat) togglePause();
+          return;
+        }
+        if (game.state !== STATE.RACE || event.repeat) return;
+
+        if (code === 'ArrowUp' || code === 'KeyW') input.gas = true;
+        else if (code === 'ArrowDown' || code === 'KeyS') input.brake = true;
+        else if (code === 'ArrowLeft' || code === 'KeyA') input.left = true;
+        else if (code === 'ArrowRight' || code === 'KeyD') input.right = true;
+      });
+
+      document.addEventListener('keyup', (event) => {
+        switch (event.code) {
+          case 'ArrowUp': case 'KeyW': input.gas = false; break;
+          case 'ArrowDown': case 'KeyS': input.brake = false; break;
+          case 'ArrowLeft': case 'KeyA': input.left = false; break;
+          case 'ArrowRight': case 'KeyD': input.right = false; break;
+        }
+      });
+
+      // ============================================================
+      // Entrada: botones táctiles
+      // ============================================================
+      document.querySelectorAll('[data-btn]').forEach((btn) => {
+        const name = btn.dataset.btn;
+        btn.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          try { btn.setPointerCapture(e.pointerId); } catch (error) { /* sin captura */ }
+          if (name === 'turbo') {
+            if (game.state === STATE.RACE) turboBuf = true;
+          } else {
+            input[name] = true;
+          }
+        });
+        const up = () => { if (name !== 'turbo') input[name] = false; };
+        btn.addEventListener('pointerup', up);
+        btn.addEventListener('pointercancel', up);
+        btn.addEventListener('lostpointercapture', up);
+        btn.addEventListener('contextmenu', (e) => e.preventDefault());
+      });
+
+      btnPlay.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (game.state === STATE.START || game.state === STATE.END) beginRace();
+        else if (game.state === STATE.RACE || game.state === STATE.PAUSE) togglePause();
+      });
+
+      canvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (game.state === STATE.START || game.state === STATE.END) beginRace();
+        else if (game.state === STATE.PAUSE) togglePause();
+      });
+      canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      // ============================================================
+      // Modal de opciones y pausa automática
+      // ============================================================
+      document.getElementById('btn-options').addEventListener('click', () => {
+        if (game.state === STATE.RACE) togglePause();
+        optionsDialog.showModal();
+      });
+      document.getElementById('btn-close-options').addEventListener('click', () => optionsDialog.close());
+      optionsDialog.addEventListener('click', (event) => {
+        if (event.target === optionsDialog) optionsDialog.close();
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && game.state === STATE.RACE) togglePause();
+      });
+      window.addEventListener('blur', () => {
+        releaseInputs();
+        if (game.state === STATE.RACE) togglePause();
+      });
+
+      // ============================================================
+      // Render
+      // ============================================================
+      function text(str, x, y, size, color, align, bold) {
+        ctx.fillStyle = color;
+        ctx.font = (bold === false ? '' : 'bold ') + size + 'px "Courier New", monospace';
+        ctx.textAlign = align || 'center';
+        ctx.fillText(str, x, y);
+      }
+      function glowText(str, x, y, size, color) {
+        ctx.save();
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 18;
+        text(str, x, y, size, color);
+        ctx.restore();
+      }
+      function dim(a) {
+        ctx.fillStyle = 'rgba(7, 1, 15, ' + a + ')';
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      function drawGridDots() {
+        const step = 56;
+        const x0 = Math.floor((game.cam.x - W / 2) / step) * step;
+        const y0 = Math.floor((game.cam.y - H / 2) / step) * step;
+        ctx.fillStyle = 'rgba(185, 103, 255, 0.10)';
+        for (let x = x0; x < game.cam.x + W / 2 + step; x += step) {
+          for (let y = y0; y < game.cam.y + H / 2 + step; y += step) {
+            ctx.fillRect(x - 1, y - 1, 2, 2);
+          }
+        }
+      }
+
+      function drawSkids() {
+        ctx.save();
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        for (const s of game.skids) {
+          ctx.strokeStyle = 'rgba(5, 2, 12, ' + (0.55 * s.life).toFixed(3) + ')';
+          ctx.beginPath();
+          ctx.moveTo(s.x1, s.y1);
+          ctx.lineTo(s.x2, s.y2);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawRoad() {
+        ctx.save();
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(185, 103, 255, 0.16)';
+        ctx.lineWidth = ROAD_HALF * 2 + 14;
+        ctx.stroke(track.centerPath);
+        ctx.strokeStyle = '#191036';
+        ctx.lineWidth = ROAD_HALF * 2;
+        ctx.stroke(track.centerPath);
+        ctx.strokeStyle = 'rgba(185, 103, 255, 0.32)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([12, 16]);
+        ctx.stroke(track.centerPath);
+        ctx.setLineDash([]);
+        ctx.strokeStyle = '#ff2a6d';
+        ctx.shadowColor = '#ff2a6d';
+        ctx.shadowBlur = 9;
+        ctx.lineWidth = 3;
+        ctx.stroke(track.edgeA);
+        ctx.stroke(track.edgeB);
+        ctx.restore();
+      }
+
+      function drawStartLine() {
+        const p = track.pts[0], d = track.dirs[0];
+        ctx.save();
+        ctx.translate(p[0], p[1]);
+        ctx.rotate(Math.atan2(d[1], d[0]));
+        const cell = (ROAD_HALF * 2) / 6;
+        for (let r = 0; r < 2; r++) {
+          for (let c = 0; c < 6; c++) {
+            ctx.fillStyle = (r + c) % 2 === 0 ? '#eaeaea' : '#16102e';
+            ctx.fillRect(-cell + r * cell, -ROAD_HALF + c * cell, cell, cell);
+          }
+        }
+        ctx.restore();
+      }
+
+      function drawPads(now) {
+        for (const pad of track.pads) {
+          const p = track.pts[pad.idx], n = track.norms[pad.idx], d = track.dirs[pad.idx];
+          const x = p[0] + n[0] * pad.lane, y = p[1] + n[1] * pad.lane;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(Math.atan2(d[1], d[0]));
+          const pulse = 0.55 + 0.45 * Math.sin(now / 240 + pad.idx);
+          ctx.globalAlpha = pad.cool > 0 ? 0.2 : 0.4 + 0.5 * pulse;
+          ctx.strokeStyle = '#05d9e8';
+          ctx.shadowColor = '#05d9e8';
+          ctx.shadowBlur = 10;
+          ctx.lineWidth = 3;
+          ctx.lineJoin = 'round';
+          ctx.beginPath();
+          ctx.moveTo(-10, -11); ctx.lineTo(0, 0); ctx.lineTo(-10, 11);
+          ctx.moveTo(0, -11); ctx.lineTo(10, 0); ctx.lineTo(0, 11);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      function drawPickups(now) {
+        for (const pk of track.pickups) {
+          if (pk.taken) continue;
+          const p = track.pts[pk.idx], n = track.norms[pk.idx];
+          const x = p[0] + n[0] * pk.lane, y = p[1] + n[1] * pk.lane;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(Math.sin(now / 320 + pk.idx) * 0.35);
+          if (pk.respawn > 0 && pk.respawn < 2) ctx.globalAlpha = 0.3 + 0.7 * Math.abs(Math.sin(now / 90));
+          ctx.fillStyle = '#ffd60a';
+          ctx.shadowColor = '#ffd60a';
+          ctx.shadowBlur = 11;
+          ctx.beginPath();
+          ctx.moveTo(-2, -12); ctx.lineTo(6, -12); ctx.lineTo(2, -3); ctx.lineTo(8, -3);
+          ctx.lineTo(-4, 12); ctx.lineTo(0, 2); ctx.lineTo(-6, 2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function drawCar(x, y, a, color, now, blink, boost) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(a);
+        if (blink && Math.floor(now / 90) % 2 === 0) ctx.globalAlpha = 0.35;
+        if (boost) {
+          ctx.fillStyle = Math.random() < 0.5 ? '#ffd60a' : '#ff9f1c';
+          ctx.shadowColor = '#ffd60a';
+          ctx.shadowBlur = 12;
+          ctx.beginPath();
+          ctx.moveTo(-13, -5);
+          ctx.lineTo(-13 - 12 - Math.random() * 9, 0);
+          ctx.lineTo(-13, 5);
+          ctx.closePath();
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+        ctx.fillStyle = '#07010f';
+        ctx.fillRect(-11, -11, 7, 4); ctx.fillRect(4, -11, 7, 4);
+        ctx.fillRect(-11, 7, 7, 4);   ctx.fillRect(4, 7, 7, 4);
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.roundRect(-13, -8, 26, 16, 5);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(7, 1, 15, 0.9)';
+        ctx.fillRect(3, -5, 5, 10);
+        ctx.restore();
+      }
+
+      function drawParticles() {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        for (const p of game.particles) {
+          ctx.globalAlpha = Math.max(0, p.life / p.max) * 0.85;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+        }
+        ctx.restore();
+      }
+
+      function drawPopups() {
+        for (const p of game.popups) {
+          const prog = p.t / p.dur;
+          ctx.globalAlpha = 1 - prog;
+          text(p.text, p.x, p.y - prog * 30, 14, p.color);
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      function drawMinimap() {
+        const bx = W - 146, by = 12, bw = 134, bh = 104;
+        const m = track.map;
+        ctx.save();
+        ctx.fillStyle = 'rgba(26, 16, 51, 0.85)';
+        ctx.strokeStyle = 'rgba(185, 103, 255, 0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, bw, bh, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(185, 103, 255, 0.8)';
+        ctx.lineWidth = 3.5;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        for (let i = 0; i < track.N; i += 4) {
+          const p = track.pts[i];
+          const X = bx + m.ox + (p[0] - m.minx) * m.scale;
+          const Y = by + m.oy + (p[1] - m.miny) * m.scale;
+          if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+
+        const dot = (wx, wy, r, color, glow) => {
+          const X = bx + m.ox + (wx - m.minx) * m.scale;
+          const Y = by + m.oy + (wy - m.miny) * m.scale;
+          ctx.fillStyle = color;
+          if (glow) { ctx.shadowColor = color; ctx.shadowBlur = 8; }
+          ctx.beginPath();
+          ctx.arc(X, Y, r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        };
+        const sp = track.pts[0];
+        dot(sp[0], sp[1], 2.5, '#eaeaea', false);
+        for (const ai of ais) dot(ai.x, ai.y, 3, ai.color, false);
+        if (game.state !== STATE.START) dot(player.x, player.y, 4, '#39ff14', true);
+        ctx.restore();
+      }
+
+      function drawSpeedo() {
+        if (game.state === STATE.START) return;
+        const spd = Math.hypot(player.vx, player.vy);
+        const ratio = clamp(spd / MAX_BOOST, 0, 1);
+        const x = 14, y = H - 46, w = 176, h = 34;
+        ctx.save();
+        ctx.fillStyle = 'rgba(26, 16, 51, 0.85)';
+        ctx.strokeStyle = 'rgba(185, 103, 255, 0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        const bx = x + 12, by = y + 19, bw = 104, bh = 8;
+        ctx.fillStyle = '#07010f';
+        ctx.fillRect(bx, by - 1, bw, bh + 2);
+        const col = ratio < 0.55 ? mix(GREEN, YELLOW, ratio / 0.55) : mix(YELLOW, PINK, (ratio - 0.55) / 0.45);
+        ctx.fillStyle = col;
+        ctx.fillRect(bx, by - 1, bw * ratio, bh + 2);
+
+        ctx.fillStyle = '#eaeaea';
+        ctx.font = 'bold 13px "Courier New", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(Math.round(spd / 3) + ' km/h', bx + bw + 10, y + 22);
+        ctx.restore();
+      }
+
+      function drawOverlay(now) {
+        const blink = 0.55 + 0.45 * Math.sin(now / 220);
+        const cx = W / 2;
+
+        if (game.state === STATE.START) {
+          dim(0.72);
+          glowText('NEON RETRO RALLY', cx, 150, 38, '#39ff14');
+          text('Carreras arcade · vista cenital', cx, 186, 16, '#9b8fb8', 'center', false);
+
+          ctx.globalAlpha = blink;
+          text('Pulsa ENTER o toca JUGAR', cx, 258, 20, '#05d9e8');
+          ctx.globalAlpha = 1;
+
+          text('RÉCORD  ' + game.best, cx, 298, 16, '#ffd60a');
+
+          text('3 vueltas contra 3 rivales de neón.', cx, 388, 14, '#9b8fb8', 'center', false);
+          text('Derrapa con FRENO a alta velocidad para sumar puntos.', cx, 410, 14, '#9b8fb8', 'center', false);
+          text('Colecciona TURBO y pisa los pads cian.', cx, 432, 14, '#9b8fb8', 'center', false);
+          text('WASD/FLECHAS conducir · SPACE turbo · P/ESC pausa', cx, 466, 13, '#9b8fb8', 'center', false);
+        }
+
+        if (game.state === STATE.COUNT) {
+          const n = Math.max(1, Math.ceil(game.countT));
+          const frac = game.countT % 1;
+          ctx.save();
+          ctx.globalAlpha = 0.35 + 0.65 * (1 - frac);
+          glowText(String(n), cx, 240, 90 + frac * 30, '#ffd60a');
+          ctx.restore();
+          text('PREPARADOS...', cx, 320, 18, '#9b8fb8', 'center', false);
+        }
+
+        if (game.state === STATE.PAUSE) {
+          dim(0.7);
+          glowText('PAUSA', cx, 230, 44, '#05d9e8');
+          text('P o ESC para continuar', cx, 274, 16, '#9b8fb8', 'center', false);
+        }
+
+        if (game.state === STATE.END) {
+          dim(0.78);
+          const victory = game.rank === 1;
+          glowText(victory ? '¡VICTORIA!' : 'CARRERA TERMINADA', cx, 130, victory ? 42 : 34, victory ? '#39ff14' : '#ff2a6d');
+          text('Posición: P' + game.rank + '   ·   Bono +' + game.finBonus, cx, 178, 20, '#eaeaea');
+          text('Tiempo total: ' + fmtTime(game.time * 1000), cx, 214, 18, '#05d9e8');
+          text('Mejor vuelta: ' + fmtTime(game.bestLapMs), cx, 246, 18, '#05d9e8');
+          glowText('PUNTUACIÓN  ' + game.score, cx, 300, 26, '#ffd60a');
+          text('Récord: ' + game.best, cx, 336, 18, '#9b8fb8');
+
+          if (game.newRecord) {
+            ctx.globalAlpha = blink;
+            text('¡NUEVO RÉCORD!', cx, 370, 20, '#39ff14');
+            ctx.globalAlpha = 1;
+          }
+
+          ctx.globalAlpha = blink;
+          text('ENTER o JUGAR · nuevo circuito', cx, 424, 17, '#05d9e8');
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      function draw(now) {
+        ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#0d0221';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.save();
+        const shx = (Math.random() - 0.5) * game.cam.shake;
+        const shy = (Math.random() - 0.5) * game.cam.shake;
+        ctx.translate(Math.round(W / 2 - game.cam.x + shx), Math.round(H / 2 - game.cam.y + shy));
+
+        drawGridDots();
+        drawSkids();
+        drawRoad();
+        drawStartLine();
+        drawPads(now);
+        drawPickups(now);
+        for (const ai of ais) drawCar(ai.x, ai.y, ai.a, ai.color, now, false, false);
+        drawCar(player.x, player.y, player.a, '#39ff14', now, player.invuln > 0, game.boosting > 0);
+        drawParticles();
+        drawPopups();
+
+        ctx.restore();
+
+        drawMinimap();
+        drawSpeedo();
+        drawOverlay(now);
+      }
+
+      // ============================================================
+      // Bucle principal
+      // ============================================================
+      function loop(timestamp) {
+        const dt = Math.max(0, Math.min(50, timestamp - (game.last || timestamp))) / 1000;
+        game.last = timestamp;
+
+        if (game.state === STATE.RACE && !optionsDialog.open) {
+          updateRace(dt);
+          updateCosmetics(dt);
+          updateCam(dt);
+        } else if (game.state === STATE.COUNT) {
+          game.countT -= dt;
+          updateCosmetics(dt);
+          updateCam(dt);
+          if (game.countT <= 0) {
+            game.state = STATE.RACE;
+            game.time = 0;
+            game.lapT = 0;
+            popup('¡GO!', '#39ff14', player.x, player.y - 30, 900);
+            updateHud();
+          }
+        } else if (game.state === STATE.END) {
+          updateCosmetics(dt);
+          updateCam(dt);
+        }
+
+        updateHud();
+        draw(timestamp);
+        requestAnimationFrame(loop);
+      }
+
+      buildRace();
+      game.state = STATE.START;
+      updateHud();
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>

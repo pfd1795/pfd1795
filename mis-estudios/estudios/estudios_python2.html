@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python — Estudios de informática</title>
+  <meta name="description" content="Introducción a Python: qué es, su sintaxis básica, tipos de datos, estructuras fundamentales, ejemplos comentados, buenas prácticas y errores comunes.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Nombre del autor</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="">
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Lenguajes de programación</p>
+          <h1>Python</h1>
+          <p class="entrada">
+            Python es un lenguaje de programación de alto nivel, conocido por una sintaxis clara que se lee casi como el inglés. En este artículo verás sus fundamentos —variables, tipos, estructuras de datos y funciones—, cómo se organizan los programas y qué errores comunes conviene evitar desde el principio.
+          </p>
+        </header>
+
+        <div class="tl-dr">
+          <h2 class="tl-dr__titulo">En 5 puntos</h2>
+          <ul>
+            <li>Python es un lenguaje interpretado y de tipado dinámico: no se compila y las variables no declaran un tipo fijo.</li>
+            <li>La indentación no es solo estética: define los bloques de código.</li>
+            <li>Sus estructuras básicas son las listas, las tuplas, los diccionarios y los conjuntos.</li>
+            <li>Las funciones se definen con <code>def</code> y pueden devolver varios valores a la vez.</li>
+            <li>Su ecosistema de bibliotecas lo hace habitual en ciencia de datos, automatización y web, entre otros usos.</li>
+          </ul>
+        </div>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es Python?</a></li>
+            <li><a href="#conceptos">Conceptos clave</a></li>
+            <li><a href="#sintaxis">Sintaxis y tipos básicos</a></li>
+            <li><a href="#estructuras">Estructuras de datos</a></li>
+            <li><a href="#ejemplos">Ejemplos ilustrativos</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es Python?</h2>
+          <p>
+            <strong>Python</strong> es un lenguaje de programación de propósito general, creado por Guido van Rossum y publicado por primera vez en 1991. Es <strong>interpretado</strong>: un programa llamado intérprete ejecuta el código línea a línea, sin necesidad de compilarlo previamente, lo que facilita probar ideas de forma rápida.
+          </p>
+          <p>
+            Su diseño privilegia la <strong>legibilidad</strong>: usa palabras completas (<code>if</code>, <code>in</code>, <code>not</code>) y una sintaxis minimalista que reduce el ruido. Esta claridad, junto con un ecosistema enorme de bibliotecas, lo ha convertido en el lenguaje dominante para iniciarse en la programación y en una herramienta central para la ciencia de datos, la automatización, el desarrollo web y la <a href="estudios_inteligencia_artificial.html">inteligencia artificial</a>.
+          </p>
+          <p class="nota">
+            <strong>Idea clave:</strong> el código de los ejemplos de este sitio en <a href="estudios_aprendizaje_automatico.html">aprendizaje automático</a> y <a href="estudios_redes_neuronales.html">redes neuronales</a> está escrito en Python básico, sin bibliotecas externas, precisamente por su legibilidad.
+          </p>
+        </section>
+
+        <section id="conceptos" aria-labelledby="conceptos-titulo">
+          <h2 id="conceptos-titulo">Conceptos clave</h2>
+          <ul>
+            <li>
+              <strong>Interpretado:</strong> el código se ejecuta directamente con el intérprete (<code>python</code> o <code>python3</code>), sin paso de compilación visible.
+            </li>
+            <li>
+              <strong>Tipado dinámico:</strong> una variable adquiere su tipo del valor que se le asigna y puede reasignarse a otro tipo.
+            </li>
+            <li>
+              <strong>Indentación significativa:</strong> los bloques (<code>if</code>, <code>for</code>, <code>def</code>…) se marcan con sangría, normalmente cuatro espacios, en lugar de llaves.
+            </li>
+            <li>
+              <strong>Todo es un objeto:</strong> los números, las cadenas y las funciones son objetos con métodos propios.
+            </li>
+            <li>
+              <strong>Mutabilidad:</strong> algunas estructuras, como las listas, pueden modificarse tras crearse; otras, como las tuplas, no.
+            </li>
+            <li>
+              <strong>Biblioteca estándar:</strong> incluye de serie módulos para archivos, fechas, matemáticas, red y muchas más tareas.
+            </li>
+            <li>
+              <strong><code>pip</code>:</strong> gestor de paquetes que instala bibliotecas de terceros desde el repositorio <em>PyPI</em>.
+            </li>
+            <li>
+              <strong>PEP 8:</strong> guía de estilo oficial; fija convenciones como nombres en <code>snake_case</code> y cuatro espacios de sangría.
+            </li>
+            <li>
+              <strong>Entornos virtuales:</strong> espacios aislados (<code>venv</code>) para que cada proyecto tenga sus propias bibliotecas y versiones.
+            </li>
+          </ul>
+        </section>
+
+        <section id="sintaxis" aria-labelledby="sintaxis-titulo">
+          <h2 id="sintaxis-titulo">Sintaxis y tipos básicos</h2>
+          <p>
+            Un programa de Python es una secuencia de sentencias. Las variables se crean al asignarles un valor, sin palabra de declaración, y los comentarios empiezan con <code>#</code>. Los cuatro tipos primitivos más usados son:
+          </p>
+          <pre><code>edad = 25              # int: enteros, sin límite de tamaño
+altura = 1.75          # float: números decimales
+nombre = "Ana"         # str: texto, con comillas simples o dobles
+es_estudiante = True   # bool: verdadero o falso (con mayúscula)
+
+print(type(edad))    # &lt;class 'int'&gt;
+print(type(nombre))  # &lt;class 'str'&gt;
+
+# La conversión entre tipos es explícita:
+texto = str(25)      # "25"
+numero = int("42")   # 42</code></pre>
+          <p>
+            El control de flujo usa palabras completas y sangría. Los bloques <code>if</code>, <code>for</code> y <code>while</code> terminan en dos puntos y el cuerpo va indentado:
+          </p>
+          <pre><code>numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+suma_pares = 0
+
+for n in numeros:
+    if n % 2 == 0:        # el resto 0 indica par
+        suma_pares += n   # equivalente a suma_pares = suma_pares + n
+
+print(suma_pares)  # 30</code></pre>
+          <p class="aviso">
+            La sangría define la estructura del programa: mezclar tabuladores y espacios, o desalinear las líneas de un mismo bloque, produce el error <code>IndentationError</code> o, peor, cambia el significado del código. Configura el editor para insertar cuatro espacios al pulsar Tab.
+          </p>
+        </section>
+
+        <section id="estructuras" aria-labelledby="estructuras-titulo">
+          <h2 id="estructuras-titulo">Estructuras de datos</h2>
+          <p>
+            Cuatro estructuras integradas cubren la mayoría de las necesidades. Elegirlas bien simplifica el resto del programa:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Estructura</th>
+                <th scope="col">Sintaxis</th>
+                <th scope="col">Rasgos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>list</code></td>
+                <td><code>[1, 2, 3]</code></td>
+                <td>Ordenada y mutable; admite elementos repetidos y de tipos distintos.</td>
+              </tr>
+              <tr>
+                <td><code>tuple</code></td>
+                <td><code>(1, 2, 3)</code></td>
+                <td>Ordenada e inmutable; ideal para valores fijos o devolver varios datos.</td>
+              </tr>
+              <tr>
+                <td><code>dict</code></td>
+                <td><code>{"clave": valor}</code></td>
+                <td>Pares clave-valor; búsqueda rápida por clave. Las claves son únicas.</td>
+              </tr>
+              <tr>
+                <td><code>set</code></td>
+                <td><code>{1, 2, 3}</code></td>
+                <td>Elementos únicos, sin orden; útil para eliminar duplicados y operar conjuntos.</td>
+              </tr>
+            </tbody>
+          </table>
+          <pre><code>frutas = ["manzana", "pera", "manzana"]   # list: admite repetidos
+frutas.append("kiwi")                     # añade al final
+print(len(frutas))                        # 4
+
+coordenada = (40.4168, -3.7038)           # tuple: no puede modificarse
+latitud, longitud = coordenada            # desempaquetado
+
+precios = {"café": 2.5, "té": 1.8}        # dict: clave → valor
+precios["cacao"] = 3.2                    # añade o actualiza
+print(precios["café"])                    # 2.5
+
+etiquetas = {"a", "b", "a", "c"}          # set: elimina duplicados
+print(len(etiquetas))                     # 3</code></pre>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">Ejemplos ilustrativos</h2>
+          <p>
+            Los ejemplos funcionan con Python 3 en cualquier intérprete, sin bibliotecas externas.
+          </p>
+
+          <h3>Funciones que devuelven varios valores</h3>
+          <p>
+            Una función se define con <code>def</code>. Al devolver una tupla, Python permite asignar los resultados a varias variables a la vez:
+          </p>
+          <pre><code>def resumir(texto):
+    # Devuelve dos valores: número de palabras y de caracteres.
+    return len(texto.split()), len(texto)
+
+frase = "Aprender Python requiere practicar todos los días"
+palabras, caracteres = resumir(frase)
+
+print(palabras, caracteres)  # 7 49</code></pre>
+
+          <h3>Diccionarios y comprensiones</h3>
+          <p>
+            Una <strong>comprensión</strong> construye una colección a partir de otra en una sola línea expresiva. Aquí se filtra un diccionario y se transforma una lista:
+          </p>
+          <pre><code>precios = {"café": 2.5, "té": 1.8, "cacao": 3.2}
+
+# Diccionario nuevo con los productos de 2 o más:
+caros = {producto: precio for producto, precio in precios.items() if precio &gt;= 2}
+print(caros)  # {'café': 2.5, 'cacao': 3.2}
+
+# Cuadrados de los números pares:
+pares = [n ** 2 for n in range(10) if n % 2 == 0]
+print(pares)  # [0, 4, 16, 36, 64]</code></pre>
+
+          <h3>Un programa pequeño pero completo</h3>
+          <p>
+            Este programa combina variables, estructuras, control de flujo y funciones: recorre una lista de diccionarios, calcula un promedio y decide una recomendación.
+          </p>
+          <pre><code>def promedio(valores):
+    # sum() y len() son funciones integradas del lenguaje.
+    if not valores:          # lista vacía
+        return 0.0
+    return sum(valores) / len(valores)
+
+notas = [
+    {"nombre": "Ana",  "puntos": [8, 9, 7]},
+    {"nombre": "Bruno", "puntos": [5, 6, 7]},
+    {"nombre": "Cleo",  "puntos": [9, 9, 10]},
+]
+
+for alumno in notas:
+    media = promedio(alumno["puntos"])
+    if media &gt;= 8:
+        estado = "sobresaliente"
+    elif media &gt;= 6:
+        estado = "aprobado"
+    else:
+        estado = "en recuperación"
+    print(alumno["nombre"], media, estado)
+
+# Ana 8.0 sobresaliente
+# Bruno 6.0 aprobado
+# Cleo 9.333333333333334 sobresaliente</code></pre>
+          <p class="nota">
+            Fíjate en <code>if not valores</code>: en Python una lista vacía se evalúa como falsa. Esta forma abreviada es idiomática y preferida a escribir <code>len(valores) == 0</code>.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Seguir <code>PEP 8</code>: nombres en <code>snake_case</code>, cuatro espacios de sangría y líneas breves.</li>
+            <li>Usar nombres descriptivos: <code>total_ventas</code> comunica más que <code>tv</code>.</li>
+            <li>Preferir las estructuras integradas y sus métodos antes de reinventarlas.</li>
+            <li>Escribir funciones pequeñas con una sola responsabilidad y, si ayuda, cadenas de documentación (<code>docstrings</code>).</li>
+            <li>Crear un entorno virtual por proyecto e instalar allí las dependencias con <code>pip</code>.</li>
+            <li>Probar el código en el intérprete interactivo o con <code>assert</code> mientras se desarrolla.</li>
+            <li>Manejar los errores esperables con <code>try</code>/<code>except</code> en lugar de dejar que el programa se detenga.</li>
+            <li>Indicar la versión usada (por ejemplo, Python 3.12) al documentar un proyecto, porque la sintaxis evoluciona.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué es un problema</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Mezclar tabuladores y espacios</td>
+                <td>El intérprete puede ver bloques inexistentes o inconsistentes.</td>
+                <td>Configurar el editor para usar siempre cuatro espacios.</td>
+              </tr>
+              <tr>
+                <td>Confundir <code>=</code> con <code>==</code></td>
+                <td><code>=</code> asigna; <code>==</code> compara. Intercambiarlos cambia el programa.</td>
+                <td>Leer las condiciones en voz alta: «es igual a» exige <code>==</code>.</td>
+              </tr>
+              <tr>
+                <td>Argumentos por defecto mutables</td>
+                <td>Un valor por defecto como <code>[]</code> se comparte entre llamadas y acumula datos.</td>
+                <td>Usar <code>None</code> como valor por defecto y crear la lista dentro de la función.</td>
+              </tr>
+              <tr>
+                <td>Modificar una lista mientras se recorre</td>
+                <td>El bucle salta elementos o se comporta de forma impredecible.</td>
+                <td>Construir una lista nueva o iterar sobre una copia.</td>
+              </tr>
+              <tr>
+                <td>Nombrar variables como integradas</td>
+                <td><code>list = [1, 2]</code> oculta el tipo <code>list</code> y rompe el resto del programa.</td>
+                <td>Elegir nombres distintos de <code>list</code>, <code>dict</code>, <code>str</code> o <code>sum</code>.</td>
+              </tr>
+              <tr>
+                <td>Comparar tipos distintos con <code>==</code> esperando conversión</td>
+                <td><code>"5" == 5</code> es falso: la cadena y el entero nunca son iguales.</td>
+                <td>Convertir explícitamente con <code>int()</code> o <code>str()</code> antes de comparar.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Elemento</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>int</code>, <code>float</code></td><td>Números enteros y decimales.</td></tr>
+              <tr><td><code>str</code></td><td>Cadenas de texto, inmutables.</td></tr>
+              <tr><td><code>bool</code></td><td>Valores <code>True</code> y <code>False</code>.</td></tr>
+              <tr><td><code>list</code></td><td>Colección ordenada y mutable.</td></tr>
+              <tr><td><code>tuple</code></td><td>Colección ordenada e inmutable.</td></tr>
+              <tr><td><code>dict</code></td><td>Asociación clave-valor.</td></tr>
+              <tr><td><code>set</code></td><td>Conjunto de valores únicos.</td></tr>
+              <tr><td><code>def</code></td><td>Define una función.</td></tr>
+              <tr><td><code>if / elif / else</code></td><td>Decisión condicional.</td></tr>
+              <tr><td><code>for / while</code></td><td>Bucles de repetición.</td></tr>
+              <tr><td><code>len()</code>, <code>sum()</code>, <code>type()</code></td><td>Funciones integradas de uso frecuente.</td></tr>
+              <tr><td><code>pip</code></td><td>Instalación de bibliotecas de terceros.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_inteligencia_artificial.html">Inteligencia artificial</a>: campo donde Python es el lenguaje dominante.</li>
+            <li><a href="estudios_aprendizaje_automatico.html">Aprendizaje automático</a>: ejemplos escritos en Python básico.</li>
+            <li><a href="estudios_redes_neuronales.html">Redes neuronales</a>: cálculo de neuronas y capas en Python.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="">
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="">
+          <span data-lang="home">Inicio</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="">
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="">
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="">
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="">
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="">
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="">
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="">
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

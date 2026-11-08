@@ -452,6 +452,156 @@
       "covers": [
         "../assets/images/games/ta-te-ti/cover.jpg"
       ]
+    },
+    {
+      "slug": "card-match",
+      "title": {
+        "es": "Card Match",
+        "en": "Card Match"
+      },
+      "description": {
+        "es": "Juego de memoria clásico: voltea cartas de dos en dos, forma parejas y vacía el tablero antes de que se acabe el tiempo. Combos, niveles crecientes y un uso de PEEK por nivel.",
+        "en": "Classic memory game: flip cards two at a time, make pairs and clear the board before time runs out. Combos, growing levels and one PEEK per level."
+      },
+      "genre": {
+        "es": "Puzzle · memoria",
+        "en": "Puzzle · memory"
+      },
+      "year": 2026,
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
+      "controls": {
+        "es": "Clic / tap voltear · H PEEK · P/Esc pausa · Enter/Space jugar",
+        "en": "Click / tap flip · H PEEK · P/Esc pause · Enter/Space play"
+      },
+      "status": "published",
+      "covers": [
+        "../assets/images/games/card-match/cover.jpg"
+      ]
+    },
+    {
+      "slug": "dodge-arena",
+      "title": {
+        "es": "Dodge Arena",
+        "en": "Dodge Arena"
+      },
+      "description": {
+        "es": "Arena minimalista de supervivencia: esquiva proyectiles rebotantes, usa el dash y recoge powerups defensivos. Modo infinito por oleadas.",
+        "en": "Minimalist survival arena: dodge bouncing projectiles, use the dash and collect defensive power-ups. Endless wave mode."
+      },
+      "genre": {
+        "es": "Acción · supervivencia",
+        "en": "Action · survival"
+      },
+      "year": 2026,
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
+      "controls": {
+        "es": "WASD/Flechas mover · Space/Shift dash · P/Esc pausa · Enter jugar",
+        "en": "WASD/Arrows move · Space/Shift dash · P/Esc pause · Enter play"
+      },
+      "status": "published",
+      "covers": [
+        "../assets/images/games/dodge-arena/cover.jpg"
+      ]
+    },
+    {
+      "slug": "neon-maze",
+      "title": {
+        "es": "Neon Maze",
+        "en": "Neon Maze"
+      },
+      "description": {
+        "es": "Laberinto procedural top-down: recoge llaves de colores, abre puertas y llega a la salida esquivando patrulleros y centinelas. Niveles infinitos.",
+        "en": "Top-down procedural maze: collect colored keys, open doors and reach the exit while dodging patrols and sentinels. Endless levels."
+      },
+      "genre": {
+        "es": "Aventura · laberinto",
+        "en": "Adventure · maze"
+      },
+      "year": 2026,
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
+      "controls": {
+        "es": "WASD/Flechas mover · P/Esc pausa · Enter jugar",
+        "en": "WASD/Arrows move · P/Esc pause · Enter play"
+      },
+      "status": "published",
+      "covers": [
+        "../assets/images/games/neon-maze/cover.jpg"
+      ]
+    },
+    {
+      "slug": "neon-rally",
+      "title": {
+        "es": "Neon Retro Rally",
+        "en": "Neon Retro Rally"
+      },
+      "description": {
+        "es": "Carrera arcade en vista cenital: 3 vueltas contra 3 rivales con IA en circuitos procedurales, derrapes, turbo y pads de aceleración.",
+        "en": "Top-down arcade racer: 3 laps against 3 AI rivals on procedural tracks, drifting, turbo and boost pads."
+      },
+      "genre": {
+        "es": "Carreras · arcade",
+        "en": "Racing · arcade"
+      },
+      "year": 2026,
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
+      "controls": {
+        "es": "W/A/S/D o flechas conducir · Space turbo · P/Esc pausa · Enter jugar",
+        "en": "W/A/S/D or arrows drive · Space turbo · P/Esc pause · Enter play"
+      },
+      "status": "published",
+      "covers": [
+        "../assets/images/games/neon-rally/cover.jpg"
+      ]
+    },
+    {
+      "slug": "tetris",
+      "title": {
+        "es": "Tetris",
+        "en": "Tetris"
+      },
+      "description": {
+        "es": "Tetris clásico: tablero 10×20, ghost piece, hold, rotación SRS con wall kicks y puntuación clásica. Partida infinita.",
+        "en": "Classic Tetris: 10×20 board, ghost piece, hold, SRS rotation with wall kicks and classic scoring. Endless play."
+      },
+      "genre": {
+        "es": "Puzzle · clásico",
+        "en": "Puzzle · classic"
+      },
+      "year": 2026,
+      "technologies": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Canvas 2D"
+      ],
+      "controls": {
+        "es": "Flechas/A-D mover · ↑/W/X rotar · ↓/S bajar · Espacio hard drop · C/Shift hold · P/Esc pausa",
+        "en": "Arrows/A-D move · ↑/W/X rotate · ↓/S soft drop · Space hard drop · C/Shift hold · P/Esc pause"
+      },
+      "status": "published",
+      "covers": [
+        "../assets/images/games/tetris/cover.jpg"
+      ]
     }
   ]
 }

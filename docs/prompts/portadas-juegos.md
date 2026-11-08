@@ -1,15 +1,11 @@
-# Prompt: portadas (covers) para la grilla de juegos
+# Prompt: portadas (covers) para una grilla de juegos
 
-> **Herramienta de desarrollo.** No es documentación de referencia del proyecto: otros agentes
-> no deben leer este documento salvo que el desarrollador se lo pida por orden explícito.
+> **Herramienta de desarrollo.** Documento autocontenido: no depende de ningún repositorio ni
+> proyecto concreto. Úsalo tal cual en cualquier sesión o agente generador de imágenes.
 
-Documento de referencia para generar las **3 portadas** de cada juego de la colección
-`juegos/` del portafolio **pfd1795**. Diseñado para que un agente IA generador de
-imágenes (o un diseñador) produzca los assets de forma consistente y reproducible.
-
-> **Estado actual:** la grilla ya consume el campo `covers` (array de 3 rutas) de
-> `javascripts/data/juegos.json` y muestra un carrusel con transición crossfade.
-> Mientras no existan las imágenes, la tarjeta muestra un placeholder con degradado.
+Documento de referencia para generar las **portadas** de juegos de una colección. Diseñado
+para que un agente IA generador de imágenes (o un diseñador) produzca los assets de forma
+consistente y reproducible, manteniendo la estética retro arcade oscura.
 
 ---
 
@@ -17,48 +13,31 @@ imágenes (o un diseñador) produzca los assets de forma consistente y reproduci
 
 | Parámetro | Valor |
 |---|---|
-| Dimensiones | **1280 × 720 px** (relación 16:9) |
-| Formato | **WebP** (calidad ~85) o **JPG** (calidad ~90). PNG solo si no hay alternativa |
-| Cantidad por juego | **1 portada mínima** (estática). Se pueden añadir hasta 3 para activar el carrusel |
-| Texto en la imagen | **Ninguno** (el título ya aparece en la tarjeta) |
-| Logos/marcas | Ninguno |
-| UI/capturas de pantalla | No (ilustración, no screenshot) |
-| Fondo | Oscuro (negro/gris muy oscuro), sin transparencia |
-| Peso objetivo | ≤ 250 KB por imagen |
+| Dimensiones | **1376 × 768 px** (observadas en portadas existentes; relación ≈ 16:9). Si el generador no soporta ese tamaño exacto, usar **1280×720** o **1920×1080** manteniendo 16:9. |
+| Formato | **WebP** (calidad ~85) o **JPG** (calidad ~90). PNG solo si no hay alternativa. |
+| Cantidad por juego | **1 portada mínima** (estática). Se pueden añadir hasta 3 para activar un carrusel. |
+| Texto en la imagen | **Ninguno** (el título ya aparece en la tarjeta). |
+| Logos/marcas | Ninguno. |
+| UI/capturas de pantalla | No (ilustración, no screenshot). |
+| Fondo | Oscuro (negro/gris muy oscuro), sin transparencia. |
+| Peso observado | **0,6–1,8 MB** en las portadas existentes. Objetivo recomendado: **≤ 500 KB** si se puede comprimir sin pérdida visible. |
 
-### Convención de nombres y rutas
+### Convención de nombres (opcional)
 
-Con una sola portada (caso actual):
+Con una sola portada:
 ```
-assets/images/games/<slug>/cover.jpg
+cover.jpg
 ```
 
 Con 2 o 3 portadas (carrusel):
 ```
-assets/images/games/<slug>/cover-1.jpg
-assets/images/games/<slug>/cover-2.jpg
-assets/images/games/<slug>/cover-3.jpg
+cover-1.jpg
+cover-2.jpg
+cover-3.jpg
 ```
 
-El `<slug>` es el mismo del manifiesto (`juegos.json`), en kebab-case
-(ej. `space-invaders`, `neon-racer`). Las rutas se guardan en el manifiesto
-como rutas relativas a la página `juegos/index.html`. Con una sola imagen:
-
-```json
-"covers": [
-  "../assets/images/games/<slug>/cover.jpg"
-]
-```
-
-Con tres imágenes:
-
-```json
-"covers": [
-  "../assets/images/games/<slug>/cover-1.jpg",
-  "../assets/images/games/<slug>/cover-2.jpg",
-  "../assets/images/games/<slug>/cover-3.jpg"
-]
-```
+El nombre base puede adaptarse al slug del juego. Las rutas se guardan donde corresponda en
+tu proyecto; no son parte de este prompt.
 
 ---
 
@@ -68,35 +47,32 @@ Con tres imágenes:
   sin suavizado/anti-aliasing excesivo).
 - **Fondo:** negro o gris muy oscuro (#0a0a0f – #1a1a2e), con sutil patrón de
   scanlines o grilla pixelada opcional.
-- **Paleta de acentos:** cian eléctrico, magenta, verde neón, ámbar; coherente con
-  el tema del portafolio (claro/oscuro). Alto contraste.
-- **Composición:** una escena icónica del gameplay, sujeto centrado, legible a
-  tamaño de tarjeta (la imagen se muestra en ~300–400 px de ancho en la grilla).
+- **Paleta de acentos:** cian eléctrico, magenta, verde neón, ámbar; alto contraste.
+- **Composición:** una escena icónica del gameplay, sujeto centrado, legible a tamaño de
+  tarjeta (la imagen se muestra en ~300–400 px de ancho en la grilla).
 - **Iluminación:** brillo neón, glow suave, sombras duras (pixeladas).
 - **Sin texto, sin logos, sin marcas de agua, sin UI.**
 
 ### Variación entre las portadas del mismo juego
 
 Si se generan 3 portadas, deben representar **el mismo juego** con **escenas/ángulos
-distintos**, para que el carrusel cuente una micro-historia visual. Si solo se
-genera 1, usar la portada **hero** (escena principal icónica).
+distintos**, para que el carrusel cuente una micro-historia visual. Si solo se genera 1,
+usar la portada **hero** (escena principal icónica).
 
-1. **Portada 1 (hero):** escena principal icónica del juego (el momento más
-   reconocible).
-2. **Portada 2 (acción):** gameplay en movimiento (enemigo, obstáculo, combo,
-   velocidad).
-3. **Portada 3 (detalle/atmósfera):** primer plano de un elemento característico o
-   escena de ambiente (menú, nivel, efecto visual).
+1. **Portada 1 (hero):** escena principal icónica del juego (el momento más reconocible).
+2. **Portada 2 (acción):** gameplay en movimiento (enemigo, obstáculo, combo, velocidad).
+3. **Portada 3 (detalle/atmósfera):** primer plano de un elemento característico o escena
+   de ambiente (menú, nivel, efecto visual).
 
 ---
 
 ## 3. Prompt maestro (plantilla)
 
-Usar este prompt como base y sustituir `{...}` por los valores de cada juego.
-Añadir la variación específica al final.
+Usar este prompt como base y sustituir `{...}` por los valores de cada juego. Añadir la
+variación específica al final.
 
 ```
-Pixel art illustration, 16:9, 1280x720, retro arcade dark style.
+Pixel art illustration, 16:9, 1376x768, retro arcade dark style.
 Scene: {DESCRIPCION_ESCENA}.
 Game genre: {GENERO}. Subject: {SUJETO_PRINCIPAL}.
 Dark background (#0a0a0f to #1a1a2e), neon accents in cyan, magenta, electric green and amber.
@@ -112,10 +88,11 @@ Centered composition, readable at small size, cinematic neon lighting, arcade ca
 
 ---
 
-## 4. Prompts por juego
+## 4. Ejemplos (no vinculantes)
 
-Cada bloque incluye el **sujeto** y las **3 escenas** (una por portada). El agente
-generador debe combinar el prompt maestro (sección 3) con la escena indicada.
+Los siguientes bloques son **ejemplos ilustrativos** de sujetos y escenas. Los nombres y
+slugs son solo referencia; sustitúyelos por los de tu juego. No son una lista cerrada ni
+obligatoria.
 
 ### snake — Snake Retro (Arcade · habilidad)
 - **Sujeto:** serpiente neón sobre cuadrícula oscura.
@@ -211,51 +188,23 @@ generador debe combinar el prompt maestro (sección 3) con la escena indicada.
 
 ## 5. Flujo de generación (agente IA)
 
-1. Leer este documento y `juegos/README.md`.
-2. Para cada juego publicado en `juegos.json` (`status: "published"`):
+1. Leer este documento.
+2. Para cada juego que quieras cubrir:
    - Generar al menos 1 imagen (idealmente 3) siguiendo el prompt maestro + escena + modificador.
-   - Guardar como `cover.jpg` (o `cover-1.jpg`/`cover-2.jpg`/`cover-3.jpg`) en
-     `assets/images/games/<slug>/`.
-3. Verificar dimensiones (1280×720) y peso (≤ 250 KB).
+   - Guardar como `cover.jpg` (o `cover-1.jpg`/`cover-2.jpg`/`cover-3.jpg`).
+3. Verificar dimensiones (1376×768 o equivalente 16:9) y peso.
 4. Si una imagen no cumple, regenerar solo esa.
-5. (Opcional) Comprimir con `cwebp`/`sharp` si supera el peso.
+5. (Opcional) Comprimir si supera el peso recomendado.
 
 ---
 
-## 6. Integración (ya implementada en la grilla)
-
-La grilla (`javascripts/controllers/juegos/fnJuegos.js`) lee `game.covers` y
-renderiza un carrusel CSS-only (crossfade, ~12 s por ciclo, 3 imágenes) en cada
-tarjeta. Si `covers` está vacío o falta, se muestra un placeholder con degradado.
-
-Para activar las portadas de un juego:
-1. Depositar las 3 imágenes en `assets/images/games/<slug>/`.
-2. Asegurar que `juegos.json` tenga el campo `covers` con las 3 rutas
-   (ya actualizado en el manifiesto).
-3. Probar por HTTP (`python -m http.server 8000`) y verificar que las imágenes
-   cargan y el carrusel anima.
-
----
-
-## 7. Checklist de calidad
+## 6. Checklist de calidad
 
 - [ ] Al menos 1 imagen por juego (`cover.jpg`), o 3 (`cover-1/2/3.jpg`) si se usa carrusel.
-- [ ] Dimensiones 1280×720.
+- [ ] Dimensiones 1376×768 (o 16:9 equivalente).
 - [ ] Estética pixel art retro arcade oscuro.
 - [ ] Sin texto, logos ni UI.
 - [ ] Paleta coherente (fondo oscuro + acentos neón).
 - [ ] Legible a tamaño de tarjeta.
-- [ ] Peso ≤ 250 KB.
-- [ ] Rutas en `juegos.json` correctas.
-- [ ] Prueba por HTTP sin errores de consola.
-
----
-
-## 8. Correcciones futuras
-
-- Si se añade un juego nuevo, añadir su bloque en la sección 4 y generar sus
-  3 portadas antes de publicar (`status: "published"`).
-- Si se cambia el estilo global, actualizar la sección 2 y regenerar todas las
-  portadas para mantener consistencia.
-- Si se cambia la relación de aspecto, actualizar también el CSS
-  (`.juego-card__portada` en `stylesheets/juegos.css`) y la sección 1.
+- [ ] Peso razonable (ideal ≤ 500 KB).
+- [ ] Prueba visual sin errores evidentes.

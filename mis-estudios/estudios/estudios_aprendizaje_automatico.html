@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aprendizaje automático — Estudios de informática</title>
+  <meta name="description" content="Introducción al aprendizaje automático: qué es, tipos de aprendizaje, cómo se entrena y evalúa un modelo, sobreajuste, métricas y buenas prácticas.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Nombre del autor</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="">
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Inteligencia artificial</p>
+          <h1>Aprendizaje automático</h1>
+          <p class="entrada">
+            El aprendizaje automático es el área de la inteligencia artificial que permite a un sistema ajustar un modelo a partir de datos, en lugar de programar todas las reglas a mano. En este artículo verás qué es, qué tipos de aprendizaje existen, cómo se entrena y evalúa un modelo y qué errores conviene evitar al aplicarlo.
+          </p>
+        </header>
+
+        <div class="tl-dr">
+          <h2 class="tl-dr__titulo">En 5 puntos</h2>
+          <ul>
+            <li>En lugar de escribir reglas manualmente, se proporcionan ejemplos y el sistema ajusta un modelo.</li>
+            <li>El aprendizaje supervisado usa ejemplos etiquetados; el no supervisado busca estructura; el por refuerzo aprende por prueba y error.</li>
+            <li>Entrenar y evaluar son etapas distintas: la evaluación necesita datos que el modelo no vio.</li>
+            <li>Un modelo que memoriza los datos de entrenamiento (sobreajuste) falla con ejemplos nuevos.</li>
+            <li>La utilidad de un modelo depende de los datos, de la métrica elegida y del contexto de uso.</li>
+          </ul>
+        </div>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es el aprendizaje automático?</a></li>
+            <li><a href="#conceptos">Conceptos clave</a></li>
+            <li><a href="#tipos">Tipos de aprendizaje</a></li>
+            <li><a href="#como-funciona">Cómo se entrena un modelo</a></li>
+            <li><a href="#generalizacion">Generalización y sobreajuste</a></li>
+            <li><a href="#ejemplos">Ejemplos ilustrativos</a></li>
+            <li><a href="#metricas">Métricas de evaluación</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es el aprendizaje automático?</h2>
+          <p>
+            El <strong>aprendizaje automático</strong> (<em>machine learning</em>) es un conjunto de técnicas que permiten a un sistema mejorar su comportamiento en una tarea a partir de <strong>datos</strong>, sin que una persona especifique cada regla. En la programación clásica, la persona escribe las reglas y el programa las aplica a los datos; en el aprendizaje automático, se proporcionan datos con ejemplos y el proceso de entrenamiento produce el modelo que resuelve la tarea.
+          </p>
+          <p>
+            Es una de las áreas dentro de la <strong>inteligencia artificial</strong>, y hoy es la base de aplicaciones como filtros de correo no deseado, recomendadores, reconocimiento de voz y sistemas generativos. No todo sistema de IA usa aprendizaje automático: existen métodos basados en reglas o búsqueda que no aprenden de datos.
+          </p>
+          <p class="nota">
+            <strong>Idea clave:</strong> en programación clásica se escriben reglas que transforman datos en respuestas; en aprendizaje automático, los datos y las respuestas se usan para obtener las reglas (el modelo).
+          </p>
+        </section>
+
+        <section id="conceptos" aria-labelledby="conceptos-titulo">
+          <h2 id="conceptos-titulo">Conceptos clave</h2>
+          <ul>
+            <li>
+              <strong>Ejemplo o instancia:</strong> un caso concreto de la tarea, por ejemplo una imagen o una fila de una tabla.
+            </li>
+            <li>
+              <strong>Característica (<em>feature</em>):</strong> cada propiedad medible de un ejemplo, como el tamaño de una casa o la antigüedad de un usuario.
+            </li>
+            <li>
+              <strong>Etiqueta:</strong> la respuesta esperada para un ejemplo en tareas supervisadas, como la categoría de una imagen.
+            </li>
+            <li>
+              <strong>Modelo:</strong> representación matemática que transforma entradas en salidas y que se ajusta durante el entrenamiento.
+            </li>
+            <li>
+              <strong>Parámetros:</strong> valores internos del modelo que el entrenamiento modifica, como los pesos de una recta o de una red neuronal.
+            </li>
+            <li>
+              <strong>Hiperparámetros:</strong> valores que la persona configura antes de entrenar, como el número de vecinos o la tasa de aprendizaje.
+            </li>
+            <li>
+              <strong>Función de pérdida o coste:</strong> medida del error entre lo que el modelo predice y lo esperado; el entrenamiento busca minimizarla.
+            </li>
+            <li>
+              <strong>Optimización:</strong> proceso de ajustar los parámetros para reducir la pérdida, por ejemplo mediante descenso de gradiente.
+            </li>
+            <li>
+              <strong>Conjuntos de datos:</strong> particiones de los ejemplos para entrenar, validar y evaluar el modelo.
+            </li>
+            <li>
+              <strong>Inferencia:</strong> uso del modelo ya entrenado para producir salidas sobre entradas nuevas.
+            </li>
+            <li>
+              <strong>Generalización:</strong> capacidad del modelo de funcionar bien con datos que no formaron parte del entrenamiento.
+            </li>
+          </ul>
+        </section>
+
+        <section id="tipos" aria-labelledby="tipos-titulo">
+          <h2 id="tipos-titulo">Tipos de aprendizaje</h2>
+
+          <h3>Aprendizaje supervisado</h3>
+          <p>
+            Se entrena con ejemplos que incluyen la <strong>etiqueta</strong> correcta. Si la etiqueta es una categoría, la tarea es <strong>clasificación</strong> (por ejemplo, decidir si un correo es o no spam); si es un valor numérico, la tarea es <strong>regresión</strong> (por ejemplo, estimar un precio).
+          </p>
+
+          <h3>Aprendizaje no supervisado</h3>
+          <p>
+            Los ejemplos no tienen etiquetas y el objetivo es descubrir <strong>estructura</strong>: agrupar casos similares (<em>clustering</em>), reducir la cantidad de dimensiones manteniendo lo importante, o encontrar reglas de asociación entre elementos.
+          </p>
+
+          <h3>Aprendizaje por refuerzo</h3>
+          <p>
+            Un <strong>agente</strong> toma decisiones en un <strong>entorno</strong> y aprende a partir de <strong>recompensas</strong> o penalizaciones, sin ejemplos etiquetados. Se usa en tareas secuenciales como el control de procesos o los juegos.
+          </p>
+
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Tipo</th>
+                <th scope="col">Qué recibe</th>
+                <th scope="col">Qué produce</th>
+                <th scope="col">Tareas típicas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Supervisado</td>
+                <td>Ejemplos con etiquetas</td>
+                <td>Modelo que predice la etiqueta</td>
+                <td>Clasificar imágenes, estimar precios</td>
+              </tr>
+              <tr>
+                <td>No supervisado</td>
+                <td>Ejemplos sin etiquetas</td>
+                <td>Estructura: grupos, dimensiones, asociaciones</td>
+                <td>Segmentar clientes, comprimir datos</td>
+              </tr>
+              <tr>
+                <td>Por refuerzo</td>
+                <td>Interacciones con un entorno</td>
+                <td>Política de decisiones</td>
+                <td>Juegos, control, robótica</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="como-funciona" aria-labelledby="como-funciona-titulo">
+          <h2 id="como-funciona-titulo">Cómo se entrena un modelo</h2>
+          <p>
+            En un flujo típico de aprendizaje supervisado, el entrenamiento consiste en ajustar los parámetros del modelo para que sus predicciones se acerquen a las etiquetas de los ejemplos. El proceso suele seguir estos pasos:
+          </p>
+          <ol>
+            <li><strong>Definir la tarea:</strong> precisar qué entrada recibe el sistema, qué salida se espera y cómo se medirá el éxito.</li>
+            <li><strong>Reunir y preparar los datos:</strong> seleccionar características, revisar errores y valores ausentes.</li>
+            <li><strong>Separar los datos:</strong> reservar ejemplos para evaluación que el modelo no usará durante el entrenamiento.</li>
+            <li><strong>Entrenar:</strong> ajustar los parámetros minimizando la función de pérdida sobre los datos de entrenamiento.</li>
+            <li><strong>Evaluar:</strong> medir el comportamiento con los datos reservados y analizar los errores.</li>
+            <li><strong>Usar y supervisar:</strong> aplicar el modelo en su contexto y vigilar que siga siendo adecuado.</li>
+          </ol>
+          <p class="aviso">
+            Toda información del futuro que se cuele en el entrenamiento invalida la evaluación: es la <strong>fuga de datos</strong> (<em>data leakage</em>). Por ejemplo, usar para predecir ventas de un mes variables que solo se conocen después de cerrar el mes.
+          </p>
+        </section>
+
+        <section id="generalizacion" aria-labelledby="generalizacion-titulo">
+          <h2 id="generalizacion-titulo">Generalización y sobreajuste</h2>
+          <p>
+            El objetivo no es acertar en los datos de entrenamiento, sino <strong>generalizar</strong> a ejemplos nuevos. Cuando un modelo se ajusta tan bien a los ejemplos de entrenamiento que memoriza sus particularidades, sufre <strong>sobreajuste</strong> (<em>overfitting</em>): su rendimiento en datos nuevos empeora. En el extremo opuesto, un modelo demasiado simple sufre <strong>subajuste</strong>: ni siquiera describe bien los datos de entrenamiento.
+          </p>
+          <p>
+            Para detectarlo se comparan las métricas en entrenamiento y en evaluación: una gran diferencia suele indicar sobreajuste. Técnicas habituales para mitigarlo incluyen usar más datos, simplificar el modelo o aplicar regularización.
+          </p>
+          <p class="nota">
+            <strong>Regla de oro:</strong> nunca evalúes un modelo con los mismos datos con los que se entrenó, y no ajustes hiperparámetros usando el conjunto de prueba.
+          </p>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">Ejemplos ilustrativos</h2>
+          <p>
+            Estos ejemplos usan Python básico, sin bibliotecas de aprendizaje automático, para mostrar las ideas de fondo. En proyectos reales se emplean bibliotecas como <code>scikit-learn</code>.
+          </p>
+
+          <h3>Entrenar es ajustar parámetros: una recta por mínimos cuadrados</h3>
+          <p>
+            El ejemplo más simple de modelo con parámetros es una recta <code>y = pendiente·x + origen</code>. «Entrenar» consiste en calcular los dos parámetros que minimizan el error cuadrático frente a los ejemplos.
+          </p>
+          <pre><code># Ajusta una recta y = pendiente * x + origen a los ejemplos
+# (mínimos cuadrados). "Entrenar" aquí es calcular esos dos números.
+xs = [1, 2, 3, 4, 5]
+ys = [2.1, 4.0, 6.2, 7.9, 10.1]
+
+n = len(xs)
+media_x = sum(xs) / n
+media_y = sum(ys) / n
+
+pendiente = sum((x - media_x) * (y - media_y) for x, y in zip(xs, ys))
+pendiente /= sum((x - media_x) ** 2 for x in xs)
+origen = media_y - pendiente * media_x
+
+print(origen, pendiente)  # ≈ 0.09 1.99
+
+def predecir(x):
+    return pendiente * x + origen
+
+print(predecir(6))        # ≈ 12.03</code></pre>
+
+          <h3>Un modelo basado en ejemplos: vecinos más cercanos</h3>
+          <p>
+            En los <strong>vecinos más cercanos</strong> (<em>k-NN</em>) el «modelo» son los propios ejemplos guardados: para clasificar un punto nuevo se buscan los <code>k</code> ejemplos más próximos y se vota su clase mayoritaria.
+          </p>
+          <pre><code>import math
+
+# El "modelo" son los ejemplos conocidos.
+puntos = [
+    {"x": 1, "y": 1, "clase": "A"},
+    {"x": 2, "y": 1, "clase": "A"},
+    {"x": 1, "y": 2, "clase": "A"},
+    {"x": 6, "y": 6, "clase": "B"},
+    {"x": 7, "y": 6, "clase": "B"},
+    {"x": 6, "y": 7, "clase": "B"},
+    {"x": 7, "y": 7, "clase": "B"},
+]
+
+def distancia(a, b):
+    return math.sqrt((a["x"] - b["x"]) ** 2 + (a["y"] - b["y"]) ** 2)
+
+def clasificar(punto, ejemplos, k=3):
+    # Busca los k ejemplos más cercanos y vota su clase mayoritaria.
+    ordenados = sorted(ejemplos, key=lambda e: distancia(e, punto))
+    votos = [e["clase"] for e in ordenados[:k]]
+    return max(set(votos), key=votos.count)
+
+nuevo = {"x": 2, "y": 2, "clase": "?"}
+print(clasificar(nuevo, puntos))  # A</code></pre>
+
+          <h3>Evaluar con datos no vistos</h3>
+          <p>
+            La evaluación mide cómo se comporta el modelo con ejemplos reservados que no participaron en el entrenamiento. Aquí el «entrenamiento» son los puntos guardados.
+          </p>
+          <pre><code># Reserva ejemplos para evaluar: el modelo no debe haberlos "visto".
+entrenamiento = puntos[:5]
+evaluacion = puntos[5:]
+
+correctos = 0
+for ejemplo in evaluacion:
+    if clasificar(ejemplo, entrenamiento) == ejemplo["clase"]:
+        correctos += 1
+
+print("Acierto:", correctos / len(evaluacion))</code></pre>
+          <p class="nota">
+            Con muy pocos ejemplos, el resultado de la evaluación es poco fiable. En la práctica se usan cientos o miles de ejemplos y se repite la evaluación para obtener medidas estables.
+          </p>
+        </section>
+
+        <section id="metricas" aria-labelledby="metricas-titulo">
+          <h2 id="metricas-titulo">Métricas de evaluación</h2>
+          <p>
+            La elección de la métrica depende de la tarea y de lo que cuesta equivocarse. Para clasificación se usan el <strong>acierto</strong> (<em>accuracy</em>), la <strong>precisión</strong>, la <strong>exhaustividad</strong> (<em>recall</em>) y su combinación <strong>F1</strong>; para regresión, errores como el absoluto medio o el cuadrático medio.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Métrica</th>
+                <th scope="col">Qué mide</th>
+                <th scope="col">Precaución</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>acierto</code></td>
+                <td>Proporción de predicciones correctas sobre el total.</td>
+                <td>Engañosa con clases desbalanceadas: acertar siempre la clase mayoritaria puede dar un valor alto.</td>
+              </tr>
+              <tr>
+                <td><code>precisión</code></td>
+                <td>De las veces que el modelo predijo una clase, cuántas acertó.</td>
+                <td>No dice nada de los casos positivos que el modelo dejó pasar.</td>
+              </tr>
+              <tr>
+                <td><code>exhaustividad</code></td>
+                <td>De los casos reales de una clase, cuántos detectó el modelo.</td>
+                <td>Puede subir a costa de generar más falsos positivos.</td>
+              </tr>
+              <tr>
+                <td><code>F1</code></td>
+                <td>Media armónica entre precisión y exhaustividad.</td>
+                <td>Resume dos aspectos, pero oculta cuál de los dos falla.</td>
+              </tr>
+              <tr>
+                <td><code>error cuadrático medio</code></td>
+                <td>Error medio de una predicción numérica, penalizando más los errores grandes.</td>
+                <td>Sus unidades están al cuadrado; para interpretar, conviene también el error absoluto medio.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Para entender estos valores conviene revisar la <strong>matriz de confusión</strong>, que desglosa aciertos y errores por clase, y analizar ejemplos concretos en los que el modelo falla.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Empezar por la pregunta: definir la tarea, el resultado esperado y el coste de los errores antes de elegir el modelo.</li>
+            <li>Conocer los datos antes de entrenarlos: revisar rangos, valores ausentes y errores de etiquetado.</li>
+            <li>Separar siempre un conjunto de evaluación y no tocarlo hasta la medición final.</li>
+            <li>Elegir métricas acordes al problema y al desbalance de clases.</li>
+            <li>Comparar contra una línea base sencilla antes de usar modelos complejos.</li>
+            <li>Registrar las versiones de datos, hiperparámetros y resultados para poder reproducir el entrenamiento.</li>
+            <li>Revisar los errores del modelo y a quiénes afectan, no solo la métrica global.</li>
+            <li>Reevaluar el modelo cuando cambien los datos o el contexto de uso.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué es un problema</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Evaluar con los datos de entrenamiento</td>
+                <td>El modelo puede haberlos memorizado; la medida no refleja la generalización.</td>
+                <td>Reservar ejemplos que el entrenamiento no use.</td>
+              </tr>
+              <tr>
+                <td>Ajustar hiperparámetros con el conjunto de prueba</td>
+                <td>El conjunto de prueba deja de ser una medición imparcial.</td>
+                <td>Usar un tercer conjunto de validación o validación cruzada.</td>
+              </tr>
+              <tr>
+                <td>Confiar solo en el acierto con clases desbalanceadas</td>
+                <td>Un modelo trivial puede parecer bueno sin detectar la clase minoritaria.</td>
+                <td>Complementar con precisión, exhaustividad y matriz de confusión.</td>
+              </tr>
+              <tr>
+                <td>Buscar siempre el modelo más complejo</td>
+                <>Aumenta el riesgo de sobreajuste y el coste de mantenimiento.</td>
+                <td>Comparar contra una línea base simple y justificar la complejidad extra.</td>
+              </tr>
+              <tr>
+                <td>Dejar que información del futuro entre al entrenamiento</td>
+                <td>La evaluación da resultados irreales que no se mantendrán en uso.</td>
+                <td>Revisar qué información está disponible en el momento de la predicción.</td>
+              </tr>
+              <tr>
+                <td>Ignorar el desplazamiento de los datos</td>
+                <td>Los datos del mundo real cambian y el modelo queda desactualizado.</td>
+                <td>Supervisar el rendimiento y reentrenar cuando sea necesario.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Término</th>
+                <th scope="col">Significado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>característica</code></td>
+                <td>Propiedad medible de un ejemplo que sirve de entrada al modelo.</td>
+              </tr>
+              <tr>
+                <td><code>etiqueta</code></td>
+                <td>Respuesta esperada de un ejemplo en aprendizaje supervisado.</td>
+              </tr>
+              <tr>
+                <td><code>parámetros</code></td>
+                <td>Valores internos del modelo que ajusta el entrenamiento.</td>
+              </tr>
+              <tr>
+                <td><code>hiperparámetros</code></td>
+                <td>Valores que se configuran antes de entrenar y no aprende el modelo.</td>
+              </tr>
+              <tr>
+                <td><code>función de pérdida</code></td>
+                <td>Medida del error que el entrenamiento intenta minimizar.</td>
+              </tr>
+              <tr>
+                <td><code>sobreajuste</code></td>
+                <td>El modelo memoriza el entrenamiento y rinde peor con datos nuevos.</td>
+              </tr>
+              <tr>
+                <td><code>subajuste</code></td>
+                <td>El modelo es demasiado simple y ni siquiera describe los datos de entrenamiento.</td>
+              </tr>
+              <tr>
+                <td><code>conjunto de prueba</code></td>
+                <td>Ejemplos reservados para medir el modelo sin interferir en su ajuste.</td>
+              </tr>
+              <tr>
+                <td><code>fuga de datos</code></td>
+                <td>Información no disponible en el momento de predecir que contamina el entrenamiento o la evaluación.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_inteligencia_artificial.html">Inteligencia artificial</a>: panorama general del campo y sus límites.</li>
+            <li><a href="estudios_redes_neuronales.html">Redes neuronales</a>: pendiente de crear.</li>
+            <li><a href="estudios_python.html">Python</a>: pendiente de crear.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="">
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="">
+          <span data-lang="home">Inicio</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="">
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="">
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="">
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="">
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="">
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="">
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="">
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

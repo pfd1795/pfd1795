@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inteligencia artificial — Estudios de informática</title>
+  <meta name="description" content="Introducción a los fundamentos de la inteligencia artificial, sus métodos, aplicaciones, limitaciones y buenas prácticas.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Nombre del autor</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="">
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <p class="marca"><a href="../index.html">Estudios de informática</a></p>
+        <a class="volver-portafolio" href="../../index.html">← Volver al portafolio</a>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Fundamentos de computación</p>
+          <h1>Inteligencia artificial</h1>
+          <p class="entrada">
+            La inteligencia artificial (IA) reúne métodos que permiten a los sistemas informáticos realizar tareas que suelen requerir capacidades asociadas con la inteligencia humana. En este artículo conocerás sus conceptos fundamentales, cómo aprende un modelo y qué límites conviene tener presentes al usarlo.
+          </p>
+        </header>
+
+        <div class="tl-dr">
+          <h2 class="tl-dr__titulo">En 5 puntos</h2>
+          <ul>
+            <li>La IA es un campo amplio; el aprendizaje automático es una de sus áreas.</li>
+            <li>Un modelo aprende patrones a partir de datos y los utiliza para producir resultados.</li>
+            <li>Entrenar un modelo y usarlo para inferir son etapas distintas.</li>
+            <li>La calidad de los datos y la evaluación influyen en la utilidad del sistema.</li>
+            <li>Las salidas de IA pueden ser inexactas, sesgadas o inadecuadas para el contexto.</li>
+          </ul>
+        </div>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es la inteligencia artificial?</a></li>
+            <li><a href="#conceptos">Conceptos clave</a></li>
+            <li><a href="#como-funciona">Cómo funciona un sistema de IA</a></li>
+            <li><a href="#ejemplos">Ejemplos ilustrativos</a></li>
+            <li><a href="#aplicaciones">Aplicaciones y límites</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es la inteligencia artificial?</h2>
+          <p>
+            La <strong>inteligencia artificial</strong> es el área de la informática que estudia y construye sistemas capaces de realizar tareas como clasificar información, reconocer patrones, generar contenido, recomendar opciones o planificar acciones. No existe una única técnica de IA: el campo incluye métodos basados en reglas, búsqueda, optimización y aprendizaje a partir de datos.
+          </p>
+          <p>
+            Un sistema de IA no necesariamente piensa o comprende como una persona. En muchos casos, calcula una salida a partir de una entrada y de patrones que se han definido manualmente o aprendido durante el entrenamiento.
+          </p>
+          <p class="nota">
+            <strong>Idea clave:</strong> que un sistema produzca una respuesta convincente no demuestra, por sí solo, que esa respuesta sea correcta ni que el sistema comprenda el tema.
+          </p>
+        </section>
+
+        <section id="conceptos" aria-labelledby="conceptos-titulo">
+          <h2 id="conceptos-titulo">Conceptos clave</h2>
+          <ul>
+            <li>
+              <strong>Aprendizaje automático:</strong> conjunto de métodos que permiten a un sistema ajustar un modelo usando datos, en lugar de especificar manualmente todas las reglas.
+            </li>
+            <li>
+              <strong>Aprendizaje supervisado:</strong> entrenamiento con ejemplos que incluyen entradas y respuestas esperadas, como imágenes etiquetadas por categoría.
+            </li>
+            <li>
+              <strong>Aprendizaje no supervisado:</strong> búsqueda de estructuras o grupos en datos sin etiquetas de respuesta proporcionadas de antemano.
+            </li>
+            <li>
+              <strong>Aprendizaje por refuerzo:</strong> aprendizaje mediante interacciones y señales de recompensa o penalización.
+            </li>
+            <li>
+              <strong>Modelo:</strong> representación matemática ajustada para producir resultados a partir de entradas.
+            </li>
+            <li>
+              <strong>Entrenamiento:</strong> proceso de ajustar los parámetros del modelo con datos.
+            </li>
+            <li>
+              <strong>Inferencia:</strong> uso de un modelo ya entrenado para producir una predicción o respuesta.
+            </li>
+            <li>
+              <strong>Red neuronal:</strong> familia de modelos compuestos por unidades conectadas que transforman datos mediante capas de operaciones.
+            </li>
+            <li>
+              <strong>Aprendizaje profundo:</strong> área del aprendizaje automático que emplea redes neuronales con múltiples capas.
+            </li>
+            <li>
+              <strong>Datos de entrenamiento:</strong> ejemplos utilizados para ajustar el modelo; su cobertura y calidad afectan lo que el modelo puede aprender.
+            </li>
+          </ul>
+          <p>
+            La IA generativa es una categoría de sistemas que producen contenido —por ejemplo, texto, imágenes o audio— a partir de patrones aprendidos. Su salida puede ser útil, pero debe comprobarse según el uso previsto.
+          </p>
+        </section>
+
+        <section id="como-funciona" aria-labelledby="como-funciona-titulo">
+          <h2 id="como-funciona-titulo">Cómo funciona un sistema de IA</h2>
+          <p>
+            En un sistema de aprendizaje automático típico, los datos se preparan y se utilizan para ajustar un modelo. Después, el modelo se evalúa con ejemplos que no se usaron para entrenarlo. Si su desempeño es adecuado para la tarea, puede utilizarse para inferir resultados sobre entradas nuevas.
+          </p>
+          <ol>
+            <li><strong>Definir la tarea:</strong> especificar qué entrada recibe el sistema y qué resultado se espera.</li>
+            <li><strong>Preparar los datos:</strong> revisar, organizar y, cuando corresponda, etiquetar los ejemplos.</li>
+            <li><strong>Entrenar:</strong> ajustar el modelo para que encuentre patrones útiles en los datos.</li>
+            <li><strong>Evaluar:</strong> medir su comportamiento en datos separados y analizar sus errores.</li>
+            <li><strong>Usar y supervisar:</strong> aplicar el modelo en un contexto definido y revisar si sigue siendo apropiado.</li>
+          </ol>
+          <p class="aviso">
+            Un buen resultado en los datos de entrenamiento no garantiza que el modelo funcione bien con ejemplos nuevos. También es importante comprobar si los datos de evaluación representan el contexto real de uso.
+          </p>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">Ejemplos ilustrativos</h2>
+          <h3>Clasificación con reglas sencillas</h3>
+          <p>
+            Este ejemplo no entrena un modelo: usa una regla escrita por una persona para clasificar una señal numérica. Sirve para contrastar una solución basada en reglas con una que aprende patrones a partir de datos.
+          </p>
+          <pre><code>def clasificar_temperatura(celsius):
+    if celsius &lt; 10:
+        return "fría"
+    if celsius &lt; 25:
+        return "templada"
+    return "cálida"
+
+print(clasificar_temperatura(18))  # templada</code></pre>
+
+          <h3>Separar datos para evaluar un modelo</h3>
+          <p>
+            El siguiente fragmento muestra la idea de separar los ejemplos antes de evaluar. Es ilustrativo: no implementa entrenamiento ni depende de una biblioteca de aprendizaje automático.
+          </p>
+          <pre><code>datos = [
+    {"entrada": "ejemplo 1", "etiqueta": "A"},
+    {"entrada": "ejemplo 2", "etiqueta": "B"},
+    {"entrada": "ejemplo 3", "etiqueta": "A"},
+    {"entrada": "ejemplo 4", "etiqueta": "B"},
+]
+
+# En un proyecto real, la separación suele hacerse de forma reproducible
+# y teniendo en cuenta el tamaño y la distribución de los datos.
+datos_entrenamiento = datos[:3]
+datos_evaluacion = datos[3:]
+
+print("Entrenamiento:", len(datos_entrenamiento))
+print("Evaluación:", len(datos_evaluacion))</code></pre>
+          <p class="nota">
+            Estos ejemplos usan Python básico para explicar ideas. No son un modelo de IA listo para producción ni miden la calidad de una predicción.
+          </p>
+        </section>
+
+        <section id="aplicaciones" aria-labelledby="aplicaciones-titulo">
+          <h2 id="aplicaciones-titulo">Aplicaciones y límites</h2>
+          <p>
+            Las técnicas de IA se utilizan en tareas diversas, como filtrar correo no deseado, reconocer objetos en imágenes, recomendar contenidos, transcribir voz o ayudar a explorar grandes conjuntos de datos. La conveniencia de cada método depende de la tarea, los datos disponibles y el impacto de los errores.
+          </p>
+          <p>
+            Entre sus límites se encuentran la dependencia de los datos, la dificultad para explicar algunas decisiones, el posible sesgo, la variación en la calidad de las salidas y la falta de garantía de que un sistema generativo proporcione información verdadera.
+          </p>
+          <p class="aviso">
+            En decisiones de alto impacto —por ejemplo, relacionadas con salud, empleo, crédito o acceso a servicios— no conviene tratar la salida del modelo como una decisión final sin controles, evaluación y supervisión adecuados.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Definir con claridad la tarea y las condiciones en las que se utilizará el sistema.</li>
+            <li>Comprobar que los datos sean pertinentes, suficientemente representativos y obtenidos de forma apropiada.</li>
+            <li>Separar los datos de evaluación de los usados para entrenar el modelo.</li>
+            <li>Medir más de un aspecto del desempeño cuando una sola métrica pueda ocultar errores importantes.</li>
+            <li>Revisar ejemplos incorrectos y analizar a quiénes afectan esos errores.</li>
+            <li>Proteger los datos personales y limitar su uso a lo necesario.</li>
+            <li>Informar cuándo una salida fue generada o asistida por IA, si el contexto lo requiere.</li>
+            <li>Mantener supervisión humana cuando el impacto de una salida sea significativo.</li>
+            <li>Volver a evaluar el sistema si cambian los datos, el contexto o los objetivos.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué es un problema</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Confundir IA con aprendizaje automático</td>
+                <td>El aprendizaje automático es una parte del campo, no un sinónimo de toda la IA.</td>
+                <td>Identificar qué técnica concreta realiza la tarea.</td>
+              </tr>
+              <tr>
+                <td>Suponer que una respuesta fluida es verdadera</td>
+                <td>La forma de expresarse no garantiza exactitud ni comprensión.</td>
+                <td>Verificar los datos importantes con fuentes apropiadas.</td>
+              </tr>
+              <tr>
+                <td>Evaluar solo con datos de entrenamiento</td>
+                <td>Puede ocultar que el modelo no generaliza a ejemplos nuevos.</td>
+                <td>Usar datos separados para evaluar y analizar los errores.</td>
+              </tr>
+              <tr>
+                <td>Ignorar la calidad y procedencia de los datos</td>
+                <td>Los problemas en los datos pueden reflejarse en las predicciones.</td>
+                <td>Documentar, revisar y proteger los datos utilizados.</td>
+              </tr>
+              <tr>
+                <td>Automatizar una decisión sin supervisión</td>
+                <td>Los errores pueden tener consecuencias desproporcionadas.</td>
+                <td>Establecer controles acordes con el riesgo de la tarea.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Término</th>
+                <th scope="col">Significado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>IA</code></td>
+                <td>Campo dedicado a sistemas que realizan tareas asociadas con capacidades inteligentes.</td>
+              </tr>
+              <tr>
+                <td><code>Aprendizaje automático</code></td>
+                <td>Métodos que ajustan modelos a partir de datos.</td>
+              </tr>
+              <tr>
+                <td><code>Entrenamiento</code></td>
+                <td>Ajuste de un modelo usando ejemplos.</td>
+              </tr>
+              <tr>
+                <td><code>Inferencia</code></td>
+                <td>Producción de resultados con un modelo ya entrenado.</td>
+              </tr>
+              <tr>
+                <td><code>Sobreajuste</code></td>
+                <td>Situación en la que el modelo se adapta demasiado a los datos de entrenamiento y rinde peor con datos nuevos.</td>
+              </tr>
+              <tr>
+                <td><code>Evaluación</code></td>
+                <td>Medición y análisis del comportamiento del sistema en ejemplos pertinentes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="estudios_aprendizaje_automatico.html">Aprendizaje automático</a>: pendiente de crear.</li>
+            <li><a href="estudios_redes_neuronales.html">Redes neuronales</a>: pendiente de crear.</li>
+            <li><a href="estudios_python.html">Python</a>: pendiente de crear.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Enciclopedia de informática · <a href="../index.html">Índice</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="">
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="">
+          <span data-lang="home">Inicio</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="">
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="">
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="">
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="">
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="">
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="">
+        <span data-lang="games">Juegos</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="">
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>
