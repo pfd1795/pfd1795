@@ -111,16 +111,19 @@ function ModalEducation(idEducation = 0) {
     const lang = currentLanguage;
     const homeTexts = translations.home[lang];
 
+    // Sin enlace a un artículo no se genera el <a>: un href vacío navegaría a la página actual
+    const institutionHtml = selectedEducation.link
+      ? `<a href="${selectedEducation.link}" title="${selectedEducation.title[lang]}" target="_blank" rel="noopener noreferrer">
+            ${selectedEducation.institution}
+          </a>`
+      : `${selectedEducation.institution}`;
+
     const content = document.createElement('section');
 
     content.innerHTML = `
       <header class="modal-header">
         <h2 id="modal-title">${selectedEducation.title[lang]}</h2>
-        <h3>
-          <a href="${selectedEducation.link}" title="${selectedEducation.title[lang]}" target="_blank" rel="noopener noreferrer">
-            ${selectedEducation.institution}
-          </a>
-        </h3>
+        <h3>${institutionHtml}</h3>
       </header>
 
       <hr class="divider">

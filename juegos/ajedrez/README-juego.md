@@ -28,10 +28,11 @@ conexión.
 ### Escritorio
 
 - Clic: seleccionar pieza / mover al destino.
+- Flechas: mover el cursor de casilla (marco verde).
+- `Enter`: seleccionar la casilla del cursor / mover / coronar-seleccionar.
 - `U`: deshacer movimiento (retira también la respuesta de la IA).
 - `Esc`: pausa / reanudar.
-- `Enter`: confirmar en pantallas de fin / reanudar.
-- Cualquier tecla en el menú: iniciar partida.
+- `Enter` / `Espacio`: iniciar partida desde el menú (también en pantallas de fin).
 
 ### Móvil
 

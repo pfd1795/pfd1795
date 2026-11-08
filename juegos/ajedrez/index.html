@@ -274,6 +274,7 @@ const FILES = ['a','b','c','d','e','f','g','h'];
 const SQ_LIGHT='#aeb9dd', SQ_DARK='#5d6b9e';
 const COL_LAST='rgba(5,217,232,0.30)';
 const COL_SEL ='rgba(255,214,10,0.40)';
+const COL_CURSOR='rgba(57,255,20,0.90)';
 const COL_CHK ='rgba(255,51,85,0.50)';
 const COL_DOT ='rgba(57,255,20,0.85)';
 const COL_RING='rgba(255,42,109,0.90)';
@@ -669,7 +670,16 @@ const store={
     this.migrate();
     try{
       const raw=localStorage.getItem(this.key);
-      if(raw){const d=JSON.parse(raw);Object.assign(this.data,d);}
+      if(raw){
+        const d=JSON.parse(raw);
+        // Solo acepta datos con forma válida: evita que un JSON corrupto rompa el juego
+        if(d&&typeof d==='object'&&d.settings&&typeof d.settings==='object'){
+          Object.assign(this.data.settings,d.settings);
+          ['wins','losses','draws','streak','bestStreak'].forEach(k=>{
+            if(Number.isFinite(d[k]))this.data[k]=d[k];
+          });
+        }
+      }
     }catch(err){/* almacenamiento no disponible */}
   },
   save(){
@@ -713,6 +723,11 @@ function draw(){
     }
     // Selección
     if(selection===r*8+c){ctx.fillStyle=COL_SEL;ctx.fillRect(x,y,cellCss,cellCss);}
+    // Cursor de teclado
+    if(state==='playing'&&cursorCell===r*8+c&&cursorCell>=0){
+      ctx.strokeStyle=COL_CURSOR;ctx.lineWidth=2;
+      ctx.strokeRect(x+1,y+1,cellCss-2,cellCss-2);
+    }
     // Jaque: rey en rojo
     if(inChk&&engine.kings[engine.turn]===r*8+c){
       ctx.fillStyle=COL_CHK;ctx.fillRect(x,y,cellCss,cellCss);}
@@ -782,7 +797,7 @@ function draw(){
 let engine=newEngine();
 let state='menu';               // menu | playing | paused | gameover
 let mode='1p', difficulty='normal', playerColor=W, aiColor=B;
-let selection=-1, targets=[], currentLegal=[];
+let selection=-1, targets=[], currentLegal=[], cursorCell=-1;
 let lastMove=null, anim=null, thinking=false, promoPending=null;
 
 const $=id=>document.getElementById(id);
@@ -837,7 +852,7 @@ function startGame(){
   aiColor=opp(playerColor);
   flip = mode==='1p' && playerColor===B;
   setupInitial(engine);
-  selection=-1;lastMove=null;anim=null;promoPending=null;thinking=false;
+  selection=-1;lastMove=null;anim=null;promoPending=null;thinking=false;cursorCell=-1;
   currentLegal=legalMoves(engine,engine.turn);
   state='playing';
   showPanel(null);
@@ -858,7 +873,7 @@ function resumeGame(){
 function toMenu(){
   state='menu';
   setupInitial(engine); // tablero de fondo
-  selection=-1;lastMove=null;anim=null;thinking=false;
+  selection=-1;lastMove=null;anim=null;thinking=false;cursorCell=-1;
   showPanel(panelMenu);updateHUD();
 }
 function endGame(end){
@@ -943,11 +958,8 @@ function pickCell(ev){
   if(flip){row=7-row;col=7-col;}
   return row*8+col;
 }
-canvas.addEventListener('pointerdown',ev=>{
-  ev.preventDefault();
-  if(state!=='playing'||thinking||anim||promoPending)return;
-  if(mode==='1p'&&engine.turn===aiColor)return;
-  const cell=pickCell(ev); if(cell<0)return;
+// Seleccionar/mover sobre una casilla; la usan el ratón y el cursor de teclado
+function touchCell(cell){
   if(selection>=0){
     const cands=currentLegal.filter(m=>m.from===selection&&m.to===cell);
     if(cands.length===1){commitMove(cands[0]);return;}
@@ -956,6 +968,13 @@ canvas.addEventListener('pointerdown',ev=>{
   const p=engine.board[cell];
   if(p&&p.c===engine.turn){selection=cell;}
   else selection=-1;
+}
+canvas.addEventListener('pointerdown',ev=>{
+  ev.preventDefault();
+  if(state!=='playing'||thinking||anim||promoPending)return;
+  if(mode==='1p'&&engine.turn===aiColor)return;
+  const cell=pickCell(ev); if(cell<0)return;
+  touchCell(cell);
 });
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
@@ -1006,12 +1025,30 @@ optionsDialog.addEventListener('click',e=>{
   if(e.target===optionsDialog)optionsDialog.close(); // clic en el backdrop
 });
 /* ---------- Teclado ---------- */
+const CURSOR_DIRS={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};
+function moveCursor(dr,dc){ // desplaza en coordenadas visibles (respeta flip) y vuelve a lógicas
+  let row=cursorCell>>3,col=cursorCell&7;
+  if(flip){row=7-row;col=7-col;}
+  row=Math.max(0,Math.min(7,row+dr));col=Math.max(0,Math.min(7,col+dc));
+  if(flip){row=7-row;col=7-col;}
+  cursorCell=row*8+col;
+}
 window.addEventListener('keydown',e=>{
   if(optionsDialog.open) return; // ESC cierra el dialog de forma nativa
-  if(state==='menu'&&!e.repeat&&e.key!=='Tab')startGame();
-  else if(state==='playing'){
+  if(state==='menu'){ if(!e.repeat&&(e.key==='Enter'||e.key===' '))startGame(); return; }
+  if(state==='playing'){
     if(e.key==='Escape')pauseGame();
     else if(e.key==='u'||e.key==='U')undo();
+    else if(CURSOR_DIRS[e.key]&&!thinking&&!anim&&!promoPending
+            &&!(mode==='1p'&&engine.turn===aiColor)){
+      e.preventDefault();
+      if(cursorCell<0)cursorCell=engine.kings[mode==='2p'?engine.turn:playerColor];
+      moveCursor(...CURSOR_DIRS[e.key]);
+    }
+    else if(e.key==='Enter'&&!e.repeat&&!thinking&&!anim&&!promoPending
+            &&cursorCell>=0&&!(mode==='1p'&&engine.turn===aiColor)){
+      touchCell(cursorCell);
+    }
   }
   else if(state==='paused'&&(e.key==='Escape'||e.key==='Enter'))resumeGame();
   else if(state==='gameover'&&e.key==='Enter')startGame();

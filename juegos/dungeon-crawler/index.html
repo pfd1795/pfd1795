@@ -534,9 +534,12 @@
               for (let x = r.x; x < r.x + r.w; x++) solid[y * MAP_W + x] = 0;
             }
           }
-          for (let i = 0; i < rooms.length - 1; i++) connect(center(rooms[i]), center(rooms[i + 1]));
+          const links = []; // conexiones reales del piso, para el minimapa
+          for (let i = 0; i < rooms.length - 1; i++) { connect(center(rooms[i]), center(rooms[i + 1])); links.push([i, i + 1]); }
           for (let k = 0; k < 2; k++) {
-            connect(center(rooms[Math.floor(Math.random() * rooms.length)]), center(rooms[Math.floor(Math.random() * rooms.length)]));
+            const a = Math.floor(Math.random() * rooms.length), b = Math.floor(Math.random() * rooms.length);
+            connect(center(rooms[a]), center(rooms[b]));
+            links.push([a, b]);
           }
 
           // Habitación inicial, más lejana (escaleras) y sala de la llave
@@ -601,7 +604,7 @@
           const stairsTile = randTile(farIdx);
           const keyTile = randTile(keyIdx);
           return {
-            solid, rooms,
+            solid, rooms, links,
             torches, enemies, coins, potions,
             key: floor < MAX_FLOOR ? { x: (keyTile.tx + 0.5) * TILE - 12, y: (keyTile.ty + 0.5) * TILE - 12, w: 24, h: 24 } : null,
             stairs: floor < MAX_FLOOR ? { x: (stairsTile.tx + 0.5) * TILE, y: (stairsTile.ty + 0.5) * TILE } : null,
@@ -687,6 +690,7 @@
       function hurtPlayer(dmg, sx, sy) {
         const p = game.player;
         p.hp -= dmg;
+        if (p.hp < 0) p.hp = 0; // acota antes de refrescar el HUD ('♥'.repeat(hp) crashea con negativos)
         p.invuln = 1000;
         const ang = Math.atan2(p.y + p.h / 2 - sy, p.x + p.w / 2 - sx);
         p.kbx = Math.cos(ang) * 320;
@@ -1232,14 +1236,14 @@
           const r = lvl.rooms[i];
           ctx.fillRect(x0 + r.x * sc, y0 + r.y * sc, r.w * sc, r.h * sc);
         }
-        // Conexiones entre habitaciones visitadas consecutivas
+        // Pasillos reales descubiertos (solo si ambos extremos están visitados)
         ctx.strokeStyle = 'rgba(5, 217, 232, 0.35)';
         ctx.beginPath();
-        for (let i = 0; i < lvl.rooms.length - 1; i++) {
-          if (!lvl.visited[i] || !lvl.visited[i + 1]) continue;
-          const a = lvl.rooms[i], b = lvl.rooms[i + 1];
-          ctx.moveTo(x0 + (a.x + a.w / 2) * sc, y0 + (a.y + a.h / 2) * sc);
-          ctx.lineTo(x0 + (b.x + b.w / 2) * sc, y0 + (b.y + b.h / 2) * sc);
+        for (const [a, b] of lvl.links || []) {
+          if (!lvl.visited[a] || !lvl.visited[b]) continue;
+          const ra = lvl.rooms[a], rb = lvl.rooms[b];
+          ctx.moveTo(x0 + (ra.x + ra.w / 2) * sc, y0 + (ra.y + ra.h / 2) * sc);
+          ctx.lineTo(x0 + (rb.x + rb.w / 2) * sc, y0 + (rb.y + rb.h / 2) * sc);
         }
         ctx.stroke();
         // Escalera y llave descubiertas

@@ -168,7 +168,7 @@ const store={
       }
       if(localStorage.getItem(store.LEGACY)!=null)localStorage.removeItem(store.LEGACY);
       const d=JSON.parse(localStorage.getItem(store.KEY));
-      return d&&d.best||0
+      return typeof d==='number'?d:(d&&d.best||0) // acepta el formato legacy numérico
     }catch(e){return 0}
   },
   save(v){try{localStorage.setItem(store.KEY,JSON.stringify({best:v}))}catch(e){}}
@@ -586,7 +586,7 @@ window.addEventListener('keydown',e=>{
     return; // ESC cierra el dialog de forma nativa
   }
   switch(game.state){
-    case 'title':startGame();break;
+    case 'title':if(code==='Enter'||code==='Space')startGame();break;
     case 'playing':
       if(code==='Escape'||code==='KeyP')pauseGame();
       break;

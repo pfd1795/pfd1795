@@ -1,3 +1,5 @@
+import { isFontScale } from './themeBackgrounds.js';
+
 const STORAGE_KEY_THEME_MODE = 'theme-mode';
 const STORAGE_KEY_THEME_COLOR = 'theme-color';
 const STORAGE_KEY_THEME_COLOR_VALUE = 'theme-color-value';
@@ -28,7 +30,9 @@ function setStorageItem(key, value) {
 }
 
 export function getThemeMode() {
-  return getStorageItem(STORAGE_KEY_THEME_MODE, 'dark');
+  const mode = getStorageItem(STORAGE_KEY_THEME_MODE, 'dark');
+
+  return mode === 'light' ? 'light' : 'dark';
 }
 
 export function setThemeMode(mode) {
@@ -74,7 +78,7 @@ export function setPsychedelicSpeed(speed) {
 export function getFontScale() {
   const value = parseFloat(getStorageItem(STORAGE_KEY_FONT_SCALE, '1'));
 
-  return Number.isFinite(value) ? value : 1;
+  return isFontScale(value) ? value : 1;
 }
 
 export function setFontScale(scale) {

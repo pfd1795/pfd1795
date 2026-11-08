@@ -83,8 +83,8 @@
         "Canvas 2D"
       ],
       "controls": {
-        "es": "Clic / táctil · U deshacer · Esc pausa",
-        "en": "Click / touch · U undo · Esc pause"
+        "es": "Clic / táctil · Flechas + Enter (teclado) · U deshacer · Esc pausa",
+        "en": "Click / touch · Arrows + Enter (keyboard) · U undo · Esc pause"
       },
       "status": "published",
       "covers": [

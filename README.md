@@ -37,7 +37,7 @@ Luego abre `http://localhost:8000/`.
 
 ```text
 ├── index.html              # Portada
-├── docs/                   # Documentación organizada (índice, auditoría, prompts)
+├── docs/                   # Documentación organizada (índice y herramientas de desarrollo)
 ├── mis-estudios/           # Enciclopedia de informática
 ├── juegos/                 # Grilla y juegos arcade (ver juegos/README.md)
 ├── javascripts/            # Módulos ES6 y lógica de la interfaz
@@ -65,7 +65,9 @@ Para agregar un juego nuevo, sigue la guía [`juegos/README.md`](./juegos/README
 
 ## Despliegue
 
-GitHub Actions publica el contenido del repositorio en GitHub Pages en cada push a `main` (`.github/workflows/static.yml`). No requiere configuración adicional.
+GitHub Actions publica en GitHub Pages en cada push a `main` (`.github/workflows/static.yml`). La acción
+prepara una copia filtrada del sitio: publica HTML, CSS, JS, iconos e imágenes (incluidos los juegos y la
+enciclopedia) y excluye el material interno (CV en `assets/files/`, documentación y plantilla de juegos).
 
 ## Limitaciones
 

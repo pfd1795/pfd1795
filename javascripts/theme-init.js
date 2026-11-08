@@ -27,7 +27,6 @@
   var CLAVE_ESCALA = 'font-scale';
 
   var MODO_POR_DEFECTO = 'dark';
-  var ACENTO_POR_DEFECTO = 'hsl(210 75% 28%)';
   var FONDO_POR_DEFECTO = 'default';
   var DIRECCION_POR_DEFECTO = 'topToBottom';
   var VELOCIDAD_POR_DEFECTO = 'normal';
@@ -73,10 +72,15 @@
   }
 
   function aplicarAcento() {
+    /* Acento: variables inline en <html>. Sin valor válido se recuperan los
+       defaults definidos en la sección `:root` de stylesheets/base.css
+       (misma conducta que mis-estudios/js/tema.js). */
     var acento = leer(CLAVE_ACENTO);
 
     if (!esColorValido(acento)) {
-      acento = ACENTO_POR_DEFECTO;
+      raiz.style.removeProperty('--theme-color');
+      raiz.style.removeProperty('--theme-color-soft');
+      return;
     }
 
     raiz.style.setProperty('--theme-color', acento);

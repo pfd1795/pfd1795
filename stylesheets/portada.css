@@ -120,6 +120,15 @@
       color: var(--theme-color-contrast);
     }
   }
+  /* Iconos de contacto: los SVG de assets/icons se pintan con máscara CSS
+     para seguir el color del texto (un <img> no hereda currentColor). */
+  .social-icon {
+    background-color: currentColor;
+    height: 48px;
+    width: 48px;
+    mask: var(--icon) center / contain no-repeat;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+  }
   .email-container {
     display: inline-block;
     position: relative;

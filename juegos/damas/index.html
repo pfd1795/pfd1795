@@ -515,7 +515,16 @@ const store={
     this.migrate();
     try{
       const raw=localStorage.getItem(this.key);
-      if(raw){const d=JSON.parse(raw);Object.assign(this.data,d);}
+      if(raw){
+        const d=JSON.parse(raw);
+        // Solo acepta datos con forma válida: evita que un JSON corrupto rompa el juego
+        if(d&&typeof d==='object'&&d.settings&&typeof d.settings==='object'){
+          Object.assign(this.data.settings,d.settings);
+          ['wins','losses','draws','streak','bestStreak'].forEach(k=>{
+            if(Number.isFinite(d[k]))this.data[k]=d[k];
+          });
+        }
+      }
     }catch(err){/* almacenamiento no disponible */}
   },
   save(){

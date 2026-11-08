@@ -1,5 +1,6 @@
 export function copyEmail() {
   const email = "pfd1795@gmail.com";
+  let notifyTimer;
 
   if (!navigator.clipboard) {
     console.warn("Clipboard API not supported");
@@ -12,7 +13,8 @@ export function copyEmail() {
 
     notifications.forEach(notification => notification.classList.add("show"));
 
-    setTimeout(() => {
+    clearTimeout(notifyTimer); // apaga el aviso solo 2 s después del último clic
+    notifyTimer = setTimeout(() => {
       notifications.forEach(notification => notification.classList.remove("show"));
     }, 2000);
   }).catch(err => {

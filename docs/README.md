@@ -35,5 +35,7 @@ documentación de referencia para agentes.
 
 ## Convenciones
 
-- No reintroducir planes de tareas, fases ni auditorías obsoletas; el estado real está en el código.
+- No reintroducir planes de tareas, fases ni auditorías/informes de estado: la documentación describe el
+  estado real del código. Los inventarios temporales (como los hallazgos de auditoría) viven solo durante
+  su ciclo de corrección y se eliminan al cerrarse.
 - Las rutas de la documentación son relativas al archivo que las contiene.
