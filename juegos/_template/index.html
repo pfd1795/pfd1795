@@ -103,7 +103,7 @@
         calc(100vw - 16px),
         var(--game-max),
         calc(var(--game-max) * 3 / 4),
-        calc((100dvh - var(--game-chrome)) * 3 / 4)
+        calc(max(0px, 100dvh - var(--game-chrome)) * 3 / 4)
       );
       aspect-ratio: 3 / 4;
       background: #07010f;

@@ -92,10 +92,10 @@
 </main>
 
 <div id="touchbar">
-  <button class="pad" data-lane="0" type="button">D</button>
-  <button class="pad" data-lane="1" type="button">F</button>
-  <button class="pad" data-lane="2" type="button">J</button>
-  <button class="pad" data-lane="3" type="button">K</button>
+  <button class="pad" data-lane="0" type="button" aria-label="Carril D">D</button>
+  <button class="pad" data-lane="1" type="button" aria-label="Carril F">F</button>
+  <button class="pad" data-lane="2" type="button" aria-label="Carril J">J</button>
+  <button class="pad" data-lane="3" type="button" aria-label="Carril K">K</button>
 </div>
 
 <dialog id="options" aria-labelledby="options-title">
@@ -305,11 +305,16 @@ function syncBody(){document.body.dataset.state=game.state;}
 /* ===================== 6. LIENZO ===================== */
 const canvas=$('#game'),g=canvas.getContext('2d');
 function setupCanvas(){
+  const rect=canvas.getBoundingClientRect();
+  const cssWidth=rect.width||W;
+  const scale=cssWidth/W;
   const dpr=Math.min(2,window.devicePixelRatio||1);
-  canvas.width=W*dpr;canvas.height=H*dpr;
-  g.setTransform(dpr,0,0,dpr,0,0);
+  const renderScale=scale*dpr;
+  canvas.width=Math.round(W*renderScale);
+  canvas.height=Math.round(H*renderScale);
+  g.setTransform(renderScale,0,0,renderScale,0,0);
 }
-setupCanvas();
+requestAnimationFrame(setupCanvas);
 window.addEventListener('resize',setupCanvas);
 
 function txt(s,x,y,size,color,align='center'){
@@ -672,6 +677,7 @@ $('#mRestart').addEventListener('click',()=>startSong(game.songIndex));
 $('#mExit').addEventListener('click',()=>{closeModal();exitToMenu();});
 $('#mClose').addEventListener('click',closeModal);
 optionsDialog.addEventListener('click',e=>{if(e.target===optionsDialog)closeModal();}); // clic en el backdrop
+optionsDialog.addEventListener('close',()=>{if(game.state==='paused')resumeGame();});
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden&&game.state==='playing')pauseGame();
 });

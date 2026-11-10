@@ -51,8 +51,8 @@
       margin: 0;
       font-size: 1.25rem;
       letter-spacing: 3px;
-      color: var(--neon-cyan);
-      text-shadow: 0 0 8px rgba(5, 217, 232, 0.8);
+      color: var(--neon-green);
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.8);
       text-transform: uppercase;
     }
     .topbar button,
@@ -101,7 +101,8 @@
       width: min(
         calc(100vw - 16px),
         var(--game-max),
-        calc((100dvh - var(--game-chrome)) * 3 / 4)
+        calc(var(--game-max) * 3 / 4),
+        calc(max(0px, 100dvh - var(--game-chrome)) * 3 / 4)
       );
       aspect-ratio: 3 / 4;
       background: #07010f;
@@ -148,7 +149,7 @@
     }
 
     @media (hover: none) and (pointer: coarse), (max-width: 600px) {
-      :root { --game-chrome: 380px; }
+      :root { --game-chrome: 400px; }
     }
 
     dialog {
@@ -172,7 +173,7 @@
 <body>
   <header class="topbar">
     <h1>Card Match</h1>
-    <button type="button" id="btn-options">Opciones</button>
+    <button type="button" id="btn-options" aria-haspopup="dialog">Opciones</button>
   </header>
 
   <section class="hud" aria-live="polite">
@@ -979,7 +980,7 @@
         if (!f) return;
         var p = f.t / f.dur;
         var a = p < 0.15 ? p / 0.15 : p > 0.7 ? (1 - p) / 0.3 : 1;
-        var col = ['', '', C.CY, C.GR, C.YE, C.PK][f.mult];
+        var col = [C.CY, C.CY, C.CY, C.GR, C.YE, C.PK][f.mult];
         var sc = 1 + 0.18 * (1 - Math.min(1, p * 3));
         ctx.save();
         ctx.translate(W / 2, 205);

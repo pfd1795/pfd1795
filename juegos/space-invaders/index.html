@@ -81,7 +81,7 @@
         calc(100vw - 16px),
         var(--game-max),
         calc(var(--game-max) * 8 / 9),
-        calc((100dvh - var(--game-chrome)) * 8 / 9)
+        calc(max(0px, 100dvh - var(--game-chrome)) * 8 / 9)
       );
       aspect-ratio: 8 / 9;
       margin: 4px 0;
@@ -118,7 +118,7 @@
     .tbtn:active { background: rgba(5, 217, 232, 0.3); }
     .tbtn.fire:active { background: rgba(255, 42, 109, 0.3); }
     @media (hover: none) and (pointer: coarse), (max-width: 600px) {
-      :root { --game-chrome: 330px; }
+      :root { --game-chrome: 260px; }
       .touchpad { display: flex; }
     }
 
@@ -928,6 +928,7 @@
       });
 
       document.addEventListener('keyup', (e) => {
+        if (optionsDialog.open) return;
         if (e.code === 'Space') game.input.fire = false;
         const dir = MOVE_KEYS[e.code];
         if (dir) game.input[dir] = false;

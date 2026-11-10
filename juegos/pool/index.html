@@ -404,11 +404,16 @@ function castRay(ox,oy,dx,dy){
 /* ===================== 9. LIENZO ===================== */
 const canvas=$('#game'),g=canvas.getContext('2d');
 function setupCanvas(){
+  const rect=canvas.getBoundingClientRect();
+  const cssWidth=rect.width||W;
+  const scale=cssWidth/W;
   const dpr=Math.min(2,window.devicePixelRatio||1);
-  canvas.width=W*dpr;canvas.height=H*dpr;
-  g.setTransform(dpr,0,0,dpr,0,0);
+  const renderScale=scale*dpr;
+  canvas.width=Math.round(W*renderScale);
+  canvas.height=Math.round(H*renderScale);
+  g.setTransform(renderScale,0,0,renderScale,0,0);
 }
-setupCanvas();
+requestAnimationFrame(setupCanvas);
 window.addEventListener('resize',setupCanvas);
 function txt(s,x,y,size,color,align='center'){
   g.fillStyle=color;g.textAlign=align;g.textBaseline='middle';
@@ -644,6 +649,7 @@ $('#mRestart').addEventListener('click',startGame);
 $('#mExit').addEventListener('click',()=>{closeModal();goTitle();});
 $('#mClose').addEventListener('click',closeModal);
 optionsDialog.addEventListener('click',e=>{if(e.target===optionsDialog)closeModal();}); // clic en el backdrop
+optionsDialog.addEventListener('close',()=>{if(game.state==='paused')resumeGame();});
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden&&game.state==='playing')pauseGame();
 });

@@ -481,7 +481,7 @@ function aiBestMove(depth,jitter){
     if(jitter&&e.history.length<8)sc+=Math.random()*30-15; // variedad
     scored.push({m,sc});
     if(sc>bestSc){bestSc=sc;best=m;}
-    if(!full && sc>alpha)alpha=sc;
+    if(sc>alpha)alpha=sc;
   }
   if(jitter){
     const pool=scored.filter(x=>x.sc>=bestSc-80);

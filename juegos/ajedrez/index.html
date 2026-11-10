@@ -661,7 +661,7 @@ const store={
     try{
       if(localStorage.getItem(this.key)==null){
         const raw=localStorage.getItem(this.legacy);
-        if(raw!=null)localStorage.setItem(this.key,raw); // conserva el récord con la clave nueva
+        if(raw!=null){ try { JSON.parse(raw); localStorage.setItem(this.key,raw); } catch(e){} } // conserva el récord con la clave nueva
       }
       if(localStorage.getItem(this.legacy)!=null)localStorage.removeItem(this.legacy);
     }catch(err){/* almacenamiento no disponible */}
@@ -797,7 +797,7 @@ function draw(){
 let engine=newEngine();
 let state='menu';               // menu | playing | paused | gameover
 let mode='1p', difficulty='normal', playerColor=W, aiColor=B;
-let selection=-1, targets=[], currentLegal=[], cursorCell=-1;
+let selection=-1, currentLegal=[], cursorCell=-1;
 let lastMove=null, anim=null, thinking=false, promoPending=null;
 
 const $=id=>document.getElementById(id);
@@ -910,7 +910,7 @@ function endGame(end){
 function commitMove(m){
   make(engine,m);
   lastMove={from:m.from,to:m.to};
-  selection=-1;targets=[];
+  selection=-1;
   anim={m,t0:performance.now(),dur:170};
   setHudStatus('');
   updateHUD();
@@ -1067,8 +1067,6 @@ const s = store.data.settings;
 [['segMode', s.mode], ['segDiff', s.diff], ['segColor', s.color]].forEach(([id, val]) => {
   [...$(id).children].forEach(c => c.classList.toggle('on', c.dataset.v === val));
 });
-[$('segMode')].forEach(el=>[...el.children].forEach(c=>
-  c.classList.toggle('on',c.dataset.v===store.data.settings.mode)));
 setupInitial(engine);
 refreshSegVisibility();
 showPanel(panelMenu);

@@ -101,7 +101,8 @@
       width: min(
         calc(100vw - 16px),
         var(--game-max),
-        calc((100dvh - var(--game-chrome)) * 4 / 3)
+        calc(var(--game-max) * 4 / 3),
+        calc(max(0px, 100dvh - var(--game-chrome)) * 4 / 3)
       );
       aspect-ratio: 4 / 3;
       background: #07010f;
@@ -169,7 +170,7 @@
 <body>
   <header class="topbar">
     <h1>Neon Retro Rally</h1>
-    <button type="button" id="btn-options">Opciones</button>
+    <button type="button" id="btn-options" aria-haspopup="dialog">Opciones</button>
   </header>
 
   <section class="hud" aria-live="polite">

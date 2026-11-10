@@ -82,7 +82,7 @@
         calc(100vw - 16px),
         var(--game-max),
         calc(var(--game-max) * 4 / 3),
-        calc((100dvh - var(--game-chrome)) * 4 / 3)
+        calc(max(0px, 100dvh - var(--game-chrome)) * 4 / 3)
       );
       aspect-ratio: 4 / 3;
       margin: 4px 0;
@@ -509,7 +509,7 @@
             }
             if (ok) rooms.push({ x: rx, y: ry, w: rw, h: rh });
           }
-          if (rooms.length < 3) continue;
+          if (rooms.length < 1) continue;
 
           const carveH = (x0, x1, y) => {
             for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) {
@@ -638,7 +638,8 @@
       }
 
       function loadFloor(n) {
-        lvl = generateFloor(n);
+        let _tries = 0;
+        do { lvl = generateFloor(n); } while (!lvl && _tries++ < 100);
         const c = lvl.rooms[0];
         const p = game.player;
         p.x = (c.x + c.w / 2) * TILE - p.w / 2;
@@ -855,7 +856,7 @@
             vx = Math.cos(e.ang) * e.speed;
             vy = Math.sin(e.ang) * e.speed;
           } else if (e.type === 'skeleton') {
-            if (dist < e.chase) {
+            if (dist < e.chase && dist > 0) {
               vx = (pcx - ecx) / dist * e.speed;
               vy = (pcy - ecy) / dist * e.speed;
             } else {
@@ -917,6 +918,7 @@
         if (game.winT > 0) {
           game.winT -= dt;
           if (game.winT <= 0) { winGame(); return; }
+          return;
         }
         updatePlayer(dt);
         if (game.state !== State.PLAYING) return; // pudo morir
@@ -1410,6 +1412,7 @@
       });
 
       document.addEventListener('keyup', (e) => {
+        if (optionsDialog.open) return;
         if (e.code === 'Space' || e.code === 'KeyJ') game.input.attack = false;
         const dir = MOVE_KEYS[e.code];
         if (dir) game.input[dir] = false;

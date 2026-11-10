@@ -243,7 +243,7 @@ canvas {
     calc(100vw - 16px),                             /* móvil: todo el ancho útil */
     var(--game-max),                                /* tope de ancho */
     calc(var(--game-max) * W / H),                  /* tope de alto = 900px */
-    calc((100dvh - var(--game-chrome)) * W / H)     /* alto disponible real */
+    calc(max(0px, 100dvh - var(--game-chrome)) * W / H)     /* alto disponible real */
   );
   aspect-ratio: W / H;
 }

@@ -80,7 +80,7 @@
         calc(100vw - 16px),
         var(--game-max),
         calc(var(--game-max) * 16 / 9),
-        calc((100dvh - var(--game-chrome)) * 16 / 9)
+        calc(max(0px, 100dvh - var(--game-chrome)) * 16 / 9)
       );
       aspect-ratio: 16 / 9;
       margin: 4px 0;
@@ -1066,6 +1066,7 @@
       });
 
       document.addEventListener('keyup', (e) => {
+        if (optionsDialog.open) return;
         if (JUMP_KEYS.includes(e.code)) game.input.jumpHeld = false;
         if (FIRE_KEYS.includes(e.code)) game.input.fire = false;
         const dir = MOVE_KEYS[e.code];

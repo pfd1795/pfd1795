@@ -291,11 +291,12 @@ function resize(){
   const rect = stage.getBoundingClientRect();
   const scale = Math.max(0.4, Math.min((rect.width-8)/GW, (rect.height-8)/GH, 1.25));
   const dpr = Math.min(dprCap, window.devicePixelRatio || 1);
-  canvas.width  = Math.round(GW*dpr);
-  canvas.height = Math.round(GH*dpr);
+  const renderScale = scale * dpr;
+  canvas.width  = Math.round(GW*renderScale);
+  canvas.height = Math.round(GH*renderScale);
   canvas.style.width  = Math.round(GW*scale) + 'px';
   canvas.style.height = Math.round(GH*scale) + 'px';
-  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.setTransform(renderScale,0,0,renderScale,0,0);
 }
 function toLogical(e){
   const rect = canvas.getBoundingClientRect();
@@ -319,7 +320,7 @@ function loadLevel(n){
       bricks.push({
         x: BX0 + c*(BW+BRICK_GAP),
         y: BRICK_TOP + r*(BRICK_H+BRICK_GAP),
-        type: ch, hp: HITS[ch] || 1, alive:true
+        w: BW, h: BRICK_H, type: ch, hp: HITS[ch] || 1, alive:true
       });
       if(ch !== 'X') destructible++;
     }

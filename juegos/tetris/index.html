@@ -102,7 +102,7 @@
         calc(100vw - 16px),
         var(--game-max),
         calc(var(--game-max) * 480 / 640),
-        calc((100dvh - var(--game-chrome)) * 480 / 640)
+        calc(max(0px, 100dvh - var(--game-chrome)) * 480 / 640)
       );
       aspect-ratio: 480 / 640;
       background: #07010f;
@@ -179,7 +179,7 @@
 <body>
   <header class="topbar">
     <h1>Tetris</h1>
-    <button type="button" id="btn-options">Opciones</button>
+    <button type="button" id="btn-options" aria-haspopup="dialog">Opciones</button>
   </header>
 
   <section class="hud" aria-live="polite">
@@ -839,6 +839,9 @@
       document.getElementById('btn-close-options').addEventListener('click', () => optionsDialog.close());
       optionsDialog.addEventListener('click', (event) => {
         if (event.target === optionsDialog) optionsDialog.close();
+      });
+      optionsDialog.addEventListener('close', () => {
+        if (game.state === STATE.PAUSED) togglePause();
       });
 
       document.addEventListener('visibilitychange', () => {

@@ -79,7 +79,7 @@
         calc(100vw - 16px),
         var(--game-max),
         calc(var(--game-max) * 3 / 4),
-        calc((100dvh - var(--game-chrome)) * 3 / 4)
+        calc(max(0px, 100dvh - var(--game-chrome)) * 3 / 4)
       );
       aspect-ratio: 3 / 4;
       margin: 4px 0;
@@ -109,7 +109,7 @@
     }
     .tbtn:active { background: rgba(5, 217, 232, 0.3); }
     @media (hover: none) and (pointer: coarse), (max-width: 600px) {
-      :root { --game-chrome: 330px; }
+      :root { --game-chrome: 230px; }
       .touchpad { display: flex; }
     }
 
@@ -382,7 +382,7 @@
 
       function endGame() {
         game.state = State.OVER;
-        if (game.score > game.best) {
+        if (Math.floor(game.score) > game.best) {
           game.best = Math.floor(game.score);
           game.newRecord = game.best > 0;
           saveBest(game.best);
@@ -671,6 +671,7 @@
       });
 
       document.addEventListener('keyup', (e) => {
+        if (optionsDialog.open) return;
         const dir = MOVE_KEYS[e.code];
         if (dir) game.input[dir] = false;
       });

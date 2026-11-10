@@ -77,21 +77,22 @@
     #best  { color: var(--neon-green); }
 
     /* ================= Escenario ================= */
-    .stage { position: relative; }
+    .stage { position: relative; display: flex; justify-content: center; }
+    .stage-wrap { position: relative; width: fit-content; }
     canvas {
       display: block;
       width: min(
         calc(100vw - 16px),
         var(--game-max),
         calc(var(--game-max) * 4 / 3),
-        calc((100dvh - var(--game-chrome)) * 4 / 3)
+        calc(max(0px, 100dvh - var(--game-chrome)) * 4 / 3)
       );
       aspect-ratio: 4 / 3;
       margin: 4px 0;
       border: 2px solid var(--neon-purple);
       border-radius: 8px;
       box-shadow: 0 0 18px rgba(185, 103, 255, 0.45);
-      touch-action: manipulation;
+      touch-action: none;
       background: var(--bg);
     }
 
@@ -208,14 +209,16 @@
 
     <!-- Escenario -->
     <div class="stage">
-      <canvas id="game" aria-label="Juego de tower defense"></canvas>
+      <div class="stage-wrap">
+        <canvas id="game" aria-label="Juego de tower defense"></canvas>
 
-      <!-- Panel de la torre seleccionada -->
-      <div class="towerpanel" id="towerPanel" hidden>
+        <!-- Panel de la torre seleccionada -->
+        <div class="towerpanel" id="towerPanel" hidden>
         <span id="tpInfo"><b>Torre</b></span>
         <button id="btnUpgrade">Mejorar</button>
         <button id="btnSell">Vender</button>
         <button id="btnCloseTP" aria-label="Cerrar">✕</button>
+      </div>
       </div>
     </div>
 
@@ -397,6 +400,7 @@
 
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('orientationchange', resizeCanvas);
 
       /* ================= Estado del juego ================= */
       const game = {
@@ -450,7 +454,7 @@
           b.classList.toggle('poor', game.money < TOWER_TYPES[type].cost);
           b.classList.toggle('sel', game.placingType === type);
         }
-        const canWave = game.state === State.PLAYING && !game.waveActive;
+        const canWave = game.state === State.START || game.state === State.OVER || game.state === State.WIN || (game.state === State.PLAYING && !game.waveActive);
         btnWave.disabled = !canWave;
         btnWave.textContent = '▶ Oleada ' + Math.min(game.wave + 1, MAX_WAVES);
         btnPause.disabled = !(game.state === State.PLAYING || game.state === State.PAUSED);
@@ -883,11 +887,11 @@
         ctx.shadowColor = '#39ff14';
         ctx.shadowBlur = 14;
         ctx.fillStyle = '#39ff14';
-        ctx.beginPath(); ctx.arc(4, 60, pulse, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.arc(4, 60, pulse, 0, Math.PI * 2); ctx.fill();
         // Salida (derecha)
         ctx.shadowColor = '#ff2a6d';
         ctx.fillStyle = '#ff2a6d';
-        ctx.beginPath(); ctx.arc(VIEW_W - 4, 420, pulse, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.arc(VIEW_W - 4, 420, pulse, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
       }
 
@@ -909,7 +913,7 @@
         ctx.strokeStyle = color;
         ctx.globalAlpha = 0.55;
         ctx.setLineDash([6, 6]);
-        ctx.beginPath(); ctx.arc(x, y, range, 0, 7); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, range, 0, Math.PI * 2); ctx.stroke();
         ctx.setLineDash([]);
         ctx.globalAlpha = 0.07;
         ctx.fillStyle = color;
@@ -929,7 +933,7 @@
           if (tw.type === 'tesla') {
             // Orbe con chispas orbitando
             ctx.fillStyle = base.color;
-            ctx.beginPath(); ctx.arc(tw.x, tw.y - 2, 6, 0, 7); ctx.fill();
+            ctx.beginPath(); ctx.arc(tw.x, tw.y - 2, 6, 0, Math.PI * 2); ctx.fill();
             for (let i = 0; i < 3; i++) {
               const a = t / 300 + i * 2.09;
               ctx.fillRect(tw.x + Math.cos(a) * 11 - 1.5, tw.y - 2 + Math.sin(a) * 11 - 1.5, 3, 3);
@@ -941,7 +945,7 @@
             ctx.rotate(tw.angle);
             ctx.fillStyle = base.color;
             ctx.fillRect(6, -spec.w / 2, spec.len, spec.w);
-            if (tw.type === 'cannon') { ctx.beginPath(); ctx.arc(6 + spec.len, 0, 4.5, 0, 7); ctx.fill(); }
+            if (tw.type === 'cannon') { ctx.beginPath(); ctx.arc(6 + spec.len, 0, 4.5, 0, Math.PI * 2); ctx.fill(); }
             if (tw.type === 'sniper') { ctx.fillRect(6 + spec.len, -2, 3, 4); }
             ctx.restore();
           }
@@ -981,9 +985,9 @@
           ctx.shadowColor = sh.color;
           ctx.shadowBlur = 8;
           ctx.fillStyle = '#fff';
-          ctx.beginPath(); ctx.arc(sh.x, sh.y, 3.5, 0, 7); ctx.fill();
+          ctx.beginPath(); ctx.arc(sh.x, sh.y, 3.5, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = sh.color;
-          ctx.beginPath(); ctx.arc(sh.x, sh.y, 2, 0, 7); ctx.fill();
+          ctx.beginPath(); ctx.arc(sh.x, sh.y, 2, 0, Math.PI * 2); ctx.fill();
         }
         ctx.restore();
       }
@@ -1012,7 +1016,7 @@
           ctx.globalAlpha = 1 - k;
           ctx.strokeStyle = rg.color;
           ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r + (rg.max - rg.r) * k, 0, 7); ctx.stroke();
+          ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r + (rg.max - rg.r) * k, 0, Math.PI * 2); ctx.stroke();
         }
         ctx.restore();
       }
