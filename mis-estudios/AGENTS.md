@@ -44,6 +44,9 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
    nuevos cargan además `../js/copiar.js`, añaden su caja «En 5 puntos» (`.tl-dr`) y —si ayudan—
    diagramas SVG inline con las clases de `enciclopedia.css` (`.diagrama`); nada de imágenes
    remotas ni librerías externas.
+8. **Sin firmas de IA**: un artículo no incluye marcas de agua, comentarios-firma, nombres de modelos
+   de IA, código ni recursos propios de un agente. La única firma admitida está en el footer de la
+   portada (`../index.html`), según la regla del [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).
 
 ## Verificación local
 

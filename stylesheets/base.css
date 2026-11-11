@@ -199,6 +199,11 @@ code {
   --theme-color-soft: hsl(210 75% 70%);
   --theme-color-contrast: var(--color-white);
 
+  /* --- Acento adaptativo del footer (igual patrón que --enc-accent) --- */
+  /* En modo claro usa la variante oscura del acento y en modo oscuro la
+     variante clara, para que el texto acento siempre tenga contraste. */
+  --footer-accent: var(--theme-color);
+
   /* --- Escala tipográfica y de espaciado --- */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -378,6 +383,7 @@ html.dark {
   --color-text: var(--dn900);
   --color-text-secondary: var(--dn700);
   --color-text-disabled: var(--dn600);
+  --footer-accent: var(--theme-color-soft);
   --neutral-background-soft: var(--dn100);
   --bg-theme-blue: var(--blue-oscuro);
   --bg-theme-red: var(--red-oscuro);
@@ -470,12 +476,121 @@ html {
   gap: var(--space-4);
   padding: 3em 1em;
 
+  .footer-section {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0 auto;
+    max-width: 960px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .footer-title {
+    color: var(--footer-accent);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-wide);
+    line-height: var(--leading-tight);
+    text-transform: uppercase;
+  }
+
+  .footer-text {
+    color: var(--color-text-secondary);
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    max-width: 64ch;
+  }
+
+  .footer-note {
+    color: var(--color-text-secondary);
+    font-size: var(--text-caption);
+    font-style: italic;
+    line-height: var(--leading-normal);
+    max-width: 60ch;
+  }
+
+  .footer-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .footer-chip {
+    background-color: var(--color-surface-raised);
+    border: var(--border-normal) solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    font-size: var(--text-caption);
+    font-weight: var(--font-medium);
+    padding: var(--space-1) var(--space-3);
+    white-space: nowrap;
+  }
+
+  .footer-chips--ai .footer-chip {
+    border-color: var(--footer-accent);
+    color: var(--footer-accent);
+    font-weight: var(--font-semibold);
+  }
+
+  .footer-fundamentals {
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    justify-content: center;
+
+    .tech-item {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+
+      figure {
+        width: 64px;
+      }
+
+      .tech-name {
+        font-size: var(--text-sm);
+        font-weight: var(--font-bold);
+        text-align: center;
+      }
+    }
+
+    @media (min-width: 768px) {
+      gap: var(--space-4);
+
+      .tech-item {
+        figure {
+          width: 86px;
+        }
+
+        .tech-name {
+          font-size: var(--text-base);
+        }
+      }
+    }
+  }
+
+  .tech-plus {
+    color: var(--color-text-secondary);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+  }
+
   .credits-text {
     font-size: var(--text-sm);
     line-height: var(--leading-normal);
+    text-align: center;
 
     a {
-      color: var(--theme-color);
+      color: var(--footer-accent);
 
       &:hover {
         text-decoration: underline;
@@ -511,7 +626,7 @@ html {
     white-space: nowrap;
 
     &:hover {
-      color: var(--theme-color);
+      color: var(--footer-accent);
       text-decoration: underline;
     }
   }
@@ -525,57 +640,14 @@ html {
   @media (min-width: 768px) {
     padding: var(--space-8) var(--space-16);
 
+    .footer-title {
+      font-size: var(--text-3xl);
+    }
+
     .credits-text {
       font-size: var(--text-base);
-      text-align: center;
     }
   }
-}
-
-.footer .tech-stack-section {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  max-width: 920px;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    margin: 0 auto;
-  }
-
-  >p:nth-child(1) {
-    strong {
-      color: var(--theme-color);
-    }
-  }
-
-  section {
-    align-items: center;
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 1rem;
-    justify-content: center;
-    padding: 1rem;
-
-    .tech-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      figure {
-        width: 86px;
-      }
-
-      .tech-name {
-        font-weight: var(--font-bold);
-      }
-    }
-  }
-}
-
-.footer .tech-plus {
-  font-size: var(--text-3xl);
-  font-weight: var(--font-bold);
 }
 
 /* ===== 4. MODAL ===== */

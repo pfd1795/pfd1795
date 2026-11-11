@@ -123,13 +123,15 @@
   </main>
 
   <footer class="footer">
-    <section class="tech-stack-section">
-      <p data-lang="subtitle">
-        Este portafolio está construido con las tecnologías fundamentales de la web: <strong>HTML</strong>,
-        <strong>CSS</strong> y <strong>JavaScript vanilla</strong>.
+    <section class="footer-section footer-tech">
+      <h2 class="footer-title" data-lang="footerTechTitle">Tecnologías utilizadas</h2>
+
+      <p class="footer-text" data-lang="footerTechText">
+        Portafolio, enciclopedia y juegos construidos con HTML, CSS y JavaScript vanilla: sin frameworks,
+        sin build step y sin dependencias externas.
       </p>
 
-      <section>
+      <div class="footer-fundamentals">
         <div class="tech-item">
           <figure>
             <img src="./assets/icons/html.svg" alt="HTML" width="86" height="86">
@@ -137,7 +139,7 @@
           <p class="tech-name" data-lang="htmlLabel">Maquetación</p>
         </div>
 
-        <span class="tech-plus">+</span>
+        <span class="tech-plus" aria-hidden="true">+</span>
 
         <div class="tech-item">
           <figure>
@@ -146,7 +148,7 @@
           <p class="tech-name" data-lang="cssLabel">Diseño</p>
         </div>
 
-        <span class="tech-plus">+</span>
+        <span class="tech-plus" aria-hidden="true">+</span>
 
         <div class="tech-item">
           <figure>
@@ -154,18 +156,61 @@
           </figure>
           <p class="tech-name" data-lang="jsLabel">Programación</p>
         </div>
-      </section>
+      </div>
+
+      <ul class="footer-chips">
+        <li class="footer-chip">HTML</li>
+        <li class="footer-chip">CSS</li>
+        <li class="footer-chip">JavaScript</li>
+        <li class="footer-chip">ES Modules</li>
+        <li class="footer-chip">CSS Nesting</li>
+        <li class="footer-chip">SVG</li>
+        <li class="footer-chip">Canvas 2D</li>
+        <li class="footer-chip">Dialog API</li>
+        <li class="footer-chip">Intersection Observer</li>
+        <li class="footer-chip">View Transitions</li>
+        <li class="footer-chip">PWA</li>
+        <li class="footer-chip">Service Worker</li>
+        <li class="footer-chip">Web App Manifest</li>
+        <li class="footer-chip">localStorage</li>
+        <li class="footer-chip">Git</li>
+        <li class="footer-chip">GitHub Pages</li>
+        <li class="footer-chip">GitHub Actions</li>
+      </ul>
     </section>
 
     <hr class="divider">
 
-    <p class="credits-text" data-lang="creditsText">
-      Los vectores y iconos son de
+    <section class="footer-section footer-ai">
+      <h2 class="footer-title" data-lang="footerAiTitle">Agentes de IA</h2>
+
+      <p class="footer-text" data-lang="footerAiText">
+        Este sitio se desarrolló con la asistencia de los siguientes agentes y modelos de IA:
+      </p>
+
+      <ul class="footer-chips footer-chips--ai">
+        <li class="footer-chip footer-chip--ai">GLM-5.3-Flash</li>
+        <li class="footer-chip footer-chip--ai">Beam Free</li>
+        <li class="footer-chip footer-chip--ai">minimax M3.1 Flash</li>
+      </ul>
+
+      <p class="footer-note" data-lang="footerAiNote">
+        Todo agente o modelo de IA que aporta al proyecto firma en esta sección y en ningún otro lugar
+        del sitio.
+      </p>
+    </section>
+
+    <hr class="divider">
+
+    <p class="credits-text">
+      <span data-lang="creditsText">Los vectores e iconos son de</span>
       <a href="https://github.com/garudatechnologydevelopers/sketch-icons?ref=svgrepo.com" title="GitHub"
-        target="_blank" rel="noopener noreferrer">github/GarudaTechnology</a> y
+        target="_blank" rel="noopener noreferrer">github/GarudaTechnology</a>
+      <span data-lang="creditsAnd"> y </span>
       <a href="https://www.svgrepo.com/author/Garuda%20Technology/" target="_blank" rel="noopener noreferrer">svgrepo/GarudaTechnology</a>
-      con la licencia MIT de
-      <a href="https://www.svgrepo.com/" target="_blank" rel="noopener noreferrer">SVG Repo</a>. Y de
+      <span data-lang="creditsLicense"> con la licencia MIT de </span>
+      <a href="https://www.svgrepo.com/" target="_blank" rel="noopener noreferrer">SVG Repo</a>
+      <span data-lang="creditsAndAlso">. Y de </span>
       <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer">google/icons</a>
     </p>
 
@@ -178,7 +223,7 @@
         <a href="https://github.com/pfd1795" target="_blank" class="developer-link" rel="noopener noreferrer">pfd1795</a>
       </div>
 
-      <p class="version-text">Ver. 1.0</p>
+      <p class="version-text">Ver. 2.0</p>
     </section>
   </footer>
 

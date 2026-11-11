@@ -43,6 +43,9 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
 7. **Portadas nuevas**: el procedimiento para generarlas es una herramienta a pedido explícito en
    [`../docs/prompts/portadas-juegos.md`](../docs/prompts/portadas-juegos.md); no leerla salvo
    petición del desarrollador.
+8. **Sin firmas de IA**: un juego no incluye marcas de agua, comentarios-firma, nombres de modelos
+   de IA, código ni recursos propios de un agente. La única firma admitida está en el footer de la
+   portada (`../index.html`), según la regla del [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).
 
 ## Verificación local
 

@@ -285,6 +285,7 @@ del manifiesto (ver Arquitectura CSS).
   `--color-success/warning/error/info`, `--color-background-neutral`, `--color-border-light`,
   `--color-separator`); reflotar un alias solo al aparecer su primer uso real.
 - **Temas de color**: el acento activo se expone como `--theme-color` (variante oscura) y `--theme-color-soft` (variante clara). `controllers/sidebar/fnThemeColor.js` los sobreescribe a partir de `utils/themeColors.js` (fuente única de las 6 opciones).
+- **Footer**: `.footer` existe solo en la portada (`index.html`) y está compuesto por la sección de tecnologías (`.footer-tech`), la de agentes de IA (`.footer-ai`), los créditos de iconos y el bloque `.footer-bottom`. Usa el acento adaptativo `--footer-accent` (`--theme-color` en modo claro y `--theme-color-soft` en modo oscuro, mismo patrón que `--enc-accent` de la enciclopedia) para que los títulos y las firmas tengan contraste en ambos modos. Las listas usan `.footer-chips` con `.footer-chip`; las firmas de IA son `.footer-chip--ai` dentro de `.footer-chips--ai`.
 - **Temas de fondo (degradados)**: el fondo de página se controla con `--page-background`, `--page-gradient`, `--page-scrim`, `--page-background-size`, `--page-background-repeat` y `--page-animation`, consumidos por `.body-container`. `utils/themeBackgrounds.js` define los 10 temas (default + 8 colores, incluido violeta, + multicolor), las 7 direcciones (4 lineales, 2 radiales y color sólido) y las 3 velocidades. El degradado usa los tokens `--<color>-oscuro` y `--neutral-background-soft`, este último redefinido en modo oscuro. El modo `multicolor` usa un arcoíris animado con `@keyframes page-rainbow` (180s lento / 30s normal / 10s rápido) que se anula con `prefers-reduced-motion`. En modo claro, `html.has-page-theme` aplica un velo neutro (`--page-scrim`) y oscurece el texto secundario para mantener el contraste.
 - **Tamaño de fuente**: `html` usa `font-size: calc(16px * var(--font-scale, 1))`; el modal fija `--font-scale` en 0.85, 1 o 1.15, por lo que escala toda la tipografía basada en `rem` sin tocar los breakpoints en `px`.
 - **Modo oscuro**: clase `.dark` en `body.dark` (portafolio) y `html.dark` (subpáginas como `mis-estudios/`, que la fijan antes de pintar); la sección `:root` de `base.css` admite ambos selectores y `fnThemeMode.js` actualiza los dos nodos. Redefine las variables semánticas (`--color-background`, `--color-surface`, `--color-text`, …), por lo que los componentes se adaptan solos.
@@ -365,6 +366,32 @@ del manifiesto (ver Arquitectura CSS).
 
 ---
 
+## Firma de agentes IA en el footer
+
+Orden permanente para todo agente o modelo de IA que trabaje en este repositorio.
+
+1. **Firma obligatoria**: todo agente o modelo de IA que aporte al proyecto —con aporte grande o
+   pequeño— debe añadir su nombre en la sección "Agentes de IA" del footer de `index.html` (la
+   primera página principal del sitio). La firma es un `<li class="footer-chip footer-chip--ai">`
+   dentro del `<ul class="footer-chips footer-chips--ai">`, y solo contiene el nombre del modelo.
+2. **Un único lugar permitido**: el footer de la portada es el **único** punto del sitio donde un
+   modelo puede dejar su marca. No hay ninguna otra mención autorizada.
+3. **Prohibiciones**: un modelo de IA **no puede** dejar marcas de agua, comentarios-firma, nombres
+   de modelo en el código, archivos ni recursos propios, claves de `localStorage` propias, entradas
+   en el manifiesto, textos en `README-juego.md`, contenidos en la enciclopedia ni ninguna otra
+   forma de mención, aclaración o expresión en el resto del sitio.
+4. **Aclaraciones del modelo**: si el modelo desea expresar o aclarar algo, ese mensaje se incluye
+   únicamente en la sección "Agentes de IA" del footer de la portada (por ejemplo, en la nota de la
+   sección, que es texto del sitio y se traduce con `data-lang`), nunca en otro archivo.
+5. **Textos de la sección**: el título, la descripción y la nota de la sección "Agentes de IA" son
+   del sitio y se traducen con `data-lang` (`footerAiTitle`, `footerAiText`, `footerAiNote` en
+   `translations.json`). Los nombres de los modelos no se traducen.
+
+Los `AGENTS.md` locales de `juegos/` y `mis-estudios/` repiten esta orden: esas carpetas no admiten
+firmas, marcas ni menciones de modelos de IA.
+
+---
+
 ## Reglas de mantenimiento
 
 - **Sin frameworks ni build**: Vanilla JS/CSS únicamente; no introducir bundlers, frameworks ni backend.
@@ -373,4 +400,5 @@ del manifiesto (ver Arquitectura CSS).
 - **Documentación**: mantener `README.md`, `AGENTS.md` (raíz y los locales de `juegos/` y `mis-estudios/`), `docs/README.md` y `juegos/README.md` sincronizados con el código. No reintroducir planes de tareas, fases ni informes de estado: la documentación describe el estado real del código.
 - **Juegos**: un juego nuevo se integra copiando su carpeta a `juegos/<slug>/` siguiendo el canon visual retro-arcade (`_template/` como base, `snake/` como referencia), añadiendo su entrada a `javascripts/data/juegos.json` (con `status: "published"` solo si está probado) y documentándolo con `README-juego.md`; no se edita el juego para adaptarlo al chrome del portafolio.
 - **Información personal**: no modificar los datos personales del desarrollador.
+- **Firma de IA**: todo agente o modelo de IA que aporte al proyecto firma **solo** en el footer de la portada (ver "Firma de agentes IA en el footer"); en ningún otro lugar del sitio puede dejar marcas, comentarios, código o recursos propios.
 - **Commits**: no crear commits automáticamente ni ejecutar `git commit`; los commits son manuales y los realiza el desarrollador.

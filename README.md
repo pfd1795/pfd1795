@@ -8,6 +8,7 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 
 - Portada con grillas de experiencia, estudios y proyectos generadas desde `javascripts/lang/translations.json`.
 - Menú lateral con navegación por secciones, submenú desplegable y scrollspy.
+- Pie de página con las tecnologías que construyeron el sitio, la firma de los agentes de IA que colaboraron y los créditos de los iconos.
 - Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
 - Enciclopedia de informática en `mis-estudios/`, con buscador y 21 artículos publicados (varios temarios siguen "Próximamente").
