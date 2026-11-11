@@ -23,3 +23,14 @@ function main() {
 }
 
 document.addEventListener('DOMContentLoaded', main);
+
+/* Registro del Service Worker (PWA). La URL se resuelve relativa al módulo
+   para funcionar tanto en desarrollo (raíz) como en GitHub Pages (subruta). */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const swUrl = new URL('../../service-worker.js', import.meta.url);
+    navigator.serviceWorker.register(swUrl).catch((err) => {
+      console.warn('Service Worker registration failed:', err);
+    });
+  });
+}

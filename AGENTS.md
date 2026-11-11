@@ -109,7 +109,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
-| `javascripts/main.js` | — (script principal) | Monta `InitModalDialog`, `SidebarController` (si existe `#HomePage`), `HomeController` (si existe `.main-layout`) y `JuegosController` (si existe `.juegos-grid`) tras `DOMContentLoaded`. |
+| `javascripts/main.js` | — (script principal) | Monta `InitModalDialog`, `SidebarController` (si existe `#HomePage`), `HomeController` (si existe `.main-layout`) y `JuegosController` (si existe `.juegos-grid`) tras `DOMContentLoaded`. Registra también el Service Worker (PWA). |
 | `javascripts/theme-init.js` | IIFE clásica (no módulo) | Aplica modo, acento, fondo y escala desde `localStorage` antes del primer pintado (portada y `juegos/`). Duplica las claves de `utils/storage.js` a propósito. |
 
 **Controladores — `controllers/home/`**
@@ -273,6 +273,7 @@ del manifiesto (ver Arquitectura CSS).
 - **Rutas de assets**: los iconos que se inyectan desde JS (modal de Configuración y modo) se resuelven con `utils/assets.js` (`import.meta.url` → `assets/icons/`), para que funcionen tanto desde la raíz (`index.html`) como desde subcarpetas (`mis-estudios/` y `juegos/`).
 - **Configuración**: el modal (`.modal-dialog`) se rellena desde `controllers/settings/settings.controller.js`; los controles de idioma/modo/color/fondo/dirección/velocidad y tamaño de fuente usan **delegación de eventos sobre `document`**, por lo que siguen funcionando aunque el contenido se genere dinámicamente en cada apertura. Las filas de "Dirección del degradado" y "Velocidad" son condicionales: se muestran/ocultan con `.is-hidden` según el tema de fondo elegido (dirección para temas con degradado; velocidad solo para `multicolor`). La lógica de aplicación vive en `controllers/sidebar/fnBackgroundTheme.js` (fondo, dirección y velocidad) y `fnFontScale.js`; los datos están centralizados en `utils/themeBackgrounds.js`. `applyTranslations()` (en `fnChangeLanguage.js`) actualiza el texto de `[data-lang]` y el `title`/`aria-label` de `[data-i18n-title]`/`[data-i18n-aria-label]`, de modo que los controles dinámicos cambian de idioma sin reabrir el modal.
 - **Pre-pintado del tema**: para evitar el parpadeo, el modo, el acento, el fondo y el tamaño de fuente se aplican antes del primer pintado. La portada y `juegos/index.html` usan `javascripts/theme-init.js` (script clásico síncrono en `<head>`); las subpáginas de `mis-estudios/` usan `mis-estudios/js/tema.js`. Ambos leen las mismas claves de `localStorage` que `utils/storage.js` (`theme-mode`, `theme-color-value`, `theme-background`, `gradient-direction`, `psychedelic-speed`, `font-scale`) y deben mantenerse sincronizados.
+- **PWA (instalable/offline)**: `manifest.json` y `service-worker.js` en la raíz; iconos en `assets/icons/icon-192.png` e `icon-512.png` (más `icon.svg` como fuente). `main.js` registra el SW con URL derivada de `import.meta.url`; las páginas de juego lo registran con un script inline. El SW precachea todo el sitio (lista generada en `service-worker.js`) y usa network-first para navegaciones y stale-while-revalidate para assets. Al publicar cambios, subir `CACHE_NAME` (`v2`, …) para forzar el refresco. Mantener las rutas relativas al desplegar en subruta.
 
 ### CSS
 

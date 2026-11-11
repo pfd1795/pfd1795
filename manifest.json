@@ -1,0 +1,26 @@
+{
+  "name": "Portafolio de Pablo Diaz",
+  "short_name": "PabloDiaz",
+  "description": "Portafolio personal, enciclopedia de informática y colección de juegos arcade desarrollados con HTML, CSS y JavaScript vanilla.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#191a1b",
+  "theme_color": "#191a1b",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

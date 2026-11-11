@@ -171,6 +171,18 @@
     .controls-info h3 { margin: 10px 0 4px; font-size: 0.88rem; letter-spacing: 1px; color: var(--neon-yellow); }
     .controls-info p { margin: 4px 0; }
   </style>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('../../service-worker.js').catch(function () {});
+    });
+  }
+  </script>
 </head>
 <body>
   <div class="app">

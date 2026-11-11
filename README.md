@@ -15,6 +15,7 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 - Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva.- La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
 - Accesibilidad: salto al contenido, tarjetas de estudios operables por teclado, foco gestionado en el menú lateral y avisos anunciados a lectores de pantalla.
+- Aplicación instalable (PWA): el sitio puede instalarse como app y funciona offline gracias a un Service Worker que precachea todo el contenido.
 
 ## Ejecución local
 
