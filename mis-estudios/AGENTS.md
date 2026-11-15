@@ -10,8 +10,9 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
   HTTP y navegador, Cliente-servidor y APIs, SQL, Seguridad web, Criptografía, TLS, Sistemas
   operativos, Modelado de datos y normalización, Paradigmas de programación, Sistemas numéricos
   y representación de datos, Python, Patrones de diseño, Inteligencia artificial, Aprendizaje
-  automático, Redes neuronales). Varios temarios siguen pendientes de
-  desarrollo ("Próximamente").
+  automático, Redes neuronales, Lógica digital y álgebra de Boole, C y gestión de memoria,
+  Frameworks de front-end, Frameworks de back-end, Principios de diseño y SOLID). Dos temarios
+  siguen pendientes de desarrollo ("Próximamente").
 - `js/tema.js`: pre-pintado del tema (script clásico síncrono).
 - `js/buscador.js`: filtro de tarjetas del índice (script clásico con `defer`).
 - `js/copiar.js`: botón «Copiar» sobre los bloques de código de los artículos (script clásico con

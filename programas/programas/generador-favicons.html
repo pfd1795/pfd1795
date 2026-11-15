@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de favicons — Programas pfd1795</title>
+  <meta name="description" content="Crea favicons PNG a partir de un texto o un emoji, en varios tamaños, y descárgalos junto con el snippet HTML para tu sitio.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../../stylesheets/programas.css">
+  <style>
+    /* Estilos propios de la herramienta. Usa los tokens de base.css. */
+    .favicon-gen__campos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-3) var(--space-4);
+    }
+
+    .favicon-gen__fieldset {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin: 0 0 var(--space-4);
+      padding: var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      min-width: 0;
+    }
+
+    .favicon-gen__fieldset > legend {
+      padding: 0 var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .favicon-gen__campo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      min-width: 0;
+    }
+
+    .favicon-gen__campo--fila {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .favicon-gen__entrada-texto,
+    .favicon-gen__selector {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      font: inherit;
+      color: var(--color-text);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .favicon-gen__color {
+      width: 100%;
+      height: 2.6rem;
+      padding: var(--space-1);
+      cursor: pointer;
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .favicon-gen__rango,
+    .favicon-gen__casilla {
+      accent-color: var(--theme-color);
+    }
+
+    .favicon-gen__rango {
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .favicon-gen__tamanos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+      gap: var(--space-2);
+    }
+
+    .favicon-gen__tamanos label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+    }
+
+    .favicon-gen__boton {
+      margin-top: var(--space-2);
+    }
+
+    .favicon-gen__resultado {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-lg);
+    }
+
+    .favicon-gen__vacio {
+      margin: 0;
+      color: var(--color-text-secondary);
+    }
+
+    .favicon-gen__mensajes p {
+      margin: 0 0 var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-inline-start: 4px solid var(--theme-color);
+      border-radius: var(--radius-md);
+    }
+
+    .favicon-gen__acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin: 0 0 var(--space-4);
+    }
+
+    .favicon-gen__vistas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin: 0 0 var(--space-4);
+      padding: 0;
+      list-style: none;
+    }
+
+    .favicon-gen__vista {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    /* Tablero de ajedrez para ver la transparencia del PNG. */
+    .favicon-gen__vista canvas {
+      max-width: 6rem;
+      max-height: 6rem;
+      background-image: linear-gradient(45deg, var(--color-border) 25%, transparent 25%, transparent 75%, var(--color-border) 75%),
+        linear-gradient(45deg, var(--color-border) 25%, transparent 25%, transparent 75%, var(--color-border) 75%);
+      background-size: 8px 8px;
+      background-position: 0 0, 4px 4px;
+    }
+
+    .favicon-gen__vista-tamano {
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+
+    .favicon-gen__nota {
+      margin: 0 0 var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .favicon-gen__snippet {
+      margin: 0 0 var(--space-2);
+      padding: var(--space-3);
+      overflow-x: auto;
+      white-space: pre;
+      font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      font-size: var(--text-sm);
+      line-height: 1.6;
+      color: var(--color-text);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .favicon-gen__aviso {
+      min-height: 1.4em;
+      margin: 0;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    @media (max-width: 480px) {
+      .favicon-gen__fieldset {
+        padding: var(--space-2);
+      }
+    }
+  </style>
+  <script src="../js/tema.js"></script>
+  <script src="../../javascripts/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <h1>Generador de favicons</h1>
+      <p>Escribe un texto corto o un emoji, ajusta los colores y la forma, y genera un favicon en PNG
+        para varios tamaños. Cada tamaño se dibuja en su propio lienzo (<code>canvas</code>) y se
+        descarga como archivo independiente; al final obtienes un snippet de HTML para pegar en el
+        <code>&lt;head&gt;</code> de tu sitio.</p>
+
+      <section aria-labelledby="entrada-titulo">
+        <h2 id="entrada-titulo">Entrada</h2>
+        <form id="form-favicon" novalidate>
+          <fieldset class="favicon-gen__fieldset">
+            <legend>Texto</legend>
+            <div class="favicon-gen__campo">
+              <label for="texto-favicon">Texto o emoji (máximo 8 caracteres)</label>
+              <input type="text" id="texto-favicon" class="favicon-gen__entrada-texto" value="P"
+                autocomplete="off" spellcheck="false" placeholder="Por ejemplo: P, AB o 👍">
+            </div>
+          </fieldset>
+
+          <fieldset class="favicon-gen__fieldset">
+            <legend>Colores</legend>
+            <div class="favicon-gen__campos">
+              <div class="favicon-gen__campo">
+                <label for="color-fondo">Color de fondo</label>
+                <input type="color" id="color-fondo" class="favicon-gen__color" value="#3a7bd5">
+              </div>
+              <div class="favicon-gen__campo">
+                <label for="color-texto">Color del texto</label>
+                <input type="color" id="color-texto" class="favicon-gen__color" value="#ffffff">
+              </div>
+              <div class="favicon-gen__campo favicon-gen__campo--fila">
+                <input type="checkbox" id="fondo-transparente" class="favicon-gen__casilla">
+                <label for="fondo-transparente">Fondo transparente</label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="favicon-gen__fieldset">
+            <legend>Forma</legend>
+            <div class="favicon-gen__campos">
+              <div class="favicon-gen__campo">
+                <label for="esquinas">Esquinas redondeadas: <output id="esquinas-valor" for="esquinas">20 %</output></label>
+                <input type="range" id="esquinas" class="favicon-gen__rango" min="0" max="50" step="5" value="20">
+              </div>
+              <div class="favicon-gen__campo">
+                <label for="relleno">Relleno (margen del texto): <output id="relleno-valor" for="relleno">15 %</output></label>
+                <input type="range" id="relleno" class="favicon-gen__rango" min="0" max="40" step="5" value="15">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="favicon-gen__fieldset">
+            <legend>Tipografía</legend>
+            <div class="favicon-gen__campos">
+              <div class="favicon-gen__campo">
+                <label for="familia-fuente">Familia de fuente</label>
+                <select id="familia-fuente" class="favicon-gen__selector">
+                  <option value="system-ui, sans-serif" selected>Automática (del sistema)</option>
+                  <option value="sans-serif">Sans serif</option>
+                  <option value="serif">Serif</option>
+                  <option value="monospace">Monoespaciada</option>
+                  <option value="cursive">Cursiva</option>
+                </select>
+              </div>
+              <div class="favicon-gen__campo favicon-gen__campo--fila">
+                <input type="checkbox" id="negrita" class="favicon-gen__casilla" checked>
+                <label for="negrita">Negrita</label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="favicon-gen__fieldset">
+            <legend>Tamaños a generar (píxeles)</legend>
+            <div class="favicon-gen__tamanos" id="tamanos">
+              <label><input type="checkbox" class="favicon-gen__casilla" value="16" checked> 16 × 16</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="32" checked> 32 × 32</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="48" checked> 48 × 48</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="64"> 64 × 64</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="96"> 96 × 96</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="128"> 128 × 128</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="180" checked> 180 × 180 (Apple)</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="192" checked> 192 × 192 (Android)</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="256"> 256 × 256</label>
+              <label><input type="checkbox" class="favicon-gen__casilla" value="512" checked> 512 × 512</label>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="btn favicon-gen__boton">Generar favicon</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="resultado-titulo" aria-live="polite">
+        <h2 id="resultado-titulo">Resultado</h2>
+        <div id="mensajes" class="favicon-gen__mensajes"></div>
+        <div id="resultado" class="favicon-gen__resultado" role="status">
+          <p class="favicon-gen__vacio">Todavía no hay ningún favicon generado. Escribe un texto o un
+            emoji, ajusta las opciones y presiona «Generar favicon».</p>
+        </div>
+      </section>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../mis-estudios/index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    // Lógica de la herramienta: dibuja el texto/emoji en canvas y exporta PNG.
+    (function () {
+      'use strict';
+
+      const form = document.getElementById('form-favicon');
+      const campoTexto = document.getElementById('texto-favicon');
+      const colorFondo = document.getElementById('color-fondo');
+      const colorTexto = document.getElementById('color-texto');
+      const fondoTransparente = document.getElementById('fondo-transparente');
+      const esquinas = document.getElementById('esquinas');
+      const esquinasValor = document.getElementById('esquinas-valor');
+      const relleno = document.getElementById('relleno');
+      const rellenoValor = document.getElementById('relleno-valor');
+      const familiaFuente = document.getElementById('familia-fuente');
+      const negrita = document.getElementById('negrita');
+      const contenedorTamanos = document.getElementById('tamanos');
+      const mensajes = document.getElementById('mensajes');
+      const resultado = document.getElementById('resultado');
+
+      let ultimoSnippet = '';
+      let generadoAlMenosUnaVez = false;
+
+      const limpiarMensajes = () => {
+        mensajes.innerHTML = '';
+      };
+
+      const mostrarError = (texto) => {
+        const parrafo = document.createElement('p');
+        parrafo.setAttribute('role', 'alert');
+        parrafo.textContent = texto;
+        mensajes.appendChild(parrafo);
+      };
+
+      const opcionesActuales = () => ({
+        texto: (campoTexto?.value ?? '').trim(),
+        fondo: colorFondo?.value ?? '#3a7bd5',
+        colorTexto: colorTexto?.value ?? '#ffffff',
+        transparente: fondoTransparente?.checked ?? false,
+        radioPorcentaje: Number(esquinas?.value ?? '20'),
+        rellenoPorcentaje: Number(relleno?.value ?? '15'),
+        familia: familiaFuente?.value ?? 'system-ui, sans-serif',
+        negrita: negrita?.checked ?? true
+      });
+
+      const tamanosSeleccionados = () => Array
+        .from(contenedorTamanos?.querySelectorAll('input:checked') ?? [])
+        .map((casilla) => Number(casilla.value))
+        .sort((a, b) => a - b);
+
+      const nombreArchivo = (tamano) => {
+        if (tamano === 180) return 'apple-touch-icon.png';
+        if (tamano === 192) return 'android-chrome-192x192.png';
+        if (tamano === 512) return 'android-chrome-512x512.png';
+        return `favicon-${tamano}x${tamano}.png`;
+      };
+
+      const trazarRectanguloRedondeado = (ctx, tamano, radio) => {
+        const r = Math.min(radio, tamano / 2);
+        ctx.beginPath();
+        ctx.moveTo(r, 0);
+        ctx.arcTo(tamano, 0, tamano, tamano, r);
+        ctx.arcTo(tamano, tamano, 0, tamano, r);
+        ctx.arcTo(0, tamano, 0, 0, r);
+        ctx.arcTo(0, 0, tamano, 0, r);
+        ctx.closePath();
+      };
+
+      // Dibuja el favicon directamente en el tamaño final (sin reescalar).
+      const dibujarFavicon = (lienzo, tamano, opciones) => {
+        lienzo.width = tamano;
+        lienzo.height = tamano;
+        const ctx = lienzo.getContext('2d');
+        if (!ctx) return;
+        ctx.clearRect(0, 0, tamano, tamano);
+
+        if (!opciones.transparente) {
+          ctx.fillStyle = opciones.fondo;
+          trazarRectanguloRedondeado(ctx, tamano, (tamano * opciones.radioPorcentaje) / 100);
+          ctx.fill();
+        }
+
+        if (!opciones.texto) return;
+
+        const disponible = tamano * (1 - (opciones.rellenoPorcentaje / 100) * 2);
+        const peso = opciones.negrita ? '700' : '400';
+        let tamanoFuente = Math.max(disponible, 1);
+        let metricas = null;
+
+        // Ajusta el tamaño de la fuente hasta que el texto quepa en el área disponible.
+        for (let intento = 0; intento < 12; intento += 1) {
+          ctx.font = `${peso} ${tamanoFuente}px ${opciones.familia}`;
+          metricas = ctx.measureText(opciones.texto);
+          const ancho = metricas.width;
+          const alto = (metricas.actualBoundingBoxAscent ?? tamanoFuente * 0.72)
+            + (metricas.actualBoundingBoxDescent ?? tamanoFuente * 0.12);
+          if (ancho <= disponible && alto <= disponible) break;
+          const factor = Math.min(disponible / (ancho || 1), disponible / (alto || 1));
+          tamanoFuente = Math.max(tamanoFuente * factor * 0.98, 1);
+        }
+
+        const ascenso = metricas?.actualBoundingBoxAscent ?? tamanoFuente * 0.72;
+        const descenso = metricas?.actualBoundingBoxDescent ?? tamanoFuente * 0.12;
+        ctx.fillStyle = opciones.colorTexto;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(opciones.texto, tamano / 2, tamano / 2 + (ascenso - descenso) / 2);
+      };
+
+      const construirSnippet = (tamanos) => tamanos
+        .map((tamano) => tamano === 180
+          ? '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">'
+          : `<link rel="icon" type="image/png" sizes="${tamano}x${tamano}" href="/${nombreArchivo(tamano)}">`)
+        .join('\n');
+
+      const construirVista = (tamano, opciones) => {
+        const elemento = document.createElement('li');
+        elemento.className = 'favicon-gen__vista';
+
+        const lienzo = document.createElement('canvas');
+        dibujarFavicon(lienzo, tamano, opciones);
+        lienzo.setAttribute('role', 'img');
+        lienzo.setAttribute('aria-label', `Vista previa del favicon de ${tamano}×${tamano} píxeles`);
+
+        const etiqueta = document.createElement('span');
+        etiqueta.className = 'favicon-gen__vista-tamano';
+        etiqueta.textContent = `${tamano}×${tamano} · ${nombreArchivo(tamano)}`;
+
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.className = 'btn';
+        boton.dataset.accion = 'descargar-tamano';
+        boton.dataset.tamano = String(tamano);
+        boton.textContent = 'Descargar PNG';
+
+        elemento.append(lienzo, etiqueta, boton);
+        return elemento;
+      };
+
+      const generar = () => {
+        limpiarMensajes();
+
+        const opciones = opcionesActuales();
+        if (!opciones.texto) {
+          mostrarError('Ingresa al menos un carácter o un emoji.');
+          return;
+        }
+        if ([...opciones.texto].length > 8) {
+          mostrarError('Usa como máximo 8 caracteres para que el icono se vea bien.');
+          return;
+        }
+
+        const tamanos = tamanosSeleccionados();
+        if (tamanos.length === 0) {
+          mostrarError('Selecciona al menos un tamaño para generar.');
+          return;
+        }
+
+        ultimoSnippet = construirSnippet(tamanos);
+
+        resultado.innerHTML = '';
+
+        const acciones = document.createElement('div');
+        acciones.className = 'favicon-gen__acciones';
+
+        const botonTodos = document.createElement('button');
+        botonTodos.type = 'button';
+        botonTodos.className = 'btn';
+        botonTodos.dataset.accion = 'descargar-todos';
+        botonTodos.textContent = `Descargar todos (${tamanos.length})`;
+
+        const botonCopiar = document.createElement('button');
+        botonCopiar.type = 'button';
+        botonCopiar.className = 'btn';
+        botonCopiar.dataset.accion = 'copiar-html';
+        botonCopiar.textContent = 'Copiar HTML del favicon';
+
+        acciones.append(botonTodos, botonCopiar);
+        resultado.appendChild(acciones);
+
+        const lista = document.createElement('ul');
+        lista.className = 'favicon-gen__vistas';
+        tamanos.forEach((tamano) => lista.appendChild(construirVista(tamano, opciones)));
+        resultado.appendChild(lista);
+
+        const notaDescargas = document.createElement('p');
+        notaDescargas.className = 'favicon-gen__nota';
+        notaDescargas.textContent = 'Si tu navegador bloquea la descarga múltiple, actívala para este sitio o descarga cada PNG por separado.';
+        resultado.appendChild(notaDescargas);
+
+        const tituloSnippet = document.createElement('p');
+        tituloSnippet.className = 'favicon-gen__nota';
+        tituloSnippet.textContent = 'Snippet para pegar dentro de <head> (las rutas asumen los PNG en la raíz del sitio):';
+        resultado.appendChild(tituloSnippet);
+
+        const snippet = document.createElement('pre');
+        snippet.className = 'favicon-gen__snippet';
+        snippet.textContent = ultimoSnippet;
+        resultado.appendChild(snippet);
+
+        const aviso = document.createElement('p');
+        aviso.className = 'favicon-gen__aviso';
+        aviso.id = 'aviso-portapapeles';
+        aviso.setAttribute('aria-live', 'polite');
+        resultado.appendChild(aviso);
+
+        generadoAlMenosUnaVez = true;
+      };
+
+      const descargarTamano = (tamano, opciones) => {
+        const lienzo = document.createElement('canvas');
+        dibujarFavicon(lienzo, tamano, opciones);
+        lienzo.toBlob((blob) => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const enlace = document.createElement('a');
+          enlace.href = url;
+          enlace.download = nombreArchivo(tamano);
+          document.body.appendChild(enlace);
+          enlace.click();
+          enlace.remove();
+          window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }, 'image/png');
+      };
+
+      const descargarTodos = () => {
+        const opciones = opcionesActuales();
+        const tamanos = tamanosSeleccionados();
+        tamanos.forEach((tamano, indice) => {
+          window.setTimeout(() => descargarTamano(tamano, opciones), indice * 400);
+        });
+        const aviso = document.getElementById('aviso-portapapeles');
+        if (aviso) aviso.textContent = `Iniciando la descarga de ${tamanos.length} archivo(s)…`;
+      };
+
+      const copiarSnippet = async () => {
+        const aviso = document.getElementById('aviso-portapapeles');
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(ultimoSnippet);
+          } else {
+            const area = document.createElement('textarea');
+            area.value = ultimoSnippet;
+            area.setAttribute('readonly', '');
+            area.style.position = 'fixed';
+            area.style.opacity = '0';
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand('copy');
+            area.remove();
+          }
+          if (aviso) aviso.textContent = 'Snippet copiado al portapapeles.';
+        } catch (error) {
+          if (aviso) aviso.textContent = 'No se pudo copiar automáticamente; selecciona el texto del snippet y cópialo a mano.';
+        }
+      };
+
+      resultado.addEventListener('click', (evento) => {
+        const boton = evento.target instanceof Element
+          ? evento.target.closest('button[data-accion]')
+          : null;
+        if (!boton) return;
+        const accion = boton.dataset.accion;
+        if (accion === 'descargar-tamano') {
+          descargarTamano(Number(boton.dataset.tamano || '0'), opcionesActuales());
+        } else if (accion === 'descargar-todos') {
+          descargarTodos();
+        } else if (accion === 'copiar-html') {
+          copiarSnippet();
+        }
+      });
+
+      form?.addEventListener('submit', (evento) => {
+        evento.preventDefault();
+        generar();
+      });
+
+      // Tras la primera generación, cualquier cambio regenera el resultado.
+      form?.addEventListener('input', () => {
+        if (esquinasValor) esquinasValor.textContent = `${esquinas?.value ?? '20'} %`;
+        if (rellenoValor) rellenoValor.textContent = `${relleno?.value ?? '15'} %`;
+        if (colorFondo) colorFondo.disabled = fondoTransparente?.checked ?? false;
+        if (generadoAlMenosUnaVez) generar();
+      });
+    })();
+  </script>
+</body>
+</html>

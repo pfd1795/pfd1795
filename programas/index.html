@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pfd1795 | Programas y herramientas</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta name="description" content="Programas y herramientas propias para web, Linux, Windows y línea de comandos: utilidades de desarrollo y productividad." />
+  <meta name="keywords" content="herramientas, programas, utilidades, web, linux, windows, cli, devops, desarrollador" />
+  <meta name="author" content="Pablo Diaz" />
+  <meta name="theme-color" content="#191a1b" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="pfd1795 | Programas y herramientas" />
+  <meta property="og:description" content="Programas y herramientas propias para web, Linux, Windows y línea de comandos." />
+  <meta property="og:url" content="https://pfd1795.github.io/pfd1795/programas/" />
+  <meta property="og:image" content="https://pfd1795.github.io/pfd1795/assets/images/profile.png" />
+  <meta property="og:locale" content="es_ES" />
+  <meta name="twitter:card" content="summary" />
+
+  <link rel="stylesheet" href="../stylesheets/base.css">
+  <link rel="stylesheet" href="../stylesheets/programas.css">
+
+  <script src="js/tema.js"></script>
+  <script src="js/buscador.js" defer></script>
+  <script src="../javascripts/main.js" defer type="module"></script>
+  <link rel="manifest" href="../manifest.json" />
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <div class="encabezado">
+        <h1>Programas y herramientas</h1>
+        <input
+          class="buscador__campo"
+          type="search"
+          id="buscador"
+          name="q"
+          aria-label="Buscar programas"
+          placeholder="buscador programas: titulo, descripcion o palabra clave (0 de 0 programas)"
+          autocomplete="off">
+      </div>
+      <p class="buscador__mensaje" id="sin-resultados" hidden>
+        No hay programas que coincidan con tu búsqueda. Prueba con otra palabra o categoría.
+      </p>
+
+      <div class="filtros" role="group" aria-label="Filtrar por categoría">
+        <button class="filtro active" type="button" data-categoria="todas">Todas</button>
+        <button class="filtro" type="button" data-categoria="web">Web</button>
+        <button class="filtro" type="button" data-categoria="linux">Linux</button>
+        <button class="filtro" type="button" data-categoria="windows">Windows</button>
+        <button class="filtro" type="button" data-categoria="cli">CLI</button>
+        <button class="filtro" type="button" data-categoria="devops">DevOps</button>
+      </div>
+
+      <section class="categoria" aria-labelledby="cat-web">
+        <h2 id="cat-web">Web</h2>
+        <ul class="lista-programas">
+          <li>
+            <div class="programa-card"
+                 data-titulo="Generador de paletas de color"
+                 data-descripcion="Crea paletas de color armoniosas a partir de un color base."
+                 data-claves="paleta color hex rgb hsl armonia generador web"
+                 data-categoria="web">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/palette.svg" alt="" />
+                <h3 class="programa-card__titulo">Generador de paletas de color</h3>
+              </div>
+              <p class="programa-card__descripcion">Crea paletas de color armoniosas a partir de un color base.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">Web</span>
+                <div class="programa-card__tech">
+                  <span>HTML</span><span>CSS</span><span>JavaScript</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="programa-card"
+                 data-titulo="Formateador JSON"
+                 data-descripcion="Valida, formatea y minifica JSON con resaltado de sintaxis."
+                 data-claves="json formatear validar minificar pretty print web"
+                 data-categoria="web">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/code.svg" alt="" />
+                <h3 class="programa-card__titulo">Formateador JSON</h3>
+              </div>
+              <p class="programa-card__descripcion">Valida, formatea y minifica JSON con resaltado de sintaxis.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">Web</span>
+                <div class="programa-card__tech">
+                  <span>HTML</span><span>JavaScript</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="programa-card"
+                 data-titulo="Convertidor de unidades"
+                 data-descripcion="Convierte entre unidades de longitud, peso, temperatura y tiempo."
+                 data-claves="convertidor unidades longitud peso temperatura tiempo web"
+                 data-categoria="web">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/translate.svg" alt="" />
+                <h3 class="programa-card__titulo">Convertidor de unidades</h3>
+              </div>
+              <p class="programa-card__descripcion">Convierte entre unidades de longitud, peso, temperatura y tiempo.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">Web</span>
+                <div class="programa-card__tech">
+                  <span>HTML</span><span>JavaScript</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="programa-card"
+                 data-titulo="Generador de favicons"
+                 data-descripcion="Genera favicons en varios tamaños a partir de texto o emoji."
+                 data-claves="favicon icono generador emoji texto web"
+                 data-categoria="web">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/home.svg" alt="" />
+                <h3 class="programa-card__titulo">Generador de favicons</h3>
+              </div>
+              <p class="programa-card__descripcion">Genera favicons en varios tamaños a partir de texto o emoji.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">Web</span>
+                <div class="programa-card__tech">
+                  <span>HTML</span><span>Canvas</span><span>JavaScript</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-linux">
+        <h2 id="cat-linux">Linux</h2>
+        <ul class="lista-programas">
+          <li>
+            <div class="programa-card"
+                 data-titulo="Script de backup incremental"
+                 data-descripcion="Backup incremental de carpetas con rsync y rotación de copias."
+                 data-claves="backup rsync linux bash script incremental rotacion"
+                 data-categoria="linux">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/docs.svg" alt="" />
+                <h3 class="programa-card__titulo">Script de backup incremental</h3>
+              </div>
+              <p class="programa-card__descripcion">Backup incremental de carpetas con rsync y rotación de copias.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">Linux</span>
+                <div class="programa-card__tech">
+                  <span>Bash</span><span>rsync</span><span>cron</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="programa-card"
+                 data-titulo="Monitor de sistema en terminal"
+                 data-descripcion="Muestra CPU, RAM y disco en tiempo real desde la terminal."
+                 data-claves="monitor sistema cpu ram disco terminal linux bash"
+                 data-categoria="linux">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/speed.svg" alt="" />
+                <h3 class="programa-card__titulo">Monitor de sistema en terminal</h3>
+              </div>
+              <p class="programa-card__descripcion">Muestra CPU, RAM y disco en tiempo real desde la terminal.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">Linux</span>
+                <div class="programa-card__tech">
+                  <span>Bash</span><span>procfs</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-windows">
+        <h2 id="cat-windows">Windows</h2>
+        <ul class="lista-programas">
+          <li>
+            <div class="programa-card"
+                 data-titulo="Limpiador de archivos temporales"
+                 data-descripcion="Elimina archivos temporales y caché para liberar espacio."
+                 data-claves="limpiador temporales cache espacio windows powershell"
+                 data-categoria="windows">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/setting.svg" alt="" />
+                <h3 class="programa-card__titulo">Limpiador de archivos temporales</h3>
+              </div>
+              <p class="programa-card__descripcion">Elimina archivos temporales y caché para liberar espacio.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">Windows</span>
+                <div class="programa-card__tech">
+                  <span>PowerShell</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="programa-card"
+                 data-titulo="Gestor de programas de inicio"
+                 data-descripcion="Lista y gestiona los programas que arrancan con Windows."
+                 data-claves="inicio arranque gestor programas windows registro"
+                 data-categoria="windows">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/setting.svg" alt="" />
+                <h3 class="programa-card__titulo">Gestor de programas de inicio</h3>
+              </div>
+              <p class="programa-card__descripcion">Lista y gestiona los programas que arrancan con Windows.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">Windows</span>
+                <div class="programa-card__tech">
+                  <span>PowerShell</span><span>WMI</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-cli">
+        <h2 id="cat-cli">CLI</h2>
+        <ul class="lista-programas">
+          <li>
+            <div class="programa-card"
+                 data-titulo="Generador de .gitignore"
+                 data-descripcion="Genera un .gitignore según la tecnología o stack del proyecto."
+                 data-claves="gitignore generador plantilla cli terminal"
+                 data-categoria="cli">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/code.svg" alt="" />
+                <h3 class="programa-card__titulo">Generador de .gitignore</h3>
+              </div>
+              <p class="programa-card__descripcion">Genera un .gitignore según la tecnología o stack del proyecto.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">CLI</span>
+                <div class="programa-card__tech">
+                  <span>Node.js</span><span>CLI</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="programa-card"
+                 data-titulo="Convertidor de imágenes"
+                 data-descripcion="Convierte entre formatos de imagen desde la línea de comandos."
+                 data-claves="imagen convertir formato png jpg webp cli"
+                 data-categoria="cli">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/palette.svg" alt="" />
+                <h3 class="programa-card__titulo">Convertidor de imágenes</h3>
+              </div>
+              <p class="programa-card__descripcion">Convierte entre formatos de imagen desde la línea de comandos.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">CLI</span>
+                <div class="programa-card__tech">
+                  <span>Python</span><span>Pillow</span><span>CLI</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="categoria" aria-labelledby="cat-devops">
+        <h2 id="cat-devops">DevOps</h2>
+        <ul class="lista-programas">
+          <li>
+            <div class="programa-card"
+                 data-titulo="Generador de Dockerfile"
+                 data-descripcion="Genera un Dockerfile base según el stack del proyecto."
+                 data-claves="dockerfile docker generador stack devops"
+                 data-categoria="devops">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/code.svg" alt="" />
+                <h3 class="programa-card__titulo">Generador de Dockerfile</h3>
+              </div>
+              <p class="programa-card__descripcion">Genera un Dockerfile base según el stack del proyecto.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">DevOps</span>
+                <div class="programa-card__tech">
+                  <span>Docker</span><span>YAML</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+          <li>
+            <div class="programa-card"
+                 data-titulo="Validador de YAML"
+                 data-descripcion="Valida la sintaxis de archivos YAML y muestra errores."
+                 data-claves="yaml validador sintaxis devops"
+                 data-categoria="devops">
+              <div class="programa-card__cabecera">
+                <img class="programa-card__icono" src="../assets/icons/docs.svg" alt="" />
+                <h3 class="programa-card__titulo">Validador de YAML</h3>
+              </div>
+              <p class="programa-card__descripcion">Valida la sintaxis de archivos YAML y muestra errores.</p>
+              <div class="programa-card__meta">
+                <span class="programa-card__categoria">DevOps</span>
+                <div class="programa-card__tech">
+                  <span>YAML</span><span>JavaScript</span>
+                </div>
+              </div>
+              <p class="programa-card__estado">Próximamente</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../index.html#inicio">
+          <img src="../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../index.html#experiencia">
+          <img src="../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../index.html#estudios">
+          <img src="../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../index.html#proyectos">
+          <img src="../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../mis-estudios/index.html">
+        <img src="../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../juegos/index.html">
+        <img src="../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="./index.html" aria-current="page">
+        <img src="../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

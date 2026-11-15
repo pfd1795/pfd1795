@@ -11,8 +11,9 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 - Pie de página con las tecnologías que construyeron el sitio, la firma de los agentes de IA que colaboraron y los créditos de los iconos.
 - Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
-- Enciclopedia de informática en `mis-estudios/`, con buscador y 21 artículos publicados (varios temarios siguen "Próximamente").
+- Enciclopedia de informática en `mis-estudios/`, con buscador y 26 artículos publicados (varios temarios siguen "Próximamente").
 - Colección de 20 juegos arcade en `juegos/`, con una grilla generada desde `javascripts/data/juegos.json`.
+- Sección de programas y herramientas en `programas/`, con grilla filtrable y tarjetas de herramientas propias (web, Linux, Windows, CLI, DevOps).
 - Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva.- La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
 - Accesibilidad: salto al contenido, tarjetas de estudios operables por teclado, foco gestionado en el menú lateral y avisos anunciados a lectores de pantalla.
@@ -41,6 +42,7 @@ Luego abre `http://localhost:8000/`.
 ├── docs/                   # Documentación organizada (índice y herramientas de desarrollo)
 ├── mis-estudios/           # Enciclopedia de informática
 ├── juegos/                 # Grilla y juegos arcade (ver juegos/README.md)
+├── programas/              # Programas y herramientas (ver programas/AGENTS.md)
 ├── javascripts/            # Módulos ES6 y lógica de la interfaz
 ├── stylesheets/            # CSS: base compartida + estilos de cada página
 ├── assets/                 # Imágenes, iconos y CV

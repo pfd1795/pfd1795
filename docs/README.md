@@ -16,6 +16,7 @@ mantenerlos sincronizados con el código es parte del mantenimiento (ver `AGENTS
 - `AGENTS.md` locales por carpeta (la raíz es la referencia; los locales solo añaden reglas propias):
   - [`juegos/AGENTS.md`](../juegos/AGENTS.md) — reglas de la grilla y de los juegos integrados.
   - [`mis-estudios/AGENTS.md`](../mis-estudios/AGENTS.md) — reglas de la enciclopedia.
+  - [`programas/AGENTS.md`](../programas/AGENTS.md) — reglas de la sección Programas.
 
 ## Juegos
 
@@ -28,8 +29,16 @@ mantenerlos sincronizados con el código es parte del mantenimiento (ver `AGENTS
 Esta carpeta solo se lee a pedido explícito del desarrollador; no forma parte de la
 documentación de referencia para agentes.
 
+- [`prompts/crear-estudios.md`](./prompts/crear-estudios.md) — instrucciones para generar un
+  artículo de la enciclopedia: contexto del proyecto (rutas, clases CSS, categorías, artículos
+  publicados), ficha de trabajo, esqueleto canónico, checklist de calidad y contrato de salida.
+- [`prompts/fichas-estudios.md`](./prompts/fichas-estudios.md) — fichas de trabajo (tema, slug,
+  categoría, objetivo, secciones) de los artículos pendientes y de los nuevos, listas para pegar
+  en el prompt anterior.
 - [`prompts/crear-videojuegos.md`](./prompts/crear-videojuegos.md) — instrucciones para generar
   un juego nuevo integrado en el portafolio.
+- [`prompts/crear-programas-web.md`](./prompts/crear-programas-web.md) — instrucciones para
+  generar una herramienta web para la sección Programas (pregunta primero qué herramienta crear).
 - [`prompts/portadas-juegos.md`](./prompts/portadas-juegos.md) — instrucciones para generar
   las portadas (pixel art retro arcade) de los juegos y su integración en la grilla.
 

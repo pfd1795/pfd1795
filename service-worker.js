@@ -1,8 +1,9 @@
 // Service Worker — PWA offline-first
 // Bump CACHE_NAME (v2, v3, ...) al actualizar el sitio para forzar refresco.
-const CACHE_NAME = 'pwa-cache-v2';
+const CACHE_NAME = 'pwa-cache-v4';
 const PRECACHE_URLS = [
   "./assets/icons/arrow_right.svg",
+  "./assets/icons/build.svg",
   "./assets/icons/chevron_down.svg",
   "./assets/icons/close.svg",
   "./assets/icons/code.svg",
@@ -98,15 +99,22 @@ const PRECACHE_URLS = [
   "./juegos/tetris/index.html",
   "./juegos/tower-defense/index.html",
   "./manifest.json",
+  "./programas/index.html",
+  "./programas/js/buscador.js",
+  "./programas/js/tema.js",
   "./mis-estudios/estudios/estudios_apis.html",
   "./mis-estudios/estudios/estudios_aprendizaje_automatico.html",
+  "./mis-estudios/estudios/estudios_c_memoria.html",
   "./mis-estudios/estudios/estudios_criptografia.html",
   "./mis-estudios/estudios/estudios_css.html",
+  "./mis-estudios/estudios/estudios_frameworks_backend.html",
+  "./mis-estudios/estudios/estudios_frameworks_frontend.html",
   "./mis-estudios/estudios/estudios_git.html",
   "./mis-estudios/estudios/estudios_html.html",
   "./mis-estudios/estudios/estudios_http.html",
   "./mis-estudios/estudios/estudios_inteligencia_artificial.html",
   "./mis-estudios/estudios/estudios_javascript.html",
+  "./mis-estudios/estudios/estudios_logica_booleana.html",
   "./mis-estudios/estudios/estudios_modelado_datos.html",
   "./mis-estudios/estudios/estudios_paradigmas.html",
   "./mis-estudios/estudios/estudios_patrones.html",
@@ -116,6 +124,7 @@ const PRECACHE_URLS = [
   "./mis-estudios/estudios/estudios_seguridad_web.html",
   "./mis-estudios/estudios/estudios_sistemas_numericos.html",
   "./mis-estudios/estudios/estudios_sistemas_operativos.html",
+  "./mis-estudios/estudios/estudios_solid.html",
   "./mis-estudios/estudios/estudios_sql.html",
   "./mis-estudios/estudios/estudios_terminal.html",
   "./mis-estudios/estudios/estudios_tls.html",
@@ -126,7 +135,8 @@ const PRECACHE_URLS = [
   "./stylesheets/base.css",
   "./stylesheets/enciclopedia.css",
   "./stylesheets/juegos.css",
-  "./stylesheets/portada.css"
+  "./stylesheets/portada.css",
+  "./stylesheets/programas.css"
 ];
 
 self.addEventListener('install', (event) => {

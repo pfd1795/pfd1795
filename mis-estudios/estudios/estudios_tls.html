@@ -202,11 +202,11 @@
           <h2 id="comandos-titulo">Verificar certificados y conexiones</h2>
           <p>Herramientas de línea de comandos para inspeccionar tus propios despliegues:</p>
           <pre><code># Ver el certificado que sirve un dominio (emisor, validez, algoritmos)
-  openssl s_client -connect pfd1795.github.io:443 -servername pfd1795.github.io </dev/null 2>/dev/null \
+  openssl s_client -connect pfd1795.github.io:443 -servername pfd1795.github.io &lt;/dev/null 2&gt;/dev/null \
     | openssl x509 -noout -subject -dates -issuer
 
 # La conectividad completa, suite pactada y cadena
-  openssl s_client -connect pfd1795.github.io:443 -servername pfd1795.github.io -brief </dev/null
+  openssl s_client -connect pfd1795.github.io:443 -servername pfd1795.github.io -brief &lt;/dev/null
 
 # Comprobar la caducidad de un archivo local
   openssl x509 -in cert.pem -noout -dates
@@ -301,6 +301,10 @@
       <a class="sidebar-item" href="../../juegos/index.html">
         <img src="../../assets/icons/gamepad.svg" alt="" />
         <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
       </a>
     </nav>
 

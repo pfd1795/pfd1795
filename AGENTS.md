@@ -47,6 +47,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    | `controllers/home/`, `lang/` | `/` (portada) |
    | `controllers/juegos/`, `data/juegos.json` | `/juegos/` |
    | `mis-estudios/` (contenido, `enciclopedia.css`, `tema.js`, `buscador.js`) | `/mis-estudios/` y sus subpáginas de `estudios/` |
+    | `programas/` (contenido, `programas.css`, `tema.js`, `buscador.js`) | `/programas/` |
    | Modal de Configuración (`settings.controller.js`, `utils/dialog.js`) | `/` y `/juegos/` (apertura desde el footer del sidebar) |
 
 3. **Checklist funcional en el navegador:**
@@ -70,8 +71,10 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 ├── docs/                   # Documentación organizada
 │   ├── README.md           # Índice de la documentación
 │   └── prompts/            # Herramientas de desarrollo (leer solo a pedido)
-│       ├── crear-videojuegos.md    # Prompt para crear juegos integrados
-│       └── portadas-juegos.md      # Guía para generar portadas de la grilla
+│       ├── crear-estudios.md        # Prompt para crear artículos de la enciclopedia
+│       ├── fichas-estudios.md       # Fichas de trabajo de los artículos (tema, slug, categoría)
+│       ├── crear-videojuegos.md     # Prompt para crear juegos integrados
+│       └── portadas-juegos.md       # Guía para generar portadas de la grilla
 ├── index.html              # Entrada principal
 ├── mis-estudios/           # Enciclopedia de informática (contenido educativo)
 │   └── AGENTS.md           # Reglas locales de la enciclopedia para agentes
@@ -81,6 +84,10 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 │   ├── README.md           # Cómo agregar juegos
 │   ├── _template/          # Plantilla base para juegos nuevos
 │   └── <slug>/             # Un juego por carpeta (index.html + README-juego.md)
+├── programas/              # Programas y herramientas (ver programas/AGENTS.md)
+│   ├── AGENTS.md           # Reglas locales de la sección para agentes
+│   ├── index.html          # Grilla de programas y herramientas
+│   └── js/                 # Scripts propios (tema, buscador)
 ├── javascripts/            # Módulos ES6
 │   ├── main.js            # Punto de entrada
 │   ├── theme-init.js      # Pre-pintado del tema (script clásico síncrono)
@@ -164,6 +171,8 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | `mis-estudios/js/tema.js` | IIFE clásica (no módulo) | Pre-pintado del tema en `mis-estudios/`: duplica la lógica de `theme-init.js` con las mismas claves. |
 | `mis-estudios/js/buscador.js` | IIFE clásica (no módulo) | Filtra `.estudio-card` del término de búsqueda y gestiona contador y mensaje vacío. |
 | `mis-estudios/js/copiar.js` | IIFE clásica (no módulo) | Botón “Copiar” sobre los bloques de código de los artículos: copia con `navigator.clipboard` (respaldo `execCommand`), dedentando la sangría. Solo en páginas de estudio. |
+| `programas/js/tema.js` | IIFE clásica (no módulo) | Pre-pintado del tema en `programas/`: duplica la lógica de `theme-init.js` con las mismas claves. |
+| `programas/js/buscador.js` | IIFE clásica (no módulo) | Filtra `.programa-card` del término de búsqueda y por categoría, gestiona contador y mensaje vacío. |
 
 ### Inventario de claves de `localStorage`
 
@@ -261,9 +270,10 @@ element?.addEventListener('click', () => {
 - **DOM**: Verificar existencia antes de manipular (`if (element)`).
 - **Eventos**: Usar delegation cuando sea posible.
 - **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`) que despliega un `.sidebar-submenu` con 3 elementos (`data-target`: experiencia, estudios, proyectos; en `mis-estudios/` son enlaces `../index.html#seccion` o `../../index.html#seccion` desde `mis-estudios/estudios/*.html`). El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible; si es una hija, abre el submenú y añade `.has-active` al `--group`. Al abrir el menú, `sidebar.controller.js` marca el fondo como `inert` (`.navbar`, `.main-layout`/`.main-content`, `.footer`, `.modal-dialog`) y lleva el foco al botón de cierre; al cerrarlo retira el `inert` y devuelve el foco al botón que lo abrió.
-- **Enlaces externos del menú**: debajo de "Inicio" hay `<a class="sidebar-item">` para "Mis estudios" (icono `menu_book`, → `./mis-estudios/index.html`) y "Juegos" (icono `gamepad`, → `./juegos/index.html`; en esas subpáginas lleva `.active` y `aria-current="page"`, y las rutas se ajustan con `../` o `../../`). No llevan `data-target`, por lo que el scrollspy los ignora; `sidebar.controller.js` cierra el menú al pulsarlos.
+- **Enlaces externos del menú**: debajo de "Inicio" hay `<a class="sidebar-item">` para "Mis estudios" (icono `menu_book`, → `./mis-estudios/index.html`), "Juegos" (icono `gamepad`, → `./juegos/index.html`) y "Programas" (icono `build`, → `./programas/index.html`; en esas subpáginas lleva `.active` y `aria-current="page"`, y las rutas se ajustan con `../` o `../../`). No llevan `data-target`, por lo que el scrollspy los ignora; `sidebar.controller.js` cierra el menú al pulsarlos.
 - **Enciclopedia** (`mis-estudios/`): contenido estático que comparte la preferencia de tema del portafolio. Su `js/tema.js` lee las claves de `localStorage` de `utils/storage.js` y aplica modo, acento, fondo y escala antes de pintar. Sus páginas cargan también la barra, el menú lateral y `javascripts/main.js`, de modo que el modal de Configuración funciona igual que en la portada. Tiene buscador en `mis-estudios/js/buscador.js`.
 - **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `stylesheets/juegos.css`. La grilla se renderiza desde `javascripts/data/juegos.json` con `controllers/juegos/` y se monta en `main.js` solo si existe `.juegos-grid`. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
+- **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `stylesheets/programas.css`. La grilla es estática en HTML con tarjetas `.programa-card` (estado "Próximamente") y buscador en `programas/js/buscador.js`. Comparte el tema mediante `programas/js/tema.js`. Las herramientas propias futuras seguirán el patrón autocontenido de `juegos/`.
 El dimensionado del escenario de los juegos de marco pequeño y de la plantilla (snake,
 space-invaders, neon-racer, plataformas, dungeon-crawler, tower-defense) sigue un criterio
 común: marco máximo de 900×900 px CSS (`--game-max`/`--game-chrome`) y buffer del canvas
@@ -341,7 +351,7 @@ del manifiesto (ver Arquitectura CSS).
 
 ### Contenido y assets
 
-- La enciclopedia cuenta con 21 artículos publicados y varias tarjetas marcadas como "Próximamente"; no todo el temario está desarrollado.
+- La enciclopedia cuenta con 26 artículos publicados y dos tarjetas marcadas como "Próximamente"; no todo el temario está desarrollado.
 - La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
 - **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `javascripts/data/juegos.json`.
