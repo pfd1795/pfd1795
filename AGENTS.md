@@ -47,7 +47,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    | `controllers/home/`, `lang/` | `/` (portada) |
    | `controllers/juegos/`, `data/juegos.json` | `/juegos/` |
    | `mis-estudios/` (contenido, `enciclopedia.css`, `tema.js`, `buscador.js`) | `/mis-estudios/` y sus subpáginas de `estudios/` |
-    | `programas/` (contenido, `programas.css`, `tema.js`, `buscador.js`) | `/programas/` |
+    | `programas/` (contenido, `programas.css`, `tema.js`, `buscador.js`) | `/programas/` y una herramienta de `/programas/programas/` (p. ej. `/programas/programas/generador-paletas.html`) |
    | Modal de Configuración (`settings.controller.js`, `utils/dialog.js`) | `/` y `/juegos/` (apertura desde el footer del sidebar) |
 
 3. **Checklist funcional en el navegador:**
@@ -74,6 +74,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 │       ├── crear-estudios.md        # Prompt para crear artículos de la enciclopedia
 │       ├── fichas-estudios.md       # Fichas de trabajo de los artículos (tema, slug, categoría)
 │       ├── crear-videojuegos.md     # Prompt para crear juegos integrados
+│       ├── crear-programas-web.md   # Prompt para crear herramientas de la sección programas
 │       └── portadas-juegos.md       # Guía para generar portadas de la grilla
 ├── index.html              # Entrada principal
 ├── mis-estudios/           # Enciclopedia de informática (contenido educativo)
@@ -87,7 +88,8 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 ├── programas/              # Programas y herramientas (ver programas/AGENTS.md)
 │   ├── AGENTS.md           # Reglas locales de la sección para agentes
 │   ├── index.html          # Grilla de programas y herramientas
-│   └── js/                 # Scripts propios (tema, buscador)
+│   ├── js/                 # Scripts propios (tema, buscador)
+│   └── programas/          # Herramientas implementadas (un archivo <slug>.html por herramienta)
 ├── javascripts/            # Módulos ES6
 │   ├── main.js            # Punto de entrada
 │   ├── theme-init.js      # Pre-pintado del tema (script clásico síncrono)
@@ -273,7 +275,7 @@ element?.addEventListener('click', () => {
 - **Enlaces externos del menú**: debajo de "Inicio" hay `<a class="sidebar-item">` para "Mis estudios" (icono `menu_book`, → `./mis-estudios/index.html`), "Juegos" (icono `gamepad`, → `./juegos/index.html`) y "Programas" (icono `build`, → `./programas/index.html`; en esas subpáginas lleva `.active` y `aria-current="page"`, y las rutas se ajustan con `../` o `../../`). No llevan `data-target`, por lo que el scrollspy los ignora; `sidebar.controller.js` cierra el menú al pulsarlos.
 - **Enciclopedia** (`mis-estudios/`): contenido estático que comparte la preferencia de tema del portafolio. Su `js/tema.js` lee las claves de `localStorage` de `utils/storage.js` y aplica modo, acento, fondo y escala antes de pintar. Sus páginas cargan también la barra, el menú lateral y `javascripts/main.js`, de modo que el modal de Configuración funciona igual que en la portada. Tiene buscador en `mis-estudios/js/buscador.js`.
 - **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `stylesheets/juegos.css`. La grilla se renderiza desde `javascripts/data/juegos.json` con `controllers/juegos/` y se monta en `main.js` solo si existe `.juegos-grid`. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
-- **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `stylesheets/programas.css`. La grilla es estática en HTML con tarjetas `.programa-card` (estado "Próximamente") y buscador en `programas/js/buscador.js`. Comparte el tema mediante `programas/js/tema.js`. Las herramientas propias futuras seguirán el patrón autocontenido de `juegos/`.
+- **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `stylesheets/programas.css`. La grilla es estática en HTML con tarjetas `.programa-card`: las herramientas implementadas se convierten en enlace (botón `Abrir` con `target="_blank"` + `rel="noopener noreferrer"`, patrón de la grilla de juegos) y las pendientes conservan el estado "Próximamente"; incluye buscador en `programas/js/buscador.js`. Comparte el tema mediante `programas/js/tema.js`. Las herramientas propias viven en `programas/programas/<slug>.html`, son autocontenidas y siguen el patrón de `juegos/` (guía en `docs/prompts/crear-programas-web.md`).
 El dimensionado del escenario de los juegos de marco pequeño y de la plantilla (snake,
 space-invaders, neon-racer, plataformas, dungeon-crawler, tower-defense) sigue un criterio
 común: marco máximo de 900×900 px CSS (`--game-max`/`--game-chrome`) y buffer del canvas

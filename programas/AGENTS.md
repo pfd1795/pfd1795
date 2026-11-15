@@ -9,8 +9,11 @@ Reglas locales para agentes que trabajan en la sección Programas. Complementa e
   programas (propios). Se renderiza estáticamente en HTML.
 - `js/tema.js`: pre-pintado del tema (script clásico síncrono).
 - `js/buscador.js`: filtro de tarjetas del índice (script clásico con `defer`).
-- Cada programa futuro será una carpeta `<slug>/` autocontenida en un único `index.html`,
-  siguiendo el patrón de `juegos/` (aún no implementado).
+- `programas/programas/`: herramientas implementadas, una por archivo `<slug>.html`
+  autocontenido (`convertidor-imagenes`, `generador-codigo-qr`, `generador-favicons`,
+  `generador-paletas`). Siguen el patrón de `juegos/`: cargan `../../stylesheets/base.css` +
+  `programas.css`, `../../javascripts/main.js` y `../js/tema.js`, con sidebar y modal de
+  Configuración completos. (Guía de creación en `docs/prompts/crear-programas-web.md`.)
 
 ## Reglas para agentes
 
@@ -34,8 +37,11 @@ Reglas locales para agentes que trabajan en la sección Programas. Complementa e
    categorías; muestra el conteo filtrado en el `placeholder` del input, gestiona los chips
    `.filtro` y usa `#sin-resultados`. No acoplarlo a módulos ES.
 7. **Tarjetas**: las herramientas aún no implementadas se marcan con `.programa-card__estado`
-   "Próximamente". Al implementar una, convertirla en enlace (pestaña nueva) siguiendo el patrón
-   de la grilla de juegos.
+   "Próximamente". Al implementar una, convertir su tarjeta en enlace (botón `Abrir` con
+   `target="_blank"` + `rel="noopener noreferrer"` y la nota "Se abre en una pestaña nueva",
+   con los estilos `.programa-card__abrir` / `.programa-card__nota` de `programas.css`),
+   siguiendo el patrón de la grilla de juegos. Si la tarjeta describía otra cosa
+   (categoría, tecnologías), alinearla con la herramienta real.
 8. **Sin firmas de IA**: una tarjeta no incluye marcas de agua, comentarios-firma, nombres de
    modelos de IA, código ni recursos propios de un agente. La única firma admitida está en el
    footer de la portada (`../index.html`), según la regla del [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).
@@ -51,4 +57,6 @@ Específico de esta carpeta, tras cualquier cambio:
 3. El modal de Configuración funciona desde el footer del sidebar y persiste los cambios.
 4. El buscador filtra por término, actualiza el contador y muestra/oculta `#sin-resultados`.
 5. Los chips de categoría filtran las tarjetas y ocultan las categorías vacías.
-6. Enlace "Programas" en el sidebar funciona desde portada, juegos, mis-estudios y artículos.
+6. Las tarjetas implementadas (paletas, favicons, código QR, convertidor de imágenes) abren su
+   herramienta en pestaña nueva y las herramientas cargan sin errores de consola.
+7. Enlace "Programas" en el sidebar funciona desde portada, juegos, mis-estudios y artículos.

@@ -1,6 +1,6 @@
 // Service Worker — PWA offline-first
 // Bump CACHE_NAME (v2, v3, ...) al actualizar el sitio para forzar refresco.
-const CACHE_NAME = 'pwa-cache-v4';
+const CACHE_NAME = 'pwa-cache-v5';
 const PRECACHE_URLS = [
   "./assets/icons/arrow_right.svg",
   "./assets/icons/build.svg",
@@ -102,6 +102,10 @@ const PRECACHE_URLS = [
   "./programas/index.html",
   "./programas/js/buscador.js",
   "./programas/js/tema.js",
+  "./programas/programas/convertidor-imagenes.html",
+  "./programas/programas/generador-codigo-qr.html",
+  "./programas/programas/generador-favicons.html",
+  "./programas/programas/generador-paletas.html",
   "./mis-estudios/estudios/estudios_apis.html",
   "./mis-estudios/estudios/estudios_aprendizaje_automatico.html",
   "./mis-estudios/estudios/estudios_c_memoria.html",

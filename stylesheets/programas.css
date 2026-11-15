@@ -241,6 +241,22 @@ html.dark .buscador__mensaje {
   border: var(--border-thin) solid var(--color-border);
   border-radius: var(--radius-pill, var(--radius-sm));
 }
+.programa-card__abrir {
+  align-self: flex-start;
+  margin-top: var(--space-1);
+  text-decoration: none;
+
+  img {
+    height: 1.1em;
+    width: 1.1em;
+  }
+}
+.programa-card__nota {
+  align-self: flex-start;
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+}
 .volver {
   margin-block: var(--space-4);
 }
