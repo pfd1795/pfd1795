@@ -170,7 +170,6 @@ let roundPlayer = null;
 let roundCpu = null;
 let roundResult = '';
 let buttons = [];
-let lastTime = performance.now();
 let modalPausedGame = false;
 
 const stars = Array.from({length:42}, () => ({
@@ -453,8 +452,6 @@ document.addEventListener('visibilitychange',() => {
 window.addEventListener('resize',resizeCanvas);
 
 function frame(now) {
-  const dt=Math.min(0.05,(now-lastTime)/1000);
-  lastTime=now;
   render();
   requestAnimationFrame(frame);
 }

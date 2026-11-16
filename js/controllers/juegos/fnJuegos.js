@@ -5,6 +5,13 @@ import { ICONS_URL } from '../../utils/assets.js';
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
 
+/* Escapa el texto del manifiesto para inyectarlo como HTML o atributo. */
+function esc(texto) {
+  return String(texto).replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
 function getText(value, lang) {
   if (typeof value === 'string') return value;
 
@@ -39,34 +46,34 @@ function CardGame(game, lang, texts) {
   article.innerHTML = `
     <div class="juego-card__portada${hasCarousel ? ' juego-card__portada--carousel' : ''}${covers.length === 0 ? ' juego-card__portada--placeholder' : ''}" aria-hidden="true">
       ${covers.length
-        ? covers.map((src) => `<img class="juego-card__portada-img" src="${src}" alt="" loading="lazy" decoding="async" />`).join('')
+        ? covers.map((src) => `<img class="juego-card__portada-img" src="${esc(src)}" alt="" loading="lazy" decoding="async" />`).join('')
         : ''}
     </div>
 
     <header class="juego-card__cabecera">
-      <span class="juego-card__genero">${genre}</span>
-      ${game.year ? `<span class="juego-card__anio">${game.year}</span>` : ''}
+      <span class="juego-card__genero">${esc(genre)}</span>
+      ${game.year ? `<span class="juego-card__anio">${esc(game.year)}</span>` : ''}
     </header>
 
-    <h2 class="juego-card__titulo">${title}</h2>
+    <h2 class="juego-card__titulo">${esc(title)}</h2>
 
-    <p class="juego-card__descripcion">${description}</p>
+    <p class="juego-card__descripcion">${esc(description)}</p>
 
     ${technologies.length ? `
-      <ul class="juego-card__tecnologias" aria-label="${texts.technologiesLabel}">
-        ${technologies.map((tech) => `<li class="juego-card__tecnologia">${tech}</li>`).join('')}
+      <ul class="juego-card__tecnologias" aria-label="${esc(texts.technologiesLabel)}">
+        ${technologies.map((tech) => `<li class="juego-card__tecnologia">${esc(tech)}</li>`).join('')}
       </ul>
     ` : ''}
 
-    ${controls ? `<p class="juego-card__controles"><strong>${texts.controlsLabel}:</strong> ${controls}</p>` : ''}
+    ${controls ? `<p class="juego-card__controles"><strong>${esc(texts.controlsLabel)}:</strong> ${esc(controls)}</p>` : ''}
 
-    <a class="btn juego-card__jugar" href="./${game.slug}/index.html" target="_blank" rel="noopener noreferrer"
-      title="${title} — ${texts.openInNewTab}">
-      <span>${texts.playGame}</span>
+    <a class="btn juego-card__jugar" href="./${esc(game.slug)}/index.html" target="_blank" rel="noopener noreferrer"
+      title="${esc(title)} — ${esc(texts.openInNewTab)}">
+      <span>${esc(texts.playGame)}</span>
       <img src="${ICONS_URL}arrow_right.svg" alt="" />
     </a>
 
-    <p class="juego-card__nota">${texts.openInNewTab}</p>
+    <p class="juego-card__nota">${esc(texts.openInNewTab)}</p>
   `;
 
   return article;

@@ -399,7 +399,18 @@ function onStable(){
 function startShuffle(){
   phase='shuffle';addPopup(boardW/2,boardH/2,'¡SIN MOVIMIENTOS! MEZCLANDO…','#05d9e8',14);
   tween(view,{boardAlpha:0},260,easeInOutQuad,()=>{
-    doShuffle();
+    // doShuffle puede fracasar tras sus 60 intentos y dejar un tablero sin jugadas:
+    // repetir la mezcla en rondas acotadas hasta garantizar jugada o combinación
+    let rounds=0;
+    do{doShuffle();rounds++;}
+    while(rounds<10&&!findRuns().length&&!findValidMove());
+    if(!findRuns().length&&!findValidMove()){
+      // Último recurso (prácticamente inalcanzable): forzar una combinación de 3
+      // para desbloquear; startClear la resuelve y onStable revalida el tablero
+      const cs=[];
+      for(let c2=0;c2<COLS&&cs.length<3;c2++){const cell=grid[0][c2];if(cell&&!cell.special)cs.push(cell);}
+      if(cs.length===3){const col=rand(COLORS.length);for(const cell of cs)cell.color=col;}
+    }
     tween(view,{boardAlpha:1},260,easeInOutQuad,()=>{
       const runs=findRuns();
       if(runs.length){combo=1;const w=computeWave(runs,null);startClear(w.clear,w.creations);}

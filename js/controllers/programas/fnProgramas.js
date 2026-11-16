@@ -101,9 +101,9 @@ function ChipsFiltro(categorias, lang) {
   chips.setAttribute('role', 'group');
   chips.setAttribute('aria-label', 'Filtrar por categoría');
   chips.innerHTML = `
-    <button class="filtro active" type="button" data-categoria="todas">Todas</button>
+    <button class="filtro active" type="button" data-categoria="todas" aria-pressed="true">Todas</button>
     ${categorias.map((categoria) => `
-      <button class="filtro" type="button" data-categoria="${esc(categoria.id)}">${esc(getText(categoria.label, lang))}</button>
+      <button class="filtro" type="button" data-categoria="${esc(categoria.id)}" aria-pressed="false">${esc(getText(categoria.label, lang))}</button>
     `).join('')}
   `;
 
@@ -123,9 +123,16 @@ function Categoria(categoria, items, lang) {
 
   const lista = section.querySelector('ul');
 
+  /* Cada tarjeta va envuelta en <li>: los hijos válidos de una lista son
+     siempre <li>, y el buscador (buscador.js) oculta/muestra por <li>. */
   items
     .filter((item) => item.category === categoria.id)
-    .forEach((item) => lista.appendChild(Card(item, lang, label)));
+    .forEach((item) => {
+      const li = document.createElement('li');
+
+      li.appendChild(Card(item, lang, label));
+      lista.appendChild(li);
+    });
 
   return section;
 }

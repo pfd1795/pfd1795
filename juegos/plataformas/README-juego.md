@@ -8,7 +8,7 @@ Plataformas 2D estilo run 'n gun clásico (Mario, Contra, Sonic, Shinobi) con es
 
 - Controlas a un ninja que corre, salta (con salto variable, *coyote time* y búfer de pulsación) y lanza hasta 3 shurikens simultáneos.
 - 3 niveles con mapas de bloques diseñados a mano y dificultad creciente: plataformas elevadas, huecos, pinchos, robots patrulla y avispas voladoras.
-- Puntuación: orbe +10, robot +50 (pisotón o shuriken), avispa +100 (solo shuriken), nivel completado +100.
+- Puntuación: orbe +10, robot +50 (pisotón o shuriken), avispa +100 (pisotón o shuriken), nivel completado +100.
 - 3 vidas: un toque enemigo, un pincho o caer al vacío cuesta una vida y reinicia el nivel conservando la puntuación; tras el daño hay invulnerabilidad parpadeante.
 - Derrota al quedarte sin vidas (Game Over); victoria al superar los 3 niveles y llegar a la bandera final.
 - Cámara con seguimiento suave del jugador, fondo con estrellas y skyline con paralelaje.

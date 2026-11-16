@@ -118,14 +118,6 @@ main :not(pre) > code {
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
 }
-.buscador {
-  margin-block: var(--space-6);
-  padding: var(--space-5);
-  background-color: var(--color-surface);
-  border: var(--border-normal) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-}
 .buscador__campo {
   width: 100%;
   padding: var(--space-2) var(--space-3);

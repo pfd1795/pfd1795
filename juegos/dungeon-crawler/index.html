@@ -838,8 +838,6 @@
             if (!game.msg || game.msg.life < 0.3) showMsg('¡Necesitas la llave para abrir la escalera!');
           }
         }
-
-        if (p.hp <= 0) return; // muerto esta frame
       }
 
       /* ================= Enemigos ================= */
@@ -1424,7 +1422,8 @@
       });
 
       document.addEventListener('keyup', (e) => {
-        if (optionsDialog.open) return;
+        // El keyup se procesa siempre: si el modal se abre con una tecla pulsada,
+        // al soltarla el input debe liberarse aunque el dialog siga abierto
         if (e.code === 'Space' || e.code === 'KeyJ') game.input.attack = false;
         const dir = MOVE_KEYS[e.code];
         if (dir) game.input[dir] = false;

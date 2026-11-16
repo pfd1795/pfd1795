@@ -686,7 +686,10 @@ const store={
         const d=JSON.parse(raw);
         // Solo acepta datos con forma válida: evita que un JSON corrupto rompa el juego
         if(d&&typeof d==='object'&&d.settings&&typeof d.settings==='object'){
-          Object.assign(this.data.settings,d.settings);
+          // Solo acepta valores conocidos: un ajuste corrupto no debe dejar la IA sin horizonte
+          if(d.settings.mode==='1p'||d.settings.mode==='2p')this.data.settings.mode=d.settings.mode;
+          if(Number.isFinite(DEPTHS[d.settings.diff]))this.data.settings.diff=d.settings.diff;
+          if(d.settings.color==='w'||d.settings.color==='b')this.data.settings.color=d.settings.color;
           ['wins','losses','draws','streak','bestStreak'].forEach(k=>{
             if(Number.isFinite(d[k]))this.data[k]=d[k];
           });
@@ -851,8 +854,8 @@ function updateHUD(){
   const d=store.data;
   $('hudRecord').textContent='V '+d.wins+' · D '+d.losses+' · E '+d.draws+
     (mode==='1p'?' · Racha '+d.streak:'');
-  $('btnUndo').disabled = engine.history.length===0 || state!=='playing' || thinking;
-  $('btnPause').disabled = state!=='playing';
+  $('btnUndo').disabled = engine.history.length===0 || state!=='playing' || thinking || promoPending;
+  $('btnPause').disabled = state!=='playing' || promoPending;
 }
 function colorName(c){return c===W?'Blancas':'Negras';}
 
@@ -873,8 +876,10 @@ function startGame(){
   if(mode==='1p'&&engine.turn===aiColor)scheduleAI();
 }
 function pauseGame(){
-  if(state!=='playing')return;
-  state='paused';anim=null;
+  if(state!=='playing'||promoPending)return; // con la coronación abierta no se pausa: ocultaría el panel y bloquearía la entrada
+  // No se toca `anim`: el bucle sigue corriendo en pausa y `afterResolve()`
+  // resuelve el movimiento en curso una sola vez (fin de partida, currentLegal y IA al día)
+  state='paused';
   showPanel(panelPause);updateHUD();
 }
 function resumeGame(){
@@ -948,7 +953,7 @@ function scheduleAI(){
   },350);
 }
 function undo(){
-  if(state!=='playing'||thinking||!engine.history.length||anim)return;
+  if(state!=='playing'||thinking||!engine.history.length||anim||promoPending)return; // con la coronación abierta no se deshace: perdería la jugada en curso
   unmake(engine);
   if(mode==='1p')
     while(engine.history.length&&engine.turn!==playerColor)unmake(engine);
@@ -1049,7 +1054,7 @@ window.addEventListener('keydown',e=>{
   if(optionsDialog.open) return; // ESC cierra el dialog de forma nativa
   if(state==='menu'){ if(!e.repeat&&(e.key==='Enter'||e.key===' '))startGame(); return; }
   if(state==='playing'){
-    if(e.key==='Escape')pauseGame();
+    if(e.key==='Escape'&&!promoPending)pauseGame(); // con la coronación abierta ESC no pausa: el panel quedaría oculto
     else if(e.key==='u'||e.key==='U')undo();
     else if(CURSOR_DIRS[e.key]&&!thinking&&!anim&&!promoPending
             &&!(mode==='1p'&&engine.turn===aiColor)){

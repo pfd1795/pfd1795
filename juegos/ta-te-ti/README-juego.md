@@ -19,7 +19,7 @@ vertical o diagonal.
 ## Controles
 
 - Ratón o toque: pulsar la casilla donde quieras colocar la X.
-- Teclado: teclas 1 a 9 (disposición como el teclado numérico: 1 arriba a la
+- Teclado: teclas 1 a 9 (disposición telefónica: 1 arriba a la
   izquierda, 9 abajo a la derecha).
 - Enter o Espacio: iniciar, reanudar o jugar otra vez.
 - P o Esc: pausar y reanudar.

@@ -82,11 +82,17 @@
         }
       });
 
-      /* Una categoría sin tarjetas visibles se oculta entera (título incluido). */
+      /* Una categoría sin tarjetas visibles se oculta entera (título incluido).
+         Se mide por las tarjetas que la contienen (no por sus <li>), así
+         funciona tanto con tarjetas envueltas en <li> como directas. */
       Array.prototype.forEach.call(document.querySelectorAll(SELECTOR_CATEGORIA), function (categoria) {
         var visible = Array.prototype.some.call(
-          categoria.querySelectorAll('li'),
-          function (item) { return !item.hidden; }
+          categoria.querySelectorAll(selectorTarjetas),
+          function (tarjeta) {
+            var item = tarjeta.closest('li') || tarjeta;
+
+            return !item.hidden;
+          }
         );
         categoria.hidden = !visible;
       });
@@ -114,7 +120,10 @@
 
       categoriaActiva = filtro.getAttribute('data-categoria') || 'todas';
       Array.prototype.forEach.call(document.querySelectorAll(SELECTOR_FILTRO), function (f) {
-        f.classList.toggle('active', f === filtro);
+        var activo = f === filtro;
+
+        f.classList.toggle('active', activo);
+        f.setAttribute('aria-pressed', String(activo));
       });
       filtrar();
     });

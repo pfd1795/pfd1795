@@ -55,7 +55,8 @@ function Card(item, lang) {
       <article class="estudio-card"
                data-titulo="${esc(title)}"
                data-descripcion="${esc(description)}"
-               data-claves="${esc(keywords)}">
+               data-claves="${esc(keywords)}"
+               data-categoria="${esc(item.category ?? '')}">
         <h3 class="estudio-card__titulo"><a href="articulos/${esc(item.slug)}.html">${esc(title)}</a></h3>
         <p class="estudio-card__descripcion">${esc(description)}</p>
       </article>
@@ -65,7 +66,8 @@ function Card(item, lang) {
       <div class="estudio-card"
            data-titulo="${esc(title)}"
            data-descripcion="${esc(description)}"
-           data-claves="${esc(keywords)}">
+           data-claves="${esc(keywords)}"
+           data-categoria="${esc(item.category ?? '')}">
         <h3 class="estudio-card__titulo">${esc(title)}</h3>
         <p class="estudio-card__descripcion">${esc(description)}</p>
         <p class="estudio-card__estado">${ESTADO_WIP}</p>

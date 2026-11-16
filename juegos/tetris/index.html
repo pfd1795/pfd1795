@@ -495,7 +495,6 @@
       }
 
       function spawnNext() {
-        refillQueue();
         game.piece = makePiece(game.queue.shift());
         refillQueue();
         game.canHold = true;

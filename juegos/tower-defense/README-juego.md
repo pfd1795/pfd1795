@@ -11,9 +11,9 @@ Tower defense clásico con estética neón sobre tema oscuro, desarrollado ínte
   - **Láser** (50): disparo rápido y barato, buen uso general.
   - **Cañón** (80): proyectil con explosión que daña en área.
   - **Tesla** (110): rayo en cadena que salta hasta 3 enemigos.
-  - **Sniper** (120): daño enorme y alcance de toda la mitad del mapa.
+  - **Sniper** (120): daño enorme y alcance de 200 px (~31 % del ancho del mapa de 640 px).
 - Cada torre mejora hasta **nivel 3** (+60% daño, +12% alcance, +15% cadencia por nivel) y puede **venderse** recuperando el 70% de lo invertido.
-- **20 oleadas** con dificultad creciente: más enemigos, aparición de rápidos (oleada 3), tanques (oleada 5) y jefes (oleadas 10 y 20). La vida de los enemigos escala un 26% por oleada.
+- **20 oleadas** con dificultad creciente: más enemigos, aparición de rápidos (oleada 3), tanques (oleada 5) y jefes (oleadas 10 y 20). La vida de los enemigos escala un 26% por oleada y, a partir de la 11, suma +12% adicional por oleada en `spawnEnemy`.
 - Economía: 220 créditos iniciales; cada muerte paga un botín (8-160 según tipo) y cada oleada superada da un bonus creciente. Las torres apuntan siempre al enemigo más adelantado ("first").
 - Victoria al superar la oleada 20, con bonus de 50 puntos por vida restante.
 

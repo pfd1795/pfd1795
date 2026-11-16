@@ -561,7 +561,8 @@
         lienzo.setAttribute('aria-label', `Degradado de la paleta ${titulo.toLowerCase()}`);
         articulo.appendChild(lienzo);
         lienzos.push({ lienzo, colores });
-        dibujarDegradado(lienzo, colores);
+        // El degradado se dibuja después, cuando el artículo ya está en el DOM:
+        // un canvas desmontado mide 0 y dibujarDegradado retornaría sin pintar
 
         articulo.appendChild(crearVariantes(colores));
         return articulo;
@@ -629,6 +630,8 @@
         for (const [clave, titulo] of NOMBRES_PALETAS) {
           zonaResultado.appendChild(crearPaleta(titulo, paletasHex[clave]));
         }
+        // Con las paletas ya insertadas, los canvas tienen tamaño y se puede pintar
+        lienzos.forEach(({ lienzo, colores }) => dibujarDegradado(lienzo, colores));
         codigoCss.textContent = construirCss(rgb.hex, paletasHex);
         codigoJson.textContent = construirJson(rgb.hex, paletasHex);
         seccionExportar.hidden = false;

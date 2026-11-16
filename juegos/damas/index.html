@@ -531,7 +531,10 @@ const store={
         const d=JSON.parse(raw);
         // Solo acepta datos con forma válida: evita que un JSON corrupto rompa el juego
         if(d&&typeof d==='object'&&d.settings&&typeof d.settings==='object'){
-          Object.assign(this.data.settings,d.settings);
+          // Solo acepta valores conocidos: un ajuste corrupto no debe dejar la IA sin horizonte
+          if(d.settings.mode==='1p'||d.settings.mode==='2p')this.data.settings.mode=d.settings.mode;
+          if(Number.isFinite(DEPTHS[d.settings.diff]))this.data.settings.diff=d.settings.diff;
+          if(d.settings.color==='w'||d.settings.color==='b')this.data.settings.color=d.settings.color;
           ['wins','losses','draws','streak','bestStreak'].forEach(k=>{
             if(Number.isFinite(d[k]))this.data[k]=d[k];
           });
@@ -724,7 +727,9 @@ function startGame(){
 }
 function pauseGame(){
   if(state!=='playing')return;
-  state='paused';anim=null;
+  // No se toca `anim`: el bucle sigue corriendo en pausa y `afterResolve()`
+  // resuelve el movimiento en curso una sola vez (fin de partida, currentLegal y IA al día)
+  state='paused';
   showPanel(panelPause);updateHUD();
 }
 function resumeGame(){
@@ -849,7 +854,7 @@ canvas.addEventListener('pointerdown',ev=>{
     const mine=currentLegal.filter(m=>m.from===cell);
     if(mine.length){
       selection=cell;
-      seqProgress = mine[0].caps.length>0 ? {k:1,seqs:mine} : {k:1,seqs:mine};
+      seqProgress={k:1,seqs:mine};
       // Jugada simple de un paso: también se puede clicar destino abajo
     }
     return;

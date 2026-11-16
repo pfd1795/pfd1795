@@ -69,7 +69,6 @@
     var modo = leer(CLAVE_MODO) || MODO_POR_DEFECTO;
 
     raiz.classList.toggle('dark', modo !== 'light');
-    raiz.classList.toggle('light', modo === 'light');
   }
 
   function aplicarAcento() {

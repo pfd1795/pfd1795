@@ -257,7 +257,6 @@ function updateBalls(s){
     let dead=false;
     for(let k=0;k<steps;k++){
       b.x+=sx;b.y+=sy;collideWalls(b);collidePaddle(b);collideBricks(b);
-      if(clearT>0)break;
       if(b.y-BALL_R>GH+12){dead=true;break;}
     }
     if(dead)balls.splice(i,1);

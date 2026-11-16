@@ -68,8 +68,8 @@ Arquitectura
 Un único index.html autocontenido. El JS vive en una IIFE en modo estricto.
 Secciones: constantes, símbolos (18 funciones de dibujo con helpers fillPoly/strokePts),
 estado global (game, board, selection, selPending, attractBack), persistencia,
-construcción de tablero (levelSpec + makeDeck con barajado Fisher-Yates y reparto
-simétrico de parejas), resolución de turnos, modo atracción, cosmética, entrada y render.
+construcción de tablero (levelSpec + makeDeck con barajado Fisher-Yates aleatorio
+de las parejas), resolución de turnos, modo atracción, cosmética, entrada y render.
 Volteo: cada carta guarda anim {t, dur, from}; el render calcula scaleX = |cos(π·p)| y
 cambia de cara en p ≥ 0,5. La lógica usa la cara lógica (down/up/matched), no la visual.
 Resolución: con dos cartas seleccionadas y animaciones terminadas se compara sym;

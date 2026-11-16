@@ -347,6 +347,9 @@
       const keys = new Set();
 
       document.addEventListener('keydown', (event) => {
+        // El dialog captura ESC de forma nativa; con modal abierto no hay controles de juego
+        if (optionsDialog.open) return;
+
         if (['ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD', 'Space', 'Enter'].includes(event.code)) {
           event.preventDefault();
         }
@@ -388,10 +391,17 @@
       });
 
       /* ================= Opciones ================= */
-      document.getElementById('btn-options').addEventListener('click', () => optionsDialog.showModal());
-      document.getElementById('btn-close-options').addEventListener('click', () => optionsDialog.close());
+      function openModal() {
+        if (game.state === STATE.PLAYING) togglePause(); // abrir opciones pausa la partida
+        optionsDialog.showModal();
+      }
+
+      function closeModal() { optionsDialog.close(); }
+
+      document.getElementById('btn-options').addEventListener('click', openModal);
+      document.getElementById('btn-close-options').addEventListener('click', closeModal);
       optionsDialog.addEventListener('click', (event) => {
-        if (event.target === optionsDialog) optionsDialog.close();
+        if (event.target === optionsDialog) closeModal(); // clic en el backdrop
       });
 
       /* ================= Actualización ================= */
@@ -514,7 +524,9 @@
         const dt = Math.max(0, Math.min(0.05, (timestamp - game.lastTime) / 1000 || 0));
         game.lastTime = timestamp;
 
-        update(dt);
+        // Con el modal abierto el estado de juego queda congelado: no se actualiza
+        if (game.state === STATE.PLAYING && !optionsDialog.open) update(dt);
+
         draw();
 
         requestAnimationFrame(loop);

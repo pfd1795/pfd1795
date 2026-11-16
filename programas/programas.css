@@ -73,14 +73,6 @@ main p {
     max-width: none;
   }
 }
-.buscador {
-  margin-block: var(--space-6);
-  padding: var(--space-5);
-  background-color: var(--color-surface);
-  border: var(--border-normal) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-}
 .buscador__campo {
   width: 100%;
   padding: var(--space-2) var(--space-3);
@@ -184,7 +176,6 @@ html.dark .buscador__mensaje {
 .programa-card__icono {
   width: 2rem;
   height: 2rem;
-  color: var(--prog-accent);
   flex-shrink: 0;
 }
 .programa-card__titulo {

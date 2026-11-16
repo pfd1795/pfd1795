@@ -714,22 +714,27 @@
       };
 
       const escribirFormatoYVersion = (matriz, tamano, version, bitsFormato) => {
-        const coordsTL = [
-          [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5],
-          [8, 7], [8, 8], [7, 8], [5, 8], [4, 8], [3, 8],
-          [2, 8], [1, 8], [0, 8]
-        ];
-
-        for (let i = 0; i < 15; i++) {
-          const bit = (bitsFormato >> i) & 1;
-          matriz[coordsTL[i][0]][coordsTL[i][1]] = bit;
+        // Primera copia, alrededor del finder superior izquierdo (ISO/IEC 18004):
+        // bits 0-5 en la columna 8, bits 9-14 en la fila 8, y las esquinas del
+        // bloque de timing en la diagonal (bits 6, 7 y 8)
+        for (let i = 0; i < 6; i++) {
+          matriz[i][8] = (bitsFormato >> i) & 1;
+        }
+        matriz[7][8] = (bitsFormato >> 6) & 1;
+        matriz[8][8] = (bitsFormato >> 7) & 1;
+        matriz[8][7] = (bitsFormato >> 8) & 1;
+        for (let i = 9; i < 15; i++) {
+          matriz[8][14 - i] = (bitsFormato >> i) & 1;
         }
 
-        for (let i = 0; i < 7; i++) {
-          matriz[tamano - 1 - i][8] = (bitsFormato >> i) & 1;
-        }
+        // Segunda copia: bits 0-7 en la fila 8 (a la derecha del finder
+        // superior izquierdo) y bits 8-14 en la columna 8 (tira vertical
+        // inferior, encima del módulo oscuro reglamentario)
         for (let i = 0; i < 8; i++) {
-          matriz[8][tamano - 8 + i] = (bitsFormato >> (7 + i)) & 1;
+          matriz[8][tamano - 1 - i] = (bitsFormato >> i) & 1;
+        }
+        for (let i = 8; i < 15; i++) {
+          matriz[tamano - 15 + i][8] = (bitsFormato >> i) & 1;
         }
 
         if (version >= 7) {

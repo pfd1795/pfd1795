@@ -7,11 +7,11 @@ Dungeon crawler de acción con vista cenital, mazmorras procedurales y estética
 ## Mecánicas
 
 - Explora mazmorras generadas proceduralmente: 7-9 salas conectadas por pasillos de 2 casillas de ancho, con enlaces extra para crear atajos.
-- Combate en tiempo real: golpe de espada en arco (120°) con retroceso de enemigos, enfriamiento de 340 ms y daño 2.
+- Combate en tiempo real: golpe de espada en arco de ~145° (umbral `dot > 0.3`) con retroceso de enemigos, enfriamiento de 340 ms y daño 2.
 - Enemigos con IA distinta: slimes que deambulan y persiguen de cerca, murciélagos rápidos y erráticos, esqueletos que patrullan y acosan a distancia media.
-- Cada 1-4 profundidad escala la vida y velocidad enemiga; en la **Profundidad 5** aguarda el **Guardián** (50 PV, embestida telegrafiada) que debe derrotarse para ganar.
+- La vida y velocidad enemigas escalan en cada profundidad (+1 PV y +4 de velocidad por profundidad sobre la base); en la **Profundidad 5** aguarda el **Guardián** (50 PV, embestida telegrafiada) que debe derrotarse para ganar.
 - Objetivos por piso: encuentra la **llave** 🔑 para abrir la **escalera** y desciende; la escalera brilla en la oscuridad para ayudarte a orientarte.
-- Objetos: orbes +10, pociones (+2 de vida o +25 puntos si estás lleno), botín ocasional de enemigos.
+- Objetos: orbes +10, pociones (+25 puntos siempre y +2 de vida si no estás lleno), botín ocasional de enemigos.
 - 6 puntos de vida; el contacto enemigo quita 1-2 según tipo, con invulnerabilidad parpadeante y retroceso. A 0 PV, Game Over.
 - Puntuación: slime 20, murciélago 30, esqueleto 50, Guardián 300, descender +100, victoria +500 + 25 por punto de vida restante.
 - **Mini mapa** en la esquina: salas visitadas, conexiones, escalera y llave descubiertas, y posición del jugador.

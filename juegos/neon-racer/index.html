@@ -683,7 +683,8 @@
       });
 
       document.addEventListener('keyup', (e) => {
-        if (optionsDialog.open) return;
+        // El keyup se procesa siempre: si el modal se abre con una tecla pulsada,
+        // al soltarla el input debe liberarse aunque el dialog siga abierto
         const dir = MOVE_KEYS[e.code];
         if (dir) game.input[dir] = false;
       });

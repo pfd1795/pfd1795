@@ -12,14 +12,13 @@ let currentMode = "dark";
 function applyTheme(mode, { persist = true } = {}) {
   currentMode = mode;
 
-  /* El portafolio aplica `.dark`/`.light` en <body>; la enciclopedia lo
+  /* El portafolio aplica `.dark` en <body>; la enciclopedia lo
      aplica en <html> para evitar el parpadeo. Se actualizan ambos nodos para
      que el tema quede siempre sincronizado, se abra donde se abra. */
   const isDark = mode === "dark";
 
   for (const node of [document.documentElement, document.body].filter(Boolean)) {
     node.classList.toggle("dark", isDark);
-    node.classList.toggle("light", !isDark);
   }
 
   const switchInput = document.querySelector(".switch-input");

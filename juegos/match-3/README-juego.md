@@ -56,3 +56,13 @@ proyecto/
 ├── docs/
 │   └── ideas-futuras.md
 └── backups/
+```
+
+## Persistencia
+
+`localStorage` (con try/catch por si está bloqueado):
+
+- `match-3_best_v1`: objeto JSON `{ record, bestLevel, sfx }` con el récord de
+  puntuación, el nivel máximo alcanzado y la preferencia de sonido. Las claves
+  antiguas `de_record` y `de_bestlevel` se migran automáticamente a esta clave
+  la primera vez que se abre el juego (se fusionan en el JSON nuevo y se borran).

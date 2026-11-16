@@ -1,6 +1,7 @@
+let notifyTimer; // compartido entre llamadas para reiniciar el aviso en cada clic
+
 export function copyEmail() {
   const email = "pfd1795@gmail.com";
-  let notifyTimer;
 
   if (!navigator.clipboard) {
     console.warn("Clipboard API not supported");

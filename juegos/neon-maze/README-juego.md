@@ -25,13 +25,15 @@ ni recursos externos.
   - *Patrulleros* (rosa, cuadrado): van y vuelven por pasillos rectos.
   - *Centinelas* (naranja, rombo): patrullan, pero si te ven en línea recta (hasta 5 casillas
     sin muros ni puertas) te persiguen unos segundos y luego regresan a su ruta.
-  - La cantidad y velocidad aumentan con el nivel.
+  - La cantidad de enemigos crece con el nivel (patrulleros y centinelas, con tope);
+    su velocidad es constante durante toda la partida.
 - **Powerups** (1 por nivel): *escudo* (absorbe un contacto) y *congelación* (enemigos
   quietos e inofensivos 3 s).
 - **Vidas y tiempo:** 3 vidas. Perder una vida (enemigo o tiempo agotado) reinicia las
   posiciones y el tiempo del nivel, conservando llaves y puertas abiertas. Sin vidas: fin.
-- **Progresión:** modo infinito; cada nivel superado genera otro más grande y rápido.
-  Victoria por niveles (no hay final): la partida termina en Game Over.
+- **Progresión:** modo infinito; cada nivel superado genera otro más grande
+  (el laberinto crece hasta 25×17 celdas). Victoria por niveles (no hay final):
+  la partida termina en Game Over.
 - **Estados:** Inicio, Jugando, Pausa (P/Esc, botón, al ocultar la pestaña o abrir Opciones),
   Nivel superado y Game Over.
 
