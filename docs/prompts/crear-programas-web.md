@@ -48,44 +48,49 @@ lateral y modal de configuración):
 ```text
 pfd1795/
 ├── index.html              # Portada
+├── js/                     # Módulos ES compartidos (main.js, theme-init.js, buscador.js…)
+├── stylesheets/            # base.css (estilos compartidos del portafolio)
 ├── mis-estudios/           # Enciclopedia de informática
 ├── juegos/                 # Juegos arcade
 └── programas/              # Programas y herramientas  ← aquí trabajas
-    ├── index.html          # Grilla con buscador y filtros
-    ├── js/                 # tema.js (pre-pintado), buscador.js
-    └── <slug>/             # Una carpeta por herramienta (tú creas una)
+    ├── index.html          # Grilla con buscador y filtros (renderizada desde el manifiesto)
+    ├── programas.css       # Estilos específicos de la sección
+    ├── herramientas/       # Un archivo <slug>.html por herramienta (tú creas uno)
+    └── data/herramientas.json # Manifiesto de la grilla de herramientas
 ```
 
 ### Dónde va tu archivo
 
 ```text
-programas/<slug>/index.html
+programas/herramientas/<slug>.html
 ```
 
 Reglas de nombre:
 
 - El `slug` en **kebab-case**, solo minúsculas, números y guiones (`generador-paletas`,
   `formateador-json`). Es el identificador de la herramienta.
-- El archivo se llama siempre `index.html` dentro de la carpeta.
-- El nombre de la carpeta **no cambia** después: es el que se enlaza desde la grilla y el que se
+- Una herramienta es **un único archivo `<slug>.html`** dentro de `herramientas/`: la carpeta
+  ya indica el contexto, así que el nombre es solo el slug.
+- El nombre del archivo **no cambia** después: es el que se enlaza desde la grilla y el que se
   cachea en el Service Worker.
 
-Ejemplos correctos: `programas/generador-paletas/index.html`,
-`programas/formateador-json/index.html`.
-Ejemplos incorrectos: `programas/GeneradorPaletas/index.html`, `programas/generador_paletas/index.html`.
+Ejemplos correctos: `programas/herramientas/generador-paletas.html`,
+`programas/herramientas/formateador-json.html`.
+Ejemplos incorrectos: `programas/herramientas/GeneradorPaletas.html`,
+`programas/herramientas/generador_paletas.html`.
 
-**Tú creas un solo archivo: la herramienta.** No crees ni modifiques la grilla, el Service
-Worker, las hojas de estilo ni los scripts: eso lo hace el desarrollador al integrar (te lo indico
-en el punto 7).
+**Tú creas un solo archivo: la herramienta.** No crees ni modifiques la grilla, el manifiesto,
+el Service Worker, las hojas de estilo ni los scripts: eso lo hace el desarrollador al integrar
+(te lo indico en el punto 8).
 
-### Rutas relativas (desde `programas/<slug>/`)
+### Rutas relativas (desde `programas/herramientas/`)
 
 | Recurso | Ruta |
 | --- | --- |
 | Estilos base | `../../stylesheets/base.css` |
-| Estilos de la sección Programas | `../../stylesheets/programas.css` |
-| Pre-pintado del tema (síncrono, en `<head>`) | `../js/tema.js` |
-| Chrome compartido (módulo ES, diferido) | `../../javascripts/main.js` |
+| Estilos de la sección Programas | `../programas.css` |
+| Pre-pintado del tema (síncrono, en `<head>`) | `../../js/theme-init.js` |
+| Chrome compartido (módulo ES, diferido) | `../../js/main.js` |
 | Favicon | `../../favicon.svg` |
 | Manifiesto PWA | `../../manifest.json` |
 | Iconos | `../../assets/icons/*.svg`, `../../assets/icons/icon-192.png` |
@@ -289,7 +294,7 @@ Dentro de `<main id="contenido" class="contenedor">`:
 Responde siempre con estos bloques, en este orden:
 
 ```text
-ARCHIVO: programas/<slug>/index.html
+ARCHIVO: programas/herramientas/<slug>.html
 ```
 
 **1. La herramienta completa**, en un único bloque de código con la etiqueta `html`:
@@ -312,10 +317,14 @@ contenido ya está en el HTML.
 
 ## 8. Nota sobre integración (la hace el desarrollador, no tú)
 
-El desarrollador integrará la herramienta añadiendo una tarjeta en `programas/index.html`
-(sustituyendo la tarjeta «Próximamente» por una tarjeta con enlace a
-`programas/<slug>/index.html`), actualizando el Service Worker y la documentación. Tú no generas
-esa tarjeta ni modificas otros archivos.
+El desarrollador integrará la herramienta añadiendo una entrada al manifiesto
+`programas/data/herramientas.json` (array `items`), con `slug`, `title {es}`,
+`description {es}`, `keywords`, `category` (un id del array `categories`), `icon` y
+`technologies`, y `status: "published"` solo si está probada. Los chips de filtro y las
+tarjetas de la grilla se generan solos desde el manifiesto: la tarjeta `published` se convierte
+en enlace (botón `Abrir`, que abre `herramientas/<slug>.html` en pestaña nueva) y la `wip`
+muestra "Próximamente". El desarrollador también actualizará el Service Worker y la
+documentación. Tú no generas esa entrada ni modificas otros archivos.
 
 ---
 
@@ -331,7 +340,7 @@ esa tarjeta ni modificas otros archivos.
   <meta name="description" content="Descripción breve de la herramienta.">
   <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
   <link rel="stylesheet" href="../../stylesheets/base.css">
-  <link rel="stylesheet" href="../../stylesheets/programas.css">
+  <link rel="stylesheet" href="../programas.css">
   <style>
     /* Estilos propios de la herramienta. Usa los tokens de base.css. */
     .herramienta__campo {
@@ -351,8 +360,8 @@ esa tarjeta ni modificas otros archivos.
       border-radius: var(--radius-lg);
     }
   </style>
-  <script src="../js/tema.js"></script>
-  <script src="../../javascripts/main.js" defer type="module"></script>
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -503,9 +512,11 @@ esa tarjeta ni modificas otros archivos.
 
 Antes de entregar, verifica y corrige:
 
-- [ ] El archivo se llama `index.html` y vive en `programas/<slug>/`.
+- [ ] El archivo se llama `<slug>.html` (kebab-case) y vive en `programas/herramientas/`.
 - [ ] `<html lang="es">` y `<body id="HomePage" class="body-container">`.
-- [ ] `<head>` carga `base.css`, `programas.css`, `../js/tema.js` (síncrono), `main.js` (módulo diferido), más `manifest`, `apple-touch-icon` y las etiquetas `mobile-web-app-*`.
+- [ ] `<head>` carga `base.css`, `../programas.css`, `../../js/theme-init.js` (síncrono),
+      `main.js` (módulo diferido), más `manifest`, `apple-touch-icon` y las etiquetas
+      `mobile-web-app-*`.
 - [ ] El chrome (navbar, `.saltar`, sidebar, overlay, modal) está completo e idéntico al esqueleto, con `Pablo Diaz` en el navbar y el enlace «Programas» marcado como activo.
 - [ ] Solo se usan clases del catálogo o clases propias con prefijo; no hay estilos que rompan el tema.
 - [ ] Todas las rutas son relativas; no hay `http://`, `https://` ni rutas que empiecen por `/`.
@@ -525,8 +536,10 @@ Antes de entregar, verifica y corrige:
 
 Estos pasos no te corresponden a ti, pero condicionan la calidad de la herramienta:
 
-1. Guardar el archivo en `programas/<slug>/` y añadir la tarjeta a la grilla.
-2. Servir por HTTP desde la raíz del repositorio (`python -m http.server 8000`) y abrir `http://localhost:8000/programas/<slug>/`.
+1. Guardar el archivo en `programas/herramientas/` y añadir su entrada al manifiesto
+   `programas/data/herramientas.json`.
+2. Servir por HTTP desde la raíz del repositorio (`python -m http.server 8000`) y abrir
+   `http://localhost:8000/programas/herramientas/<slug>.html`.
    Con `file://` los módulos ES no cargan y la página se ve rota: es un error de prueba, no de la herramienta.
 3. Comprobar en la consola del navegador que no hay errores.
 4. Cambiar de modo claro a oscuro y de acento desde el modal de Configuración: la herramienta debe seguir funcionando.
@@ -538,8 +551,8 @@ Estos pasos no te corresponden a ti, pero condicionan la calidad de la herramien
 ## 12. Límites
 
 - No ejecutes el código, no sirvas la página, no abras enlaces: solo produces HTML.
-- No crees ni modifiques ningún archivo que no sea la herramienta (ni la grilla, ni el Service
-  Worker, ni el CSS, ni el JS).
+- No crees ni modifiques ningún archivo que no sea la herramienta (ni la grilla, ni el
+  manifiesto, ni el Service Worker, ni el CSS, ni el JS).
 - No añadas dependencias, CDNs, fuentes remotas, imágenes remotas ni recursos de terceros.
 - No incluyas marcas de agua, nombres de modelos de IA, comentarios-firma ni ninguna otra
   mención a un modelo o agente en la herramienta.

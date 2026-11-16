@@ -6,7 +6,7 @@ Portafolio web personal desarrollado con HTML, CSS y JavaScript vanilla. Sitio e
 
 **URL de producción:** https://pfd1795.github.io/pfd1795/
 
-**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `AGENTS.md` locales en `juegos/` y `mis-estudios/` (reglas propias de cada carpeta; los agentes los combinan con el de la raíz), `docs/README.md` (índice de la documentación) y `juegos/README.md` (cómo agregar y documentar juegos). `docs/prompts/` contiene herramientas para desarrolladores: solo leerlas cuando se pida explícitamente. No hay fases, tareas, auditorías ni informes activos en el repositorio; el estado real está en el código y en esta guía.
+**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `AGENTS.md` locales en `juegos/`, `mis-estudios/` y `programas/` (reglas propias de cada carpeta; los agentes los combinan con el de la raíz), `docs/README.md` (índice de la documentación) y `juegos/README.md` (cómo agregar y documentar juegos). `docs/prompts/` contiene herramientas para desarrolladores: solo leerlas cuando se pida explícitamente. No hay fases, tareas, auditorías ni informes activos en el repositorio; el estado real está en el código y en esta guía.
 
 ---
 
@@ -43,11 +43,12 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 
    | Cambio afecta a… | Cargar |
    | --- | --- |
-   | `base.css`, `sidebar/`, `main.js`, `theme-init.js` | `/`, `/juegos/`, `/mis-estudios/` y una subpágina de estudio (p. ej. `/mis-estudios/estudios/estudios_css.html`) |
+   | `base.css`, `sidebar/`, `main.js`, `theme-init.js` | `/`, `/juegos/`, `/mis-estudios/` y una subpágina de estudio (p. ej. `/mis-estudios/articulos/css.html`) |
    | `controllers/home/`, `lang/` | `/` (portada) |
-   | `controllers/juegos/`, `data/juegos.json` | `/juegos/` |
-   | `mis-estudios/` (contenido, `enciclopedia.css`, `tema.js`, `buscador.js`) | `/mis-estudios/` y sus subpáginas de `estudios/` |
-    | `programas/` (contenido, `programas.css`, `tema.js`, `buscador.js`) | `/programas/` y una herramienta de `/programas/programas/` (p. ej. `/programas/programas/generador-paletas.html`) |
+   | `controllers/juegos/`, `juegos/data/juegos.json` | `/juegos/` |
+   | `mis-estudios/` (contenido, `mis-estudios.css`, manifiesto `data/articulos.json`) | `/mis-estudios/` y una subpágina de `articulos/` (p. ej. `/mis-estudios/articulos/css.html`) |
+   | `programas/` (contenido, `programas.css`, manifiesto `data/herramientas.json`) | `/programas/` y una herramienta de `/programas/herramientas/` (p. ej. `/programas/herramientas/generador-paletas.html`) |
+   | `js/buscador.js` | `/mis-estudios/` y `/programas/` (filtro, conteo del placeholder y chips de categoría) |
    | Modal de Configuración (`settings.controller.js`, `utils/dialog.js`) | `/` y `/juegos/` (apertura desde el footer del sidebar) |
 
 3. **Checklist funcional en el navegador:**
@@ -56,7 +57,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    - Sidebar: scrollspy marca la sección visible; abrir/cerrar deja `inert` solo en el fondo y devuelve el foco al botón que lo abrió.
    - Modal de Configuración: modo claro/oscuro, acento, fondo de página (dirección/velocidad según tema), tamaño de fuente y idioma persisten tras una recarga dura.
    - Idioma ES/EN: la portada y la grilla de juegos se re-renderizan con las cadenas correctas (las cadenas generadas en JS no usan `data-lang`).
-   - Tema sin parpadeo: tras recarga dura, el fondo y el acento correctos se pintan antes del primer frame (lo aplica `theme-init.js` / `tema.js`).
+   - Tema sin parpadeo: tras recarga dura, el fondo y el acento correctos se pintan antes del primer frame (lo aplica `js/theme-init.js`, único en todo el sitio).
    - En `juegos/`: las tarjetas del manifiesto se renderizan, las portadas cargan y los lanzamientos abren pestaña nueva con `rel="noopener noreferrer"`.
    - En `mis-estudios/`: el tema del portafolio se respeta y el buscador filtra, actualiza el conteo del placeholder y muestra/oculta `#sin-resultados`.
 4. **Registros en consola permitidos:** los avisos de `utils/storage.js` y `theme-init.js` cuando `localStorage` está bloqueado (modo privado) son esperables; cualquier otro error sí es un problema.
@@ -76,36 +77,44 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 │       ├── crear-videojuegos.md     # Prompt para crear juegos integrados
 │       ├── crear-programas-web.md   # Prompt para crear herramientas de la sección programas
 │       └── portadas-juegos.md       # Guía para generar portadas de la grilla
-├── index.html              # Entrada principal
+├── index.html              # Entrada principal (portada)
 ├── mis-estudios/           # Enciclopedia de informática (contenido educativo)
-│   └── AGENTS.md           # Reglas locales de la enciclopedia para agentes
+│   ├── AGENTS.md           # Reglas locales de la enciclopedia para agentes
+│   ├── index.html          # Índice con buscador; grilla generada desde data/articulos.json
+│   ├── mis-estudios.css    # Estilos específicos de la enciclopedia
+│   ├── articulos/          # Un artículo por archivo <slug>.html
+│   ├── data/articulos.json # Manifiesto de la grilla de artículos
+│   └── js/copiar.js        # Botón «Copiar» de los bloques de código (solo artículos)
 ├── juegos/                 # Grilla y juegos arcade (guía en juegos/README.md)
 │   ├── AGENTS.md           # Reglas locales de la grilla y los juegos para agentes
-│   ├── index.html          # Grilla generada desde javascripts/data/juegos.json
+│   ├── index.html          # Grilla generada desde juegos/data/juegos.json
 │   ├── README.md           # Cómo agregar juegos
+│   ├── juegos.css          # Estilos específicos de la grilla de juegos
+│   ├── data/juegos.json    # Manifiesto de la grilla de juegos
 │   ├── _template/          # Plantilla base para juegos nuevos
 │   └── <slug>/             # Un juego por carpeta (index.html + README-juego.md)
 ├── programas/              # Programas y herramientas (ver programas/AGENTS.md)
 │   ├── AGENTS.md           # Reglas locales de la sección para agentes
-│   ├── index.html          # Grilla de programas y herramientas
-│   ├── js/                 # Scripts propios (tema, buscador)
-│   └── programas/          # Herramientas implementadas (un archivo <slug>.html por herramienta)
-├── javascripts/            # Módulos ES6
-│   ├── main.js            # Punto de entrada
-│   ├── theme-init.js      # Pre-pintado del tema (script clásico síncrono)
-│   ├── controllers/       # Controladores de UI
-│   │   ├── home/          # Grillas y modales de contenido (experiencia, estudios, proyectos)
-│   │   ├── juegos/        # Grilla de juegos desde el manifiesto
-│   │   ├── sidebar/       # Menú lateral: tema, idioma, scrollspy, acentos y fondos
-│   │   └── settings/      # Modal de configuración
-│   ├── data/              # Manifiestos de contenido (juegos.json)
-│   ├── utils/             # Utilidades
-│   └── lang/              # Internacionalización
-├── stylesheets/           # CSS
-│   ├── base.css           # Base compartida: reset, tokens, layout, modal, componentes, navbar y sidebar
-│   ├── portada.css        # Estilos específicos de la portada
-│   ├── enciclopedia.css   # Estilos específicos de la enciclopedia (mis-estudios/)
-│   └── juegos.css         # Estilos específicos de la grilla de juegos
+│   ├── index.html          # Índice con buscador y filtros; grilla desde data/herramientas.json
+│   ├── programas.css       # Estilos específicos de la sección
+│   ├── herramientas/       # Herramientas implementadas (un archivo <slug>.html por herramienta)
+│   └── data/herramientas.json # Manifiesto de la grilla de herramientas
+├── js/                     # Módulos ES6 (compartidos por todo el sitio)
+│   ├── main.js             # Punto de entrada
+│   ├── theme-init.js       # Pre-pintado del tema (script clásico síncrono, único)
+│   ├── buscador.js         # Buscador de grillas (script clásico configurable)
+│   ├── controllers/        # Controladores de UI
+│   │   ├── home/           # Grillas y modales de contenido (experiencia, estudios, proyectos)
+│   │   ├── juegos/         # Grilla de juegos desde el manifiesto
+│   │   ├── mis-estudios/   # Grilla de artículos desde el manifiesto
+│   │   ├── programas/      # Grilla de herramientas desde el manifiesto
+│   │   ├── sidebar/        # Menú lateral: tema, idioma, scrollspy, acentos y fondos
+│   │   └── settings/       # Modal de configuración
+│   ├── utils/              # Utilidades
+│   └── lang/               # Internacionalización
+├── stylesheets/            # CSS compartido
+│   ├── base.css            # Base compartida: reset, tokens, layout, modal, componentes, navbar y sidebar
+│   └── portada.css         # Estilos específicos de la portada
 └── assets/                # Imágenes e iconos
 ```
 
@@ -118,8 +127,9 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
-| `javascripts/main.js` | — (script principal) | Monta `InitModalDialog`, `SidebarController` (si existe `#HomePage`), `HomeController` (si existe `.main-layout`) y `JuegosController` (si existe `.juegos-grid`) tras `DOMContentLoaded`. Registra también el Service Worker (PWA). |
-| `javascripts/theme-init.js` | IIFE clásica (no módulo) | Aplica modo, acento, fondo y escala desde `localStorage` antes del primer pintado (portada y `juegos/`). Duplica las claves de `utils/storage.js` a propósito. |
+| `js/main.js` | — (script principal) | Monta `InitModalDialog`, `SidebarController` (si existe `#HomePage`), `HomeController` (si existe `.main-layout`) y los controladores de grilla (`JuegosController` si existe `.juegos-grid`, `MisEstudiosController` si existe `.estudios-grid`, `ProgramasController` si existe `.programas-grid`) tras `DOMContentLoaded`. Registra también el Service Worker (PWA). |
+| `js/theme-init.js` | IIFE clásica (no módulo) | Aplica modo, acento, fondo y escala desde `localStorage` antes del primer pintado en **todas las páginas** (portada, `juegos/`, `mis-estudios/` y `programas/`). Es el único script de pre-pintado; duplica las claves de `utils/storage.js` a propósito. |
+| `js/buscador.js` | IIFE clásica (no módulo) | Buscador único de las grillas: filtra las tarjetas del término (y por categoría si hay chips `.filtro`), actualiza el placeholder con el conteo y usa `#sin-resultados`. Se configura por `data-attributes` del input `#buscador` (`data-buscador-tarjetas`, `data-buscador-placeholder`); la recarga tras renders dinámicos la resuelve un `MutationObserver` y los chips por delegación sobre `document`. |
 
 **Controladores — `controllers/home/`**
 
@@ -132,8 +142,22 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
-| `juegos.controller.js` | `default JuegosController()` | Carga el manifiesto `data/juegos.json`, lo valida y dispara el render de la grilla. |
+| `juegos.controller.js` | `default JuegosController()` | Carga el manifiesto `juegos/data/juegos.json`, lo valida y dispara el render de la grilla. |
 | `fnJuegos.js` | `GridGames()`, `reloadGamesContent()` | Genera las tarjetas desde el manifiesto (etiquetas por idioma desde `translations.page[lang]`) y re-renderiza al cambiar de idioma. |
+
+**Controladores — `controllers/mis-estudios/`**
+
+| Archivo | Exporta | Responsabilidad |
+| --- | --- | --- |
+| `mis-estudios.controller.js` | `default MisEstudiosController()` | Dispara el render de la grilla de artículos. |
+| `fnMisEstudios.js` | `GridEstudios()` | Genera las categorías y tarjetas de artículos desde `mis-estudios/data/articulos.json` (mismo esquema que juegos.json). Contenido solo en español. |
+
+**Controladores — `controllers/programas/`**
+
+| Archivo | Exporta | Responsabilidad |
+| --- | --- | --- |
+| `programas.controller.js` | `default ProgramasController()` | Dispara el render de la grilla de herramientas. |
+| `fnProgramas.js` | `GridProgramas()` | Genera los chips de filtro, las categorías y las tarjetas desde `programas/data/herramientas.json` (mismo esquema que juegos.json). Contenido solo en español. |
 
 **Controladores — `controllers/sidebar/`**
 
@@ -164,32 +188,45 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | `themeBackgrounds.js` | `BACKGROUND_THEMES`, `GRADIENT_DIRECTIONS`, `PSYCHEDELIC_SPEEDS`, `FONT_SCALE_OPTIONS` | Catálogos únicos de los temas de fondo, 7 direcciones, 3 velocidades y 3 escalas. |
 | `themeColors.js` | `THEME_COLORS`, `getThemeColorDef` | Fuente única de los 6 acentos disponibles. |
 
-**Internacionalización y enciclopedia**
+**Internacionalización y scripts clásicos de sección**
 
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
-| `javascripts/lang/translations.config.js` | `currentLanguage`, `setCurrentLanguage()` | Estado global del idioma (`es` \| `en`) leído por todas las grillas. |
-| `javascripts/lang/translations.json` | datos JSON | Claves de la UI (`page`, `introSection`, `home`, `header`, …). |
-| `mis-estudios/js/tema.js` | IIFE clásica (no módulo) | Pre-pintado del tema en `mis-estudios/`: duplica la lógica de `theme-init.js` con las mismas claves. |
-| `mis-estudios/js/buscador.js` | IIFE clásica (no módulo) | Filtra `.estudio-card` del término de búsqueda y gestiona contador y mensaje vacío. |
+| `js/lang/translations.config.js` | `currentLanguage`, `setCurrentLanguage()` | Estado global del idioma (`es` \| `en`) leído por todas las grillas. |
+| `js/lang/translations.json` | datos JSON | Claves de la UI (`page`, `introSection`, `home`, `header`, …). |
 | `mis-estudios/js/copiar.js` | IIFE clásica (no módulo) | Botón “Copiar” sobre los bloques de código de los artículos: copia con `navigator.clipboard` (respaldo `execCommand`), dedentando la sangría. Solo en páginas de estudio. |
-| `programas/js/tema.js` | IIFE clásica (no módulo) | Pre-pintado del tema en `programas/`: duplica la lógica de `theme-init.js` con las mismas claves. |
-| `programas/js/buscador.js` | IIFE clásica (no módulo) | Filtra `.programa-card` del término de búsqueda y por categoría, gestiona contador y mensaje vacío. |
+
+### Manifiestos de contenido
+
+Las tres grillas de sección usan el **mismo esquema de manifiesto**: una clave raíz
+`version` (formato) y un array `items`; en `mis-estudios/` y `programas/` hay además
+un array `categories` (`id` + `label {es}`) que ordena y agrupa las tarjetas. Cada
+entrada lleva `slug` (kebab-case, validado con un patrón), `title`, `description`,
+`status: "published" \| "wip"` y campos propios de la sección (`covers`/`year`/… en
+juegos; `keywords`/`category` en artículos y herramientas; `icon`/`technologies` en
+herramientas). Solo se publican entradas con `status: "published"` y slug válido;
+las URLs no van en el manifiesto: se construyen como `<patrón de la sección>/<slug>…`.
+
+| Manifiesto | Grilla | Contenido de las entradas |
+| --- | --- | --- |
+| `juegos/data/juegos.json` | `.juegos-grid` | Juegos en `juegos/<slug>/index.html` |
+| `mis-estudios/data/articulos.json` | `.estudios-grid` | Artículos en `mis-estudios/articulos/<slug>.html` |
+| `programas/data/herramientas.json` | `.programas-grid` | Herramientas en `programas/herramientas/<slug>.html` |
 
 ### Inventario de claves de `localStorage`
 
 Referencia única de preferencias. Recuerda: una clave nueva debe reflejarse aquí,
-en `utils/storage.js`, en `theme-init.js` y en `mis-estudios/js/tema.js`.
+en `utils/storage.js` y en `theme-init.js` (único script de pre-pintado).
 
 | Clave | Valores posibles | Escribe | Lee | Por defecto |
 | --- | --- | --- | --- | --- |
-| `theme-mode` | `dark` \| `light` | `fnThemeMode` (vía `utils/storage.js`) | `theme-init.js`, `mis-estudios/js/tema.js` | `dark` |
+| `theme-mode` | `dark` \| `light` | `fnThemeMode` (vía `utils/storage.js`) | `theme-init.js` | `dark` |
 | `theme-color` | nombre de acento en `themeColors.js` (`blue`\|`red`\|…) | `fnThemeColor` | `utils/storage.js` (`getThemeColor`) | `blue` |
-| `theme-color-value` | color CSS, p. ej. `hsl(210 75% 28%)` | `fnThemeColor` | `theme-init.js`, `mis-estudios/js/tema.js` | `hsl(210 75% 28%)` |
-| `theme-background` | `default` \| color \| `multicolor` (`BACKGROUND_THEMES`) | `fnBackgroundTheme` | `theme-init.js`, `mis-estudios/js/tema.js` | `default` |
-| `gradient-direction` | una de `GRADIENT_DIRECTIONS` | `fnBackgroundTheme` | `theme-init.js`, `mis-estudios/js/tema.js` | `topToBottom` |
-| `psychedelic-speed` | `lento` \| `normal` \| `rapido` | `fnBackgroundTheme` | `theme-init.js`, `mis-estudios/js/tema.js` | `normal` |
-| `font-scale` | `0.85` \| `1` \| `1.15` | `fnFontScale` | `theme-init.js`, `mis-estudios/js/tema.js` | `1` |
+| `theme-color-value` | color CSS, p. ej. `hsl(210 75% 28%)` | `fnThemeColor` | `theme-init.js` | `hsl(210 75% 28%)` |
+| `theme-background` | `default` \| color \| `multicolor` (`BACKGROUND_THEMES`) | `fnBackgroundTheme` | `theme-init.js` | `default` |
+| `gradient-direction` | una de `GRADIENT_DIRECTIONS` | `fnBackgroundTheme` | `theme-init.js` | `topToBottom` |
+| `psychedelic-speed` | `lento` \| `normal` \| `rapido` | `fnBackgroundTheme` | `theme-init.js` | `normal` |
+| `font-scale` | `0.85` \| `1` \| `1.15` | `fnFontScale` | `theme-init.js` | `1` |
 | `language` | `es` \| `en` | `fnChangeLanguage` | `fnChangeLanguage`, `translations.config.js` | `es` |
 | `<slug>_best_v1` | número u objeto JSON (récord del juego; algunos juegos guardan `{record, bestLevel}` o un mapa por canción) | cada juego en `juegos/<slug>/` | el propio juego | — (propio de cada juego) |
 
@@ -252,12 +289,12 @@ element?.addEventListener('click', () => {
 - **Comillas**: Dobles para atributos (`"value"`)
 - **Idioma**: Atributo `lang="es"` en `<html>`
 - **Accesibilidad**: Alt text en imágenes, atributos `title` en links
-- **Scripts**: Usar `defer type="module"`, salvo `javascripts/theme-init.js`, que es un script clásico síncrono a propósito para aplicar el tema antes del primer pintado
+- **Scripts**: Usar `defer type="module"`, salvo `js/theme-init.js`, que es un script clásico síncrono a propósito para aplicar el tema antes del primer pintado
 - **SEO**: Meta tags descripción y keywords incluidos
 
 ```html
 <!-- Correcto -->
-<script src="./javascripts/main.js" defer type="module"></script>
+<script src="./js/main.js" defer type="module"></script>
 <img src="./assets/image.png" alt="Descripción" loading="lazy" />
 ```
 
@@ -267,15 +304,16 @@ element?.addEventListener('click', () => {
 
 ### JavaScript
 
-- **Controladores**: Funciones export default que inicializan componentes. Punto de entrada: `javascripts/main.js`.
+- **Controladores**: Funciones export default que inicializan componentes. Punto de entrada: `js/main.js`.
 - **Utils**: Funciones puras exportadas nombradas.
 - **DOM**: Verificar existencia antes de manipular (`if (element)`).
 - **Eventos**: Usar delegation cuando sea posible.
-- **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`) que despliega un `.sidebar-submenu` con 3 elementos (`data-target`: experiencia, estudios, proyectos; en `mis-estudios/` son enlaces `../index.html#seccion` o `../../index.html#seccion` desde `mis-estudios/estudios/*.html`). El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible; si es una hija, abre el submenú y añade `.has-active` al `--group`. Al abrir el menú, `sidebar.controller.js` marca el fondo como `inert` (`.navbar`, `.main-layout`/`.main-content`, `.footer`, `.modal-dialog`) y lleva el foco al botón de cierre; al cerrarlo retira el `inert` y devuelve el foco al botón que lo abrió.
+- **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`) que despliega un `.sidebar-submenu` con 3 elementos (`data-target`: experiencia, estudios, proyectos; en `mis-estudios/` son enlaces `../index.html#seccion` o `../../index.html#seccion` desde `mis-estudios/articulos/*.html`). El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible; si es una hija, abre el submenú y añade `.has-active` al `--group`. Al abrir el menú, `sidebar.controller.js` marca el fondo como `inert` (`.navbar`, `.main-layout`/`.main-content`, `.footer`, `.modal-dialog`) y lleva el foco al botón de cierre; al cerrarlo retira el `inert` y devuelve el foco al botón que lo abrió.
 - **Enlaces externos del menú**: debajo de "Inicio" hay `<a class="sidebar-item">` para "Mis estudios" (icono `menu_book`, → `./mis-estudios/index.html`), "Juegos" (icono `gamepad`, → `./juegos/index.html`) y "Programas" (icono `build`, → `./programas/index.html`; en esas subpáginas lleva `.active` y `aria-current="page"`, y las rutas se ajustan con `../` o `../../`). No llevan `data-target`, por lo que el scrollspy los ignora; `sidebar.controller.js` cierra el menú al pulsarlos.
-- **Enciclopedia** (`mis-estudios/`): contenido estático que comparte la preferencia de tema del portafolio. Su `js/tema.js` lee las claves de `localStorage` de `utils/storage.js` y aplica modo, acento, fondo y escala antes de pintar. Sus páginas cargan también la barra, el menú lateral y `javascripts/main.js`, de modo que el modal de Configuración funciona igual que en la portada. Tiene buscador en `mis-estudios/js/buscador.js`.
-- **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `stylesheets/juegos.css`. La grilla se renderiza desde `javascripts/data/juegos.json` con `controllers/juegos/` y se monta en `main.js` solo si existe `.juegos-grid`. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
-- **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `stylesheets/programas.css`. La grilla es estática en HTML con tarjetas `.programa-card`: las herramientas implementadas se convierten en enlace (botón `Abrir` con `target="_blank"` + `rel="noopener noreferrer"`, patrón de la grilla de juegos) y las pendientes conservan el estado "Próximamente"; incluye buscador en `programas/js/buscador.js`. Comparte el tema mediante `programas/js/tema.js`. Las herramientas propias viven en `programas/programas/<slug>.html`, son autocontenidas y siguen el patrón de `juegos/` (guía en `docs/prompts/crear-programas-web.md`).
+- **Grillas y manifiestos**: las tres secciones (`juegos/`, `mis-estudios/`, `programas/`) siguen el mismo patrón: `index.html` con buscador (y filtros en programas), un contenedor `<seccion>-grid` vacío en el HTML, un manifiesto `<seccion>/data/*.json` y un controlador en `js/controllers/<seccion>/` (`<seccion>.controller.js` + `fn<Seccion>.js`) que renderiza las tarjetas. El controlador se monta en `main.js` solo si existe su contenedor. Para agregar contenido nuevo: archivo por `slug` en la carpeta de la sección + entrada en el manifiesto + verificación.
+- **Enciclopedia** (`mis-estudios/`): comparte la preferencia de tema del portafolio (pre-pintado con `js/theme-init.js`). Sus páginas cargan también la barra, el menú lateral y `js/main.js`, de modo que el modal de Configuración funciona igual que en la portada. La grilla se renderiza desde `mis-estudios/data/articulos.json`; los artículos viven en `mis-estudios/articulos/<slug>.html`. El buscador es el `js/buscador.js` compartido, configurado por `data-attributes` del input.
+- **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `juegos/juegos.css`. La grilla se renderiza desde `juegos/data/juegos.json` con `controllers/juegos/`. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
+- **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `programas/programas.css`. La grilla se renderiza desde `programas/data/herramientas.json` con `controllers/programas/` (chips de filtro incluidos, generados desde las categorías del manifiesto): las herramientas `published` se convierten en enlace (botón `Abrir` con `target="_blank"` + `rel="noopener noreferrer"`, patrón de la grilla de juegos) y las `wip` conservan el estado "Próximamente". Las herramientas propias viven en `programas/herramientas/<slug>.html`, son autocontenidas y siguen el patrón de `juegos/` (guía en `docs/prompts/crear-programas-web.md`). El buscador es el `js/buscador.js` compartido; comparte el tema mediante `js/theme-init.js`.
 El dimensionado del escenario de los juegos de marco pequeño y de la plantilla (snake,
 space-invaders, neon-racer, plataformas, dungeon-crawler, tower-defense) sigue un criterio
 común: marco máximo de 900×900 px CSS (`--game-max`/`--game-chrome`) y buffer del canvas
@@ -284,13 +322,13 @@ renderizado a la resolución visible (`renderScale`), documentado en `juegos/REA
 del manifiesto (ver Arquitectura CSS).
 - **Rutas de assets**: los iconos que se inyectan desde JS (modal de Configuración y modo) se resuelven con `utils/assets.js` (`import.meta.url` → `assets/icons/`), para que funcionen tanto desde la raíz (`index.html`) como desde subcarpetas (`mis-estudios/` y `juegos/`).
 - **Configuración**: el modal (`.modal-dialog`) se rellena desde `controllers/settings/settings.controller.js`; los controles de idioma/modo/color/fondo/dirección/velocidad y tamaño de fuente usan **delegación de eventos sobre `document`**, por lo que siguen funcionando aunque el contenido se genere dinámicamente en cada apertura. Las filas de "Dirección del degradado" y "Velocidad" son condicionales: se muestran/ocultan con `.is-hidden` según el tema de fondo elegido (dirección para temas con degradado; velocidad solo para `multicolor`). La lógica de aplicación vive en `controllers/sidebar/fnBackgroundTheme.js` (fondo, dirección y velocidad) y `fnFontScale.js`; los datos están centralizados en `utils/themeBackgrounds.js`. `applyTranslations()` (en `fnChangeLanguage.js`) actualiza el texto de `[data-lang]` y el `title`/`aria-label` de `[data-i18n-title]`/`[data-i18n-aria-label]`, de modo que los controles dinámicos cambian de idioma sin reabrir el modal.
-- **Pre-pintado del tema**: para evitar el parpadeo, el modo, el acento, el fondo y el tamaño de fuente se aplican antes del primer pintado. La portada y `juegos/index.html` usan `javascripts/theme-init.js` (script clásico síncrono en `<head>`); las subpáginas de `mis-estudios/` usan `mis-estudios/js/tema.js`. Ambos leen las mismas claves de `localStorage` que `utils/storage.js` (`theme-mode`, `theme-color-value`, `theme-background`, `gradient-direction`, `psychedelic-speed`, `font-scale`) y deben mantenerse sincronizados.
+- **Pre-pintado del tema**: para evitar el parpadeo, el modo, el acento, el fondo y el tamaño de fuente se aplican antes del primer pintado. **Todas las páginas** (portada, `juegos/`, `mis-estudios/`, `programas/` y sus subpáginas) usan el mismo `js/theme-init.js` (script clásico síncrono en `<head>`, con la profundidad de ruta que corresponda: `../js/` o `../../js/`). Lee las mismas claves de `localStorage` que `utils/storage.js` (`theme-mode`, `theme-color-value`, `theme-background`, `gradient-direction`, `psychedelic-speed`, `font-scale`).
 - **PWA (instalable/offline)**: `manifest.json` y `service-worker.js` en la raíz; iconos en `assets/icons/icon-192.png` e `icon-512.png` (más `icon.svg` como fuente). `main.js` registra el SW con URL derivada de `import.meta.url`; las páginas de juego lo registran con un script inline. El SW precachea todo el sitio (lista generada en `service-worker.js`) y usa network-first para navegaciones y stale-while-revalidate para assets. Al publicar cambios, subir `CACHE_NAME` (`v2`, …) para forzar el refresco. Mantener las rutas relativas al desplegar en subruta.
 
 ### CSS
 
 - **Sistema de diseño**: tokens definidos en la sección `:root` de `stylesheets/base.css` — neutros (`--n100…--n900`, `--dn100…--dn900`), superficies (`--color-background`, `--color-surface`, `--color-border`), texto (`--color-text`, `--color-text-secondary`), acentos en trío (`--<color>-claro/-normal/-oscuro`), tipografía (`--text-*`, `--font-*`), radios, sombras (`--shadow-sm…--shadow-xl`) y bordes (`--border-thin/-normal/-thick`).
-- **Hojas CSS**: `stylesheets/base.css` contiene todo lo compartido (reset, variables, estilos globales, `.main-content`, modal, componentes, navbar y sidebar); `portada.css`, `enciclopedia.css` y `juegos.css` solo añaden lo específico de cada página. Cada HTML carga siempre `base.css` primero y después la hoja de su página, sin `@import`; un cambio compartido se hace una sola vez en `base.css`.
+- **Hojas CSS**: `stylesheets/base.css` contiene todo lo compartido (reset, variables, estilos globales, `.main-content`, modal, componentes, navbar y sidebar); `stylesheets/portada.css` añade lo específico de la portada, y cada sección es dueña de su hoja: `juegos/juegos.css`, `mis-estudios/mis-estudios.css` y `programas/programas.css`. Cada HTML carga siempre `base.css` primero y después la hoja de su página, sin `@import`; un cambio compartido se hace una sola vez en `base.css`.
 - **Alias de compatibilidad**: el único alias que queda definido y con uso real es
   `--color-white` (→ `--n100`). Tras la última auditoría se purgaron los ~44 tokens sin
   referencias (toda la familia `--color-blue/-dark/…` y los semánticos
@@ -301,8 +339,9 @@ del manifiesto (ver Arquitectura CSS).
 - **Temas de fondo (degradados)**: el fondo de página se controla con `--page-background`, `--page-gradient`, `--page-scrim`, `--page-background-size`, `--page-background-repeat` y `--page-animation`, consumidos por `.body-container`. `utils/themeBackgrounds.js` define los 10 temas (default + 8 colores, incluido violeta, + multicolor), las 7 direcciones (4 lineales, 2 radiales y color sólido) y las 3 velocidades. El degradado usa los tokens `--<color>-oscuro` y `--neutral-background-soft`, este último redefinido en modo oscuro. El modo `multicolor` usa un arcoíris animado con `@keyframes page-rainbow` (180s lento / 30s normal / 10s rápido) que se anula con `prefers-reduced-motion`. En modo claro, `html.has-page-theme` aplica un velo neutro (`--page-scrim`) y oscurece el texto secundario para mantener el contraste.
 - **Tamaño de fuente**: `html` usa `font-size: calc(16px * var(--font-scale, 1))`; el modal fija `--font-scale` en 0.85, 1 o 1.15, por lo que escala toda la tipografía basada en `rem` sin tocar los breakpoints en `px`.
 - **Modo oscuro**: clase `.dark` en `body.dark` (portafolio) y `html.dark` (subpáginas como `mis-estudios/`, que la fijan antes de pintar); la sección `:root` de `base.css` admite ambos selectores y `fnThemeMode.js` actualiza los dos nodos. Redefine las variables semánticas (`--color-background`, `--color-surface`, `--color-text`, …), por lo que los componentes se adaptan solos.
-- **Enciclopedia**: estilos en `stylesheets/enciclopedia.css`; conserva los nombres de clase originales y usa el acento adaptativo `--enc-accent`.
-- **Juegos**: `stylesheets/juegos.css` contiene la página y las tarjetas (`.juego-card*`) con tokens de `base.css`. Cada tarjeta muestra su portada (`.juego-card__portada`) leyendo `covers` del manifiesto: rutas relativas a `juegos/index.html`, como `../assets/images/games/<slug>/cover.jpg`. Con una sola imagen es estática; con 2–3 se activa el carrusel por CSS (`--carousel`, crossfade); sin imágenes, placeholder con degradado. La guía para generar portadas es una herramienta de desarrollo en `docs/prompts/portadas-juegos.md`.
+- **Enciclopedia**: estilos en `mis-estudios/mis-estudios.css`; conserva los nombres de clase originales y usa el acento adaptativo `--enc-accent`.
+- **Juegos**: `juegos/juegos.css` contiene la página y las tarjetas (`.juego-card*`) con tokens de `base.css`. Cada tarjeta muestra su portada (`.juego-card__portada`) leyendo `covers` del manifiesto: rutas relativas a `juegos/index.html`, como `../assets/images/games/<slug>/cover.jpg`. Con una sola imagen es estática; con 2–3 se activa el carrusel por CSS (`--carousel`, crossfade); sin imágenes, placeholder con degradado. La guía para generar portadas es una herramienta de desarrollo en `docs/prompts/portadas-juegos.md`.
+- **Programas**: `programas/programas.css` contiene la página, los chips `.filtro` y las tarjetas (`.programa-card*`) con tokens de `base.css` y el acento adaptativo `--prog-accent`.
 - **Modal**: `.modal-dialog` usa las variables semánticas y se adapta al modo oscuro automáticamente; el botón de cierre usa `.modal-close`; el bloqueo de scroll usa `.modal-open` en `<body>`. El `<dialog>` referencia `aria-labelledby="modal-title"`, por lo que cada contenido dinámico (Configuración y educación) debe generar un elemento con `id="modal-title"` en cada apertura.
 - **Salto al contenido**: el estilo del enlace `.saltar` vive en la sección de componentes de `stylesheets/base.css` y lo comparten la portada y la enciclopedia.
 - **Transiciones**: variables `--transition-normal`, `--ease-in-out`; se anulan con `prefers-reduced-motion: reduce`.
@@ -310,9 +349,9 @@ del manifiesto (ver Arquitectura CSS).
 ### Internacionalización
 
 - Idioma principal de la interfaz: Español, con traducciones EN de la interfaz.
-- La mayoría de los módulos usan nombres de variables y funciones en inglés. Los scripts de pre-pintado (`theme-init.js`, `mis-estudios/js/tema.js`) y la enciclopedia conservan nombres heredados en español.
+- La mayoría de los módulos usan nombres de variables y funciones en inglés. Los scripts clásicos (`js/theme-init.js`, `js/buscador.js`, `mis-estudios/js/copiar.js`) y la enciclopedia conservan nombres heredados en español.
 - Comentarios y documentación: español.
-- Configuración en `javascripts/lang/translations.config.js`; traducciones en `javascripts/lang/translations.json` (secciones: `page`, `introSection`, `home`, `header`, entre otras).
+- Configuración en `js/lang/translations.config.js`; traducciones en `js/lang/translations.json` (secciones: `page`, `introSection`, `home`, `header`, entre otras).
 
 ---
 
@@ -336,7 +375,7 @@ del manifiesto (ver Arquitectura CSS).
 ### Preferencias y almacenamiento
 
 - Tema, idioma, fondo, dirección, velocidad y escala se guardan en `localStorage`. Si el navegador lo bloquea, se usan los valores por defecto y no se persiste nada.
-- `javascripts/theme-init.js` y `mis-estudios/js/tema.js` duplican la lectura de las claves para evitar el parpadeo. Cualquier clave de tema nueva debe añadirse en ambos y en `javascripts/utils/storage.js`.
+- `js/theme-init.js` es el único script de pre-pintado y duplica la lectura de las claves a propósito. Cualquier clave de tema nueva debe añadirse en él y en `js/utils/storage.js`.
 - Los juegos usan claves propias con el patrón `<slug>_best_v1`, sin colisionar con las del sitio. Todos comparten el canon visual retro-arcade (paleta neón oscura, modal `<dialog>`, scanlines CRT) documentado en `juegos/README.md`.
 
 ### Internacionalización
@@ -356,7 +395,7 @@ del manifiesto (ver Arquitectura CSS).
 - La enciclopedia cuenta con 26 artículos publicados y dos tarjetas marcadas como "Próximamente"; no todo el temario está desarrollado.
 - La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
-- **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `javascripts/data/juegos.json`.
+- **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `juegos/data/juegos.json`.
 - El correo que copia `utils/copyEmail.js` está fijado en el código. Si cambia, hay que actualizarlo ahí y en la información de contacto.
 - **`assets/files/PabloDiazCV.pdf`** (238 KB) se mantiene en el repositorio sin enlazar por
   decisión del desarrollador (2026-11-05): es material para reenlazar el CV desde
@@ -374,7 +413,7 @@ del manifiesto (ver Arquitectura CSS).
 
 - No hay minificación, bundling ni caché personalizada; es intencional para mantener el sitio simple.
 - Usar `loading="lazy"` en imágenes y evitar dependencias externas.
-- Cualquier cambio en el sistema de temas debe reflejarse en `utils/storage.js`, `utils/themeBackgrounds.js`, `theme-init.js` y `mis-estudios/js/tema.js`.
+- Cualquier cambio en el sistema de temas debe reflejarse en `utils/storage.js`, `utils/themeBackgrounds.js` y `theme-init.js` (único script de pre-pintado).
 
 ---
 
@@ -410,7 +449,7 @@ firmas, marcas ni menciones de modelos de IA.
 - **GitHub Pages**: mantener rutas relativas y compatibilidad con despliegue estático desde `main`.
 - **Performance**: usar `loading="lazy"` en imágenes.
 - **Documentación**: mantener `README.md`, `AGENTS.md` (raíz y los locales de `juegos/` y `mis-estudios/`), `docs/README.md` y `juegos/README.md` sincronizados con el código. No reintroducir planes de tareas, fases ni informes de estado: la documentación describe el estado real del código.
-- **Juegos**: un juego nuevo se integra copiando su carpeta a `juegos/<slug>/` siguiendo el canon visual retro-arcade (`_template/` como base, `snake/` como referencia), añadiendo su entrada a `javascripts/data/juegos.json` (con `status: "published"` solo si está probado) y documentándolo con `README-juego.md`; no se edita el juego para adaptarlo al chrome del portafolio.
+- **Juegos**: un juego nuevo se integra copiando su carpeta a `juegos/<slug>/` siguiendo el canon visual retro-arcade (`_template/` como base, `snake/` como referencia), añadiendo su entrada a `juegos/data/juegos.json` (con `status: "published"` solo si está probado) y documentándolo con `README-juego.md`; no se edita el juego para adaptarlo al chrome del portafolio.
 - **Información personal**: no modificar los datos personales del desarrollador.
 - **Firma de IA**: todo agente o modelo de IA que aporte al proyecto firma **solo** en el footer de la portada (ver "Firma de agentes IA en el footer"); en ningún otro lugar del sitio puede dejar marcas, comentarios, código o recursos propios.
 - **Commits**: no crear commits automáticamente ni ejecutar `git commit`; los commits son manuales y los realiza el desarrollador.

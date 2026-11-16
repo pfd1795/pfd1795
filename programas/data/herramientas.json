@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "cat-web",
+      "label": {
+        "es": "Web"
+      }
+    },
+    {
+      "id": "cat-linux",
+      "label": {
+        "es": "Linux"
+      }
+    },
+    {
+      "id": "cat-windows",
+      "label": {
+        "es": "Windows"
+      }
+    },
+    {
+      "id": "cat-cli",
+      "label": {
+        "es": "CLI"
+      }
+    },
+    {
+      "id": "cat-devops",
+      "label": {
+        "es": "DevOps"
+      }
+    }
+  ],
+  "items": [
+    {
+      "slug": "generador-paletas",
+      "title": {
+        "es": "Generador de paletas de color"
+      },
+      "description": {
+        "es": "Crea paletas de color armoniosas a partir de un color base."
+      },
+      "keywords": "paleta color hex rgb hsl armonia generador web",
+      "category": "cat-web",
+      "icon": "palette.svg",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "status": "published"
+    },
+    {
+      "slug": "formateador-json",
+      "title": {
+        "es": "Formateador JSON"
+      },
+      "description": {
+        "es": "Valida, formatea y minifica JSON con resaltado de sintaxis."
+      },
+      "keywords": "json formatear validar minificar pretty print web",
+      "category": "cat-web",
+      "icon": "code.svg",
+      "technologies": [
+        "HTML",
+        "JavaScript"
+      ],
+      "status": "wip"
+    },
+    {
+      "slug": "convertidor-de-unidades",
+      "title": {
+        "es": "Convertidor de unidades"
+      },
+      "description": {
+        "es": "Convierte entre unidades de longitud, peso, temperatura y tiempo."
+      },
+      "keywords": "convertidor unidades longitud peso temperatura tiempo web",
+      "category": "cat-web",
+      "icon": "translate.svg",
+      "technologies": [
+        "HTML",
+        "JavaScript"
+      ],
+      "status": "wip"
+    },
+    {
+      "slug": "generador-favicons",
+      "title": {
+        "es": "Generador de favicons"
+      },
+      "description": {
+        "es": "Genera favicons en varios tamaños a partir de texto o emoji."
+      },
+      "keywords": "favicon icono generador emoji texto web",
+      "category": "cat-web",
+      "icon": "home.svg",
+      "technologies": [
+        "HTML",
+        "Canvas",
+        "JavaScript"
+      ],
+      "status": "published"
+    },
+    {
+      "slug": "generador-codigo-qr",
+      "title": {
+        "es": "Generador de código QR"
+      },
+      "description": {
+        "es": "Genera códigos QR para enlaces o texto y descúrgalos como PNG."
+      },
+      "keywords": "qr codigo generador png enlace texto web",
+      "category": "cat-web",
+      "icon": "code.svg",
+      "technologies": [
+        "HTML",
+        "Canvas",
+        "JavaScript"
+      ],
+      "status": "published"
+    },
+    {
+      "slug": "convertidor-imagenes",
+      "title": {
+        "es": "Convertidor de imágenes"
+      },
+      "description": {
+        "es": "Redimensiona y convierte imágenes entre PNG, JPEG y WebP sin salir de tu navegador."
+      },
+      "keywords": "imagen convertir formato redimensionar png jpeg webp navegador web",
+      "category": "cat-web",
+      "icon": "palette.svg",
+      "technologies": [
+        "HTML",
+        "Canvas",
+        "JavaScript"
+      ],
+      "status": "published"
+    },
+    {
+      "slug": "script-de-backup-incremental",
+      "title": {
+        "es": "Script de backup incremental"
+      },
+      "description": {
+        "es": "Backup incremental de carpetas con rsync y rotación de copias."
+      },
+      "keywords": "backup rsync linux bash script incremental rotacion",
+      "category": "cat-linux",
+      "icon": "docs.svg",
+      "technologies": [
+        "Bash",
+        "rsync",
+        "cron"
+      ],
+      "status": "wip"
+    },
+    {
+      "slug": "monitor-de-sistema-en-terminal",
+      "title": {
+        "es": "Monitor de sistema en terminal"
+      },
+      "description": {
+        "es": "Muestra CPU, RAM y disco en tiempo real desde la terminal."
+      },
+      "keywords": "monitor sistema cpu ram disco terminal linux bash",
+      "category": "cat-linux",
+      "icon": "speed.svg",
+      "technologies": [
+        "Bash",
+        "procfs"
+      ],
+      "status": "wip"
+    },
+    {
+      "slug": "limpiador-de-archivos-temporales",
+      "title": {
+        "es": "Limpiador de archivos temporales"
+      },
+      "description": {
+        "es": "Elimina archivos temporales y caché para liberar espacio."
+      },
+      "keywords": "limpiador temporales cache espacio windows powershell",
+      "category": "cat-windows",
+      "icon": "setting.svg",
+      "technologies": [
+        "PowerShell"
+      ],
+      "status": "wip"
+    },
+    {
+      "slug": "gestor-de-programas-de-inicio",
+      "title": {
+        "es": "Gestor de programas de inicio"
+      },
+      "description": {
+        "es": "Lista y gestiona los programas que arrancan con Windows."
+      },
+      "keywords": "inicio arranque gestor programas windows registro",
+      "category": "cat-windows",
+      "icon": "setting.svg",
+      "technologies": [
+        "PowerShell",
+        "WMI"
+      ],
+      "status": "wip"
+    },
+    {
+      "slug": "generador-de-gitignore",
+      "title": {
+        "es": "Generador de .gitignore"
+      },
+      "description": {
+        "es": "Genera un .gitignore según la tecnología o stack del proyecto."
+      },
+      "keywords": "gitignore generador plantilla cli terminal",
+      "category": "cat-cli",
+      "icon": "code.svg",
+      "technologies": [
+        "Node.js",
+        "CLI"
+      ],
+      "status": "wip"
+    },
+    {
+      "slug": "generador-de-dockerfile",
+      "title": {
+        "es": "Generador de Dockerfile"
+      },
+      "description": {
+        "es": "Genera un Dockerfile base según el stack del proyecto."
+      },
+      "keywords": "dockerfile docker generador stack devops",
+      "category": "cat-devops",
+      "icon": "code.svg",
+      "technologies": [
+        "Docker",
+        "YAML"
+      ],
+      "status": "wip"
+    },
+    {
+      "slug": "validador-de-yaml",
+      "title": {
+        "es": "Validador de YAML"
+      },
+      "description": {
+        "es": "Valida la sintaxis de archivos YAML y muestra errores."
+      },
+      "keywords": "yaml validador sintaxis devops",
+      "category": "cat-devops",
+      "icon": "docs.svg",
+      "technologies": [
+        "YAML",
+        "JavaScript"
+      ],
+      "status": "wip"
+    }
+  ]
+}

@@ -1,0 +1,415 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "cat-fundamentos",
+      "label": {
+        "es": "Fundamentos de computación"
+      }
+    },
+    {
+      "id": "cat-ia",
+      "label": {
+        "es": "Inteligencia artificial"
+      }
+    },
+    {
+      "id": "cat-web",
+      "label": {
+        "es": "Web (HTML, CSS y JavaScript)"
+      }
+    },
+    {
+      "id": "cat-redes",
+      "label": {
+        "es": "Redes"
+      }
+    },
+    {
+      "id": "cat-lenguajes",
+      "label": {
+        "es": "Lenguajes de programación"
+      }
+    },
+    {
+      "id": "cat-frameworks",
+      "label": {
+        "es": "Frameworks"
+      }
+    },
+    {
+      "id": "cat-arquitectura",
+      "label": {
+        "es": "Arquitectura y diseño de software"
+      }
+    },
+    {
+      "id": "cat-terminal",
+      "label": {
+        "es": "Comandos y terminal"
+      }
+    },
+    {
+      "id": "cat-versiones",
+      "label": {
+        "es": "Control de versiones"
+      }
+    },
+    {
+      "id": "cat-bd",
+      "label": {
+        "es": "Bases de datos"
+      }
+    },
+    {
+      "id": "cat-seguridad",
+      "label": {
+        "es": "Seguridad"
+      }
+    },
+    {
+      "id": "cat-herramientas",
+      "label": {
+        "es": "Herramientas"
+      }
+    }
+  ],
+  "items": [
+    {
+      "slug": "sistemas-numericos",
+      "title": {
+        "es": "Sistemas numéricos y representación de datos"
+      },
+      "description": {
+        "es": "Binario, hexadecimal, bits, bytes y codificación de texto."
+      },
+      "keywords": "sistemas numericos binario hexadecimal bits bytes complemento a dos ieee 754 unicode utf8 endianness Binario, hexadecimal, bits, bytes, enteros con signo, punto flotante y codificación de texto.",
+      "category": "cat-fundamentos",
+      "status": "published"
+    },
+    {
+      "slug": "logica-booleana",
+      "title": {
+        "es": "Lógica digital y álgebra de Boole"
+      },
+      "description": {
+        "es": "Proposiciones, conectores, tablas de verdad y simplificación."
+      },
+      "keywords": "boole and or not xor tabla de verdad puertas logica digital algebra proposicional simplificacion de morgan Proposiciones, conectores, tablas de verdad y simplificación de expresiones booleanas.",
+      "category": "cat-fundamentos",
+      "status": "published"
+    },
+    {
+      "slug": "sistemas-operativos",
+      "title": {
+        "es": "Sistemas operativos"
+      },
+      "description": {
+        "es": "Procesos, memoria virtual, sistema de archivos y concurrencia."
+      },
+      "keywords": "sistemas operativos procesos hilos planificacion memoria virtual paginacion sistema de archivos syscalls concurrencia mutex deadlock Procesos, memoria virtual, sistema de archivos, llamadas al sistema y concurrencia.",
+      "category": "cat-fundamentos",
+      "status": "published"
+    },
+    {
+      "slug": "inteligencia-artificial",
+      "title": {
+        "es": "Inteligencia artificial"
+      },
+      "description": {
+        "es": "Fundamentos, métodos, aplicaciones y límites."
+      },
+      "keywords": "inteligencia artificial ia machine learning aprendizaje automatico modelo entrenamiento inferencia redes neuronales Fundamentos de IA: métodos, aplicaciones, limitaciones y buenas prácticas.",
+      "category": "cat-ia",
+      "status": "published"
+    },
+    {
+      "slug": "aprendizaje-automatico",
+      "title": {
+        "es": "Aprendizaje automático"
+      },
+      "description": {
+        "es": "Tipos, entrenamiento, evaluación y sobreajuste."
+      },
+      "keywords": "aprendizaje automatico machine learning supervisado no supervisado refuerzo sobreajuste metricas Tipos de aprendizaje, entrenamiento, evaluación, sobreajuste y métricas.",
+      "category": "cat-ia",
+      "status": "published"
+    },
+    {
+      "slug": "redes-neuronales",
+      "title": {
+        "es": "Redes neuronales"
+      },
+      "description": {
+        "es": "Neurona, capas, retropropagación y descenso de gradiente."
+      },
+      "keywords": "redes neuronales neurona capas retropropagacion descenso gradiente deep learning Neurona artificial, capas, retropropagación, descenso de gradiente.",
+      "category": "cat-ia",
+      "status": "published"
+    },
+    {
+      "slug": "html",
+      "title": {
+        "es": "HTML"
+      },
+      "description": {
+        "es": "Estructura, semántica y accesibilidad del contenido."
+      },
+      "keywords": "html marcado etiquetas semantica estructura formularios accesibilidad enlaces Estructura, semántica y accesibilidad del contenido de una página web.",
+      "category": "cat-web",
+      "status": "published"
+    },
+    {
+      "slug": "css",
+      "title": {
+        "es": "CSS"
+      },
+      "description": {
+        "es": "Presentación, selectores, caja, Flexbox y Grid."
+      },
+      "keywords": "css estilos selectores box model flexbox grid responsive especificidad Presentación, selectores, modelo de caja, Flexbox y Grid.",
+      "category": "cat-web",
+      "status": "published"
+    },
+    {
+      "slug": "javascript",
+      "title": {
+        "es": "JavaScript"
+      },
+      "description": {
+        "es": "Tipos, funciones, DOM y asincronía."
+      },
+      "keywords": "javascript js tipos funciones closures dom eventos promesas async await Lenguaje del navegador: tipos, funciones, DOM y asincronía.",
+      "category": "cat-web",
+      "status": "published"
+    },
+    {
+      "slug": "http",
+      "title": {
+        "es": "HTTP y navegador web"
+      },
+      "description": {
+        "es": "Ciclo de una página, caché, CORS y DevTools."
+      },
+      "keywords": "http https cable cache etag cors origen almacenamiento localstorage cookies navegador devtools render dom cssom http2 http3 Ciclo de una página, render, caché, CORS, almacenamiento del cliente y DevTools.",
+      "category": "cat-web",
+      "status": "published"
+    },
+    {
+      "slug": "redes",
+      "title": {
+        "es": "Redes: fundamentos"
+      },
+      "description": {
+        "es": "Capas, IP, puertos, DNS y HTTP."
+      },
+      "keywords": "redes tcp ip udp puertos dns http modelo osi capas direccionamiento localhost Modelo por capas, direcciones IP, puertos, DNS y HTTP.",
+      "category": "cat-redes",
+      "status": "published"
+    },
+    {
+      "slug": "tls",
+      "title": {
+        "es": "Seguridad en redes y TLS"
+      },
+      "description": {
+        "es": "TLS, certificados, handshake y HTTPS."
+      },
+      "keywords": "tls ssl certificados https cifrado handshake seguridad redes hsts mixed content openssl Cifrado en tránsito: TLS, certificados, handshake y el papel de HTTPS.",
+      "category": "cat-redes",
+      "status": "published"
+    },
+    {
+      "slug": "python",
+      "title": {
+        "es": "Python"
+      },
+      "description": {
+        "es": "Sintaxis, estructuras de datos y ecosistema."
+      },
+      "keywords": "python sintaxis listas diccionarios pip scripting venv pep8 Sintaxis, estructuras de datos, funciones, módulos y ecosistema del lenguaje.",
+      "category": "cat-lenguajes",
+      "status": "published"
+    },
+    {
+      "slug": "c-memoria",
+      "title": {
+        "es": "C y gestión de memoria"
+      },
+      "description": {
+        "es": "Punteros, memoria automática y dinámica, y sus errores."
+      },
+      "keywords": "c punteros memoria malloc compilacion gcc bajo nivel pila heap Punteros, memoria automática y dinámica, y los errores que aparecen al gestionarla mal.",
+      "category": "cat-lenguajes",
+      "status": "published"
+    },
+    {
+      "slug": "paradigmas",
+      "title": {
+        "es": "Paradigmas de programación"
+      },
+      "description": {
+        "es": "Imperativo, orientado a objetos, funcional y declarativo."
+      },
+      "keywords": "paradigmas imperativo orientado a objetos funcional declarativo composicion inmutabilidad Imperativo, orientado a objetos, funcional y declarativo: diferencias y cuándo usar cada uno.",
+      "category": "cat-lenguajes",
+      "status": "published"
+    },
+    {
+      "slug": "frameworks-frontend",
+      "title": {
+        "es": "Frameworks de front-end"
+      },
+      "description": {
+        "es": "React, Vue y Svelte: componentes, estado y cuándo usarlos."
+      },
+      "keywords": "frontend react vue svelte javascript componentes estado spa framework React, Vue y Svelte: componentes, estado y cuándo conviene un framework.",
+      "category": "cat-frameworks",
+      "status": "published"
+    },
+    {
+      "slug": "frameworks-backend",
+      "title": {
+        "es": "Frameworks de back-end"
+      },
+      "description": {
+        "es": "Enrutado, capas, middleware y acceso a datos."
+      },
+      "keywords": "backend api rest express node enrutado plantillas orm middleware capas servidor framework Enrutado, capas, middleware y acceso a datos en el servidor.",
+      "category": "cat-frameworks",
+      "status": "published"
+    },
+    {
+      "slug": "patrones",
+      "title": {
+        "es": "Patrones de diseño"
+      },
+      "description": {
+        "es": "Soluciones reutilizables a problemas habituales."
+      },
+      "keywords": "patrones diseno factory observer singleton strategy adapter decorator facade command Soluciones reutilizables a problemas habituales de diseño de software.",
+      "category": "cat-arquitectura",
+      "status": "published"
+    },
+    {
+      "slug": "solid",
+      "title": {
+        "es": "Principios de diseño y SOLID"
+      },
+      "description": {
+        "es": "Responsabilidad única, abierto/cerrado, Liskov, segregación e inversión."
+      },
+      "keywords": "solid acoplamiento cohesion responsabilidad unica diseño modular open closed liskov Responsabilidad única, abierto/cerrado, Liskov, segregación e inversión de dependencias.",
+      "category": "cat-arquitectura",
+      "status": "published"
+    },
+    {
+      "slug": "apis",
+      "title": {
+        "es": "Cliente-servidor y APIs"
+      },
+      "description": {
+        "es": "REST, JSON, JWT y OAuth2 paso a paso."
+      },
+      "keywords": "cliente servidor api rest json endpoints jwt oauth sesion token bearer autenticacion autorizacion El modelo cliente-servidor, APIs REST, JSON y autenticación (sesiones, JWT, OAuth2).",
+      "category": "cat-arquitectura",
+      "status": "published"
+    },
+    {
+      "slug": "terminal",
+      "title": {
+        "es": "Terminal y línea de comandos"
+      },
+      "description": {
+        "es": "Navegación, archivos, permisos, procesos y tuberías."
+      },
+      "keywords": "terminal shell bash comandos navegacion permisos chmod grep tuberias pipe",
+      "category": "cat-terminal",
+      "status": "published"
+    },
+    {
+      "slug": "git",
+      "title": {
+        "es": "Git"
+      },
+      "description": {
+        "es": "Repositorios, commits, ramas y remotos."
+      },
+      "keywords": "git control de versiones commits ramas merge rebase repositorio remoto github Repositorios, commits, ramas y trabajo con remotos.",
+      "category": "cat-versiones",
+      "status": "published"
+    },
+    {
+      "slug": "sql",
+      "title": {
+        "es": "SQL y bases de datos relacionales"
+      },
+      "description": {
+        "es": "Tablas, consultas, JOIN, índices y transacciones."
+      },
+      "keywords": "sql base de datos relacional tablas consultas join indices claves select where group transacciones postgres sqlite Tablas, claves, consultas, JOIN, índices y transacciones.",
+      "category": "cat-bd",
+      "status": "published"
+    },
+    {
+      "slug": "modelado-datos",
+      "title": {
+        "es": "Modelado de datos y normalización"
+      },
+      "description": {
+        "es": "Entidades, relaciones, claves y formas normales."
+      },
+      "keywords": "modelado datos normalizacion formas normales entidad relacion clave anomalias 1nf 2nf 3nf bcnf Entidades, relaciones, claves y formas normales para evitar redundancias.",
+      "category": "cat-bd",
+      "status": "published"
+    },
+    {
+      "slug": "seguridad-web",
+      "title": {
+        "es": "Seguridad en aplicaciones web"
+      },
+      "description": {
+        "es": "XSS, inyección SQL, CSRF, cabeceras de seguridad y cookies."
+      },
+      "keywords": "seguridad xss csrf inyeccion sql validacion owasp sanitizacion csp cookies sesion contrasenas dependencias cabeceras XSS, inyección SQL, CSRF, validación, cabeceras de seguridad, cookies y dependencias.",
+      "category": "cat-seguridad",
+      "status": "published"
+    },
+    {
+      "slug": "criptografia",
+      "title": {
+        "es": "Criptografía básica"
+      },
+      "description": {
+        "es": "Hash, cifrado, firmas y hashing de contraseñas."
+      },
+      "keywords": "criptografia hash sha cifrado simetrico asimetrico firma contrasenas bcrypt argon2 sal secretos openssl Hash, cifrado simétrico y asimétrico, firmas y hashing de contraseñas.",
+      "category": "cat-seguridad",
+      "status": "published"
+    },
+    {
+      "slug": "editores-ides-depuracion",
+      "title": {
+        "es": "Editores, IDEs y depuración"
+      },
+      "description": {
+        "es": "Herramientas del día a día y depuración."
+      },
+      "keywords": "editor ide depuracion debugger breakpoints vscode herramientas Herramientas del día a día y cómo depurar con método.",
+      "category": "cat-herramientas",
+      "status": "wip"
+    },
+    {
+      "slug": "empaquetado-despliegue",
+      "title": {
+        "es": "Empaquetado y despliegue"
+      },
+      "description": {
+        "es": "Builds, variables de entorno y publicación."
+      },
+      "keywords": "despliegue build variables de entorno docker ci cd produccion Builds, variables de entorno y publicación de aplicaciones.",
+      "category": "cat-herramientas",
+      "status": "wip"
+    }
+  ]
+}

@@ -48,42 +48,48 @@ lateral y modal de configuración):
 ```text
 pfd1795/
 ├── index.html              # Portada
+├── js/                     # Módulos ES compartidos (main.js, theme-init.js, buscador.js…)
+├── stylesheets/            # base.css (estilos compartidos del portafolio)
 ├── mis-estudios/           # Enciclopedia de informática  ← aquí trabajas
-│   ├── index.html          # Índice con buscador y categorías
-│   ├── js/                 # tema.js (pre-pintado), buscador.js, copiar.js
-│   └── estudios/           # Un archivo HTML por artículo
+│   ├── index.html          # Índice con buscador; grilla desde data/articulos.json
+│   ├── mis-estudios.css    # Estilos específicos de la enciclopedia
+│   ├── articulos/          # Un archivo HTML por artículo  ← aquí va tu archivo
+│   ├── data/articulos.json # Manifiesto de la grilla de artículos
+│   └── js/copiar.js        # Botón «Copiar» de los bloques de código
 └── juegos/                 # Juegos arcade
 ```
 
 ### Dónde va tu archivo
 
 ```text
-mis-estudios/estudios/estudios_<tema>.html
+mis-estudios/articulos/<slug>.html
 ```
 
 Reglas de nombre:
 
-- Prefijo obligatorio `estudios_`.
-- El resto en **minúsculas y con guiones bajos** (`snake_case`). Nunca uses guiones (`-`) ni
-  mayúsculas.
-- El nombre describe el tema y **no cambia** después: es el que se enlaza desde el índice y el
+- El slug en **kebab-case**: solo minúsculas, números y guiones (`logica-booleana.html`).
+  Nunca uses guiones bajos ni mayúsculas.
+- Sin prefijos redundantes: la carpeta `articulos/` ya indica el contexto, así que el nombre
+  del archivo es solo el slug.
+- El nombre describe el tema y **no cambia** después: es el que se enlaza desde la grilla y el
   que se cachea en el Service Worker.
 
-Ejemplos correctos: `estudios_regex.html`, `estudios_ci_cd.html`, `estudios_solid.html`.
-Ejemplos incorrectos: `estudios-regex.html`, `estudios_Regex.html`, `regex.html`.
+Ejemplos correctos: `regex.html`, `ci-cd.html`, `solid.html`.
+Ejemplos incorrectos: `expresiones_regulares.html` (guiones bajos), `Regex.html` (mayúsculas),
+`regex.html.txt` (extensión).
 
-**Tú creas un solo archivo: el artículo.** No crees ni modifiques el índice, el Service Worker,
-las hojas de estilo ni los scripts: eso lo hace el desarrollador al integrar (te lo indico en el
-punto 7).
+**Tú creas un solo archivo: el artículo.** No crees ni modifiques el índice, el manifiesto, el
+Service Worker, las hojas de estilo ni los scripts: eso lo hace el desarrollador al integrar
+(te lo indico en el punto 7).
 
-### Rutas relativas (desde `mis-estudios/estudios/`)
+### Rutas relativas (desde `mis-estudios/articulos/`)
 
 | Recurso | Ruta |
 | --- | --- |
 | Estilos base | `../../stylesheets/base.css` |
-| Estilos de la enciclopedia | `../../stylesheets/enciclopedia.css` |
-| Pre-pintado del tema (síncrono, en `<head>`) | `../js/tema.js` |
-| Chrome compartido (módulo ES, diferido) | `../../javascripts/main.js` |
+| Estilos de la enciclopedia | `../mis-estudios.css` |
+| Pre-pintado del tema (síncrono, en `<head>`) | `../../js/theme-init.js` |
+| Chrome compartido (módulo ES, diferido) | `../../js/main.js` |
 | Botón «Copiar» sobre los bloques de código | `../js/copiar.js` |
 | Favicon | `../../favicon.svg` |
 | Manifiesto PWA | `../../manifest.json` |
@@ -170,32 +176,32 @@ Solo puedes enlazar a estos desde «Ver también». No inventes nombres de archi
 
 | Artículo | Archivo |
 | --- | --- |
-| Sistemas numéricos y representación de datos | `estudios_sistemas_numericos.html` |
-| Lógica digital y álgebra de Boole | `estudios_logica_booleana.html` |
-| Sistemas operativos | `estudios_sistemas_operativos.html` |
-| Inteligencia artificial | `estudios_inteligencia_artificial.html` |
-| Aprendizaje automático | `estudios_aprendizaje_automatico.html` |
-| Redes neuronales | `estudios_redes_neuronales.html` |
-| HTML | `estudios_html.html` |
-| CSS | `estudios_css.html` |
-| JavaScript | `estudios_javascript.html` |
-| HTTP y navegador web | `estudios_http.html` |
-| Redes: fundamentos | `estudios_redes.html` |
-| Seguridad en redes y TLS | `estudios_tls.html` |
-| Python | `estudios_python.html` |
-| C y gestión de memoria | `estudios_c_memoria.html` |
-| Paradigmas de programación | `estudios_paradigmas.html` |
-| Patrones de diseño | `estudios_patrones.html` |
-| Frameworks de front-end | `estudios_frameworks_frontend.html` |
-| Frameworks de back-end | `estudios_frameworks_backend.html` |
-| Principios de diseño y SOLID | `estudios_solid.html` |
-| Cliente-servidor y APIs | `estudios_apis.html` |
-| Terminal y línea de comandos | `estudios_terminal.html` |
-| Git | `estudios_git.html` |
-| SQL y bases de datos relacionales | `estudios_sql.html` |
-| Modelado de datos y normalización | `estudios_modelado_datos.html` |
-| Seguridad en aplicaciones web | `estudios_seguridad_web.html` |
-| Criptografía básica | `estudios_criptografia.html` |
+| Sistemas numéricos y representación de datos | `sistemas-numericos.html` |
+| Lógica digital y álgebra de Boole | `logica-booleana.html` |
+| Sistemas operativos | `sistemas-operativos.html` |
+| Inteligencia artificial | `inteligencia-artificial.html` |
+| Aprendizaje automático | `aprendizaje-automatico.html` |
+| Redes neuronales | `redes-neuronales.html` |
+| HTML | `html.html` |
+| CSS | `css.html` |
+| JavaScript | `javascript.html` |
+| HTTP y navegador web | `http.html` |
+| Redes: fundamentos | `redes.html` |
+| Seguridad en redes y TLS | `tls.html` |
+| Python | `python.html` |
+| C y gestión de memoria | `c-memoria.html` |
+| Paradigmas de programación | `paradigmas.html` |
+| Patrones de diseño | `patrones.html` |
+| Frameworks de front-end | `frameworks-frontend.html` |
+| Frameworks de back-end | `frameworks-backend.html` |
+| Principios de diseño y SOLID | `solid.html` |
+| Cliente-servidor y APIs | `apis.html` |
+| Terminal y línea de comandos | `terminal.html` |
+| Git | `git.html` |
+| SQL y bases de datos relacionales | `sql.html` |
+| Modelado de datos y normalización | `modelado-datos.html` |
+| Seguridad en aplicaciones web | `seguridad-web.html` |
+| Criptografía básica | `criptografia.html` |
 
 Si un tema relacionado **todavía no existe**, menciónalo como texto plano («el artículo de
 Docker se forthcoming» no: mejor «todavía no hay un artículo sobre Docker en esta enciclopedia»)
@@ -209,7 +215,7 @@ El trabajo llega siempre como una **ficha**. No hay interrogatorio: no hagas pre
 
 ```text
 TEMA: <título del artículo>
-SLUG: <identificador en minúsculas con guiones bajos, sin el prefijo `estudios_` ni la extensión>
+SLUG: <identificador en kebab-case, sin la extensión>
 CATEGORÍA: <una de las doce categorías válidas>
 OBJETIVO: <qué debe saber hacer o entender el lector al terminar>
 NIVEL: <básico | intermedio | avanzado>
@@ -348,7 +354,7 @@ En este orden, dentro de `<article class="estudio">`:
 
 ### Enlaces internos
 
-- Rutas relativas: `estudios_css.html`, `estudios_javascript.html#dom`.
+- Rutas relativas: `css.html`, `javascript.html#dom`.
 - «Ver también» solo con artículos del roster.
 
 ---
@@ -365,9 +371,9 @@ En este orden, dentro de `<article class="estudio">`:
   <meta name="description" content="Descripción breve del artículo: qué es y qué cubre.">
   <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
   <link rel="stylesheet" href="../../stylesheets/base.css">
-  <link rel="stylesheet" href="../../stylesheets/enciclopedia.css">
-  <script src="../js/tema.js"></script>
-  <script src="../../javascripts/main.js" defer type="module"></script>
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
   <script src="../js/copiar.js" defer></script>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
@@ -497,7 +503,7 @@ console.log(ejemplo);</code></pre>
           <ul class="ver-tambien">
             <!-- Sustituye estos enlaces por artículos reales del roster: el href es el nombre
                  exacto del archivo y el texto, el título del artículo. -->
-            <li><a href="estudios_javascript.html">JavaScript</a>: relación con este artículo.</li>
+            <li><a href="javascript.html">JavaScript</a>: relación con este artículo.</li>
           </ul>
         </section>
       </article>
@@ -579,7 +585,7 @@ console.log(ejemplo);</code></pre>
 Responde siempre con estos cuatro bloques, en este orden:
 
 ```text
-ARCHIVO: mis-estudios/estudios/estudios_<slug>.html
+ARCHIVO: mis-estudios/articulos/<slug>.html
 CATEGORÍA: <categoría utilizada>
 ```
 
@@ -596,18 +602,23 @@ CATEGORÍA: <categoría utilizada>
 los datos de tu artículo:
 
 ```text
-2.1) Tarjeta para mis-estudios/index.html (sustituye la tarjeta «Próximamente» por esta):
+2.1) Entrada para mis-estudios/data/articulos.json (añádela al array items; el campo
+     category es el id del array categories del manifiesto):
 
-            <article class="estudio-card"
-                     data-titulo="TÍTULO"
-                     data-descripcion="DESCRIPCIÓN CORTA (una frase)"
-                     data-claves="PALABRAS CLAVE SEPARADAS POR ESPACIOS">
-              <h3 class="estudio-card__titulo"><a href="estudios/estudios_SLUG.html">TÍTULO</a></h3>
-              <p class="estudio-card__descripcion">DESCRIPCIÓN CORTA</p>
-            </article>
+      {
+        "slug": "SLUG",
+        "title": { "es": "TÍTULO" },
+        "description": { "es": "DESCRIPCIÓN CORTA (una frase)" },
+        "keywords": "PALABRAS CLAVE SEPARADAS POR ESPACIOS",
+        "category": "cat-…",
+        "status": "published"
+      }
 
-2.2) service-worker.js: añade "./mis-estudios/estudios/estudios_SLUG.html" a PRECACHE_URLS
-     y sube CACHE_NAME (pwa-cache-v2 → pwa-cache-v3) para forzar el refresco del precache.
+     La tarjeta de la grilla se genera sola desde el manifiesto: no editar
+     mis-estudios/index.html.
+
+2.2) service-worker.js: añade "./mis-estudios/articulos/SLUG.html" a PRECACHE_URLS
+     y sube CACHE_NAME (actualmente v6: v6 → v7) para forzar el refresco del precache.
 
 2.3) Actualiza el número de artículos publicados en mis-estudios/AGENTS.md y en AGENTS.md (raíz).
 ```
@@ -625,11 +636,11 @@ contenido ya está en el HTML.
 
 Antes de entregar, verifica y corrige:
 
-- [ ] El archivo se llama `estudios_<slug>.html`, en minúsculas y con guiones bajos.
+- [ ] El archivo se llama `<slug>.html`, en kebab-case, y vive en `mis-estudios/articulos/`.
 - [ ] `<html lang="es">` y `<body id="HomePage" class="body-container">`.
-- [ ] `<head>` carga `base.css`, `enciclopedia.css`, `../js/tema.js` (síncrono), `main.js`
-      (módulo diferido) y `copiar.js` (diferido), más `manifest`, `apple-touch-icon` y las
-      etiquetas `mobile-web-app-*`.
+- [ ] `<head>` carga `base.css`, `../mis-estudios.css`, `../../js/theme-init.js` (síncrono),
+      `main.js` (módulo diferido) y `copiar.js` (diferido), más `manifest`, `apple-touch-icon`
+      y las etiquetas `mobile-web-app-*`.
 - [ ] El chrome (navbar, `.saltar`, sidebar, overlay, modal) está completo e idéntico al
       esqueleto, con `Pablo Diaz` en el navbar y el enlace «Mis estudios» marcado como activo.
 - [ ] Solo se usan clases del catálogo; no hay `<style>` ni `<script>` propios.
@@ -654,9 +665,10 @@ Antes de entregar, verifica y corrige:
 
 Estos pasos no te corresponden a ti, pero condicionan la calidad del artículo:
 
-1. Guardar el archivo en `mis-estudios/estudios/` y añadir la tarjeta al índice.
+1. Guardar el archivo en `mis-estudios/articulos/` y añadir su entrada al manifiesto
+   `mis-estudios/data/articulos.json` (la tarjeta aparece en la grilla del índice sola).
 2. Servir por HTTP desde la raíz del repositorio
-   (`python -m http.server 8000`) y abrir `http://localhost:8000/mis-estudios/estudios/…`.
+   (`python -m http.server 8000`) y abrir `http://localhost:8000/mis-estudios/articulos/…`.
    Con `file://` los módulos ES no cargan y la página se ve rota: es un error de prueba, no del
    artículo.
 3. Comprobar en la consola del navegador que no hay errores.
@@ -672,8 +684,8 @@ Estos pasos no te corresponden a ti, pero condicionan la calidad del artículo:
 ## 10. Límites
 
 - No ejecutes el código, no sirvas la página, no abras enlaces: solo produces HTML.
-- No crees ni modifiques ningún archivo que no sea el artículo (ni el índice, ni el Service
-  Worker, ni el CSS, ni el JS).
+- No crees ni modifiques ningún archivo que no sea el artículo (ni el índice, ni el manifiesto,
+  ni el Service Worker, ni el CSS, ni el JS).
 - No añadas dependencias, CDNs, fuentes remotas, imágenes remotas ni recursos de terceros.
 - No incluyas marcas de agua, nombres de modelos de IA, comentarios-firma ni ninguna otra
   mención a un modelo o agente en el artículo.

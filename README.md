@@ -6,14 +6,14 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 
 ## Características
 
-- Portada con grillas de experiencia, estudios y proyectos generadas desde `javascripts/lang/translations.json`.
+- Portada con grillas de experiencia, estudios y proyectos generadas desde `js/lang/translations.json`.
 - Menú lateral con navegación por secciones, submenú desplegable y scrollspy.
 - Pie de página con las tecnologías que construyeron el sitio, la firma de los agentes de IA que colaboraron y los créditos de los iconos.
 - Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
-- Enciclopedia de informática en `mis-estudios/`, con buscador y 26 artículos publicados (varios temarios siguen "Próximamente").
-- Colección de 20 juegos arcade en `juegos/`, con una grilla generada desde `javascripts/data/juegos.json`.
-- Sección de programas y herramientas en `programas/`, con grilla filtrable y tarjetas de herramientas propias (web, Linux, Windows, CLI, DevOps).
+- Enciclopedia de informática en `mis-estudios/`, con buscador y 26 artículos publicados (varios temarios siguen "Próximamente"); la grilla se genera desde `mis-estudios/data/articulos.json`.
+- Colección de 20 juegos arcade en `juegos/`, con una grilla generada desde `juegos/data/juegos.json`.
+- Sección de programas y herramientas en `programas/`, con grilla filtrable generada desde `programas/data/herramientas.json` y tarjetas de herramientas propias (web, Linux, Windows, CLI, DevOps).
 - Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva.- La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
 - Accesibilidad: salto al contenido, tarjetas de estudios operables por teclado, foco gestionado en el menú lateral y avisos anunciados a lectores de pantalla.
@@ -40,11 +40,11 @@ Luego abre `http://localhost:8000/`.
 ```text
 ├── index.html              # Portada
 ├── docs/                   # Documentación organizada (índice y herramientas de desarrollo)
-├── mis-estudios/           # Enciclopedia de informática
-├── juegos/                 # Grilla y juegos arcade (ver juegos/README.md)
-├── programas/              # Programas y herramientas (ver programas/AGENTS.md)
-├── javascripts/            # Módulos ES6 y lógica de la interfaz
-├── stylesheets/            # CSS: base compartida + estilos de cada página
+├── mis-estudios/           # Enciclopedia de informática (articulos/, data/articulos.json, mis-estudios.css)
+├── juegos/                 # Grilla y juegos arcade (data/juegos.json, juegos.css; ver juegos/README.md)
+├── programas/              # Programas y herramientas (herramientas/, data/herramientas.json, programas.css)
+├── js/                     # Módulos ES6, theme-init, buscador y controladores de la interfaz
+├── stylesheets/            # CSS compartido: base.css y portada.css
 ├── assets/                 # Imágenes, iconos y CV
 └── .github/workflows/      # Despliegue en GitHub Pages
 ```
@@ -63,7 +63,7 @@ Para agregar un juego nuevo, sigue la guía [`juegos/README.md`](./juegos/README
 
 1. Copiar la carpeta a `juegos/<slug>/`.
 2. Renombrar su documentación a `README-juego.md`.
-3. Añadir la entrada en `javascripts/data/juegos.json`.
+3. Añadir la entrada en `juegos/data/juegos.json`.
 4. Probar por HTTP y actualizar la documentación.
 
 ## Despliegue

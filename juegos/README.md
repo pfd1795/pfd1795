@@ -63,7 +63,7 @@ rutas aceptables son `data:` o archivos dentro de la propia carpeta.
 
 ### 3. Añadir la entrada al manifiesto
 
-Edita [`javascripts/data/juegos.json`](../javascripts/data/juegos.json) y agrega un objeto:
+Edita [`data/juegos.json`](./data/juegos.json) y agrega un objeto:
 
 ```json
 {
@@ -114,7 +114,7 @@ Abre `http://localhost:8000/juegos/` y comprueba:
 
 ---
 
-## Manifiesto `javascripts/data/juegos.json`
+## Manifiesto `data/juegos.json`
 
 Es la **única fuente de verdad** de la grilla. La página no contiene tarjetas escritas a mano.
 
@@ -132,7 +132,7 @@ Es la **única fuente de verdad** de la grilla. La página no contiene tarjetas 
 
 Notas:
 
-- El archivo tiene una clave raíz `version` (formato del manifiesto) y el array `games`; no los elimines.
+- El archivo tiene una clave raíz `version` (formato del manifiesto) y el array `items`; no los elimines. Es el mismo esquema que usan `mis-estudios/data/articulos.json` y `programas/data/herramientas.json` (que añaden un array `categories` para agrupar las tarjetas).
 - El enlace para jugar se construye automáticamente como `./<slug>/index.html`; no guardes la URL del juego en el JSON (las rutas del campo `covers` sí van en el JSON).
 - Si un `slug` no cumple el patrón o falta `status`, el juego se omite y se registra un aviso en
   la consola. La página sigue funcionando.
@@ -324,7 +324,7 @@ manifiesto.
 
 | Síntoma | Causa probable | Solución |
 | --- | --- | --- |
-| La grilla está vacía | El manifiesto no tiene entradas `published` o el `slug` es inválido | Revisa `javascripts/data/juegos.json` y la consola. |
+| La grilla está vacía | El manifiesto no tiene entradas `published` o el `slug` es inválido | Revisa `data/juegos.json` y la consola. |
 | El botón Jugar da 404 | La carpeta no coincide con el `slug` | Renombra la carpeta o corrige el `slug`. |
 | El juego no carga | Se abrió con `file://` | Sirve el sitio por HTTP (`python3 -m http.server`). |
 | El juego se ve roto | Rutas relativas incorrectas o recursos externos | Usa rutas dentro de `juegos/<slug>/` y evita CDNs. |

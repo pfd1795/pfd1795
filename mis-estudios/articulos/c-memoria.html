@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C y gestión de memoria — Estudios de informática</title>
+  <meta name="description" content="Aprende cómo C usa variables, punteros, pila y montón, y cómo gestionar memoria dinámica de forma segura.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Lenguajes de programación</p>
+          <h1>C y gestión de memoria</h1>
+          <p class="entrada">
+            C es un lenguaje de programación compilado que ofrece control directo sobre la representación y el ciclo de vida de los datos. Ese control permite construir software eficiente, pero también obliga a comprender punteros, límites de memoria y liberación de recursos. Conocer la diferencia entre la pila y el montón ayuda a escribir programas más seguros y a evitar errores como fugas, accesos inválidos y desbordamientos de búfer.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>C permite trabajar cerca de la memoria, pero el programador debe respetar los tipos, los límites de los objetos y su tiempo de vida.</li>
+            <li>Un puntero guarda una dirección; usarlo requiere que esa dirección sea válida y que el objeto al que apunta siga existiendo.</li>
+            <li>La pila suele alojar datos de duración automática, mientras que la memoria dinámica se solicita en el montón y debe gestionarse explícitamente.</li>
+            <li>Cada asignación dinámica que tenga éxito debe tener un plan claro de liberación, y el programa debe comprobar si la asignación falló.</li>
+            <li>Los accesos fuera de los límites, los punteros colgantes y las cadenas sin terminador pueden causar comportamiento indefinido y vulnerabilidades.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es?</a></li>
+            <li><a href="#compilacion">Compilación y estructura de un programa</a></li>
+            <li><a href="#tipos-variables">Tipos y declaración de variables</a></li>
+            <li><a href="#punteros">Punteros y direcciones de memoria</a></li>
+            <li><a href="#pila-monton">Pila frente a montón</a></li>
+            <li><a href="#memoria-dinamica">Memoria dinámica con malloc y free</a></li>
+            <li><a href="#cadenas">Cadenas de caracteres</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es?</h2>
+          <p>
+            C es un lenguaje de propósito general que se utiliza, entre otros ámbitos, en sistemas operativos, controladores, herramientas de desarrollo y programas donde importa el control de recursos. El código fuente se compila a instrucciones que puede ejecutar una plataforma. C ofrece operaciones sobre valores y también herramientas para trabajar con direcciones de memoria.
+          </p>
+          <p>
+            La <strong>memoria</strong> es el espacio donde un programa mantiene instrucciones y datos mientras se ejecuta. Una variable representa un objeto con un tipo y un tiempo de vida. El tipo determina qué clase de valor puede guardar y cómo se interpreta; el tiempo de vida indica durante qué parte de la ejecución existe ese objeto.
+          </p>
+          <p>
+            En C, el programador puede declarar objetos con duración automática, estática o asignar memoria dinámica. En la práctica, suele hablarse de <strong>pila</strong> y <strong>montón</strong> para explicar dos formas habituales de organizar la memoria, aunque esos términos describen convenciones de implementación y no sustituyen las reglas formales del lenguaje.
+          </p>
+          <p>
+            Un error de memoria puede ser sutil: el programa quizá compile y funcione en una prueba, pero falle con otros datos o en otra plataforma. Algunos errores producen resultados incorrectos; otros implican <strong>comportamiento indefinido</strong>, es decir, el estándar de C no establece qué debe ocurrir. Por eso no se debe confiar en que un acceso inválido siempre provoque un fallo visible.
+          </p>
+          <p class="nota">
+            En C, el control de memoria no significa que el programa pueda acceder con seguridad a cualquier dirección. Solo deben usarse objetos válidos, dentro de sus límites y durante su tiempo de vida.
+          </p>
+        </section>
+
+        <section id="compilacion" aria-labelledby="compilacion-titulo">
+          <h2 id="compilacion-titulo">Compilación y estructura de un programa</h2>
+          <p>
+            Un archivo fuente de C suele tener extensión <code>.c</code>. El proceso de construcción incluye el preprocesamiento de directivas como <code>#include</code>, la compilación del código y el enlazado de los objetos resultantes con las bibliotecas necesarias. Las herramientas concretas y las opciones dependen de la plataforma.
+          </p>
+          <p>
+            Este programa mínimo incluye la declaración de una función estándar para imprimir texto y una función <code>main</code>, que es el punto de entrada habitual de una aplicación:
+          </p>
+          <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    int cantidad = 3;
+    printf("Cantidad: %d\n", cantidad);
+    return 0;
+}</code></pre>
+          <p>
+            En un entorno que tenga disponible un compilador compatible con GCC, un comando de ejemplo para compilarlo sería:
+          </p>
+          <pre><code>cc -std=c17 -Wall -Wextra -Wpedantic programa.c -o programa</code></pre>
+          <p>
+            <code>-std=c17</code> solicita un modo del estándar C17 en compiladores que lo admiten, y las opciones <code>-Wall</code>, <code>-Wextra</code> y <code>-Wpedantic</code> activan grupos de advertencias útiles. Una advertencia no siempre indica un error, pero conviene entenderla antes de ignorarla.
+          </p>
+          <p>
+            La función devuelve un valor entero al entorno. Por convención, <code>0</code> suele indicar que terminó correctamente. Para programas pequeños, mantener la entrada, el procesamiento y la liberación de recursos organizados facilita seguir el flujo de ejecución.
+          </p>
+          <p class="aviso">
+            El comando de compilación es ilustrativo: el nombre del compilador, las opciones disponibles y la ejecución del programa pueden cambiar según el sistema operativo y la cadena de herramientas instalada.
+          </p>
+        </section>
+
+        <section id="tipos-variables" aria-labelledby="tipos-variables-titulo">
+          <h2 id="tipos-variables-titulo">Tipos y declaración de variables</h2>
+          <p>
+            Cada objeto en C tiene un tipo. Los tipos enteros, como <code>int</code> y <code>size_t</code>, representan números enteros; los tipos de punto flotante, como <code>double</code>, representan valores aproximados con parte fraccionaria; y los tipos derivados, como arrays y estructuras, agrupan datos. El tipo <code>char</code> puede representar una unidad de carácter y también se utiliza al trabajar con bytes.
+          </p>
+          <p>
+            Una declaración da nombre y tipo a un objeto. Si el objeto puede cambiar, se suele llamar variable. Inicializarlo al declararlo evita depender de un valor indeterminado:
+          </p>
+          <pre><code>int intentos = 0;
+double temperatura = 21.5;
+char inicial = 'M';</code></pre>
+          <p>
+            Un <strong>array</strong> contiene una cantidad fija de elementos del mismo tipo, colocados consecutivamente. Los índices de C comienzan en cero. Un array de cuatro elementos tiene índices válidos de <code>0</code> a <code>3</code>; acceder a <code>4</code> queda fuera de sus límites.
+          </p>
+          <pre><code>int puntuaciones[4] = {12, 18, 15, 20};
+
+for (size_t i = 0; i &lt; 4; i++) {
+    printf("%d\n", puntuaciones[i]);
+}</code></pre>
+          <p>
+            En el ejemplo, <code>size_t</code> es un tipo entero sin signo usado habitualmente para tamaños e índices. Al recorrer un array, el límite del bucle debe corresponder a la cantidad real de elementos. C no comprueba automáticamente los límites de un array en tiempo de ejecución.
+          </p>
+        </section>
+
+        <section id="punteros" aria-labelledby="punteros-titulo">
+          <h2 id="punteros-titulo">Punteros y direcciones de memoria</h2>
+          <p>
+            Una variable normal contiene un valor. Un <strong>puntero</strong> es un objeto cuyo valor puede ser la dirección de otro objeto, siempre que el tipo del puntero sea compatible. La declaración <code>int *p</code> indica que <code>p</code> puede apuntar a un <code>int</code>.
+          </p>
+          <p>
+            El operador <code>&amp;</code> obtiene la dirección de un objeto, y el operador <code>*</code>, cuando se aplica a un puntero válido, permite acceder al objeto señalado. El uso de <code>*</code> para declarar un puntero y para desreferenciarlo está relacionado, pero su significado concreto depende del contexto.
+          </p>
+          <pre><code>int temperatura = 18;
+int *puntero = &amp;temperatura;
+
+*puntero = 19;
+printf("%d\n", temperatura);</code></pre>
+          <p>
+            <code>puntero</code> guarda la dirección de <code>temperatura</code>. Al escribir <code>*puntero = 19</code>, se modifica el objeto señalado; por eso, después, <code>temperatura</code> vale <code>19</code>. No se debe desreferenciar un puntero nulo, indeterminado o que ya no apunta a un objeto vivo.
+          </p>
+          <p>
+            El valor especial <code>NULL</code> representa un puntero que no señala un objeto. Puede usarse para indicar «ningún objeto» y comprobar si una función devolvió un puntero válido. No es una dirección que se pueda leer o escribir.
+          </p>
+          <p>
+            Los punteros también aparecen al pasar datos a funciones. C pasa los argumentos por valor: una función recibe una copia del argumento. Si se quiere que una función modifique un objeto del llamador, se puede pasar un puntero a ese objeto:
+          </p>
+          <pre><code>void incrementar(int *valor) {
+    if (valor != NULL) {
+        *valor += 1;
+    }
+}</code></pre>
+          <p>
+            La función comprueba que el puntero no sea nulo antes de usarlo. Esa comprobación no puede demostrar que cualquier dirección no nula sea válida, pero sí evita el caso específico de recibir <code>NULL</code>.
+          </p>
+        </section>
+
+        <section id="pila-monton" aria-labelledby="pila-monton-titulo">
+          <h2 id="pila-monton-titulo">Pila frente a montón</h2>
+          <p>
+            La <strong>pila</strong> suele asociarse a llamadas de funciones y a objetos con duración automática. Al entrar en una función, sus variables locales automáticas dejan de existir cuando termina su bloque. En cambio, la <strong>memoria dinámica</strong> se solicita durante la ejecución y conserva su duración hasta que se libera o termina el programa.
+          </p>
+          <p>
+            «Montón» es el nombre habitual para la región administrada por las funciones de asignación dinámica de C. El estándar del lenguaje define el comportamiento de esas funciones y la duración de los objetos, pero no obliga a una implementación a organizar físicamente la memoria con una pila o un montón de una forma específica.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Aspecto</th>
+                <th scope="col">Duración automática (a menudo en la pila)</th>
+                <th scope="col">Memoria dinámica (a menudo en el montón)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Cómo se obtiene</td>
+                <td>Al entrar en el bloque donde se declara el objeto.</td>
+                <td>Mediante funciones como <code>malloc</code> o <code>calloc</code>.</td>
+              </tr>
+              <tr>
+                <td>Fin de vida</td>
+                <td>Al abandonar el bloque, según las reglas del lenguaje.</td>
+                <td>Al llamar a <code>free</code> con el puntero de la asignación.</td>
+              </tr>
+              <tr>
+                <td>Control habitual</td>
+                <td>Lo administra el flujo de bloques y funciones.</td>
+                <td>El programa debe organizar la liberación.</td>
+              </tr>
+              <tr>
+                <td>Uso frecuente</td>
+                <td>Variables locales de tamaño y duración conocidos.</td>
+                <td>Datos cuyo tamaño o duración se determina durante la ejecución.</td>
+              </tr>
+              <tr>
+                <td>Riesgo típico</td>
+                <td>Devolver o conservar la dirección de un objeto que ya dejó de existir.</td>
+                <td>Olvidar liberar, liberar dos veces o usar el objeto tras liberarlo.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            La tabla describe el modelo de programación habitual, no una promesa sobre la ubicación física exacta de cada objeto. Por ejemplo, los compiladores pueden optimizar el almacenamiento siempre que el comportamiento observable siga las reglas del lenguaje.
+          </p>
+          <p>
+            El siguiente diagrama representa la relación conceptual entre una función que usa un dato local y un objeto asignado dinámicamente. No representa direcciones reales ni una disposición obligatoria:
+          </p>
+          <figure class="diagrama" aria-labelledby="fig-memoria-titulo">
+            <figcaption id="fig-memoria-titulo">Relación entre la memoria automática (pila) y la memoria dinámica (montón).</figcaption>
+            <svg viewBox="0 0 700 255" role="img" aria-labelledby="memoria-titulo memoria-descripcion">
+              <title id="memoria-titulo">Representación conceptual de memoria automática y dinámica</title>
+              <desc id="memoria-descripcion">Un marco de función contiene una variable local y un puntero. El puntero señala un bloque dinámico separado. Al terminar la función, la variable local deja de existir; el bloque dinámico sigue reservado hasta liberarlo.</desc>
+              <rect class="caja" x="35" y="45" width="260" height="150" rx="8"></rect>
+              <text class="texto" x="165" y="72" text-anchor="middle">Duración automática</text>
+              <rect class="caja-destacada" x="65" y="95" width="90" height="60" rx="6"></rect>
+              <text class="texto-acentuado" x="110" y="120" text-anchor="middle">local</text>
+              <text class="texto-secundario" x="110" y="142" text-anchor="middle">valor</text>
+              <rect class="caja" x="175" y="95" width="90" height="60" rx="6"></rect>
+              <text class="texto" x="220" y="120" text-anchor="middle">puntero</text>
+              <text class="texto-secundario" x="220" y="142" text-anchor="middle">dirección</text>
+              <rect class="caja" x="430" y="85" width="230" height="95" rx="8"></rect>
+              <text class="texto" x="545" y="112" text-anchor="middle">Memoria dinámica</text>
+              <text class="texto-secundario" x="545" y="143" text-anchor="middle">objeto reservado</text>
+              <path class="flecha-acentuada" d="M265 125 H430"></path>
+              <text class="texto-secundario" x="350" y="113" text-anchor="middle">apunta a</text>
+              <text class="texto-secundario" x="165" y="222" text-anchor="middle">termina al salir del bloque</text>
+              <text class="texto-secundario" x="545" y="222" text-anchor="middle">liberar con free</text>
+            </svg>
+          </figure>
+        </section>
+
+        <section id="memoria-dinamica" aria-labelledby="memoria-dinamica-titulo">
+          <h2 id="memoria-dinamica-titulo">Memoria dinámica con malloc y free</h2>
+          <p>
+            La función <code>malloc</code>, declarada en <code>&lt;stdlib.h&gt;</code>, solicita un número de bytes y devuelve un puntero al bloque reservado. Si no puede satisfacer la solicitud, devuelve <code>NULL</code>. La memoria obtenida con <code>malloc</code> no se inicializa: su contenido no debe leerse hasta haber escrito valores válidos.
+          </p>
+          <p>
+            Este ejemplo reserva espacio para cinco enteros, comprueba el resultado, inicializa los elementos, los utiliza y libera el bloque. La comprobación de tamaño evita multiplicaciones que excedan el rango de <code>size_t</code>.
+          </p>
+          <pre><code>#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    size_t cantidad = 5;
+
+    if (cantidad &gt; SIZE_MAX / sizeof(int)) {
+        return 1;
+    }
+
+    int *valores = malloc(cantidad * sizeof *valores);
+    if (valores == NULL) {
+        return 1;
+    }
+
+    for (size_t i = 0; i &lt; cantidad; i++) {
+        valores[i] = (int)(i * 10);
+    }
+
+    for (size_t i = 0; i &lt; cantidad; i++) {
+        printf("%d\n", valores[i]);
+    }
+
+    free(valores);
+    return 0;
+}</code></pre>
+          <p>
+            La expresión <code>sizeof *valores</code> obtiene el tamaño del tipo señalado por <code>valores</code>. Así, si el tipo del puntero cambia, no hace falta repetir el tipo en el cálculo. La conversión de <code>i</code> a <code>int</code> es explícita; en este ejemplo el rango es pequeño y conocido.
+          </p>
+          <p>
+            <code>free</code> debe recibir un puntero devuelto por una función de asignación dinámica que aún no haya sido liberado. Liberar un objeto automático, pasar una dirección incorrecta o volver a liberar el mismo bloque tiene comportamiento indefinido. Después de liberar un bloque, los punteros que lo señalaban quedan colgantes: ya no deben usarse para acceder al objeto.
+          </p>
+          <p>
+            Asignar <code>NULL</code> a una variable puntero después de <code>free</code> puede ayudar a evitar que esa variable conserve un valor obsoleto:
+          </p>
+          <pre><code>free(valores);
+valores = NULL;</code></pre>
+          <p>
+            Esto solo limpia esa variable. Si existen copias del puntero, también quedan colgantes y deben dejar de usarse. Poner a cero un puntero no libera memoria por sí mismo; la liberación ocurre en la llamada válida a <code>free</code>.
+          </p>
+          <p>
+            Para reservar memoria inicializada a cero existe <code>calloc</code>, que recibe una cantidad de elementos y el tamaño de cada uno. Para cambiar el tamaño de un bloque existe <code>realloc</code>, pero debe usarse con cuidado: si falla, devuelve <code>NULL</code> y el bloque original continúa reservado. Guardar su resultado primero en un puntero temporal evita perder la única referencia al bloque original.
+          </p>
+          <pre><code>int *temporal = realloc(valores, nueva_cantidad * sizeof *valores);
+
+if (temporal != NULL) {
+    valores = temporal;
+} else {
+    /* valores sigue apuntando al bloque original */
+}</code></pre>
+          <p class="aviso">
+            El ejemplo de <code>realloc</code> es un patrón parcial: antes de calcular el nuevo tamaño también hay que validar que la multiplicación no desborde, y el programa debe definir cómo manejar el fallo. No uses el bloque original después de que una operación de redimensionado haya tenido éxito si su dirección anterior dejó de ser válida.
+          </p>
+        </section>
+
+        <section id="cadenas" aria-labelledby="cadenas-titulo">
+          <h2 id="cadenas-titulo">Cadenas de caracteres</h2>
+          <p>
+            C no tiene un tipo de cadena incorporado equivalente a los de algunos lenguajes de alto nivel. Una cadena convencional es un array de <code>char</code> que termina con el carácter nulo <code>'\0'</code>. Ese terminador indica dónde acaba el texto; no debe confundirse con el carácter <code>'0'</code>.
+          </p>
+          <p>
+            Para almacenar el texto <code>sol</code> se necesitan cuatro posiciones: tres letras y el terminador. La declaración siguiente deja espacio para ese terminador:
+          </p>
+          <pre><code>char palabra[] = "sol";</code></pre>
+          <p>
+            Al copiar o construir cadenas, hay que reservar suficiente espacio para todos los caracteres y el terminador. Las funciones de la biblioteca estándar pueden requerir que el programador garantice ese espacio; no todas reciben el tamaño del destino ni pueden comprobar sus límites automáticamente.
+          </p>
+          <p>
+            Una cadena que no contiene un terminador dentro de su array puede hacer que una función siga leyendo más allá del objeto. Un array demasiado pequeño puede provocar escrituras fuera de sus límites. Ambos errores pueden llevar a comportamiento indefinido, fallos o vulnerabilidades.
+          </p>
+          <p>
+            Para entradas de texto, una opción es leer una línea con <code>fgets</code>, proporcionando el tamaño del búfer:
+          </p>
+          <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    char nombre[32];
+
+    if (fgets(nombre, sizeof nombre, stdin) != NULL) {
+        printf("Texto recibido: %s", nombre);
+    }
+
+    return 0;
+}</code></pre>
+          <p>
+            <code>fgets</code> lee como máximo un carácter menos que la capacidad indicada y termina el resultado con <code>'\0'</code> si la lectura tiene éxito. Si la línea es más larga, puede quedar texto pendiente en el flujo; un programa que necesite procesar entradas extensas debe definir cómo detectar y manejar esa situación.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li><strong>Inicializa los objetos antes de leerlos.</strong> No uses el contenido de una variable automática sin asignarle un valor válido.</li>
+            <li><strong>Comprueba los resultados de asignación.</strong> Verifica si <code>malloc</code>, <code>calloc</code> o <code>realloc</code> devolvieron <code>NULL</code>.</li>
+            <li><strong>Calcula tamaños con cuidado.</strong> Comprueba que la cantidad multiplicada por el tamaño de cada elemento no exceda el rango de <code>size_t</code>.</li>
+            <li><strong>Documenta quién es responsable de liberar.</strong> Cada bloque dinámico necesita un propietario claro y una ruta de liberación, incluso cuando aparece un error.</li>
+            <li><strong>Respeta los límites de arrays y cadenas.</strong> Usa la capacidad real del destino y deja espacio para el terminador nulo de las cadenas.</li>
+            <li><strong>No conserves direcciones de objetos que dejan de existir.</strong> Una dirección no prolonga el tiempo de vida de una variable local.</li>
+            <li><strong>Evita liberar dos veces o usar después de liberar.</strong> Tras liberar un objeto, trata todas las copias de su puntero como inválidas.</li>
+            <li><strong>Activa advertencias del compilador y herramientas de análisis.</strong> Ayudan a detectar algunos errores, pero no sustituyen la revisión del diseño ni garantizan que el programa sea correcto.</li>
+            <li><strong>Usa asignación automática cuando sea adecuada.</strong> Si el tamaño y la duración son conocidos, un array local puede ser más sencillo que la memoria dinámica, teniendo en cuenta los límites de recursos de la plataforma.</li>
+          </ul>
+          <p class="nota">
+            Diseña el flujo de errores antes de añadir asignaciones dinámicas. Una estructura simple de liberación evita que una salida temprana del programa deje recursos sin liberar.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Qué puede ocurrir</th>
+                <th scope="col">Cómo prevenirlo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Desreferenciar un puntero nulo o indeterminado.</td>
+                <td>Acceso inválido y comportamiento indefinido.</td>
+                <td>Inicializa los punteros y comprueba los resultados antes de usarlos.</td>
+              </tr>
+              <tr>
+                <td>Escribir más allá del final de un array.</td>
+                <td>Se corrompen otros datos o el programa falla; también puede abrir una vulnerabilidad.</td>
+                <td>Controla el índice y compara siempre con la cantidad real de elementos.</td>
+              </tr>
+              <tr>
+                <td>Olvidar liberar memoria dinámica.</td>
+                <td>El programa retiene memoria que ya no necesita mientras el bloque siga reservado.</td>
+                <td>Define la propiedad del bloque y asegúrate de liberar en todas las rutas apropiadas.</td>
+              </tr>
+              <tr>
+                <td>Usar un puntero después de <code>free</code>.</td>
+                <td>El puntero queda colgante y ya no puede usarse para acceder al objeto.</td>
+                <td>Invalida el uso de todos los alias y asigna <code>NULL</code> a la variable que se liberó.</td>
+              </tr>
+              <tr>
+                <td>Liberar dos veces el mismo bloque.</td>
+                <td>Comportamiento indefinido.</td>
+                <td>Centraliza la liberación y cambia el estado del propietario después de liberar.</td>
+              </tr>
+              <tr>
+                <td>Leer memoria devuelta por <code>malloc</code> antes de inicializarla.</td>
+                <td>Se usa un valor indeterminado.</td>
+                <td>Escribe valores válidos antes de leer el bloque o utiliza una función de asignación inicializada cuando corresponda.</td>
+              </tr>
+              <tr>
+                <td>Calcular el tamaño de una reserva con una multiplicación no comprobada.</td>
+                <td>El tamaño puede desbordarse y reservar menos espacio del necesario.</td>
+                <td>Comprueba el límite de la multiplicación antes de llamar a la función de asignación.</td>
+              </tr>
+              <tr>
+                <td>Devolver la dirección de una variable local automática.</td>
+                <td>La variable deja de existir al salir de la función y el puntero queda inválido.</td>
+                <td>Devuelve un valor por copia, usa un objeto con duración adecuada o define claramente una estrategia de propiedad dinámica.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Elemento</th>
+                <th scope="col">Uso habitual</th>
+                <th scope="col">Precaución</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>&amp;objeto</code></td><td>Obtener la dirección de un objeto.</td><td>El objeto debe existir en ese contexto.</td></tr>
+              <tr><td><code>*puntero</code></td><td>Acceder al objeto señalado.</td><td>El puntero debe ser válido y el objeto seguir vivo.</td></tr>
+              <tr><td><code>NULL</code></td><td>Representar que no se señala un objeto.</td><td>No se puede desreferenciar.</td></tr>
+              <tr><td><code>malloc(bytes)</code></td><td>Solicitar memoria dinámica sin inicializarla.</td><td>Comprobar el resultado y calcular el tamaño sin desbordamiento.</td></tr>
+              <tr><td><code>calloc(n, tamaño)</code></td><td>Solicitar memoria para elementos inicializada a cero en sus bytes.</td><td>Comprobar el resultado y usar los tipos adecuados.</td></tr>
+              <tr><td><code>realloc(p, bytes)</code></td><td>Intentar redimensionar una asignación dinámica.</td><td>Usar un puntero temporal y manejar el fallo.</td></tr>
+              <tr><td><code>free(p)</code></td><td>Devolver una asignación dinámica que sigue reservada.</td><td>No liberar objetos automáticos, punteros inválidos ni bloques ya liberados.</td></tr>
+              <tr><td><code>'\0'</code></td><td>Marcar el final de una cadena C.</td><td>Reservar espacio para el terminador y no confundirlo con el carácter <code>'0'</code>.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="paradigmas.html">Paradigmas de programación</a>: contexto sobre diferentes formas de organizar y expresar programas.</li>
+            <li><a href="sistemas-operativos.html">Sistemas operativos</a>: relación con los programas de bajo nivel y la administración de recursos del sistema.</li>
+            <li><a href="terminal.html">Terminal y línea de comandos</a>: compilar con gcc y observar la memoria desde la shell.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

@@ -7,7 +7,7 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
 ## Qué es esta carpeta
 
 - `index.html`: la grilla de juegos (chrome del portafolio). Se renderiza desde
-  [`../javascripts/data/juegos.json`](../javascripts/data/juegos.json) con `controllers/juegos/`;
+  [`./data/juegos.json`](./data/juegos.json) con `controllers/juegos/`;
   se monta en `main.js` solo si existe `.juegos-grid`.
 - `_template/`: plantilla para juegos nuevos (no aparece en la grilla).
 - `<slug>/`: un juego por carpeta, autocontenido en un único `index.html` (+ `README-juego.md`).
@@ -32,7 +32,7 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
    récord `<slug>_best_v1` en `localStorage`. No renombrar slugs publicados sin actualizar los
    tres. Si un juego cambia de clave de récord, debe migrar la clave antigua automáticamente
    (copiar el valor a la clave nueva y borrar la antigua al abrir el juego).
-4. **Manifiesto** (`javascripts/data/juegos.json`): un solo juego por entrada; textos `es`/`en`
+4. **Manifiesto** (`data/juegos.json`): un solo juego por entrada; textos `es`/`en`
    en el objeto; `status: "published"` solo si el juego está probado; `covers` con rutas relativas
    a `juegos/index.html` (una imagen = estática; 2–3 = carrusel por CSS; ninguna = placeholder).
    El filtro de la grilla solo publica entradas con `status: "published"` y slug válido.

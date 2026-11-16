@@ -15,31 +15,31 @@
    integración y las notas.
 4. Repite con la siguiente ficha. No hace falta cerrar la conversación.
 
-Las fichas cubren **los siete temas que el índice anunciaba como «Próximamente»** (cinco ya
-publicados) y **ocho temas nuevos** que completan el temario.
+Las fichas cubren **los siete temas que el manifiesto del índice anunciaba como
+«Próximamente»** (cinco ya publicados) y **ocho temas nuevos** que completan el temario.
 
 ## Orden de publicación recomendado
 
 Publica primero los que cierran huecos ya anunciados y después los nuevos: así el «Ver
 también» de los primeros puede enlazar con los segundos cuando ya estén publicados.
 
-| # | Tema | Archivo | Categoría | Estado en el índice |
+| # | Tema | Archivo | Categoría | Estado en el manifiesto |
 | --- | --- | --- | --- | --- |
-| 1 | Lógica digital y álgebra de Boole | `estudios_logica_booleana.html` | Fundamentos de computación | Publicado |
-| 2 | C y gestión de memoria | `estudios_c_memoria.html` | Lenguajes de programación | Publicado |
-| 3 | Frameworks de front-end | `estudios_frameworks_frontend.html` | Frameworks | Publicado |
-| 4 | Frameworks de back-end | `estudios_frameworks_backend.html` | Frameworks | Publicado |
-| 5 | Principios de diseño y SOLID | `estudios_solid.html` | Arquitectura y diseño de software | Publicado |
-| 6 | Editores, IDEs y depuración | `estudios_editores_depuracion.html` | Herramientas | Próximamente |
-| 7 | Empaquetado y despliegue | `estudios_empaquetado_despliegue.html` | Herramientas | Próximamente |
-| 8 | TypeScript | `estudios_typescript.html` | Lenguajes de programación | Nuevo |
-| 9 | Accesibilidad web | `estudios_accesibilidad.html` | Web (HTML, CSS y JavaScript) | Nuevo |
-| 10 | Bases de datos NoSQL | `estudios_nosql.html` | Bases de datos | Nuevo |
-| 11 | Testing automatizado | `estudios_testing.html` | Herramientas | Nuevo |
-| 12 | GitHub Actions y CI/CD | `estudios_ci_cd.html` | Control de versiones | Nuevo |
-| 13 | Docker y contenedores | `estudios_docker.html` | Herramientas | Nuevo |
-| 14 | Linux y servidores | `estudios_linux_servidores.html` | Comandos y terminal | Nuevo |
-| 15 | Expresiones regulares | `estudios_regex.html` | Lenguajes de programación | Nuevo |
+| 1 | Lógica digital y álgebra de Boole | `logica-booleana.html` | Fundamentos de computación | Publicado |
+| 2 | C y gestión de memoria | `c-memoria.html` | Lenguajes de programación | Publicado |
+| 3 | Frameworks de front-end | `frameworks-frontend.html` | Frameworks | Publicado |
+| 4 | Frameworks de back-end | `frameworks-backend.html` | Frameworks | Publicado |
+| 5 | Principios de diseño y SOLID | `solid.html` | Arquitectura y diseño de software | Publicado |
+| 6 | Editores, IDEs y depuración | `editores-ides-depuracion.html` | Herramientas | Próximamente |
+| 7 | Empaquetado y despliegue | `empaquetado-despliegue.html` | Herramientas | Próximamente |
+| 8 | TypeScript | `typescript.html` | Lenguajes de programación | Nuevo |
+| 9 | Accesibilidad web | `accesibilidad.html` | Web (HTML, CSS y JavaScript) | Nuevo |
+| 10 | Bases de datos NoSQL | `nosql.html` | Bases de datos | Nuevo |
+| 11 | Testing automatizado | `testing.html` | Herramientas | Nuevo |
+| 12 | GitHub Actions y CI/CD | `ci-cd.html` | Control de versiones | Nuevo |
+| 13 | Docker y contenedores | `docker.html` | Herramientas | Nuevo |
+| 14 | Linux y servidores | `linux-servidores.html` | Comandos y terminal | Nuevo |
+| 15 | Expresiones regulares | `regex.html` | Lenguajes de programación | Nuevo |
 
 > Las fichas solo enlazan a artículos **ya publicados** (los que figuran en el roster del
 > prompt). Cuando termines la tanda, puedes añadir enlaces entre los artículos nuevos desde el
@@ -51,7 +51,7 @@ también» de los primeros puede enlazar con los segundos cuando ya estén publi
 
 ```text
 TEMA: Lógica digital y álgebra de Boole
-SLUG: logica_booleana
+SLUG: logica-booleana
 CATEGORÍA: Fundamentos de computación
 OBJETIVO: Que el lector pueda construir y simplificar expresiones lógicas, leer una tabla de
            verdad y entender cómo los operadores booleanos (AND, OR, NOT) se traducen a las
@@ -69,7 +69,7 @@ VER TAMBIÉN: Sistemas numéricos y representación de datos, Sistemas operativo
 
 ```text
 TEMA: C y gestión de memoria
-SLUG: c_memoria
+SLUG: c-memoria
 CATEGORÍA: Lenguajes de programación
 OBJETIVO: Que el lector entienda cómo C reserva y libera memoria (pila y montón), qué son los
            punteros, por qué existen los desbordamientos de búfer y cómo se evita la fuga de
@@ -88,7 +88,7 @@ VER TAMBIÉN: Paradigmas de programación, Sistemas operativos
 
 ```text
 TEMA: Frameworks de front-end
-SLUG: frameworks_frontend
+SLUG: frameworks-frontend
 CATEGORÍA: Frameworks
 OBJETIVO: Que el lector entienda qué es un framework de front-end, cuándo conviene usar uno y
            cómo se comparan React, Vue y Svelte en cuanto a estado, componentes y rendimiento.
@@ -106,7 +106,7 @@ VER TAMBIÉN: JavaScript, HTML, CSS
 
 ```text
 TEMA: Frameworks de back-end
-SLUG: frameworks_backend
+SLUG: frameworks-backend
 CATEGORÍA: Frameworks
 OBJETIVO: Que el lector entienda el papel de un framework de servidor, cómo se organiza una
            aplicación por capas (routing, controladores, servicios, acceso a datos) y qué
@@ -143,7 +143,7 @@ VER TAMBIÉN: Patrones de diseño, Paradigmas de programación
 
 ```text
 TEMA: Editores, IDEs y depuración
-SLUG: editores_depuracion
+SLUG: editores-ides-depuracion
 CATEGORÍA: Herramientas
 OBJETIVO: Que el lector pueda elegir entre editor e IDE, trabajar con control de versiones desde
            el editor y depurar su código con puntos de ruptura, pila de llamadas y expresiones
@@ -164,7 +164,7 @@ VER TAMBIÉN: Terminal y línea de comandos, Git, JavaScript
 
 ```text
 TEMA: Empaquetado y despliegue
-SLUG: empaquetado_despliegue
+SLUG: empaquetado-despliegue
 CATEGORÍA: Herramientas
 OBJETIVO: Que el lector entienda qué es un build, cómo se empaqueta una aplicación web, qué son
            las variables de entorno y cómo se despliega y se mantiene en producción.
@@ -301,7 +301,7 @@ VER TAMBIÉN: Terminal y línea de comandos, Sistemas operativos
 
 ```text
 TEMA: Linux y servidores
-SLUG: linux_servidores
+SLUG: linux-servidores
 CATEGORÍA: Comandos y terminal
 OBJETIVO: Que el lector sepa administrar un servidor Linux: estructura del sistema de archivos,
            usuarios y permisos, procesos y servicios, red y cortafuegos, y el despliegue de una
@@ -342,11 +342,12 @@ VER TAMBIÉN: JavaScript, Terminal y línea de comandos
 
 Cuando hayas publicado los artículos, el proyecto necesita estos tres ajustes:
 
-1. **Índice** (`mis-estudios/index.html`): cada tarjeta «Próximamente» se sustituye por la
-   tarjeta con enlace que entrega el agente (`.estudio-card` como `<article>`, con
-   `data-titulo`, `data-descripcion` y `data-claves`), y los temas nuevos se añaden a su sección.
-   El buscador recalcula el contador solo.
-2. **Service Worker** (`service-worker.js`): añadir cada artículo nuevo a `PRECACHE_URLS` y subir
-   `CACHE_NAME` (`pwa-cache-v2` → `pwa-cache-v3`) para forzar el refresco del precache.
+1. **Manifiesto** (`mis-estudios/data/articulos.json`): añadir la entrada de cada artículo al
+   array `items` (el bloque que entrega el agente: `slug`, `title {es}`, `description {es}`,
+   `keywords`, `category`, `status: "published"`). La grilla del índice se genera sola desde el
+   manifiesto: no editar tarjetas estáticas en `mis-estudios/index.html`.
+2. **Service Worker** (`service-worker.js`): añadir cada artículo nuevo
+   (`./mis-estudios/articulos/<slug>.html`) a `PRECACHE_URLS` y subir `CACHE_NAME`
+   (actualmente v6: v6 → v7) para forzar el refresco del precache.
 3. **Documentación**: actualizar el número de artículos publicados y el listado de temas en
    `mis-estudios/AGENTS.md` y en el `AGENTS.md` de la raíz.

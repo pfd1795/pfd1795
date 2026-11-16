@@ -5,49 +5,62 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
 
 ## Qué es esta carpeta
 
-- `index.html`: índice de la enciclopedia con buscador y categorías.
-- `estudios/*.html`: artículos educativos estáticos (HTML, Git, Terminal, JavaScript, Redes, CSS,
-  HTTP y navegador, Cliente-servidor y APIs, SQL, Seguridad web, Criptografía, TLS, Sistemas
-  operativos, Modelado de datos y normalización, Paradigmas de programación, Sistemas numéricos
-  y representación de datos, Python, Patrones de diseño, Inteligencia artificial, Aprendizaje
-  automático, Redes neuronales, Lógica digital y álgebra de Boole, C y gestión de memoria,
-  Frameworks de front-end, Frameworks de back-end, Principios de diseño y SOLID). Dos temarios
-  siguen pendientes de desarrollo ("Próximamente").
-- `js/tema.js`: pre-pintado del tema (script clásico síncrono).
-- `js/buscador.js`: filtro de tarjetas del índice (script clásico con `defer`).
-- `js/copiar.js`: botón «Copiar» sobre los bloques de código de los artículos (script clásico con
-  `defer`, solo en las páginas de estudio). Copia con `navigator.clipboard` y respaldo con
-  `execCommand`, dedentando la sangría del código antes de copiar.
+- `index.html`: índice de la enciclopedia con buscador; la grilla de artículos se renderiza
+  desde [`data/articulos.json`](./data/articulos.json) con `js/controllers/mis-estudios/`
+  (se monta en `main.js` solo si existe `.estudios-grid`).
+- `mis-estudios.css`: estilos específicos de la sección (acento adaptativo `--enc-accent`).
+- `articulos/*.html`: artículos educativos estáticos, un archivo `<slug>.html` por artículo
+  (HTML, Git, Terminal, JavaScript, Redes, CSS, HTTP y navegador, Cliente-servidor y APIs,
+  SQL, Seguridad web, Criptografía, TLS, Sistemas operativos, Modelado de datos y
+  normalización, Paradigmas de programación, Sistemas numéricos y representación de datos,
+  Python, Patrones de diseño, Inteligencia artificial, Aprendizaje automático, Redes
+  neuronales, Lógica digital y álgebra de Boole, C y gestión de memoria, Frameworks de
+  front-end, Frameworks de back-end, Principios de diseño y SOLID). Las entradas `wip` del
+  manifiesto se muestran como "Próximamente".
+- `data/articulos.json`: manifiesto de la grilla (mismo esquema que `juegos.json`:
+  `version` + `categories` + `items`).
+- `js/copiar.js`: botón «Copiar» sobre los bloques de código de los artículos (script
+  clásico con `defer`, solo en las páginas de artículo). Copia con `navigator.clipboard` y
+  respaldo con `execCommand`, dedentando la sangría del código antes de copiar.
+
+El pre-pintado del tema y el buscador son **compartidos**: `js/theme-init.js` y
+`js/buscador.js` (configurado por `data-attributes` del input `#buscador`); esta carpeta
+no tiene copias propias.
 
 ## Reglas para agentes
 
 1. **Contenido solo en español**: los artículos no usan el sistema de traducciones
    (`translations.json`); la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN.
-2. **Pre-pintado obligatorio**: toda página nueva debe cargar `js/tema.js` en el `<head>` antes de
-   pintar. Duplica las claves de `localStorage` de `utils/storage.js`: si se añade o cambia una
-   clave de tema, actualizar `tema.js`, `theme-init.js` y `utils/storage.js` a la vez
-   (inventario en el [`AGENTS.md` raíz](../AGENTS.md#inventario-de-claves-de-localstorage)).
+2. **Pre-pintado obligatorio**: toda página nueva debe cargar `js/theme-init.js` en el
+   `<head>` antes de pintar (`../js/` desde esta carpeta, `../../js/` desde `articulos/`).
+   Es el único script de pre-pintado del sitio: si se añade o cambia una clave de tema,
+   actualizar `theme-init.js` y `js/utils/storage.js` a la vez (inventario en el
+   [`AGENTS.md` raíz](../AGENTS.md#inventario-de-claves-de-localstorage)).
 3. **Chrome compartido, no copiado**: las páginas cargan `../stylesheets/base.css` +
-   `enciclopedia.css` (`../../…` desde `estudios/`), el sidebar con rutas ajustadas (`../index.html#seccion`
-   desde esta carpeta, `../../index.html#seccion` desde `estudios/`) y `../javascripts/main.js`
-   como módulo, para reutilizar el modal de Configuración del portafolio.
-4. **Nombres heredados en español**: los scripts de esta carpeta y sus clases (`buscador__campo`,
-   `estudio-card`) conservan español y BEM-like; no renombrar por consistencia con `controllers/`
-   (que usa inglés) ni sin motivo real. `estilos` y lógica locales se rigen por `enciclopedia.css`
-   y el acento adaptativo `--enc-accent`.
-5. **Rutas relativas**: despliegue en subruta de GitHub Pages; ninguna ruta absoluta (`/images/…`,
-   `/stylesheets/…`).
-6. **Buscador**: `buscador.js` opera solo si existen `#buscador`, `.estudio-card` y las categorías;
-   muestra el conteo filtrado en el `placeholder` del input y usa `#sin-resultados`. No acoplarlo a
-   módulos ES.
-7. **Contenido educativo**: nuevo material se agrega como un `estudios/<tema>.html` siguiendo la
-   estructura de los existentes y enlazándolo desde `index.html` con su categoría. Los artículos
-   nuevos cargan además `../js/copiar.js`, añaden su caja «En 5 puntos» (`.tl-dr`) y —si ayudan—
-   diagramas SVG inline con las clases de `enciclopedia.css` (`.diagrama`); nada de imágenes
-   remotas ni librerías externas.
-8. **Sin firmas de IA**: un artículo no incluye marcas de agua, comentarios-firma, nombres de modelos
-   de IA, código ni recursos propios de un agente. La única firma admitida está en el footer de la
-   portada (`../index.html`), según la regla del [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).
+   `mis-estudios.css` (`../../…` y `../mis-estudios.css` desde `articulos/`), el sidebar
+   con rutas ajustadas (`../index.html#seccion` desde esta carpeta, `../../index.html#seccion`
+   desde `articulos/`) y `../js/main.js` como módulo, para reutilizar el modal de
+   Configuración del portafolio.
+4. **Nombres heredados en español**: las clases de esta carpeta (`buscador__campo`,
+   `estudio-card`, `categoria`, `tl-dr`) conservan español y BEM-like; no renombrar por
+   consistencia con `controllers/` (que usa inglés) ni sin motivo real. Los estilos locales
+   se rigen por `mis-estudios.css` y el acento adaptativo `--enc-accent`.
+5. **Rutas relativas**: despliegue en subruta de GitHub Pages; ninguna ruta absoluta
+   (`/images/…`, `/stylesheets/…`).
+6. **Buscador**: el `js/buscador.js` compartido opera solo si existe `#buscador`; esta
+   página lo configura con `data-buscador-tarjetas=".estudio-card"` y su texto de
+   placeholder. Filtra por término, actualiza el conteo del placeholder, oculta categorías
+   vacías y usa `#sin-resultados`. No acoplarlo a módulos ES.
+7. **Contenido educativo**: agregar un artículo es crear `articulos/<slug>.html`
+   (kebab-case, sin prefijos redundantes), siguiendo la estructura de los existentes, y
+   añadir su entrada a `data/articulos.json` (`status: "published"` solo si está probado).
+   Los artículos cargan `../js/copiar.js`, añaden su caja «En 5 puntos» (`.tl-dr`) y —si
+   ayudan— diagramas SVG inline con las clases de `mis-estudios.css` (`.diagrama`); nada de
+   imágenes remotas ni librerías externas.
+8. **Sin firmas de IA**: un artículo no incluye marcas de agua, comentarios-firma, nombres
+   de modelos de IA, código ni recursos propios de un agente. La única firma admitida está
+   en el footer de la portada (`../index.html`), según la regla del
+   [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).
 
 ## Verificación local
 
@@ -58,8 +71,13 @@ Específico de esta carpeta, tras cualquier cambio:
    `http://localhost:8000/mis-estudios/`.
 2. El tema (modo, acento, fondo, escala) se pinta sin parpadeo y coincide con el del portafolio.
 3. El modal de Configuración funciona desde el footer del sidebar y persiste los cambios.
-4. El buscador filtra por término, actualiza `#contador` y muestra/oculta `#sin-resultados`.
-5. En `estudios/*.html`: enlaces de vuelta correctos (`../index.html`, `../../index.html`) y el
-   submenú del sidebar apunta a las secciones de la portada con la profundidad de rutas correcta.
-6. El botón «Copiar» aparece sobre los bloques de código de cada artículo, copia el código sin la
-   sangría del HTML y confirma con «Copiado» (o aviso si falla).
+4. La grilla renderiza desde `data/articulos.json`: 26 artículos publicados + 2
+   "Próximamente", agrupados en las categorías del manifiesto.
+5. El buscador filtra por término, actualiza el conteo del placeholder y muestra/oculta
+   `#sin-resultados`.
+6. En `articulos/*.html`: enlaces de vuelta correctos (`../index.html`, `../../index.html`),
+   el submenú del sidebar apunta a las secciones de la portada con la profundidad de rutas
+   correcta y los enlaces entre artículos (`articulos/<slug>.html` relativos entre ellos)
+   funcionan.
+7. El botón «Copiar» aparece sobre los bloques de código de cada artículo, copia el código
+   sin la sangría del HTML y confirma con «Copiado» (o aviso si falla).
