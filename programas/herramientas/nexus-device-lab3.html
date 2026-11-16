@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS DEVICE LAB — Programas pfd1795</title>
+  <meta name="description" content="Plataforma universal de diagnóstico del navegador y del dispositivo: sensores, pantalla, cámara, red, GPU, benchmarks e informe exportable.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../programas.css">
+  <style>
+    .nxl{--nxl-bg:#05070b;--nxl-card:#0b1119;--nxl-line:#12323d;--nxl-cy:#00e5ff;--nxl-mg:#ff2bd6;--nxl-gr:#39ff88;--nxl-tx:#cfeff5;--nxl-dim:#7b98a2;--nxl-warn:#ffd23f;--nxl-err:#ff4d6d;
+      position:relative;overflow:hidden;background:var(--nxl-bg);color:var(--nxl-tx);font-family:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,monospace;
+      padding:var(--space-4,1rem);border:1px solid var(--nxl-line);border-radius:var(--radius-lg,12px);box-shadow:0 0 30px rgba(0,229,255,.08) inset}
+    .nxl::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,229,255,.035) 0 1px,transparent 1px 3px)}
+    .nxl>*{position:relative}
+    .nxl h1{margin:0 0 .25rem;font-size:clamp(1.5rem,6vw,2.4rem);letter-spacing:.14em;color:var(--nxl-cy);text-shadow:0 0 14px rgba(0,229,255,.6)}
+    .nxl h1 span{color:var(--nxl-mg);text-shadow:0 0 14px rgba(255,43,214,.6)}
+    .nxl p{color:var(--nxl-tx)}
+    .nxl-sub{margin:0 0 .75rem;color:var(--nxl-dim)!important;letter-spacing:.18em;font-size:.72rem}
+    .nxl-hud{display:flex;flex-wrap:wrap;gap:1rem 1.5rem;align-items:center;margin:1rem 0}
+    .nxl-ring{--p:0;width:112px;aspect-ratio:1;flex:none;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--nxl-cy) calc(var(--p)*1%),var(--nxl-line) 0);box-shadow:0 0 18px rgba(0,229,255,.25)}
+    .nxl-ring div{width:84%;aspect-ratio:1;border-radius:50%;background:var(--nxl-bg);display:grid;place-items:center}
+    .nxl-ring b{font-size:1.7rem;color:var(--nxl-gr);text-shadow:0 0 10px rgba(57,255,136,.5)}
+    .nxl-lvl{margin:0;font-size:1.2rem;color:var(--nxl-mg)!important}
+    .nxl-act{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+    .nxl-btn{font:inherit;font-size:.8rem;letter-spacing:.04em;color:var(--nxl-cy);background:transparent;border:1px solid var(--nxl-cy);border-radius:var(--radius-sm,4px);padding:.5rem .8rem;cursor:pointer;min-height:40px;transition:background .15s,box-shadow .15s}
+    .nxl-btn:hover:not(:disabled){background:rgba(0,229,255,.12);box-shadow:0 0 10px rgba(0,229,255,.4)}
+    .nxl-btn:disabled{opacity:.45;cursor:progress}
+    .nxl-btn[aria-pressed="true"]{background:var(--nxl-cy);color:#000}
+    .nxl-btn.mg{color:var(--nxl-mg);border-color:var(--nxl-mg)}
+    .nxl-btn.mg:hover:not(:disabled){background:rgba(255,43,214,.12);box-shadow:0 0 10px rgba(255,43,214,.4)}
+    .nxl-btn[hidden],.nxl [hidden]{display:none!important}
+    .nxl :focus-visible{outline:2px solid var(--nxl-mg);outline-offset:2px}
+    .nxl-bar{height:8px;background:var(--nxl-line);border-radius:4px;overflow:hidden}
+    .nxl-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--nxl-cy),var(--nxl-gr));transition:width .15s}
+    #nxl-status{margin:.5rem 0 1rem;font-size:.85rem;color:var(--nxl-dim)!important}
+    .nxl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:var(--space-3,.75rem)}
+    .nxl-card{display:flex;flex-direction:column;gap:.5rem;min-width:0;padding:.85rem;background:var(--nxl-card);border:1px solid var(--nxl-line);border-left:3px solid var(--nxl-dim);border-radius:var(--radius-md,8px)}
+    .nxl-card[data-st="ok"]{border-left-color:var(--nxl-gr)}
+    .nxl-card[data-st="lim"]{border-left-color:var(--nxl-warn)}
+    .nxl-card[data-st="err"]{border-left-color:var(--nxl-err)}
+    .nxl-card header{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+    .nxl-card h2,.nxl-sec h2{margin:0;font-size:.95rem;color:var(--nxl-cy);letter-spacing:.05em}
+    .nxl-msg{margin:0;font-size:.85rem;overflow-wrap:anywhere}
+    .nxl-tech,.nxl-out{margin:0;font-size:.72rem;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--nxl-dim);font-family:inherit}
+    .nxl-tech{display:none;padding-top:.4rem;border-top:1px dashed var(--nxl-line)}
+    .nxl.tech-on .nxl-tech{display:block}
+    .nxl-tech:empty,.nxl-out:empty{display:none!important}
+    .nxl-card .nxl-act{margin-top:auto}
+    .nxl-card video,.nxl-card img,.nxl-card canvas{max-width:100%;height:auto;border:1px solid var(--nxl-line);border-radius:var(--radius-sm,4px)}
+    .nxl-pad{position:relative;width:100%;min-height:130px;display:grid;place-items:center;border:1px dashed var(--nxl-mg);border-radius:var(--radius-sm,4px);color:var(--nxl-dim);font-size:.75rem;text-align:center;touch-action:none;user-select:none;overflow:hidden}
+    .nxl-dot{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:2px solid var(--nxl-mg);background:rgba(255,43,214,.25);pointer-events:none}
+    .nxl-sec{margin-top:1.25rem;padding:.85rem;border:1px solid var(--nxl-line);border-radius:var(--radius-md,8px);display:flex;flex-direction:column;gap:.75rem}
+    .nxl-ovl{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;font:inherit;font-size:.8rem;cursor:pointer}
+    .nxl-ovl span{color:#fff;mix-blend-mode:difference}
+    .nxl-bn{display:grid;grid-template-columns:90px 1fr 40px;gap:.5rem;align-items:center;font-size:.8rem}
+    @media (prefers-reduced-motion:reduce){.nxl *{transition:none!important}}
+    @media print{
+      body.nxl-printing :is(.navbar,.sidebar,.sidebar-overlay,.modal-dialog,.saltar,.volver){display:none!important}
+      body.nxl-printing .nxl{border:0;background:#fff;padding:0;box-shadow:none}
+      body.nxl-printing .nxl::before{display:none}
+      body.nxl-printing .nxl>*:not(#reporte){display:none!important}
+      body.nxl-printing #reporte{border:0;padding:0}
+      body.nxl-printing #reporte>*:not(.nxl-report){display:none!important}
+    }
+  </style>
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <div class="nxl" id="nxl">
+        <h1>NEXUS <span>DEVICE</span> LAB</h1>
+        <p class="nxl-sub">Universal Browser Diagnostics Platform</p>
+        <p>Analiza las capacidades de este dispositivo y su navegador, prueba cada componente y genera un informe local. Todo se ejecuta en tu equipo, sin enviar datos a ningún servidor.</p>
+
+        <div class="nxl-hud">
+          <div class="nxl-ring" id="nxl-ring" role="img" aria-label="Device Health Score"><div><b id="nxl-score">--</b></div></div>
+          <div>
+            <p class="nxl-lvl" id="nxl-level">Sin datos</p>
+            <p class="nxl-sub">Device Health Score</p>
+          </div>
+          <div class="nxl-act" role="group" aria-label="Modos de análisis">
+            <button type="button" class="nxl-btn" id="m-quick">Diagnóstico rápido</button>
+            <button type="button" class="nxl-btn" id="m-full">Diagnóstico completo</button>
+            <button type="button" class="nxl-btn" id="m-manual" aria-pressed="false">Diagnóstico manual</button>
+            <button type="button" class="nxl-btn mg" id="m-tech" aria-pressed="false">Ver detalles técnicos</button>
+          </div>
+        </div>
+        <div class="nxl-bar" id="nxl-prog" hidden><i></i></div>
+        <p id="nxl-status" role="status">Preparando diagnóstico rápido…</p>
+
+        <div class="nxl-grid" id="nxl-grid"></div>
+
+        <section class="nxl-sec" id="reporte" aria-labelledby="rep-t">
+          <h2 id="rep-t">Exportación y reporte final</h2>
+          <div class="nxl-act">
+            <button type="button" class="nxl-btn" id="x-cert">Generar certificado</button>
+            <button type="button" class="nxl-btn" id="x-json">Exportar JSON</button>
+            <button type="button" class="nxl-btn" id="x-html">Exportar HTML</button>
+            <button type="button" class="nxl-btn mg" id="x-pdf">Versión imprimible / PDF</button>
+          </div>
+          <div class="nxl-report" id="nxl-report" hidden></div>
+        </section>
+      </div>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../mis-estudios/index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ---------- Utilidades ---------- */
+      const el = (tag, attrs = {}, ...kids) => {
+        const e = document.createElement(tag);
+        for (const k in attrs) {
+          const v = attrs[k];
+          if (v === false || v == null) continue;
+          if (k === 'class') e.className = v;
+          else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+          else e.setAttribute(k, v);
+        }
+        kids.flat().forEach((x) => e.append(x));
+        return e;
+      };
+      const btn = (text, fn, cls = '') => el('button', { type: 'button', class: 'nxl-btn ' + cls, onclick: fn }, text);
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const NS = '⚠️ No soportado por este dispositivo';
+      const NA = '⚠️ No disponible en este navegador';
+      const ICON = { ok: '✅', lim: '⚠️', err: '❌', pend: '⏳' };
+      const NAME = { ok: 'Correcto', lim: 'Limitado', err: 'Error', pend: 'Pendiente' };
+      const sec = window.isSecureContext;
+      const perm = async (n) => { try { return (await navigator.permissions.query({ name: n })).state; } catch (e) { return 'desconocido'; } };
+      const frame = () => new Promise((r) => requestAnimationFrame(r));
+      const AC = window.AudioContext || window.webkitAudioContext;
+
+      /* ---------- Registro de módulos ---------- */
+      const MODS = [];
+      const R = {};
+      const cards = {};
+      const ran = new Set();
+      let BENCH = null;
+      const def = (id, title, quick, detect, ui) => MODS.push({ id, title, quick, detect, ui });
+      const feat = (test, okMsg, extra) => () => {
+        const ok = test();
+        return { st: ok ? 'ok' : 'lim', msg: ok ? okMsg : NS, tech: { 'Contexto seguro': sec, ...(ok && extra ? extra() : {}) } };
+      };
+
+      function setRes(id, st, msg, tech) {
+        const prev = R[id] || { tech: {} };
+        R[id] = { st, msg: msg == null ? prev.msg : msg, tech: { ...prev.tech, ...(tech || {}) } };
+        const c = cards[id];
+        c.dataset.st = st;
+        const ico = c.querySelector('.nxl-ico');
+        ico.textContent = ICON[st];
+        ico.setAttribute('aria-label', NAME[st]);
+        c.querySelector('.nxl-msg').textContent = R[id].msg;
+        c.querySelector('.nxl-tech').textContent = Object.entries(R[id].tech).map(([k, v]) => k + ': ' + v).join('\n');
+        updateScore();
+      }
+
+      async function run(m) {
+        setRes(m.id, 'pend', 'Analizando…');
+        try {
+          const r = await m.detect();
+          setRes(m.id, r.st, r.msg, r.tech);
+        } catch (e) {
+          setRes(m.id, 'lim', NA, { Nota: 'Excepción controlada durante la detección' });
+        }
+        ran.add(m.id);
+      }
+
+      /* ---------- Puntuación ---------- */
+      const VAL = { ok: 1, lim: 0.4, err: 0 };
+      const level = (s) => (s >= 90 ? 'Excelente' : s >= 75 ? 'Muy Bueno' : s >= 55 ? 'Bueno' : s >= 35 ? 'Regular' : 'Limitado');
+      function score() {
+        const ev = Object.values(R).filter((r) => r.st !== 'pend');
+        if (!ev.length) return null;
+        return Math.round((100 * ev.reduce((a, r) => a + VAL[r.st], 0)) / ev.length);
+      }
+      function updateScore() {
+        const s = score();
+        $('nxl-score').textContent = s == null ? '--' : s;
+        $('nxl-ring').style.setProperty('--p', s == null ? 0 : s);
+        $('nxl-ring').setAttribute('aria-label', 'Device Health Score: ' + (s == null ? 'sin datos' : s + ' de 100'));
+        $('nxl-level').textContent = s == null ? 'Sin datos' : level(s);
+      }
+
+      /* ---------- Helpers de pruebas ---------- */
+      const confirmUI = (b, set, okMsg, badMsg) => {
+        const w = el('span', { class: 'nxl-act', hidden: '' }, el('span', {}, '¿Funcionó?'),
+          btn('Sí', () => { set('ok', okMsg); w.hidden = true; }),
+          btn('No', () => { set('err', badMsg); w.hidden = true; }, 'mg'));
+        b.append(w);
+        return () => { w.hidden = false; };
+      };
+      const sensorUI = (evName, Ctor, okMsg, mkFmt) => (b, { set, out }) => {
+        let on = false, got = false;
+        const fmt = mkFmt();
+        b.append(btn('Activar sensor', async () => {
+          if (on) return;
+          try {
+            if (Ctor && typeof Ctor.requestPermission === 'function') {
+              const r = await Ctor.requestPermission();
+              if (r !== 'granted') { set('lim', '⚠️ Permiso de sensor denegado'); return; }
+            }
+            on = true;
+            window.addEventListener(evName, (e) => {
+              const r = fmt(e);
+              if (!r) return;
+              if (!got) { got = true; set('ok', okMsg); }
+              out(r);
+            });
+            setTimeout(() => { if (!got) set('lim', '⚠️ Este dispositivo no entrega datos de este sensor'); }, 2500);
+          } catch (e) { set('lim', NA); }
+        }));
+      };
+      const stopStream = (s) => s && s.getTracks().forEach((t) => t.stop());
+
+      /* ---------- Módulos ---------- */
+      def('info', 'Información general', true, async () => {
+        const ua = navigator.userAgent, u = navigator.userAgentData;
+        const os = /Windows/.test(ua) ? 'Windows' : /Android/.test(ua) ? 'Android' : /iPhone|iPad|iPod/.test(ua) ? 'iOS' : /Mac OS X/.test(ua) ? 'macOS' : /CrOS/.test(ua) ? 'ChromeOS' : /Linux/.test(ua) ? 'Linux' : 'Desconocido';
+        const br = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'Desconocido';
+        const en = /Firefox\//.test(ua) ? 'Gecko' : /Chrome\/|Edg\//.test(ua) ? 'Blink' : /AppleWebKit/.test(ua) ? 'WebKit' : 'Desconocido';
+        let arch = 'No detectable';
+        try {
+          if (u && u.getHighEntropyValues) {
+            const h = await u.getHighEntropyValues(['architecture', 'bitness']);
+            arch = ((h.architecture || '') + (h.bitness ? '-' + h.bitness : '')) || arch;
+          }
+        } catch (e) { /* sin datos */ }
+        const tz = (Intl.DateTimeFormat().resolvedOptions() || {}).timeZone || 'desconocida';
+        const cores = navigator.hardwareConcurrency || 'n/d';
+        return {
+          st: 'ok',
+          msg: `${os} · ${br} (${en}) · ${cores} hilos · ${tz}`,
+          tech: {
+            'Sistema operativo': os, Navegador: br, Motor: en, 'User Agent': ua,
+            Plataforma: (u && u.platform) || navigator.platform || 'n/d', Arquitectura: arch,
+            'RAM aproximada': navigator.deviceMemory ? '≥ ' + navigator.deviceMemory + ' GB' : 'n/d',
+            'CPU Threads': cores, Idiomas: (navigator.languages || [navigator.language]).join(', '), 'Zona horaria': tz,
+            Cookies: navigator.cookieEnabled, Conexión: navigator.onLine ? 'online' : 'offline',
+            'Do Not Track': navigator.doNotTrack || 'n/d', DPR: window.devicePixelRatio,
+            Resolución: `${screen.width}x${screen.height}`, Orientación: (screen.orientation && screen.orientation.type) || (innerWidth > innerHeight ? 'landscape' : 'portrait')
+          }
+        };
+      });
+
+      def('screen', 'Pantalla', true, () => {
+        const o = (screen.orientation && screen.orientation.type) || (innerWidth > innerHeight ? 'landscape' : 'portrait');
+        return {
+          st: 'ok', msg: `Pantalla detectada: ${screen.width}×${screen.height} px · ${o}`,
+          tech: { Resolución: `${screen.width}x${screen.height}`, 'Tamaño visible': `${innerWidth}x${innerHeight}`, DPR: window.devicePixelRatio, Orientación: o, 'Profundidad de color': screen.colorDepth + ' bit' }
+        };
+      }, (b, { out }) => {
+        const test = (color) => {
+          const o = el('div', { class: 'nxl-ovl', role: 'dialog', 'aria-label': 'Prueba de color de pantalla', tabindex: '0' }, el('span', {}, 'Toca o pulsa Esc para cerrar'));
+          o.style.background = color;
+          const close = () => { document.removeEventListener('keydown', onKey); o.remove(); };
+          const onKey = (e) => { if (e.key === 'Escape') close(); };
+          o.addEventListener('click', close);
+          document.addEventListener('keydown', onKey);
+          document.body.append(o);
+          o.focus();
+        };
+        [['Blanco', '#fff'], ['Negro', '#000'], ['Rojo', '#f00'], ['Verde', '#0f0'], ['Azul', '#00f']].forEach(([n, c]) => b.append(btn(n, () => test(c))));
+        b.append(btn('Pantalla completa', async () => {
+          try {
+            if (document.fullscreenElement) await document.exitFullscreen();
+            else await document.documentElement.requestFullscreen();
+            out('');
+          } catch (e) { out(NS); }
+        }, 'mg'));
+      });
+
+      def('touch', 'Touch', true, () => {
+        const mt = navigator.maxTouchPoints || 0;
+        const t = mt > 0 || 'ontouchstart' in window;
+        return { st: t ? 'ok' : 'lim', msg: t ? `Pantalla táctil detectada (${mt || '?'} puntos máx.)` : '⚠️ No se detectó pantalla táctil', tech: { 'Soporte táctil': t, maxTouchPoints: mt, Multitouch: mt > 1 } };
+      }, (b, { set, out }) => {
+        const pad = el('div', { class: 'nxl-pad', tabindex: '0', 'aria-label': 'Área táctil de prueba' }, 'Toca aquí con uno o varios dedos');
+        const dots = new Map();
+        let max = 0;
+        const place = (e) => {
+          const r = pad.getBoundingClientRect();
+          let d = dots.get(e.pointerId);
+          if (!d) { d = el('span', { class: 'nxl-dot' }); dots.set(e.pointerId, d); pad.append(d); }
+          d.style.left = e.clientX - r.left + 'px';
+          d.style.top = e.clientY - r.top + 'px';
+        };
+        const drop = (e) => { const d = dots.get(e.pointerId); if (d) { d.remove(); dots.delete(e.pointerId); } out(`Puntos simultáneos: ${dots.size} (máx. ${max})`); };
+        pad.addEventListener('pointerdown', (e) => {
+          place(e);
+          max = Math.max(max, dots.size);
+          out(`Puntos simultáneos: ${dots.size} (máx. ${max})`);
+          if (e.pointerType === 'touch') set('ok', max > 1 ? `Multitouch funcionando (${max} puntos)` : 'Touch funcionando (1 punto)');
+        });
+        pad.addEventListener('pointermove', (e) => { if (dots.has(e.pointerId)) place(e); });
+        ['pointerup', 'pointercancel', 'pointerleave'].forEach((n) => pad.addEventListener(n, drop));
+        b.before(pad);
+      });
+
+      def('input', 'Teclado y ratón', true, () => {
+        const ok = 'PointerEvent' in window && 'WheelEvent' in window;
+        return { st: ok ? 'ok' : 'lim', msg: ok ? 'Eventos de teclado, ratón, rueda y puntero disponibles' : NS, tech: { 'Pointer Events': 'PointerEvent' in window, Wheel: 'WheelEvent' in window } };
+      }, (b, { set, out }) => {
+        const f = { Teclado: false, Ratón: false, Rueda: false, Puntero: false };
+        const pad = el('div', { class: 'nxl-pad', tabindex: '0', 'aria-label': 'Zona de prueba de teclado y ratón' }, 'Haz clic aquí, mueve el ratón, usa la rueda y pulsa teclas');
+        const upd = () => {
+          out(Object.entries(f).map(([k, v]) => `${k}: ${v ? '✔' : '…'}`).join('\n'));
+          if (Object.values(f).every(Boolean)) set('ok', 'Teclado, ratón y rueda funcionando correctamente');
+        };
+        const mark = (k) => (e) => { if (k === 'Rueda') e.preventDefault(); f[k] = true; upd(); };
+        pad.addEventListener('keydown', mark('Teclado'));
+        pad.addEventListener('mousemove', mark('Ratón'));
+        pad.addEventListener('wheel', mark('Rueda'), { passive: false });
+        pad.addEventListener('pointerdown', mark('Puntero'));
+        b.before(pad);
+      });
+
+      def('geo', 'Geolocalización', false, async () => {
+        if (!('geolocation' in navigator)) return { st: 'lim', msg: NS };
+        const p = await perm('geolocation');
+        return { st: p === 'denied' ? 'lim' : 'ok', msg: p === 'denied' ? '⚠️ Permiso de ubicación denegado' : 'GPS disponible. Pulsa Probar para solicitar permiso.', tech: { Permiso: p, 'Contexto seguro': sec } };
+      }, (b, { set, out }) => {
+        b.append(btn('Probar ubicación', () => {
+          if (!navigator.geolocation) { set('lim', NS); return; }
+          set('pend', 'Solicitando ubicación…');
+          navigator.geolocation.getCurrentPosition((p) => {
+            const c = p.coords, f = (v, u = '') => (v == null ? 'n/d' : (Math.round(v * 100) / 100) + u);
+            set('ok', `GPS funcionando correctamente (±${f(c.accuracy, ' m')})`);
+            out(`Latitud: ${c.latitude}\nLongitud: ${c.longitude}\nPrecisión: ${f(c.accuracy, ' m')}\nAltitud: ${f(c.altitude, ' m')}\nVelocidad: ${f(c.speed, ' m/s')}`);
+          }, (e) => set('lim', e.code === 1 ? '⚠️ Permiso de ubicación denegado' : '⚠️ No se pudo obtener la ubicación'), { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+        }));
+      });
+
+      def('camera', 'Cámara', false, async () => {
+        if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return { st: 'lim', msg: NS };
+        const n = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput').length;
+        if (!n) return { st: 'lim', msg: '⚠️ No se detectaron cámaras', tech: { Cámaras: 0 } };
+        return { st: 'ok', msg: `${n} cámara(s) disponible(s). Pulsa Vista previa para probar.`, tech: { Cámaras: n, Permiso: await perm('camera') } };
+      }, (b, { set, out }) => {
+        let stream = null, vid = null, shot = null;
+        const stop = () => { stopStream(stream); stream = null; if (vid) { vid.remove(); vid = null; } };
+        b.append(btn('Vista previa', async () => {
+          try {
+            stop();
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            vid = el('video', { playsinline: '', autoplay: '', 'aria-label': 'Vista previa de la cámara' });
+            vid.muted = true;
+            vid.srcObject = stream;
+            b.before(vid);
+            await vid.play().catch(() => {});
+            const s = stream.getVideoTracks()[0].getSettings();
+            set('ok', 'Cámara funcionando correctamente', { Resolución: `${s.width}x${s.height}`, 'Facing Mode': s.facingMode || 'no informado' });
+            out(`Resolución: ${s.width}×${s.height}\nFacing Mode: ${s.facingMode || 'no informado'}`);
+          } catch (e) { set('lim', e && e.name === 'NotAllowedError' ? '⚠️ Permiso de cámara denegado' : '⚠️ No se pudo acceder a la cámara'); }
+        }));
+        b.append(btn('Capturar foto', () => {
+          if (!vid || !vid.videoWidth) { out('Inicia la vista previa primero.'); return; }
+          const c = el('canvas');
+          c.width = vid.videoWidth; c.height = vid.videoHeight;
+          c.getContext('2d').drawImage(vid, 0, 0);
+          if (shot) shot.remove();
+          shot = el('img', { alt: 'Foto capturada', src: c.toDataURL('image/jpeg', 0.8) });
+          b.before(shot);
+        }));
+        b.append(btn('Detener', stop, 'mg'));
+      });
+
+      def('mic', 'Micrófono', false, async () => {
+        if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return { st: 'lim', msg: NS };
+        const p = await perm('microphone');
+        return { st: p === 'denied' ? 'lim' : 'ok', msg: p === 'denied' ? '⚠️ Permiso de micrófono denegado' : 'Micrófono disponible. Pulsa Probar para ver el nivel.', tech: { Permiso: p } };
+      }, (b, { set, out }) => {
+        let ac = null, st = null, raf = 0;
+        const bar = el('div', { class: 'nxl-bar', role: 'progressbar', 'aria-label': 'Nivel de entrada', 'aria-valuemin': '0', 'aria-valuemax': '100', hidden: '' }, el('i'));
+        b.before(bar);
+        const stop = () => { cancelAnimationFrame(raf); stopStream(st); if (ac && ac.close) ac.close().catch(() => {}); ac = st = null; bar.hidden = true; };
+        b.append(btn('Probar micrófono', async () => {
+          try {
+            stop();
+            st = await navigator.mediaDevices.getUserMedia({ audio: true });
+            if (!AC) { set('lim', NA); stop(); return; }
+            ac = new AC();
+            const an = ac.createAnalyser();
+            an.fftSize = 512;
+            ac.createMediaStreamSource(st).connect(an);
+            const buf = new Uint8Array(an.fftSize);
+            let peak = 0;
+            bar.hidden = false;
+            set('ok', 'Micrófono funcionando correctamente');
+            const tick = () => {
+              an.getByteTimeDomainData(buf);
+              let s = 0;
+              for (const v of buf) { const d = (v - 128) / 128; s += d * d; }
+              const lvl = Math.min(100, Math.round(Math.sqrt(s / buf.length) * 300));
+              peak = Math.max(peak, lvl);
+              bar.firstChild.style.width = lvl + '%';
+              bar.setAttribute('aria-valuenow', lvl);
+              out(`Nivel: ${lvl}% · Pico: ${peak}%`);
+              raf = requestAnimationFrame(tick);
+            };
+            tick();
+          } catch (e) { set('lim', e && e.name === 'NotAllowedError' ? '⚠️ Permiso de micrófono denegado' : '⚠️ No se pudo acceder al micrófono'); }
+        }));
+        b.append(btn('Detener', () => { stop(); out(''); }, 'mg'));
+      });
+
+      def('speakers', 'Altavoces', false, () => (AC ? { st: 'pend', msg: 'Pulsa Reproducir tono y confirma si lo escuchas.' } : { st: 'lim', msg: NS }), (b, { set }) => {
+        b.append(btn('Reproducir tono', async () => {
+          try {
+            const ac = new AC();
+            await ac.resume();
+            const o = ac.createOscillator(), g = ac.createGain();
+            o.frequency.value = 440; g.gain.value = 0.1;
+            o.connect(g); g.connect(ac.destination);
+            o.start();
+            setTimeout(() => { o.stop(); ac.close().catch(() => {}); ask(); }, 700);
+          } catch (e) { set('lim', NA); }
+        }));
+        const ask = confirmUI(b, set, 'Altavoces funcionando correctamente', 'El usuario no escuchó el tono');
+      });
+
+      def('vibration', 'Vibración', false, feat(() => 'vibrate' in navigator, 'Vibración disponible. Pulsa Probar y confirma.'), (b, { set }) => {
+        b.append(btn('Probar vibración', () => {
+          try { if (navigator.vibrate && navigator.vibrate([200, 100, 200])) ask(); else set('lim', NS); } catch (e) { set('lim', NA); }
+        }));
+        const ask = confirmUI(b, set, 'Vibración funcionando correctamente', 'El usuario no sintió la vibración');
+      });
+
+      def('gyro', 'Giroscopio', false, () => ('DeviceOrientationEvent' in window ? { st: 'pend', msg: 'Pulsa Activar sensor y mueve el dispositivo.' } : { st: 'lim', msg: NS }),
+        sensorUI('deviceorientation', window.DeviceOrientationEvent, 'Giroscopio funcionando correctamente', () => (e) => {
+          if (e.alpha == null && e.beta == null && e.gamma == null) return null;
+          const f = (v) => (v == null ? 'n/d' : v.toFixed(1) + '°');
+          return `Alpha: ${f(e.alpha)}\nBeta: ${f(e.beta)}\nGamma: ${f(e.gamma)}`;
+        }));
+
+      def('accel', 'Acelerómetro', false, () => ('DeviceMotionEvent' in window ? { st: 'pend', msg: 'Pulsa Activar sensor y mueve el dispositivo.' } : { st: 'lim', msg: NS }),
+        sensorUI('devicemotion', window.DeviceMotionEvent, 'Acelerómetro funcionando correctamente', () => {
+          let l = null;
+          return (e) => {
+            const a = e.accelerationIncludingGravity;
+            if (!a || a.x == null) return null;
+            const m = l ? Math.abs(a.x - l.x) + Math.abs(a.y - l.y) + Math.abs(a.z - l.z) : 0;
+            l = { x: a.x, y: a.y, z: a.z };
+            return `X: ${a.x.toFixed(2)}\nY: ${a.y.toFixed(2)}\nZ: ${a.z.toFixed(2)}\nMovimiento: ${m > 1.5 ? 'DETECTADO' : '—'}`;
+          };
+        }));
+
+      const batFmt = (b) => ({
+        st: 'ok',
+        msg: `Batería al ${Math.round(b.level * 100)}% · ${b.charging ? 'cargando' : 'descargando'}`,
+        tech: { Nivel: Math.round(b.level * 100) + '%', 'Estado de carga': b.charging ? 'cargando' : 'descargando', 'Tiempo de carga (s)': b.chargingTime, 'Tiempo de descarga (s)': b.dischargingTime }
+      });
+      let batBound = false;
+      def('battery', 'Batería', true, async () => {
+        if (!navigator.getBattery) return { st: 'lim', msg: NA, tech: { API: 'Battery Status API no expuesta por este navegador' } };
+        const b = await navigator.getBattery();
+        if (!batBound) {
+          batBound = true;
+          ['levelchange', 'chargingchange'].forEach((ev) => b.addEventListener(ev, () => { const r = batFmt(b); setRes('battery', r.st, r.msg, r.tech); }));
+        }
+        return batFmt(b);
+      });
+
+      def('network', 'Red', true, () => {
+        const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const on = navigator.onLine ? 'en línea' : 'sin conexión';
+        if (!c) return { st: navigator.onLine ? 'lim' : 'err', msg: `Estado: ${on}. Detalles de red ${NA.replace('⚠️ ', '')}`, tech: { Estado: on } };
+        return {
+          st: navigator.onLine ? 'ok' : 'err',
+          msg: `${on} · ${c.effectiveType || 'tipo n/d'} · ↓${c.downlink ?? '?'} Mb/s · RTT ${c.rtt ?? '?'} ms`,
+          tech: { Estado: on, 'Tipo de conexión': c.type || 'n/d', 'Tipo efectivo': c.effectiveType || 'n/d', Downlink: c.downlink ?? 'n/d', RTT: c.rtt ?? 'n/d', 'Save Data': c.saveData ?? 'n/d' }
+        };
+      });
+
+      def('webrtc', 'WebRTC', false, () => {
+        const C = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+        if (!C) return { st: 'lim', msg: NS };
+        const pc = new C();
+        pc.close();
+        return { st: 'ok', msg: 'WebRTC soportado', tech: { RTCPeerConnection: true, getUserMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) } };
+      });
+
+      def('wasm', 'WebAssembly', true, () => {
+        const ok = typeof WebAssembly === 'object' && WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]));
+        return ok ? { st: 'ok', msg: 'WebAssembly soportado' } : { st: 'lim', msg: NS };
+      });
+
+      def('webgl', 'WebGL', true, () => {
+        const cv = el('canvas');
+        const g2 = cv.getContext('webgl2');
+        const g = g2 || cv.getContext('webgl') || cv.getContext('experimental-webgl');
+        if (!g) return { st: 'lim', msg: NS, tech: { WebGL: false, WebGL2: false } };
+        const x = g.getExtension('WEBGL_debug_renderer_info');
+        const vendor = x ? g.getParameter(x.UNMASKED_VENDOR_WEBGL) : g.getParameter(g.VENDOR);
+        const rend = x ? g.getParameter(x.UNMASKED_RENDERER_WEBGL) : g.getParameter(g.RENDERER);
+        return { st: g2 ? 'ok' : 'lim', msg: `${g2 ? 'WebGL 2' : 'WebGL 1 (sin WebGL 2)'} · ${rend}`, tech: { WebGL: true, WebGL2: !!g2, Vendor: vendor, Renderer: rend, 'Versión': g.getParameter(g.VERSION), 'Textura máx.': g.getParameter(g.MAX_TEXTURE_SIZE) } };
+      });
+
+      def('webgpu', 'WebGPU', false, async () => {
+        if (!navigator.gpu) return { st: 'lim', msg: NS };
+        const a = await navigator.gpu.requestAdapter();
+        if (!a) return { st: 'lim', msg: '⚠️ WebGPU presente, pero sin adaptador disponible' };
+        let i = a.info || {};
+        if (!a.info && a.requestAdapterInfo) { try { i = await a.requestAdapterInfo(); } catch (e) { i = {}; } }
+        return { st: 'ok', msg: 'WebGPU disponible', tech: { Vendor: i.vendor || 'n/d', Arquitectura: i.architecture || 'n/d', Dispositivo: i.device || 'n/d' } };
+      });
+
+      def('bluetooth', 'Bluetooth', false, feat(() => 'bluetooth' in navigator, 'Web Bluetooth soportado'));
+      def('usb', 'USB', false, feat(() => 'usb' in navigator, 'WebUSB soportado'));
+      def('serial', 'Serial', false, feat(() => 'serial' in navigator, 'Web Serial soportado'));
+      def('nfc', 'NFC', false, feat(() => 'NDEFReader' in window, 'Web NFC soportado'));
+
+      def('torch', 'Linterna (Torch)', false, () => (('ImageCapture' in window) && navigator.mediaDevices ? { st: 'pend', msg: 'Pulsa Probar linterna (usa la cámara trasera).' } : { st: 'lim', msg: NS }), (b, { set }) => {
+        let s = null;
+        const off = () => { stopStream(s); s = null; };
+        b.append(btn('Probar linterna', async () => {
+          try {
+            off();
+            s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } });
+            const t = s.getVideoTracks()[0];
+            const caps = (t.getCapabilities && t.getCapabilities()) || {};
+            if (!caps.torch) { off(); set('lim', '⚠️ Linterna no soportada por este dispositivo'); return; }
+            await t.applyConstraints({ advanced: [{ torch: true }] });
+            set('ok', 'Linterna activada');
+          } catch (e) { off(); set('lim', '⚠️ No se pudo activar la linterna'); }
+        }));
+        b.append(btn('Apagar', off, 'mg'));
+      });
+
+      def('sensors', 'Sensores experimentales', false, () => {
+        const names = ['AmbientLightSensor', 'Sensor', 'ProximitySensor', 'Magnetometer', 'AbsoluteOrientationSensor', 'RelativeOrientationSensor'];
+        const tech = {};
+        names.forEach((n) => { tech[n] = n in window; });
+        const have = names.filter((n) => n in window);
+        if (!have.length) return { st: 'lim', msg: NS, tech };
+        return { st: have.length === names.length ? 'ok' : 'lim', msg: `${have.length}/${names.length} APIs disponibles: ${have.join(', ')}`, tech };
+      });
+
+      let deferred = null, instBtn = null;
+      def('pwa', 'PWA', true, async () => {
+        const sw = 'serviceWorker' in navigator;
+        const man = !!document.querySelector('link[rel="manifest"]');
+        let reg = false;
+        try { reg = sw && !!(await navigator.serviceWorker.getRegistration()); } catch (e) { reg = false; }
+        const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+        if (instBtn) instBtn.hidden = !deferred;
+        return {
+          st: sw && man ? 'ok' : 'lim',
+          msg: standalone ? 'Ejecutándose como aplicación instalada' : deferred ? 'Instalable: pulsa Instalar aplicación' : sw && man ? 'PWA compatible (manifest y Service Worker disponibles)' : '⚠️ Compatibilidad PWA limitada',
+          tech: { 'Service Workers': sw, 'SW registrado': reg, Manifest: man, Instalable: !!deferred, 'Modo standalone': standalone, 'Contexto seguro': sec }
+        };
+      }, (b) => {
+        instBtn = btn('Instalar aplicación', async () => {
+          if (!deferred) return;
+          try { deferred.prompt(); await deferred.userChoice; } catch (e) { /* cancelado */ }
+          deferred = null;
+          instBtn.hidden = true;
+        });
+        instBtn.hidden = true;
+        b.append(instBtn);
+      });
+
+      /* ---------- Benchmarks ---------- */
+      const bCPU = async () => {
+        const t = performance.now();
+        let n = 0, s = 0;
+        while (performance.now() - t < 400) { for (let i = 0; i < 20000; i++) s += Math.sqrt(i) * Math.sin(i); n += 20000; }
+        const per = n / (performance.now() - t);
+        return { score: Math.min(100, Math.round(per / 500)), raw: Math.round(per) + ' ops/ms', chk: s > -1 };
+      };
+      const bRender = async () => {
+        const c = el('canvas'); c.width = 480; c.height = 320;
+        const x = c.getContext('2d');
+        if (!x) return { score: 0, raw: 'sin canvas 2D' };
+        const t = performance.now();
+        let f = 0;
+        while (performance.now() - t < 400) {
+          for (let i = 0; i < 300; i++) { x.fillStyle = `hsl(${(i * 7 + f) % 360},80%,55%)`; x.beginPath(); x.arc(Math.random() * 480, Math.random() * 320, 6 + Math.random() * 20, 0, 6.283); x.fill(); }
+          f++;
+        }
+        const fps = f / ((performance.now() - t) / 1000);
+        return { score: Math.min(100, Math.round(fps / 10)), raw: Math.round(fps) + ' frames/s' };
+      };
+      const bMem = async () => {
+        try {
+          const t = performance.now();
+          const a = new Float64Array(4000000);
+          for (let i = 0; i < a.length; i++) a[i] = i * 1.5;
+          let s = 0;
+          for (let i = 0; i < a.length; i++) s += a[i];
+          const ms = Math.max(1, performance.now() - t);
+          return { score: Math.min(100, Math.round(2000 / ms)), raw: Math.round(ms) + ' ms (32 MB)', chk: s > 0 };
+        } catch (e) { return { score: 0, raw: 'sin memoria suficiente' }; }
+      };
+      const bAnim = async () => {
+        let f = 0;
+        const t = performance.now();
+        while (performance.now() - t < 1000) { await frame(); f++; }
+        const fps = f / ((performance.now() - t) / 1000);
+        return { score: Math.min(100, Math.round((fps / 60) * 100)), raw: Math.round(fps) + ' fps' };
+      };
+
+      def('bench', 'Benchmarks', false, () => (BENCH ? { st: 'ok', msg: `Benchmarks completados · media ${BENCH.media}/100` } : { st: 'pend', msg: 'Ejecución manual: pulsa Ejecutar benchmarks.' }), (b, { set, out }) => {
+        const list = el('div', { 'aria-live': 'polite' });
+        b.before(list);
+        const go = btn('Ejecutar benchmarks', async () => {
+          go.disabled = true;
+          list.textContent = '';
+          const tests = [['CPU', bCPU], ['Renderizado', bRender], ['Memoria', bMem], ['Animación', bAnim]];
+          const res = {};
+          for (const [n, fn] of tests) {
+            out('Ejecutando ' + n + '…');
+            await frame();
+            let r;
+            try { r = await fn(); } catch (e) { r = { score: 0, raw: 'no disponible' }; }
+            res[n] = { puntuacion: r.score, detalle: r.raw };
+            const bar = el('div', { class: 'nxl-bar', role: 'progressbar', 'aria-label': n, 'aria-valuenow': String(r.score), 'aria-valuemin': '0', 'aria-valuemax': '100' }, el('i'));
+            bar.firstChild.style.width = r.score + '%';
+            list.append(el('div', { class: 'nxl-bn' }, el('span', {}, n), bar, el('b', {}, String(r.score))));
+          }
+          const vals = Object.values(res).map((v) => v.puntuacion);
+          BENCH = { media: Math.round(vals.reduce((a, c) => a + c, 0) / vals.length), pruebas: res };
+          out('Detalle: ' + Object.entries(res).map(([k, v]) => `${k} ${v.detalle}`).join(' · '));
+          set('ok', `Benchmarks completados · media ${BENCH.media}/100`, Object.fromEntries(Object.entries(res).map(([k, v]) => [k, `${v.puntuacion}/100 (${v.detalle})`])));
+          go.disabled = false;
+        });
+        b.append(go);
+      });
+
+      /* ---------- Render de tarjetas ---------- */
+      const grid = $('nxl-grid');
+      MODS.forEach((m) => {
+        const c = el('article', { class: 'nxl-card', 'data-st': 'pend', 'aria-labelledby': 'nxl-t-' + m.id },
+          el('header', {}, el('h2', { id: 'nxl-t-' + m.id }, m.title), el('span', { class: 'nxl-ico', role: 'img', 'aria-label': 'Pendiente' }, ICON.pend)),
+          el('p', { class: 'nxl-msg', role: 'status' }, 'Pendiente de análisis'),
+          el('pre', { class: 'nxl-tech' }),
+          el('pre', { class: 'nxl-out' }));
+        const act = el('div', { class: 'nxl-act' });
+        c.append(act);
+        cards[m.id] = c;
+        R[m.id] = { st: 'pend', msg: 'Pendiente de análisis', tech: {} };
+        act.append(btn('Analizar', () => run(m)));
+        if (m.ui) m.ui(act, { set: (st, msg, tech) => setRes(m.id, st, msg, tech), out: (t) => { c.querySelector('.nxl-out').textContent = t; } });
+        grid.append(c);
+      });
+      const byId = Object.fromEntries(MODS.map((m) => [m.id, m]));
+
+      /* ---------- Modos de análisis ---------- */
+      const modeBtns = ['m-quick', 'm-full', 'm-manual'].map($);
+      let busy = false;
+      const status = (t) => { $('nxl-status').textContent = t; };
+      async function runSet(list, label) {
+        if (busy) return;
+        busy = true;
+        modeBtns.forEach((x) => { x.disabled = true; });
+        const prog = $('nxl-prog');
+        prog.hidden = false;
+        prog.firstChild.style.width = '0%';
+        for (let i = 0; i < list.length; i++) {
+          status(`${label}: analizando ${list[i].title} (${i + 1}/${list.length})`);
+          await run(list[i]);
+          prog.firstChild.style.width = ((i + 1) / list.length) * 100 + '%';
+        }
+        status(`${label} finalizado. Revisa las tarjetas y usa las pruebas interactivas para completar el análisis.`);
+        setTimeout(() => { prog.hidden = true; }, 800);
+        modeBtns.forEach((x) => { x.disabled = false; });
+        busy = false;
+      }
+      const setManual = (on) => $('m-manual').setAttribute('aria-pressed', on ? 'true' : 'false');
+      $('m-quick').addEventListener('click', () => { setManual(false); runSet(MODS.filter((m) => m.quick), 'Diagnóstico rápido'); });
+      $('m-full').addEventListener('click', () => { setManual(false); runSet(MODS, 'Diagnóstico completo'); });
+      $('m-manual').addEventListener('click', () => { setManual(true); status('Modo manual: pulsa Analizar en cada componente que quieras revisar.'); });
+      $('m-tech').addEventListener('click', (e) => {
+        const on = $('nxl').classList.toggle('tech-on');
+        e.currentTarget.setAttribute('aria-pressed', on ? 'true' : 'false');
+        e.currentTarget.textContent = on ? 'Ocultar detalles técnicos' : 'Ver detalles técnicos';
+      });
+
+      ['online', 'offline'].forEach((ev) => window.addEventListener(ev, () => { if (ran.has('network')) run(byId.network); }));
+      window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; if (ran.has('pwa')) run(byId.pwa); });
+      window.addEventListener('appinstalled', () => { deferred = null; if (ran.has('pwa')) run(byId.pwa); });
+
+      /* ---------- Reporte y exportación ---------- */
+      const REPORT_CSS = '.nxl-report{background:#fff;color:#111;font:14px/1.5 system-ui,sans-serif;padding:1.25rem;border:3px double #089;max-width:900px;margin:0 auto;width:100%;box-sizing:border-box}'
+        + '.nxl-report h2{margin:0 0 .5rem;color:#067;letter-spacing:.08em}.nxl-report h3{margin:1.2rem 0 .3rem;color:#a07}'
+        + '.nxl-report p{color:#111!important;margin:.2rem 0}.nxl-report .sc{font-size:1.2rem}'
+        + '.nxl-report table{width:100%;border-collapse:collapse;font-size:.85rem}.nxl-report th,.nxl-report td{border:1px solid #bbb;padding:.3rem .4rem;text-align:left;vertical-align:top;overflow-wrap:anywhere}'
+        + '.nxl-report ul{margin:.2rem 0;padding-left:1.2rem}';
+      document.head.append(el('style', {}, REPORT_CSS));
+
+      function buildReport() {
+        const now = new Date(), s = score();
+        const rows = MODS.map((m) => ({ id: m.id, nombre: m.title, estado: R[m.id].st, resumen: R[m.id].msg, tecnico: R[m.id].tech }));
+        return {
+          app: 'NEXUS DEVICE LAB', fecha: now.toLocaleDateString('es'), hora: now.toLocaleTimeString('es'), iso: now.toISOString(),
+          dispositivo: R.info.st === 'pend' ? 'No analizado (ejecuta un diagnóstico)' : R.info.msg,
+          score: s, nivel: s == null ? 'Sin datos' : level(s),
+          capacidades: rows.filter((r) => r.estado === 'ok').map((r) => r.nombre),
+          limitaciones: rows.filter((r) => r.estado === 'lim' || r.estado === 'err').map((r) => `${r.nombre}: ${r.resumen}`),
+          benchmarks: BENCH, modulos: rows
+        };
+      }
+      const li = (a) => (a.length ? '<ul>' + a.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<p>Ninguna</p>');
+      function reportHTML(r) {
+        const bench = r.benchmarks ? '<h3>Benchmarks</h3><p>Media: ' + r.benchmarks.media + '/100</p>' + li(Object.entries(r.benchmarks.pruebas).map(([k, v]) => `${k}: ${v.puntuacion}/100 (${v.detalle})`)) : '';
+        return '<h2>NEXUS DEVICE LAB REPORT</h2>'
+          + `<p><b>Fecha:</b> ${esc(r.fecha)} &nbsp; <b>Hora:</b> ${esc(r.hora)}</p>`
+          + `<p><b>Dispositivo:</b> ${esc(r.dispositivo)}</p>`
+          + `<p class="sc">Device Health Score: <b>${r.score == null ? '—' : r.score + '/100'}</b> (${esc(r.nivel)})</p>`
+          + '<h3>Resultados</h3><table><thead><tr><th scope="col">Módulo</th><th scope="col">Estado</th><th scope="col">Resumen</th></tr></thead><tbody>'
+          + r.modulos.map((m) => `<tr><td>${esc(m.nombre)}</td><td>${ICON[m.estado]} ${NAME[m.estado]}</td><td>${esc(m.resumen)}</td></tr>`).join('')
+          + '</tbody></table><h3>Capacidades detectadas</h3>' + li(r.capacidades)
+          + '<h3>Limitaciones detectadas</h3>' + li(r.limitaciones) + bench;
+      }
+      const download = (name, mime, text) => {
+        const u = URL.createObjectURL(new Blob([text], { type: mime }));
+        const a = el('a', { href: u, download: name });
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(u), 1000);
+      };
+      const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+      const showCert = () => { const box = $('nxl-report'); box.innerHTML = reportHTML(buildReport()); box.hidden = false; return box; };
+      $('x-cert').addEventListener('click', () => { showCert().scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      $('x-json').addEventListener('click', () => download(`nexus-device-lab-${stamp()}.json`, 'application/json', JSON.stringify(buildReport(), null, 2)));
+      $('x-html').addEventListener('click', () => {
+        const r = buildReport();
+        download(`nexus-device-lab-${stamp()}.html`, 'text/html', `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>NEXUS DEVICE LAB REPORT</title><style>body{margin:1rem;background:#eee}${REPORT_CSS}</style></head><body><div class="nxl-report">${reportHTML(r)}</div></body></html>`);
+      });
+      $('x-pdf').addEventListener('click', () => {
+        showCert();
+        document.body.classList.add('nxl-printing');
+        window.print();
+      });
+      window.addEventListener('afterprint', () => document.body.classList.remove('nxl-printing'));
+
+      /* ---------- Arranque: diagnóstico rápido automático (sin permisos) ---------- */
+      runSet(MODS.filter((m) => m.quick), 'Diagnóstico rápido');
+    })();
+  </script>
+</body>
+</html>

@@ -140,6 +140,24 @@
       "status": "published"
     },
     {
+      "slug": "escaner-dispositivos",
+      "title": {
+        "es": "Escáner de dispositivos"
+      },
+      "description": {
+        "es": "Diagnóstico local del navegador y del dispositivo: comprueba pantalla, cámara, sensores, red, WebGL y PWA, y exporta un informe con la puntuación de salud."
+      },
+      "keywords": "escaner diagnostico dispositivo navegador smartphone capacidades hardware prueba informe score",
+      "category": "cat-web",
+      "icon": "escaner.svg",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "status": "published"
+    },
+    {
       "slug": "script-de-backup-incremental",
       "title": {
         "es": "Script de backup incremental"
