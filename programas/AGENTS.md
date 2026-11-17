@@ -76,12 +76,12 @@ Específico de esta carpeta, tras cualquier cambio:
    `http://localhost:8000/programas/`.
 2. El tema (modo, acento, fondo, escala) se pinta sin parpadeo y coincide con el del portafolio.
 3. El modal de Configuración funciona desde el footer del sidebar y persiste los cambios.
-4. La grilla renderiza desde `data/herramientas.json`: 5 herramientas publicadas + 9
+4. La grilla renderiza desde `data/herramientas.json`: 8 herramientas publicadas + 9
    "Próximamente", agrupadas en las categorías del manifiesto, con sus chips de filtro.
 5. El buscador filtra por término, actualiza el conteo del placeholder y muestra/oculta
    `#sin-resultados`.
 6. Los chips de categoría filtran las tarjetas y ocultan las categorías vacías.
 7. Las tarjetas implementadas (paletas, favicons, código QR, convertidor de imágenes,
-   escáner de dispositivos) abren su herramienta en pestaña nueva y las herramientas cargan
-   sin errores de consola.
+   escáner de dispositivos, estación de música DJ, editor de textos, pizarra de dibujo)
+   abren su herramienta en pestaña nueva y las herramientas cargan sin errores de consola.
 8. Enlace "Programas" en el sidebar funciona desde portada, juegos, mis-estudios y artículos.

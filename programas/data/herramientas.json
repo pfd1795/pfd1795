@@ -275,6 +275,61 @@
         "JavaScript"
       ],
       "status": "wip"
+    },
+    {
+      "slug": "dj",
+      "title": {
+        "es": "Estación de música DJ"
+      },
+      "description": {
+        "es": "Secuenciador y estación de música en el navegador: crea ritmos, ajusta el BPM, graba y exporta tus pistas."
+      },
+      "keywords": "dj musica secuenciador ritmo bpm grabacion exportar audio web",
+      "category": "cat-web",
+      "icon": "speed.svg",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Web Audio"
+      ],
+      "status": "published"
+    },
+    {
+      "slug": "editor-text",
+      "title": {
+        "es": "Editor de textos"
+      },
+      "description": {
+        "es": "Editor de textos con formato: fuentes, tamaños, colores, guardado en tu dispositivo y reapertura de documentos."
+      },
+      "keywords": "editor texto formato fuente tamaño color guardar documento web",
+      "category": "cat-web",
+      "icon": "format_size.svg",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "status": "published"
+    },
+    {
+      "slug": "pizarra-dibujo",
+      "title": {
+        "es": "Pizarra de dibujo"
+      },
+      "description": {
+        "es": "Dibuja en un lienzo en blanco con lápiz, pincel, rotulador y spray, elige colores y grosor, y guarda tu dibujo como imagen PNG."
+      },
+      "keywords": "pizarra dibujo lienzo lapiz pincel rotulador spray color png",
+      "category": "cat-web",
+      "icon": "palette.svg",
+      "technologies": [
+        "HTML",
+        "Canvas",
+        "JavaScript"
+      ],
+      "status": "published"
     }
   ]
 }

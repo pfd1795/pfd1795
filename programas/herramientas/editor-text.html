@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor de textos — Programas pfd1795</title>
+  <meta name="description" content="Editor de textos con formato: fuentes, tamaños, colores, guardado en tu dispositivo y reapertura de documentos.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../programas.css">
+  <style>
+    /* Estilos propios del editor de textos. Usa los tokens de base.css. */
+    .editor-doc__grupo { flex: 1 1 16rem; }
+    .editor-doc__etiqueta {
+      display: block;
+      margin-bottom: var(--space-1);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+    .editor-doc__campo {
+      width: 100%;
+      max-width: 24rem;
+      padding: var(--space-2) var(--space-3);
+      font: inherit;
+      color: var(--color-text);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+    .editor-doc__cabecera {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    .editor-doc__acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .editor-doc__boton {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.2rem;
+      height: 2.2rem;
+      padding: 0 var(--space-2);
+      font: inherit;
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background-color var(--transition-fast) var(--ease-in-out), border-color var(--transition-fast) var(--ease-in-out);
+    }
+    .editor-doc__boton:hover {
+      background-color: var(--theme-color-soft);
+      border-color: var(--theme-color);
+    }
+    .editor-doc__boton[aria-pressed="true"] {
+      background-color: var(--theme-color-soft);
+      border-color: var(--theme-color);
+      color: var(--theme-color);
+    }
+    .editor-doc__boton--primario {
+      background-color: var(--theme-color);
+      border-color: var(--theme-color);
+      color: #ffffff;
+    }
+    .editor-doc__boton--primario:hover { opacity: 0.92; }
+    .editor-doc__boton svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+    .editor-doc__letra--negrita { font-weight: 700; }
+    .editor-doc__letra--cursiva { font-style: italic; }
+    .editor-doc__letra--subrayado { text-decoration: underline; }
+    .editor-doc__letra--tachado { text-decoration: line-through; }
+    .editor-doc__selector {
+      height: 2.2rem;
+      max-width: 11rem;
+      padding: 0 var(--space-2);
+      font: inherit;
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .editor-doc__color {
+      width: 2.2rem;
+      height: 2.2rem;
+      padding: 2px;
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .editor-doc__opcion {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 0 var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+    }
+    .editor-doc__separador {
+      width: 1px;
+      align-self: stretch;
+      margin: 0 var(--space-1);
+      background-color: var(--color-border);
+    }
+    .editor-doc__barra {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-2);
+      background-color: var(--color-surface);
+      border-bottom: var(--border-normal) solid var(--color-border);
+    }
+    .editor-doc__marco {
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .editor-doc__lienzo {
+      min-height: 55vh;
+      padding: var(--space-4);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: var(--text-base);
+      line-height: 1.6;
+      color: var(--color-text);
+      background-color: var(--color-surface);
+      overflow-wrap: break-word;
+    }
+    .editor-doc__lienzo:focus { outline: none; }
+    .editor-doc__lienzo:focus-visible {
+      outline: 2px solid var(--theme-color);
+      outline-offset: -2px;
+    }
+    .editor-doc__lienzo:empty::before {
+      content: attr(data-placeholder);
+      color: var(--color-text-disabled);
+    }
+    .editor-doc__lienzo blockquote {
+      margin: var(--space-3) 0;
+      padding: var(--space-1) var(--space-3);
+      border-left: 4px solid var(--theme-color);
+      color: var(--color-text-secondary);
+    }
+    .editor-doc__lienzo a { color: var(--theme-color); }
+    .editor-doc__lienzo hr {
+      margin: var(--space-4) 0;
+      border: none;
+      border-top: var(--border-normal) solid var(--color-border);
+    }
+    .editor-doc__estado {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-2) var(--space-4);
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+      background-color: var(--color-surface);
+      border-top: var(--border-normal) solid var(--color-border);
+    }
+    .editor-doc__avisos { margin-top: var(--space-2); }
+    .editor-doc__avisos p {
+      margin: 0;
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      background-color: var(--theme-color-soft);
+      border-radius: var(--radius-sm);
+    }
+    .editor-doc__avisos p[role="alert"] {
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--theme-color);
+    }
+    .editor-doc__confirmar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+      margin: var(--space-2) 0;
+      padding: var(--space-3);
+      font-size: var(--text-sm);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+    .editor-doc__confirmar p { flex: 1 1 12rem; margin: 0; }
+    .editor-doc__enlace {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+    .editor-doc__enlace .editor-doc__campo {
+      flex: 1 1 12rem;
+      width: auto;
+      max-width: none;
+    }
+    .editor-doc__boton:focus-visible,
+    .editor-doc__selector:focus-visible,
+    .editor-doc__campo:focus-visible,
+    .editor-doc__color:focus-visible {
+      outline: 2px solid var(--theme-color);
+      outline-offset: 2px;
+    }
+    @media (max-width: 480px) {
+      .editor-doc__lienzo {
+        min-height: 50vh;
+        padding: var(--space-3);
+      }
+      .editor-doc__selector { max-width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .editor-doc__boton,
+      .editor-doc__selector,
+      .editor-doc__campo { transition: none; }
+    }
+    @media print {
+      .navbar,
+      .saltar,
+      .sidebar,
+      .sidebar-overlay,
+      .modal-dialog,
+      .volver,
+      .editor-doc__cabecera,
+      .editor-doc__confirmar,
+      .editor-doc__barra,
+      .editor-doc__enlace,
+      .editor-doc__estado,
+      .editor-doc__avisos,
+      section h2 { display: none !important; }
+      .editor-doc__marco { border: none; }
+      .editor-doc__lienzo {
+        min-height: auto;
+        padding: 0;
+      }
+      .main-content { padding: 0; }
+    }
+  </style>
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <h1>Editor de textos</h1>
+      <p>Escribe y da formato a tus documentos: fuentes, tamaños, colores, alineación, listas y más. Guárdalos en tu dispositivo como archivo .html o .txt, vuelve a abrirlos aquí para seguir editándolos y cuenta con autoguardado en este navegador. Atajo: <kbd>Ctrl</kbd> + <kbd>S</kbd> guarda el documento en tu dispositivo.</p>
+
+      <section aria-labelledby="documento-titulo">
+        <h2 id="documento-titulo">Documento</h2>
+        <div class="editor-doc__cabecera">
+          <div class="editor-doc__grupo">
+            <label class="editor-doc__etiqueta" for="editor-titulo">Nombre del documento</label>
+            <input type="text" id="editor-titulo" class="editor-doc__campo" placeholder="Mi documento" maxlength="80" aria-label="Nombre del documento">
+          </div>
+          <div class="editor-doc__acciones">
+            <button type="button" id="editor-boton-nuevo" class="editor-doc__boton">Nuevo</button>
+            <button type="button" id="editor-boton-abrir" class="editor-doc__boton">Abrir</button>
+            <button type="button" id="editor-boton-guardar" class="editor-doc__boton editor-doc__boton--primario">Guardar (.html)</button>
+            <button type="button" id="editor-boton-guardar-txt" class="editor-doc__boton">Guardar (.txt)</button>
+            <button type="button" id="editor-boton-imprimir" class="editor-doc__boton">Imprimir</button>
+            <input type="file" id="editor-archivo" accept=".html,.htm,.txt" hidden>
+          </div>
+        </div>
+        <div id="editor-fila-nuevo" class="editor-doc__confirmar" hidden>
+          <p>¿Borrar el documento actual y empezar uno nuevo? El autoguardado también se borrará.</p>
+          <button type="button" id="editor-nuevo-si" class="editor-doc__boton">Sí, empezar de nuevo</button>
+          <button type="button" id="editor-nuevo-no" class="editor-doc__boton">Cancelar</button>
+        </div>
+        <div id="editor-avisos" class="editor-doc__avisos" aria-live="polite"></div>
+      </section>
+
+      <section aria-labelledby="editar-titulo">
+        <h2 id="editar-titulo">Editar</h2>
+
+        <div class="editor-doc__marco">
+          <div id="editor-barra" class="editor-doc__barra" role="toolbar" aria-label="Herramientas de formato">
+            <button type="button" class="editor-doc__boton" data-comando="undo" title="Deshacer" aria-label="Deshacer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 5 4 9l4 4"/><path d="M4 9h10a6 6 0 0 1 0 12h-4"/></svg>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="redo" title="Rehacer" aria-label="Rehacer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 5l4 4-4 4"/><path d="M20 9H10a6 6 0 0 0 0 12h4"/></svg>
+            </button>
+
+            <span class="editor-doc__separador" aria-hidden="true"></span>
+
+            <select id="editor-fuente" class="editor-doc__selector" aria-label="Fuente" title="Fuente">
+              <option value="" disabled selected>Fuente</option>
+              <option value="Arial, Helvetica, sans-serif">Arial</option>
+              <option value="Verdana, Geneva, sans-serif">Verdana</option>
+              <option value="Tahoma, sans-serif">Tahoma</option>
+              <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+              <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">Times New Roman</option>
+              <option value="'Palatino Linotype', 'Book Antiqua', serif">Palatino</option>
+              <option value="Garamond, serif">Garamond</option>
+              <option value="'Courier New', Courier, monospace">Courier New</option>
+              <option value="Impact, sans-serif">Impact</option>
+              <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+              <option value="'Segoe UI', Arial, sans-serif">Segoe UI</option>
+            </select>
+            <select id="editor-tamano" class="editor-doc__selector" aria-label="Tamaño de letra" title="Tamaño de letra">
+              <option value="" disabled selected>Tamaño</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="14">14</option>
+              <option value="16">16</option>
+              <option value="18">18</option>
+              <option value="20">20</option>
+              <option value="24">24</option>
+              <option value="28">28</option>
+              <option value="32">32</option>
+              <option value="36">36</option>
+              <option value="48">48</option>
+              <option value="72">72</option>
+            </select>
+            <select id="editor-bloque" class="editor-doc__selector" aria-label="Estilo de párrafo" title="Estilo de párrafo">
+              <option value="" disabled selected>Estilo</option>
+              <option value="P">Párrafo</option>
+              <option value="H1">Título 1</option>
+              <option value="H2">Título 2</option>
+              <option value="H3">Título 3</option>
+              <option value="BLOCKQUOTE">Cita</option>
+            </select>
+
+            <span class="editor-doc__separador" aria-hidden="true"></span>
+
+            <button type="button" class="editor-doc__boton" data-comando="bold" aria-pressed="false" title="Negrita" aria-label="Negrita">
+              <span class="editor-doc__letra--negrita" aria-hidden="true">N</span>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="italic" aria-pressed="false" title="Cursiva" aria-label="Cursiva">
+              <span class="editor-doc__letra--cursiva" aria-hidden="true">K</span>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="underline" aria-pressed="false" title="Subrayado" aria-label="Subrayado">
+              <span class="editor-doc__letra--subrayado" aria-hidden="true">S</span>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="strikeThrough" aria-pressed="false" title="Tachado" aria-label="Tachado">
+              <span class="editor-doc__letra--tachado" aria-hidden="true">T</span>
+            </button>
+
+            <input type="color" id="editor-color-texto" class="editor-doc__color" value="#000000" title="Color del texto" aria-label="Color del texto">
+            <input type="color" id="editor-color-resaltado" class="editor__color" style="display:none" aria-hidden="true" tabindex="-1">
+            <input type="color" id="editor-color-resaltado-real" class="editor-doc__color" value="#ffff00" title="Color de resaltado" aria-label="Color de resaltado">
+
+            <span class="editor-doc__separador" aria-hidden="true"></span>
+
+            <button type="button" class="editor-doc__boton" data-comando="justifyLeft" aria-pressed="false" title="Alinear a la izquierda" aria-label="Alinear a la izquierda">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 6h16M4 11h10M4 16h16M4 21h10"/></svg>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="justifyCenter" aria-pressed="false" title="Centrar" aria-label="Centrar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 6h16M7 11h10M4 16h16M7 21h10"/></svg>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="justifyRight" aria-pressed="false" title="Alinear a la derecha" aria-label="Alinear a la derecha">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 6h16M10 11h10M4 16h16M10 21h10"/></svg>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="justifyFull" aria-pressed="false" title="Justificar" aria-label="Justificar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 6h16M4 11h16M4 16h16M4 21h16"/></svg>
+            </button>
+
+            <span class="editor-doc__separador" aria-hidden="true"></span>
+
+            <button type="button" class="editor-doc__boton" data-comando="insertUnorderedList" aria-pressed="false" title="Lista con viñetas" aria-label="Lista con viñetas">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="4.5" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="17" r="1.3" fill="currentColor" stroke="none"/><path d="M9 7h11M9 12h11M9 17h11"/></svg>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="insertOrderedList" aria-pressed="false" title="Lista numerada" aria-label="Lista numerada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><text x="2" y="9" font-size="6.5" fill="currentColor" stroke="none" font-family="Arial">1</text><text x="2" y="14" font-size="6.5" fill="currentColor" stroke="none" font-family="Arial">2</text><text x="2" y="19" font-size="6.5" fill="currentColor" stroke="none" font-family="Arial">3</text><path d="M9 7h11M9 12h11M9 17h11"/></svg>
+            </button>
+
+            <span class="editor-doc__separador" aria-hidden="true"></span>
+
+            <button type="button" class="editor-doc__boton" data-comando="outdent" title="Disminuir sangría" aria-label="Disminuir sangría">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 6h8M12 12h8M12 18h8"/><path d="M4 10l-3 2 3 2"/><path d="M1 12h7"/></svg>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="indent" title="Aumentar sangría" aria-label="Aumentar sangría">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 6h8M12 12h8M12 18h8"/><path d="M4 10l3 2-3 2"/><path d="M1 12h7"/></svg>
+            </button>
+
+            <span class="editor-doc__separador" aria-hidden="true"></span>
+
+            <button type="button" class="editor-doc__boton" data-comando="subscript" aria-pressed="false" title="Subíndice" aria-label="Subíndice">
+              <span aria-hidden="true">X<sub>2</sub></span>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="superscript" aria-pressed="false" title="Superíndice" aria-label="Superíndice">
+              <span aria-hidden="true">X<sup>2</sup></span>
+            </button>
+
+            <button type="button" class="editor-doc__boton" data-accion="enlace" title="Insertar enlace" aria-label="Insertar enlace">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </button>
+            <button type="button" class="editor-doc__boton" data-comando="insertHorizontalRule" title="Insertar línea horizontal" aria-label="Insertar línea horizontal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M7 7h10" opacity="0.5"/><path d="M4 12h16"/><path d="M7 17h10" opacity="0.5"/></svg>
+            </button>
+            <button type="button" class="editor-doc__boton" data-accion="limpiar" title="Quitar formato" aria-label="Quitar formato">
+              <span aria-hidden="true"><strong>T</strong>x</span>
+            </button>
+
+            <label class="editor-doc__opcion" for="editor-pegar-plano" title="Al activarlo, el texto se pega sin formato">
+              <input type="checkbox" id="editor-pegar-plano">
+              <span>Pegar sin formato</span>
+            </label>
+          </div>
+
+          <div id="editor-texto" class="editor-doc__lienzo" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Área de edición del documento" spellcheck="true" data-placeholder="Empieza a escribir tu documento…"></div>
+
+          <div class="editor-doc__estado">
+            <span id="editor-conteo">0 palabras · 0 caracteres</span>
+            <span id="editor-estado-guardado">Documento nuevo</span>
+          </div>
+        </div>
+
+        <div id="editor-fila-enlace" class="editor-doc__enlace" hidden>
+          <label class="editor-doc__etiqueta" for="editor-enlace-url">Dirección del enlace</label>
+          <input type="text" id="editor-enlace-url" class="editor-doc__campo" placeholder="https://ejemplo.com" inputmode="url" aria-label="Dirección del enlace">
+          <button type="button" id="editor-enlace-aplicar" class="editor-doc__boton editor-doc__boton--primario">Aplicar</button>
+          <button type="button" id="editor-enlace-cancelar" class="editor-doc__boton">Cancelar</button>
+        </div>
+      </section>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../mis-estudios/index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const CLAVE = 'pfd1795-programas-editor-textos';
+
+      const editor = document.getElementById('editor-texto');
+      const barra = document.getElementById('editor-barra');
+      const titulo = document.getElementById('editor-titulo');
+      const avisos = document.getElementById('editor-avisos');
+      const conteo = document.getElementById('editor-conteo');
+      const estadoGuardado = document.getElementById('editor-estado-guardado');
+      const entradaArchivo = document.getElementById('editor-archivo');
+      const filaEnlace = document.getElementById('editor-fila-enlace');
+      const campoEnlace = document.getElementById('editor-enlace-url');
+      const filaNuevo = document.getElementById('editor-fila-nuevo');
+      const selectorFuente = document.getElementById('editor-fuente');
+      const selectorTamano = document.getElementById('editor-tamano');
+      const selectorBloque = document.getElementById('editor-bloque');
+      const colorTexto = document.getElementById('editor-color-texto');
+      const colorResaltado = document.getElementById('editor-color-resaltado-real');
+      const pegarPlano = document.getElementById('editor-pegar-plano');
+
+      if (!editor) return;
+
+      let seleccionGuardada = null;
+      let temporizador = null;
+
+      const escaparHTML = (texto) => texto.replace(/[&<>"']/g, (car) => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[car]
+      ));
+
+      const mensaje = (texto, esError) => {
+        if (!avisos) return;
+        avisos.innerHTML = '';
+        const parrafo = document.createElement('p');
+        if (esError) parrafo.setAttribute('role', 'alert');
+        parrafo.textContent = texto;
+        avisos.appendChild(parrafo);
+        if (!esError) {
+          window.setTimeout(() => {
+            if (parrafo.parentNode === avisos) parrafo.remove();
+          }, 6000);
+        }
+      };
+
+      const guardarSeleccion = () => {
+        seleccionGuardada = null;
+        const seleccion = window.getSelection();
+        if (seleccion && seleccion.rangeCount > 0 && editor.contains(seleccion.anchorNode)) {
+          seleccionGuardada = seleccion.getRangeAt(0).cloneRange();
+        }
+      };
+
+      const restaurarSeleccion = () => {
+        if (!seleccionGuardada) return;
+        editor.focus();
+        const seleccion = window.getSelection();
+        seleccion.removeAllRanges();
+        seleccion.addRange(seleccionGuardada);
+      };
+
+      const actualizarConteo = () => {
+        if (!conteo) return;
+        const texto = (editor.innerText || '').replace(/\u00a0/g, ' ');
+        const recorte = texto.trim();
+        const palabras = recorte ? recorte.split(/\s+/).length : 0;
+        conteo.textContent = palabras + (palabras === 1 ? ' palabra · ' : ' palabras · ') + texto.length + ' caracteres';
+      };
+
+      const guardarAutomatico = () => {
+        if (!estadoGuardado) return;
+        estadoGuardado.textContent = 'Guardando…';
+        window.clearTimeout(temporizador);
+        temporizador = window.setTimeout(() => {
+          try {
+            window.localStorage.setItem(CLAVE, JSON.stringify({
+              titulo: titulo ? titulo.value : '',
+              html: editor.innerHTML,
+              fecha: new Date().toISOString()
+            }));
+            estadoGuardado.textContent = 'Guardado automáticamente';
+          } catch (error) {
+            estadoGuardado.textContent = 'No se pudo guardar automáticamente';
+          }
+        }, 800);
+      };
+
+      const actualizarEstado = () => {
+        if (!barra) return;
+        const seleccion = window.getSelection();
+        const activo = Boolean(seleccion && seleccion.anchorNode && editor.contains(seleccion.anchorNode));
+        const comandos = [
+          'bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript',
+          'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
+          'insertUnorderedList', 'insertOrderedList'
+        ];
+        comandos.forEach((comando) => {
+          const boton = barra.querySelector('[data-comando="' + comando + '"]');
+          if (!boton) return;
+          let presionado = false;
+          if (activo) {
+            try { presionado = document.queryCommandState(comando); } catch (error) { presionado = false; }
+          }
+          boton.setAttribute('aria-pressed', presionado ? 'true' : 'false');
+        });
+      };
+
+      const ejecutar = (comando, valor) => {
+        try { document.execCommand('styleWithCSS', false, true); } catch (error) {}
+        try {
+          document.execCommand(comando, false, valor || null);
+        } catch (error) {
+          mensaje('La acción no está disponible en este navegador.', true);
+        }
+        actualizarEstado();
+        actualizarConteo();
+        guardarAutomatico();
+      };
+
+      const aplicarTamano = (pixeles) => {
+        restaurarSeleccion();
+        try { document.execCommand('styleWithCSS', false, false); } catch (error) {}
+        try { document.execCommand('fontSize', false, '7'); } catch (error) {}
+        try { document.execCommand('styleWithCSS', false, true); } catch (error) {}
+        editor.querySelectorAll('font[size="7"]').forEach((fuente) => {
+          const span = document.createElement('span');
+          span.style.fontSize = pixeles + 'px';
+          while (fuente.firstChild) span.appendChild(fuente.firstChild);
+          fuente.parentNode.replaceChild(span, fuente);
+        });
+        actualizarEstado();
+        actualizarConteo();
+        guardarAutomatico();
+      };
+
+      const aplicarResaltado = (color) => {
+        restaurarSeleccion();
+        let soportado = false;
+        try { soportado = document.queryCommandSupported('hiliteColor'); } catch (error) { soportado = false; }
+        ejecutar(soportado ? 'hiliteColor' : 'backColor', color);
+      };
+
+      const nombreBase = () => (titulo && titulo.value.trim() ? titulo.value.trim() : 'documento')
+        .replace(/[\\/:*?"<>|]+/g, '')
+        .replace(/\s+/g, '-')
+        .slice(0, 80);
+
+      const descargar = (contenido, nombre, tipo) => {
+        const blob = new Blob([contenido], { type: tipo });
+        const url = URL.createObjectURL(blob);
+        const enlace = document.createElement('a');
+        enlace.href = url;
+        enlace.download = nombre;
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+
+      const construirHTML = () => {
+        const tituloDoc = titulo && titulo.value.trim() ? titulo.value.trim() : 'Documento';
+        return '<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n' +
+          '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+          '<title>' + escaparHTML(tituloDoc) + '</title>\n' +
+          '<style>body{max-width:50rem;margin:2rem auto;padding:0 1rem;font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#1a1a1a;background:#ffffff}blockquote{border-left:4px solid #999;margin:1rem 0;padding:.25rem 1rem}img{max-width:100%}</style>\n' +
+          '</head>\n<body>\n' + editor.innerHTML + '\n</body>\n</html>';
+      };
+
+      const guardarHTML = () => {
+        descargar(construirHTML(), nombreBase() + '.html', 'text/html;charset=utf-8');
+        mensaje('Documento guardado en tu dispositivo como archivo .html. Ábrelo de nuevo aquí para seguir editándolo.');
+      };
+
+      const guardarTXT = () => {
+        descargar(editor.innerText || '', nombreBase() + '.txt', 'text/plain;charset=utf-8');
+        mensaje('Documento guardado en tu dispositivo como texto plano (.txt).');
+      };
+
+      const abrirArchivo = (archivo) => {
+        if (!archivo) return;
+        const lector = new FileReader();
+        lector.addEventListener('load', () => {
+          try {
+            const texto = String(lector.result);
+            if (/\.html?$/i.test(archivo.name)) {
+              const doc = new DOMParser().parseFromString(texto, 'text/html');
+              doc.querySelectorAll('script, style, link, meta, iframe, object, embed').forEach((nodo) => nodo.remove());
+              doc.querySelectorAll('*').forEach((nodo) => {
+                Array.from(nodo.attributes).forEach((atributo) => {
+                  const nombre = atributo.name.toLowerCase();
+                  const valor = String(atributo.value).trim().toLowerCase();
+                  if (nombre.indexOf('on') === 0 || ((nombre === 'href' || nombre === 'src') && valor.indexOf('javascript:') === 0)) {
+                    nodo.removeAttribute(atributo.name);
+                  }
+                });
+              });
+              editor.innerHTML = doc.body ? doc.body.innerHTML : '';
+            } else {
+              editor.innerHTML = texto
+                .split(/\r?\n/)
+                .filter((linea) => linea.trim().length > 0)
+                .map((linea) => '<p>' + escaparHTML(linea) + '</p>')
+                .join('');
+            }
+            if (titulo && !titulo.value.trim()) {
+              titulo.value = archivo.name.replace(/\.(html?|txt)$/i, '');
+            }
+            actualizarConteo();
+            actualizarEstado();
+            guardarAutomatico();
+            mensaje('Documento «' + archivo.name + '» abierto. Ya puedes seguir editándolo.');
+          } catch (error) {
+            mensaje('No se pudo abrir el archivo. Usa un documento .html o .txt válido.', true);
+          }
+        });
+        lector.addEventListener('error', () => {
+          mensaje('No se pudo leer el archivo seleccionado.', true);
+        });
+        lector.readAsText(archivo, 'utf-8');
+      };
+
+      if (barra) {
+        barra.addEventListener('mousedown', (evento) => {
+          const boton = evento.target.closest('button');
+          if (boton) evento.preventDefault();
+          guardarSeleccion();
+        });
+
+        barra.addEventListener('click', (evento) => {
+          const boton = evento.target.closest('button');
+          if (!boton) return;
+          const comando = boton.getAttribute('data-comando');
+          const accion = boton.getAttribute('data-accion');
+          if (comando) {
+            ejecutar(comando);
+            return;
+          }
+          if (accion === 'limpiar') {
+            ejecutar('removeFormat');
+            ejecutar('formatBlock', 'P');
+          } else if (accion === 'enlace') {
+            if (seleccionGuardada && !seleccionGuardada.collapsed) {
+              if (campoEnlace) campoEnlace.value = '';
+              if (filaEnlace) filaEnlace.hidden = false;
+              if (campoEnlace) campoEnlace.focus();
+            } else {
+              mensaje('Selecciona primero el texto al que quieres añadir el enlace.', true);
+            }
+          }
+        });
+      }
+
+      const alCambiarSelector = (evento, aplicar) => {
+        const valor = evento.target.value;
+        if (!valor) return;
+        restaurarSeleccion();
+        aplicar(valor);
+      };
+
+      selectorFuente?.addEventListener('change', (evento) => alCambiarSelector(evento, (valor) => ejecutar('fontName', valor)));
+      selectorTamano?.addEventListener('change', (evento) => alCambiarSelector(evento, (valor) => aplicarTamano(valor)));
+      selectorBloque?.addEventListener('change', (evento) => alCambiarSelector(evento, (valor) => ejecutar('formatBlock', valor)));
+      colorTexto?.addEventListener('change', (evento) => { restaurarSeleccion(); ejecutar('foreColor', evento.target.value); });
+      colorResaltado?.addEventListener('change', (evento) => aplicarResaltado(evento.target.value));
+
+      document.getElementById('editor-enlace-aplicar')?.addEventListener('click', () => {
+        let direccion = campoEnlace ? campoEnlace.value.trim() : '';
+        if (!direccion) {
+          mensaje('Escribe la dirección del enlace (por ejemplo, https://ejemplo.com).', true);
+          return;
+        }
+        if (!/^(https?:\/\/|mailto:|tel:|#|\/)/i.test(direccion)) {
+          direccion = 'https://' + direccion;
+        }
+        restaurarSeleccion();
+        ejecutar('createLink', direccion);
+        if (filaEnlace) filaEnlace.hidden = true;
+        if (campoEnlace) campoEnlace.value = '';
+      });
+
+      document.getElementById('editor-enlace-cancelar')?.addEventListener('click', () => {
+        if (filaEnlace) filaEnlace.hidden = true;
+        if (campoEnlace) campoEnlace.value = '';
+        editor.focus();
+      });
+
+      campoEnlace?.addEventListener('keydown', (evento) => {
+        if (evento.key === 'Enter') {
+          evento.preventDefault();
+          document.getElementById('editor-enlace-aplicar')?.click();
+        } else if (evento.key === 'Escape') {
+          evento.preventDefault();
+          document.getElementById('editor-enlace-cancelar')?.click();
+        }
+      });
+
+      document.getElementById('editor-boton-nuevo')?.addEventListener('click', () => {
+        if (filaNuevo) filaNuevo.hidden = false;
+      });
+      document.getElementById('editor-nuevo-no')?.addEventListener('click', () => {
+        if (filaNuevo) filaNuevo.hidden = true;
+      });
+      document.getElementById('editor-nuevo-si')?.addEventListener('click', () => {
+        editor.innerHTML = '';
+        if (titulo) titulo.value = '';
+        try { window.localStorage.removeItem(CLAVE); } catch (error) {}
+        if (estadoGuardado) estadoGuardado.textContent = 'Documento nuevo';
+        actualizarConteo();
+        actualizarEstado();
+        if (filaNuevo) filaNuevo.hidden = true;
+        editor.focus();
+        mensaje('Documento nuevo listo. Escribe cuando quieras.');
+      });
+
+      document.getElementById('editor-boton-guardar')?.addEventListener('click', guardarHTML);
+      document.getElementById('editor-boton-guardar-txt')?.addEventListener('click', guardarTXT);
+      document.getElementById('editor-boton-abrir')?.addEventListener('click', () => {
+        if (entradaArchivo) entradaArchivo.click();
+      });
+      entradaArchivo?.addEventListener('change', () => {
+        if (entradaArchivo.files && entradaArchivo.files[0]) abrirArchivo(entradaArchivo.files[0]);
+        entradaArchivo.value = '';
+      });
+      document.getElementById('editor-boton-imprimir')?.addEventListener('click', () => window.print());
+
+      editor.addEventListener('input', () => {
+        actualizarConteo();
+        actualizarEstado();
+        guardarAutomatico();
+      });
+
+      editor.addEventListener('paste', (evento) => {
+        if (!pegarPlano || !pegarPlano.checked) return;
+        evento.preventDefault();
+        let texto = '';
+        try { texto = evento.clipboardData.getData('text/plain'); } catch (error) { texto = ''; }
+        if (texto) ejecutar('insertText', texto);
+      });
+
+      editor.addEventListener('keydown', (evento) => {
+        if ((evento.ctrlKey || evento.metaKey) && !evento.shiftKey && !evento.altKey && evento.key.toLowerCase() === 's') {
+          evento.preventDefault();
+          guardarHTML();
+        }
+      });
+
+      titulo?.addEventListener('input', guardarAutomatico);
+      document.addEventListener('selectionchange', actualizarEstado);
+
+      let recuperado = false;
+      try {
+        const datos = JSON.parse(window.localStorage.getItem(CLAVE) || 'null');
+        if (datos && typeof datos.html === 'string' && datos.html.length > 0) {
+          editor.innerHTML = datos.html;
+          if (titulo && typeof datos.titulo === 'string') titulo.value = datos.titulo;
+          let fechaLegible = '';
+          try { fechaLegible = new Date(datos.fecha).toLocaleString('es'); } catch (error) { fechaLegible = ''; }
+          mensaje('Se recuperó tu último documento' + (fechaLegible ? ' (guardado el ' + fechaLegible + ')' : '') + '.');
+          recuperado = true;
+        }
+      } catch (error) {}
+
+      if (estadoGuardado) estadoGuardado.textContent = recuperado ? 'Guardado automáticamente' : 'Documento nuevo';
+      actualizarConteo();
+      actualizarEstado();
+    })();
+  </script>
+</body>
+</html>
