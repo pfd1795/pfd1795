@@ -501,7 +501,7 @@ class Engine{
   const c=this.ctx,fn=this['d_'+id];if(fn)fn.call(this,time,vel);
   void c;
  }
- _noiseSrc(t,dur){const s=this.ctx.createBufferSource();s.buffer=this.noise;s.start(t);s.stop(t+dur+.05);return s;}
+ _noiseSrc(t,dur){const s=this.ctx.createBufferSource();s.buffer=this.noise;s.start(t);s.stop(t+dur+.05);s.onended=()=>{try{s.disconnect();}catch(e){}};return s;}
  d_kick(t,v){const c=this.ctx,o=c.createOscillator(),g=c.createGain();
   o.type='sine';o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(38,t+.12);
   g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.42);
@@ -509,7 +509,7 @@ class Engine{
  d_snare(t,v){const c=this.ctx,n=this._noiseSrc(t,.25),bp=c.createBiquadFilter(),g=c.createGain();
   bp.type='bandpass';bp.frequency.value=1800;bp.Q.value=.8;
   g.gain.setValueAtTime(v*.9,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
-  n.connect(bp);bp.connect(g);g.connect(this.ch.snare.in);n.onended=()=>{g.disconnect();bp.disconnect();};
+  n.connect(bp);bp.connect(g);g.connect(this.ch.snare.in);n.onended=()=>{try{n.disconnect();}catch(e){}g.disconnect();bp.disconnect();};
   const o=c.createOscillator(),g2=c.createGain();o.type='triangle';o.frequency.setValueAtTime(190,t);
   g2.gain.setValueAtTime(v*.6,t);g2.gain.exponentialRampToValueAtTime(.001,t+.11);
   o.connect(g2);g2.connect(this.ch.snare.in);o.start(t);o.stop(t+.13);o.onended=()=>{g2.disconnect();o.disconnect();};}
@@ -518,23 +518,23 @@ class Engine{
   const g0=g.gain;g0.setValueAtTime(v,t);g0.exponentialRampToValueAtTime(.01,t+.03);
   g0.setValueAtTime(v*.7,t+.03);g0.exponentialRampToValueAtTime(.01,t+.06);
   g0.setValueAtTime(v*.9,t+.06);g0.exponentialRampToValueAtTime(.001,t+.28);
-  n.connect(bp);bp.connect(g);g.connect(this.ch.clap.in);n.onended=()=>{g.disconnect();bp.disconnect();};}
+  n.connect(bp);bp.connect(g);g.connect(this.ch.clap.in);n.onended=()=>{try{n.disconnect();}catch(e){}g.disconnect();bp.disconnect();};}
  d_chh(t,v){const c=this.ctx,n=this._noiseSrc(t,.07),hp=c.createBiquadFilter(),g=c.createGain();
   hp.type='highpass';hp.frequency.value=7500;
   g.gain.setValueAtTime(v*.6,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);
-  n.connect(hp);hp.connect(g);g.connect(this.ch.chh.in);n.onended=()=>{g.disconnect();hp.disconnect();};}
+  n.connect(hp);hp.connect(g);g.connect(this.ch.chh.in);n.onended=()=>{try{n.disconnect();}catch(e){}g.disconnect();hp.disconnect();};}
  d_ohh(t,v){const c=this.ctx,n=this._noiseSrc(t,.45),hp=c.createBiquadFilter(),g=c.createGain();
   hp.type='highpass';hp.frequency.value=6800;
   g.gain.setValueAtTime(v*.55,t);g.gain.exponentialRampToValueAtTime(.001,t+.4);
-  n.connect(hp);hp.connect(g);g.connect(this.ch.ohh.in);n.onended=()=>{g.disconnect();hp.disconnect();};}
+  n.connect(hp);hp.connect(g);g.connect(this.ch.ohh.in);n.onended=()=>{try{n.disconnect();}catch(e){}g.disconnect();hp.disconnect();};}
  d_crash(t,v){const c=this.ctx,n=this._noiseSrc(t,1.3),hp=c.createBiquadFilter(),g=c.createGain();
   hp.type='highpass';hp.frequency.value=4500;
   g.gain.setValueAtTime(v*.55,t);g.gain.exponentialRampToValueAtTime(.001,t+1.2);
-  n.connect(hp);hp.connect(g);g.connect(this.ch.crash.in);n.onended=()=>{g.disconnect();hp.disconnect();};}
+  n.connect(hp);hp.connect(g);g.connect(this.ch.crash.in);n.onended=()=>{try{n.disconnect();}catch(e){}g.disconnect();hp.disconnect();};}
  d_ride(t,v){const c=this.ctx,n=this._noiseSrc(t,.6),bp=c.createBiquadFilter(),g=c.createGain();
   bp.type='bandpass';bp.frequency.value=9200;bp.Q.value=1.6;
   g.gain.setValueAtTime(v*.4,t);g.gain.exponentialRampToValueAtTime(.001,t+.5);
-  n.connect(bp);bp.connect(g);g.connect(this.ch.ride.in);n.onended=()=>{g.disconnect();bp.disconnect();};
+  n.connect(bp);bp.connect(g);g.connect(this.ch.ride.in);n.onended=()=>{try{n.disconnect();}catch(e){}g.disconnect();bp.disconnect();};
   const o=c.createOscillator(),g2=c.createGain();o.type='sine';o.frequency.value=5200;
   g2.gain.setValueAtTime(v*.12,t);g2.gain.exponentialRampToValueAtTime(.001,t+.35);
   o.connect(g2);g2.connect(this.ch.ride.in);o.start(t);o.stop(t+.4);o.onended=()=>{g2.disconnect();o.disconnect();};}
@@ -571,7 +571,7 @@ class Engine{
   amp.gain.setTargetAtTime(sus,time+a,d/3);
   src.connect(flt);flt.connect(amp);amp.connect(this.ch.synth.in);
   const voice={off:t=>{try{const g=amp.gain;if(g.cancelAndHoldAtTime)g.cancelAndHoldAtTime(t);else{g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);}g.setTargetAtTime(0,t,r/4);src.stop(t+r*1.5+.1);}catch(e){}},
-               kill:()=>{try{amp.disconnect();flt.disconnect();}catch(e){}}};
+               kill:()=>{try{src.disconnect();amp.disconnect();flt.disconnect();}catch(e){}}};
   if(dur!=null){
    const off=Math.max(time+dur,time+a);
    amp.gain.setTargetAtTime(0,off,r/3);
@@ -598,7 +598,7 @@ class Engine{
   const src=this.ctx.createBufferSource();src.buffer=s.buffer;
   const g=this.ctx.createGain();g.gain.value=clamp(vel||.9,0,1);
   src.connect(g);g.connect(this.ch.smp.in);src.start(this.at(time));
-  src.onended=()=>{try{g.disconnect();}catch(e){}};
+  src.onended=()=>{try{src.disconnect();g.disconnect();}catch(e){}};
  }
  /* ---------- mixer / fx ---------- */
  audible(st){return this.anySolo()?!!st.s:!st.m;}
@@ -726,15 +726,19 @@ const transport={
   $('lcd').textContent='STEP -- / --';
  },
  tick(){
+  if(document.hidden) return;
   const c=engine.ctx;
-  while(this.nextTime<c.currentTime+.15){
+  let scheduled=0;
+  while(this.nextTime<c.currentTime+.15 && scheduled<4){
    this.schedule(this.pos,this.abs,this.nextTime);
    this.lastTime=this.nextTime;this.lastAbs=this.abs;
    const sd=this.stepDur();
    this.nextTime+=sd;this.abs++;this.pos++;
    if(state.loopOn&&this.pos>state.loopEnd)this.pos=state.loopStart;
    else if(!state.loopOn&&this.pos>=state.steps){this.stop();return;}
+    scheduled++;
   }
+  if(this.nextTime < c.currentTime - 0.5) this.nextTime = c.currentTime + this.stepDur();
  },
  schedule(pos,abs,t){
   let time=t;
@@ -1265,7 +1269,7 @@ function buildMixer(){
    pan.addEventListener('input',()=>{st.p=+pan.value;engine.applyMix();saveSoon();});
   }
   const an=isMaster?null:engine.ch[getId].an;
-  mixMeters.push({fill,an,isMaster});
+  mixMeters.push({fill,an,isMaster,buf:an?new Float32Array(an.fftSize):null});
   m.appendChild(s);
  };
  TRACKS.forEach((t,i)=>strip(t.n,t.id,i,false));
@@ -1449,16 +1453,18 @@ function rafLoop(){
   let p=0;
   if(mm.isMaster){
    const use=engine.aL;if(use){
-    const buf=new Float32Array(use.fftSize);use.getFloatTimeDomainData(buf);
-    let s=0;for(let i=0;i<buf.length;i++)s+=buf[i]*buf[i];
-    const db=20*Math.log10(Math.sqrt(s/buf.length)||1e-6);
+    if(!mm.buf||mm.buf.length!==use.fftSize)mm.buf=new Float32Array(use.fftSize);
+    use.getFloatTimeDomainData(mm.buf);
+    let s=0;for(let i=0;i<mm.buf.length;i++)s+=mm.buf[i]*mm.buf[i];
+    const db=20*Math.log10(Math.sqrt(s/mm.buf.length)||1e-6);
     p=clamp((db+60)/60,0,1);
    }
   }else if(mm.an){
-   const buf=new Float32Array(mm.an.fftSize);mm.an.getFloatTimeDomainData(buf);
-   let s=0;for(let i=0;i<buf.length;i++)s+=buf[i]*buf[i];
-   const db=20*Math.log10(Math.sqrt(s/buf.length)||1e-6);
-   p=clamp((db+60)/60,0,1);
+    if(!mm.buf||mm.buf.length!==mm.an.fftSize)mm.buf=new Float32Array(mm.an.fftSize);
+    mm.an.getFloatTimeDomainData(mm.buf);
+    let s=0;for(let i=0;i<mm.buf.length;i++)s+=mm.buf[i]*mm.buf[i];
+    const db=20*Math.log10(Math.sqrt(s/mm.buf.length)||1e-6);
+    p=clamp((db+60)/60,0,1);
   }
   mm.fill.style.transform='scaleY('+p.toFixed(3)+')';
  });
@@ -1764,6 +1770,8 @@ function wireUI(){
  });
  /* reanudar audio en el primer gesto */
  document.addEventListener('pointerdown',()=>engine.resume(),{passive:true});
+ window.addEventListener('blur',()=>{if(engine.ready)engine.panic();});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden&&transport.playing)transport.stop();});
  window.addEventListener('beforeunload',()=>{try{const{samples,...rest}=state;localStorage.setItem('nexus-gs-autosave',JSON.stringify(rest));}catch(e){}});
 }
 
