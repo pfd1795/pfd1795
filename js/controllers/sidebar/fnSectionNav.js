@@ -36,7 +36,9 @@ export default function sectionNav() {
 
   const observer = new IntersectionObserver(
     (entries) => {
-      const visible = entries.find((entry) => entry.isIntersecting);
+      const visible = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
       if (visible) {
         setActive(visible.target.id);

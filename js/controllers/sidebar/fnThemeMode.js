@@ -51,8 +51,10 @@ export function updateModeText() {
   const lang = currentLanguage;
   const modeText = document.querySelector(".mode-label");
 
-  if (modeText) {
-    modeText.textContent = translations.page[lang][currentMode];
+  const modeLabel = translations.page?.[lang]?.[currentMode];
+
+  if (modeText && modeLabel !== undefined) {
+    modeText.textContent = modeLabel;
   }
 }
 

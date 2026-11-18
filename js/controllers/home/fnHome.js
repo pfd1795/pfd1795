@@ -50,12 +50,12 @@ export function GridWorkExperience() {
     });
   };
 
-  translations.workExperience.forEach((work) => {
+  (translations.workExperience ?? []).forEach((work) => {
     const article = document.createElement('article');
     article.className = 'card-work';
 
     const panelId = `work-panel-${work.id}`;
-    const techList = work.technologies.map((tech) => `<li>${tech}</li>`).join('');
+    const techList = (work.technologies ?? []).map((tech) => `<li>${tech}</li>`).join('');
 
     article.innerHTML = `
       <button class="card-work__header" type="button" aria-expanded="false" aria-controls="${panelId}">
@@ -104,10 +104,10 @@ export function GridWorkExperience() {
 
 
 function ModalEducation(idEducation = 0) {
-  const selectedEducation = translations.educations.find(edu => edu.id === idEducation);
+  const selectedEducation = (translations.educations ?? []).find(edu => edu.id === idEducation);
 
   if (selectedEducation) {
-    const skillsList = selectedEducation.skills.map(skill => `<li>${skill}</li>`).join("");
+    const skillsList = (selectedEducation.skills ?? []).map(skill => `<li>${skill}</li>`).join("");
     const lang = currentLanguage;
     const homeTexts = translations.home[lang];
 
@@ -153,7 +153,7 @@ export function GridEducation() {
 
     const lang = currentLanguage;
 
-    translations.educations.forEach((edu) => {
+    (translations.educations ?? []).forEach((edu) => {
       const article = document.createElement('button');
       article.className = 'card-studies';
       article.type = 'button';
@@ -177,7 +177,7 @@ export function GridProjects() {
   if (projectsGrid) {
     const lang = currentLanguage;
 
-    projectsGrid.innerHTML = translations.projects.map(project => `
+    projectsGrid.innerHTML = (translations.projects ?? []).map(project => `
       <article class="project-card">
         <div class="project-image-container">
           <figure>
@@ -192,7 +192,7 @@ export function GridProjects() {
           <p class="project-description">${project.description[lang]}</p>
 
           <div class="project-technologies">
-            ${project.technologies.map(tech => `
+            ${(project.technologies ?? []).map(tech => `
               <span class="tech-badge">${tech}</span>
             `).join('')}
           </div>

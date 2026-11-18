@@ -140,6 +140,8 @@ const PRECACHE_URLS = [
   "./programas/data/herramientas.json",
   "./programas/herramientas/convertidor-imagenes.html",
   "./programas/herramientas/dj.html",
+  "./programas/herramientas/dj.css",
+  "./programas/herramientas/dj.js",
   "./programas/herramientas/editor-text.html",
   "./programas/herramientas/escaner-dispositivos.html",
   "./programas/herramientas/generador-codigo-qr.html",

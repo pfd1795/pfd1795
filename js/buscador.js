@@ -133,8 +133,12 @@
     /* Las grillas renderizadas desde manifiestos rellenan el DOM después de
        DOMContentLoaded; el observer dispara el primer conteo correcto. */
     if (window.MutationObserver) {
+      var debounceTimer = null;
       new MutationObserver(function () {
-        filtrar();
+        if (debounceTimer) {
+          clearTimeout(debounceTimer);
+        }
+        debounceTimer = setTimeout(filtrar, 50);
       }).observe(document.body, { childList: true, subtree: true });
     }
 

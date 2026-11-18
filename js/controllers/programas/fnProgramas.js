@@ -35,10 +35,8 @@ function esc(texto) {
   ));
 }
 
-function filtrarPublicados() {
+function filtrarItemsValidos() {
   return (data.items ?? []).filter((item) => {
-    if (item.status !== 'published') return true;
-
     if (!SLUG_PATTERN.test(item.slug ?? '')) {
       console.warn(`[programas] Slug inválido: "${item.slug}"`);
       return false;
@@ -143,7 +141,7 @@ export function GridProgramas() {
   if (!grid) return;
 
   const lang = currentLanguage;
-  const items = filtrarPublicados();
+  const items = filtrarItemsValidos();
   const categorias = data.categories ?? [];
 
   grid.innerHTML = '';
