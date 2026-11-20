@@ -18,6 +18,7 @@
   <meta property="og:image" content="https://pfd1795.github.io/pfd1795/assets/images/profile.png" />
   <meta property="og:locale" content="es_ES" />
   <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://pfd1795.github.io/pfd1795/assets/images/profile.png" />
 
   <script src="./js/theme-init.js"></script>
 
@@ -41,7 +42,7 @@
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
-    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
       <span data-lang="menu">Menú</span>
       <img src="./assets/icons/menu.svg" alt="" />
     </button>
@@ -58,7 +59,7 @@
 
         <div class="intro-content">
           <figure>
-            <img src="./assets/images/profile.png" alt="Foto de perfil" loading="lazy" width="1024" height="1024" />
+            <img src="./assets/images/profile.png" alt="Foto de perfil" fetchpriority="high" width="1024" height="1024" />
           </figure>
 
           <p class="description-text">
@@ -73,18 +74,18 @@
 
       <section class="header-contact">
         <a href="https://www.linkedin.com/in/pfd-dev/" title="LinkedIn" target="_blank" class="social-link" aria-label="LinkedIn" rel="noopener noreferrer">
-          <span class="social-icon" style="--icon: url('./assets/icons/linkedin.svg')"></span>
+          <span class="social-icon social-icon--linkedin"></span>
         </a>
 
         <div class="email-container">
           <button type="button" class="social-link email-link" title="Copiar correo" aria-label="Copiar correo" data-i18n-title="copyEmail" data-i18n-aria-label="copyEmail">
-            <span class="social-icon" style="--icon: url('./assets/icons/gmail.svg')"></span>
+            <span class="social-icon social-icon--gmail"></span>
           </button>
           <span class="copy-notification" data-lang="copyNotification" role="status" aria-live="polite">¡Correo copiado!</span>
         </div>
 
         <a href="https://github.com/pfd1795" title="GitHub" target="_blank" class="social-link" aria-label="GitHub" rel="noopener noreferrer">
-          <span class="social-icon" style="--icon: url('./assets/icons/github.svg')"></span>
+          <span class="social-icon social-icon--github"></span>
         </a>
       </section>
     </section>
@@ -193,6 +194,7 @@
         <li class="footer-chip footer-chip--ai">Beam Free</li>
         <li class="footer-chip footer-chip--ai">minimax M3.1 Flash</li>
         <li class="footer-chip footer-chip--ai">GLM-5.3-Flash Free</li>
+        <li class="footer-chip footer-chip--ai">Big Pickle</li>
       </ul>
 
       <p class="footer-note" data-lang="footerAiNote">
@@ -234,7 +236,7 @@
     <header class="sidebar-header">
       <h2 data-lang="menu">Menú</h2>
 
-      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
         <span data-lang="close">Cerrar</span>
         <img src="./assets/icons/close.svg" alt="" />
       </button>
@@ -242,7 +244,7 @@
 
     <nav class="sidebar-menu">
       <div class="sidebar-item--group">
-        <button class="sidebar-item" data-target="inicio">
+        <button type="button" class="sidebar-item" data-target="inicio">
           <img src="./assets/icons/home.svg" alt="" />
           <span data-lang="home">Inicio</span>
         </button>
@@ -254,17 +256,17 @@
       </div>
 
       <div class="sidebar-submenu" id="sidebar-secciones">
-        <button class="sidebar-item sidebar-subitem" data-target="experiencia">
+        <button type="button" class="sidebar-item sidebar-subitem" data-target="experiencia">
           <img src="./assets/icons/docs.svg" alt="" />
           <span data-lang="experienceTitle">Experiencia Laboral</span>
         </button>
 
-        <button class="sidebar-item sidebar-subitem" data-target="estudios">
+        <button type="button" class="sidebar-item sidebar-subitem" data-target="estudios">
           <img src="./assets/icons/school.svg" alt="" />
           <span data-lang="studiesTitle">Estudios | Cursos</span>
         </button>
 
-        <button class="sidebar-item sidebar-subitem" data-target="proyectos">
+        <button type="button" class="sidebar-item sidebar-subitem" data-target="proyectos">
           <img src="./assets/icons/code.svg" alt="" />
           <span data-lang="projects">Proyectos</span>
         </button>
@@ -287,7 +289,7 @@
     </nav>
 
     <footer class="sidebar-footer">
-      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
         <span data-lang="settings">Configuración</span>
         <img src="./assets/icons/setting.svg" alt="" />
       </button>
@@ -295,7 +297,7 @@
   </aside>
 
   <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
     <div class="modal-dialog-body"></div>
   </dialog>
 </body>

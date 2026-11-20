@@ -13,11 +13,14 @@ Reglas locales para agentes que trabajan en la sección Programas. Complementa e
 - `programas.css`: estilos específicos de la sección (chips `.filtro`, tarjetas
   `.programa-card*`, acento adaptativo `--prog-accent`).
 - `herramientas/`: herramientas implementadas, una por archivo `<slug>.html`
-  autocontenido (`convertidor-imagenes`, `escaner-dispositivos`, `generador-codigo-qr`,
-  `generador-favicons`, `generador-paletas`). Siguen el patrón de `juegos/`: cargan
-  `../../stylesheets/base.css` + `../programas.css`, `../../js/main.js` y
-  `../../js/theme-init.js`, con sidebar y modal de Configuración completos. (Guía de
-  creación en `docs/prompts/crear-programas-web.md`.)
+  autocontenido (`convertidor-imagenes`, `dj`, `editor-text`, `escaner-dispositivos`,
+  `generador-codigo-qr`, `generador-favicons`, `generador-paletas`, `pizarra-dibujo`).
+  Siguen el patrón de `juegos/`: cargan `../../stylesheets/base.css` + `../programas.css`,
+  `../../js/main.js` y `../../js/theme-init.js`, con sidebar y modal de Configuración
+  completos. **Excepción documentada:** `dj.html` es una estación de música autocontenida
+  con tema y estilos propios (`dj.css`); no carga el chrome compartido, usa su propio
+  favicon inline y registra el service worker desde `dj.js`. No replicar esta excepción
+  en herramientas nuevas. (Guía de creación en `docs/prompts/crear-programas-web.md`.)
 - `data/herramientas.json`: manifiesto de la grilla (mismo esquema que `juegos.json`:
   `version` + `categories` + `items`; las entradas llevan `icon` y `technologies`).
 
@@ -31,7 +34,8 @@ no tiene copias propias.
    (`translations.json`); la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN.
 2. **Pre-pintado obligatorio**: toda página nueva debe cargar `js/theme-init.js` en el
    `<head>` antes de pintar (`../js/` desde esta carpeta, `../../js/` desde
-   `herramientas/`). Es el único script de pre-pintado del sitio: si se añade o cambia una
+   `herramientas/`), salvo las excepciones documentadas anteriores (`dj.html`), que
+   gestionan su propio tema. Es el único script de pre-pintado del sitio: si se añade o cambia una
    clave de tema, actualizar `theme-init.js` y `js/utils/storage.js` a la vez (inventario
    en el [`AGENTS.md` raíz](../AGENTS.md#inventario-de-claves-de-localstorage)).
 3. **Chrome compartido, no copiado**: las páginas cargan `../stylesheets/base.css` +

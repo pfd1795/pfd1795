@@ -2,7 +2,7 @@
 // Precachea todo el sitio (lista generada con las mismas exclusiones del
 // workflow de despliegue: sin documentación, CV ni plantilla de juegos).
 // Bump CACHE_NAME (v2, v3, ...) al actualizar el sitio para forzar refresco.
-const CACHE_NAME = 'pwa-cache-v10';
+const CACHE_NAME = 'pwa-cache-v11';
 const PRECACHE_URLS = [
   "./assets/icons/arrow_right.svg",
   "./assets/icons/build.svg",
@@ -159,7 +159,13 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
       Promise.allSettled(PRECACHE_URLS.map((url) => cache.add(url)))
-    ).then(() => self.skipWaiting())
+    ).then((resultados) => {
+      const fallidos = resultados.filter((resultado) => resultado.status === 'rejected');
+      if (fallidos.length) {
+        console.warn(`[SW] No se pudieron precachear ${fallidos.length} URLs:`, fallidos.map((r) => r.reason));
+      }
+      return self.skipWaiting();
+    })
   );
 });
 
@@ -189,13 +195,29 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(request).then((r) => r || caches.match('./index.html')))
+        .catch(async () => {
+          const directa = await caches.match(request, { ignoreSearch: true });
+          if (directa) return directa;
+
+          /* Las navegaciones a /juegos/ (o /juegos) no coinciden con la entrada
+             precacheada ./juegos/index.html: resolver el index del directorio. */
+          const base = new URL(request.url);
+          const candidatas = [
+            new URL('./index.html', base.href).href,
+            new URL(base.pathname.replace(/\/?$/, '/') + 'index.html', base.href).href
+          ];
+          for (const url of candidatas) {
+            const encontrada = await caches.match(url, { ignoreSearch: true });
+            if (encontrada) return encontrada;
+          }
+          return caches.match('./index.html');
+        })
     );
     return;
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
+    caches.match(request, { ignoreSearch: true }).then((cached) => {
       const network = fetch(request)
         .then((response) => {
           if (response && response.status === 200 && response.type === 'basic') {

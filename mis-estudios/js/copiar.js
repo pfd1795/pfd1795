@@ -66,17 +66,18 @@
       return;
     }
 
-    Array.prototype.forEach.call(bloques, function (codigo) {
+    Array.prototype.forEach.call(bloques, function (codigo, indice) {
       var pre = codigo.parentElement;
       var boton = document.createElement('button');
       boton.type = 'button';
       boton.className = 'btn-copiar';
       boton.textContent = 'Copiar';
+      /* Nombre accesible estable: el texto del aviso no cambia el del botón. */
+      boton.setAttribute('aria-label', 'Copiar bloque de código ' + (indice + 1) + ' de ' + bloques.length);
 
       var aviso = document.createElement('span');
-      aviso.setAttribute('aria-live', 'polite');
+      aviso.setAttribute('role', 'status');
       aviso.className = 'copiar__aviso';
-      boton.appendChild(aviso);
 
       boton.addEventListener('click', function () {
         var ok = copiar(quitarSangria(codigo.textContent));
@@ -90,6 +91,7 @@
       });
 
       pre.style.position = 'relative';
+      pre.appendChild(aviso);
       pre.appendChild(boton);
     });
   }

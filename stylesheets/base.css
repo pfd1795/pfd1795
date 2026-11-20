@@ -153,7 +153,7 @@ th {
 
 th,
 td {
-  border: 1px solid black;
+  border: var(--border-normal) solid var(--color-border);
   padding: 0.5rem;
 }
 
@@ -771,7 +771,7 @@ body.modal-open {
   opacity: .8;
   width: 1.5em;
 }
-/* El modo se pre-pinta en <html> (theme-init.js / tema.js), así que la regla
+/* El modo se pre-pinta en <html> (theme-init.js), así que la regla
    se escribe contra ese nodo: `body:not(.dark)` dejaría una ventana entre el
    primer pintado y DOMContentLoaded donde el invert se activa en modo oscuro. */
 html:not(.dark) .modal-dialog .settings .settings-icon {
@@ -810,7 +810,8 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   border-radius: var(--radius-md);
   padding: 6px;
 }
-.modal-dialog .settings .color-option {
+.modal-dialog .settings .color-option,
+.modal-dialog .settings .theme-option {
   aspect-ratio: 1;
   border: var(--border-thick) solid transparent;
   border-radius: var(--radius-full);
@@ -825,6 +826,10 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   &.selected {
     box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 2px var(--theme-color);
   }
+}
+/* Los swatches de fondo llevan un borde interior para distinguir los claros. */
+.modal-dialog .settings .theme-option {
+  box-shadow: inset 0 0 0 1px var(--color-border);
 }
 .modal-dialog .settings .theme-options {
   display: grid;
@@ -833,23 +838,6 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   overflow: hidden;
   border-radius: var(--radius-md);
   padding: 6px;
-}
-.modal-dialog .settings .theme-option {
-  aspect-ratio: 1;
-  border: var(--border-thick) solid transparent;
-  border-radius: var(--radius-full);
-  box-shadow: inset 0 0 0 1px var(--color-border);
-  cursor: pointer;
-  transition: transform var(--transition-fast) var(--ease-in-out),
-    box-shadow var(--transition-fast) var(--ease-in-out);
-  width: 100%;
-  will-change: transform;
-  &:hover {
-    transform: scale(1.06);
-  }
-  &.selected {
-    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 2px var(--theme-color);
-  }
 }
 .modal-dialog .settings .settings-row--direction,
 .modal-dialog .settings .settings-row--speed,
@@ -874,32 +862,7 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   justify-content: flex-end;
   margin-left: 0;
 }
-.modal-dialog .settings .direction-option {
-  align-items: center;
-  background-color: var(--color-border);
-  border: var(--border-normal) solid transparent;
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  cursor: pointer;
-  display: inline-flex;
-  height: 2em;
-  justify-content: center;
-  padding: 0;
-  transition: background-color var(--transition-fast) var(--ease-in-out),
-    color var(--transition-fast) var(--ease-in-out);
-  width: 2em;
-  &:hover {
-    background-color: var(--color-surface);
-  }
-  &.selected {
-    background-color: var(--theme-color);
-    border-color: var(--theme-color);
-    color: var(--theme-color-contrast);
-  }
-}
-.modal-dialog .settings .direction-icon {
-  fill: currentColor;
-}
+.modal-dialog .settings .direction-option,
 .modal-dialog .settings .speed-option,
 .modal-dialog .settings .font-scale-option {
   align-items: center;
@@ -909,12 +872,7 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   color: var(--color-text);
   cursor: pointer;
   display: inline-flex;
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  height: 2.25em;
   justify-content: center;
-  padding: 0 var(--space-2);
-  width: auto;
   transition: background-color var(--transition-fast) var(--ease-in-out),
     color var(--transition-fast) var(--ease-in-out);
   &:hover {
@@ -926,6 +884,22 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
     color: var(--theme-color-contrast);
   }
 }
+.modal-dialog .settings .direction-option {
+  height: 2em;
+  padding: 0;
+  width: 2em;
+}
+.modal-dialog .settings .direction-icon {
+  fill: currentColor;
+}
+.modal-dialog .settings .speed-option,
+.modal-dialog .settings .font-scale-option {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  height: 2.25em;
+  padding: 0 var(--space-2);
+  width: auto;
+}
 .modal-dialog .settings .font-scale-option {
   padding: 0;
   width: 2.75em;
@@ -933,9 +907,10 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
     line-height: 1;
   }
 }
+/* Se oculta sin quitar del flujo para que las filas de dirección y velocidad
+   no provoquen un salto de layout al cambiar de tema de fondo. */
 .modal-dialog .settings .is-hidden {
   visibility: hidden;
-  pointer-events: none;
 }
 .modal-dialog .segmented {
   background-color: var(--color-border);

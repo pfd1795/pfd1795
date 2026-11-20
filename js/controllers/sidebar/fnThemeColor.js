@@ -1,4 +1,9 @@
-import { getThemeColor, setThemeColor } from "../../utils/storage.js";
+import {
+  getThemeColor,
+  setThemeColor,
+  STORAGE_KEY_THEME_COLOR,
+  STORAGE_KEY_THEME_COLOR_VALUE
+} from "../../utils/storage.js";
 import { getThemeColorDef } from "../../utils/themeColors.js";
 
 function markSelected(color) {
@@ -12,7 +17,7 @@ function markSelected(color) {
   });
 }
 
-function changeColor(color) {
+function changeColor(color, { persist = true } = {}) {
   const themeColor = getThemeColorDef(color);
   const root = document.documentElement;
 
@@ -21,7 +26,11 @@ function changeColor(color) {
 
   markSelected(themeColor.color);
 
-  setThemeColor(themeColor.color, themeColor.value);
+  /* En el arranque y en la sincronización entre pestañas no se reescribe:
+     el valor ya está guardado (o lo acaba de escribir la otra pestaña). */
+  if (persist) {
+    setThemeColor(themeColor.color, themeColor.value);
+  }
 }
 
 export default function themeColor() {
@@ -33,5 +42,12 @@ export default function themeColor() {
     changeColor(option.dataset.color || "blue");
   });
 
-  changeColor(getThemeColor().color);
+  /* Sincronización entre pestañas: si otra cambia el acento, se repinta el
+     swatch seleccionado sin volver a escribir localStorage. */
+  window.addEventListener("storage", (event) => {
+    if (event.key !== STORAGE_KEY_THEME_COLOR && event.key !== STORAGE_KEY_THEME_COLOR_VALUE) return;
+    changeColor(getThemeColor().color, { persist: false });
+  });
+
+  changeColor(getThemeColor().color, { persist: false });
 }

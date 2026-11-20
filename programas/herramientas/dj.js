@@ -1273,7 +1273,9 @@ async function refreshRecs(){
    const play=document.createElement('button');play.textContent='Escuchar';
    play.addEventListener('click',()=>{
     const url=URL.createObjectURL(r.blob);
-    const a=new Audio(url);a.play();a.onended=()=>URL.revokeObjectURL(url);
+    const a=new Audio(url);
+    a.onended=()=>URL.revokeObjectURL(url);
+    a.play().catch(()=>URL.revokeObjectURL(url));
    });
    const wave=document.createElement('button');wave.textContent='Forma de onda';
    wave.addEventListener('click',async()=>{
@@ -1362,7 +1364,8 @@ function initPWA(){
   const manifest={name:'NEXUS GROOVE STATION',short_name:'NEXUS GS',start_url:'.',display:'standalone',
    background_color:'#04060a',theme_color:'#04060a',icons:[{src:iconCv.toDataURL('image/png'),sizes:'192x192',type:'image/png'}]};
   const link=document.createElement('link');link.rel='manifest';
-  link.href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'}));
+  /* data: URI en vez de ObjectURL: no hay que revocarlo y no queda fuga por carga. */
+  link.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(manifest));
   document.head.appendChild(link);
  }catch(e){}
  /* detección / registro de service worker (archivo externo opcional) */

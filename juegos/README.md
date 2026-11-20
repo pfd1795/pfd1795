@@ -298,6 +298,10 @@ antigua la primera vez que se abre el juego), así que ningún jugador pierde su
 | pool | `pool_best_v1` | `pixelpool_records_v1` |
 | ta-te-ti | `ta-te-ti_best_v1` | `tateti_neon_record` |
 
+Además del récord, un juego puede guardar preferencias propias con el patrón `<slug>_…_v1`
+(p. ej. `snake_settings_v1` o `neon-maze_sfx_v1`). Son claves privadas de cada juego, no
+deben borrarse al limpiar el inventario de `localStorage` del sitio.
+
 ---
 
 ## Usar la plantilla

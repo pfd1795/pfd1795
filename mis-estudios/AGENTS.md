@@ -54,7 +54,8 @@ no tiene copias propias.
 7. **Contenido educativo**: agregar un artículo es crear `articulos/<slug>.html`
    (kebab-case, sin prefijos redundantes), siguiendo la estructura de los existentes, y
    añadir su entrada a `data/articulos.json` (`status: "published"` solo si está probado).
-   Los artículos cargan `../js/copiar.js`, añaden su caja «En 5 puntos» (`.tl-dr`) y —si
+   Los artículos cargan `../js/copiar.js`; la caja «En 5 puntos» (`.tl-dr`) es recomendable, no obligatoria
+   (los artículos ya publicados sin ella se respetan), y —si
    ayudan— diagramas SVG inline con las clases de `mis-estudios.css` (`.diagrama`); nada de
    imágenes remotas ni librerías externas.
 8. **Sin firmas de IA**: un artículo no incluye marcas de agua, comentarios-firma, nombres

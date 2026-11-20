@@ -468,10 +468,13 @@ pre:has(> .btn-copiar) {
   border-color: var(--enc-accent);
 }
 .copiar__aviso {
-  margin-left: var(--space-2);
+  position: absolute;
+  top: calc(var(--space-8) + var(--space-1));
+  right: var(--space-2);
   font-weight: 400;
   font-size: var(--text-sm);
   color: var(--enc-accent);
+  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {

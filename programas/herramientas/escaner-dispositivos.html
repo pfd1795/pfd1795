@@ -618,7 +618,7 @@
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
-    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
       <span data-lang="menu">Menú</span>
       <img src="../../assets/icons/menu.svg" alt="" />
     </button>
@@ -701,7 +701,7 @@
     <header class="sidebar-header">
       <h2 data-lang="menu">Menú</h2>
 
-      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
         <span data-lang="close">Cerrar</span>
         <img src="../../assets/icons/close.svg" alt="" />
       </button>
@@ -754,7 +754,7 @@
     </nav>
 
     <footer class="sidebar-footer">
-      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
         <span data-lang="settings">Configuración</span>
         <img src="../../assets/icons/setting.svg" alt="" />
       </button>
@@ -762,7 +762,7 @@
   </aside>
 
   <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
     <div class="modal-dialog-body"></div>
   </dialog>
 
@@ -1263,7 +1263,9 @@
       /* === 06 · Cámara === */
       var detenerCamara = function () {
         if (ESTADO.handles.camara) {
-          try { ESTADO.handles.camara.stop(); } catch (error) { /* ignorado */ }
+          try {
+            ESTADO.handles.camara.getTracks().forEach(function (pista) { pista.stop(); });
+          } catch (error) { /* ignorado */ }
           ESTADO.handles.camara = null;
         }
         var video = $('esc-video');
@@ -1381,7 +1383,9 @@
       /* === 07 · Micrófono === */
       var detenerMicro = function () {
         if (ESTADO.handles.micro) {
-          try { ESTADO.handles.micro.stop(); } catch (error) { /* ignorado */ }
+          try {
+            ESTADO.handles.micro.getTracks().forEach(function (pista) { pista.stop(); });
+          } catch (error) { /* ignorado */ }
           ESTADO.handles.micro = null;
         }
       };
@@ -1437,13 +1441,16 @@
                   return;
                 }
                 var flujo = await navigator.mediaDevices.getUserMedia({ audio: true });
-                ESTADO.handles.micro = flujo;
 
                 var contexto = new Contexto();
                 var analizador = contexto.createAnalyser();
                 analizador.fftSize = 256;
                 contexto.createMediaStreamSource(flujo).connect(analizador);
-                var datos = new Uint8Array(analyser.frequencyBinCount);
+                var datos = new Uint8Array(analizador.frequencyBinCount);
+
+                /* El handle se registra solo cuando el analizador ya funciona:
+                   así el bloque catch puede liberar el stream si algo falla. */
+                ESTADO.handles.micro = flujo;
 
                 var pico = 0;
                 var ultimoInforme = 0;
@@ -1493,6 +1500,11 @@
 
                 pintar();
               } catch (error) {
+                detenerMicro();
+                if (ESTADO.handles.raf) {
+                  cancelAnimationFrame(ESTADO.handles.raf);
+                  ESTADO.handles.raf = null;
+                }
                 api.estado('limitado', 'No se pudo abrir el micrófono: permiso denegado o dispositivo en uso.');
               } finally {
                 botonActivar.disabled = false;
@@ -1713,7 +1725,20 @@
 
       /* === 11 · Linterna === */
       var detenerLinterna = function () {
+        var actual = ESTADO.handles.linterna;
         ESTADO.handles.linterna = null;
+        if (!actual) return;
+
+        if (actual.imagen && actual.imagen.applyConstraints) {
+          try {
+            actual.imagen.applyConstraints({ advanced: [{ torch: false }] }).catch(function () {});
+          } catch (error) { /* ignorado */ }
+        }
+        if (actual.flujo) {
+          try {
+            actual.flujo.getTracks().forEach(function (pista) { pista.stop(); });
+          } catch (error) { /* ignorado */ }
+        }
       };
 
       definir('linterna', 'Linterna', 4, 'multimedia', false, async function () {
@@ -1733,8 +1758,15 @@
             var boton = crear('button', 'escaner__boton', 'Activar linterna');
             boton.type = 'button';
             boton.addEventListener('click', seguro(async function () {
+              if (ESTADO.handles.linterna) {
+                detenerLinterna();
+                boton.textContent = 'Activar linterna';
+                api.estado('pendiente', 'Linterna apagada.');
+                return;
+              }
+              var flujo = null;
               try {
-                var flujo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                flujo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 var pista = flujo.getVideoTracks()[0];
                 var capacidad = pista.getCapabilities ? pista.getCapabilities() : {};
                 if (!capacidad.torch) {
@@ -1745,8 +1777,14 @@
                 var imagen = new ImageCapture(pista);
                 await imagen.applyConstraints({ advanced: [{ torch: true }] });
                 ESTADO.handles.linterna = { flujo: flujo, imagen: imagen };
+                boton.textContent = 'Apagar linterna';
                 api.estado('ok', 'Linterna encendida. Vuelve a pulsar el botón para apagarla.');
               } catch (error) {
+                if (flujo) {
+                  try { flujo.getTracks().forEach(function (t) { t.stop(); }); } catch (ignore) { /* ignorado */ }
+                }
+                detenerLinterna();
+                boton.textContent = 'Activar linterna';
                 api.estado('limitado', 'No se pudo controlar la linterna: permiso denegado o sin flash.');
               }
             }));
@@ -3154,10 +3192,11 @@
           instalacionPendiente = evento;
         });
 
-        /* Libera cámara, micrófono y sensores al salir de la página. */
+        /* Libera cámara, micrófono, linterna y sensores al salir de la página. */
         window.addEventListener('pagehide', function () {
           detenerCamara();
           detenerMicro();
+          detenerLinterna();
           detenerGeo();
           detenerGiro();
           detenerAcel();

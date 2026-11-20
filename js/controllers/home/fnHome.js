@@ -2,7 +2,7 @@ import { ModalDialog } from '../../utils/dialog.js';
 import { currentLanguage } from '../../lang/translations.config.js';
 import translations from '../../lang/translations.json' with { type: 'json' };
 
-export function GridWorkExperience() {
+export function GridWorkExperience(expandedPanelId = null) {
   const container = document.querySelector('.grid-works');
 
   if (!container) return;
@@ -50,6 +50,10 @@ export function GridWorkExperience() {
     });
   };
 
+  /* Al re-renderizar por un cambio de idioma se restaura la tarjeta abierta:
+     el panel se identifica por work.id, estable entre traducciones. */
+  let restoredCard = null;
+
   (translations.workExperience ?? []).forEach((work) => {
     const article = document.createElement('article');
     article.className = 'card-work';
@@ -71,7 +75,7 @@ export function GridWorkExperience() {
             <p><strong>${homeTexts.employmentTypeLabel}</strong> ${work.employmentType[lang]}</p>
 
             <div>
-              <strong>${homeTexts.technologiesLabel}</strong>
+              <strong>${homeTexts.technologiesUsedLabel}</strong>
               <ul class="tech-list">${techList}</ul>
             </div>
 
@@ -99,7 +103,17 @@ export function GridWorkExperience() {
     });
 
     container.appendChild(article);
+
+    if (expandedPanelId && panelId === expandedPanelId) {
+      article.classList.add('expanded');
+      header.setAttribute('aria-expanded', 'true');
+      restoredCard = article;
+    }
   });
+
+  if (restoredCard) {
+    applyLayout(restoredCard);
+  }
 }
 
 
@@ -207,8 +221,8 @@ export function GridProjects() {
   }
 }
 
-export function reloadHomeContent() {
-  GridWorkExperience();
+export function reloadHomeContent(expandedPanelId = null) {
+  GridWorkExperience(expandedPanelId);
   GridEducation();
   GridProjects();
 }

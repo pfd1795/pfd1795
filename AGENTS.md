@@ -128,7 +128,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
 | `js/main.js` | — (script principal) | Monta `InitModalDialog`, `SidebarController` (si existe `#HomePage`), `HomeController` (si existe `.main-layout`) y los controladores de grilla (`JuegosController` si existe `.juegos-grid`, `MisEstudiosController` si existe `.estudios-grid`, `ProgramasController` si existe `.programas-grid`) tras `DOMContentLoaded`. Registra también el Service Worker (PWA). |
-| `js/theme-init.js` | IIFE clásica (no módulo) | Aplica modo, acento, fondo y escala desde `localStorage` antes del primer pintado en **todas las páginas** (portada, `juegos/`, `mis-estudios/` y `programas/`). Es el único script de pre-pintado; duplica las claves de `utils/storage.js` a propósito. |
+| `js/theme-init.js` | IIFE clásica (no módulo) | Aplica modo, acento, fondo y escala desde `localStorage` antes del primer pintado en **todas las páginas del portafolio y sus secciones** (portada, `juegos/`, `mis-estudios/`, `programas/` y artículos/herramientas con chrome compartido). Salvo los juegos y `dj.html`, autocontenidos. Es el único script de pre-pintado; duplica las claves de `utils/storage.js` a propósito. |
 | `js/buscador.js` | IIFE clásica (no módulo) | Buscador único de las grillas: filtra las tarjetas del término (y por categoría si hay chips `.filtro`), actualiza el placeholder con el conteo y usa `#sin-resultados`. Se configura por `data-attributes` del input `#buscador` (`data-buscador-tarjetas`, `data-buscador-placeholder`); la recarga tras renders dinámicos la resuelve un `MutationObserver` y los chips por delegación sobre `document`. |
 
 **Controladores — `controllers/home/`**
@@ -136,7 +136,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
 | `home.controller.js` | `default HomeController()` | Inicializa las grillas de la portada y el scrollspy dependiente. |
-| `fnHome.js` | `GridWorkExperience()`, `GridEducation()`, `GridProjects()`, `reloadHomeContent()` | Genera el HTML de cada grilla (cadenas tomadas de `translations.introSection[lang]`) y re-renderiza al cambiar de idioma. |
+| `fnHome.js` | `GridWorkExperience()`, `GridEducation()`, `GridProjects()`, `reloadHomeContent()` | Genera el HTML de cada grilla (cadenas tomadas de `translations.home[lang]` e `introSection`) y re-renderiza al cambiar de idioma, conservando la tarjeta de experiencia expandida. |
 
 **Controladores — `controllers/juegos/`**
 
@@ -167,7 +167,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | `fnSectionNav.js` | `default sectionNav()` | Scrollspy con `IntersectionObserver`: marca `.active` y abre el submenú cuando la sección es hija. |
 | `fnChangeLanguage.js` | `sectionLanguage()` (default), `applyTranslations()` | Toggle ES/EN y actualización de `[data-lang]`, `[data-i18n-title]`, `[data-i18n-aria-label]`. |
 | `fnThemeMode.js` | `themeMode()` (default), `updateModeText()` | Alterna claro/oscuro y actualiza el texto del botón correspondiente. |
-| `fnThemeColor.js` | `default themeColor()` | Aplica el acento activo (`--theme-color`, `--theme-color-soft`) desde `utils/themeColors.js`. |
+| `fnThemeColor.js` | `default themeColor()` | Aplica el acento activo (`--theme-color`, `--theme-color-soft`) desde `utils/themeColors.js` y sincroniza el swatch seleccionado entre pestañas sin reescribir `localStorage`. |
 | `fnBackgroundTheme.js` | `default backgroundTheme()` | Aplica tema de fondo, dirección del degradado y velocidad (`--page-*`). |
 | `fnFontScale.js` | `default fontSize()` | Aplica la escala tipográfica (`--font-scale`) de 0.85 / 1 / 1.15. |
 
@@ -233,7 +233,9 @@ en `utils/storage.js` y en `theme-init.js` (único script de pre-pintado).
 Los juegos que antes usaban otra clave migran la clave antigua automáticamente (copian el valor
 a la clave `<slug>_best_v1` y borran la antigua la primera vez que se abre el juego). El mapa
 completo de claves actuales y antiguas está en `juegos/README.md` (sección "Canon visual
-retro-arcade").
+retro-arcade"). Además del récord, algunos juegos guardan preferencias propias con el patrón
+`<slug>_…_v1` (p. ej. `snake_settings_v1` o `neon-maze_sfx_v1`): son claves privadas de cada
+juego, documentadas en `juegos/README.md`, y no deben borrarse al limpiar el inventario.
 
 ---
 
@@ -266,7 +268,7 @@ element?.addEventListener('click', () => {
 - **Nesting**: Permitido (CSS moderno nativo)
 - **Comentarios**: Secciones con `/* ===== Nombre ===== */`
 - **Unidades**: `rem` para texto, `em` para componentes, `px` para breakpoints
-- **Responsive**: Mobile-first con `@media (min-width: 768px)`
+- **Responsive**: Mobile-first con `@media (min-width: 768px)`. Se admiten excepciones puntuales con `@media (max-width: 767px)` cuando son complementarias de un bloque `min-width` ya existente (p. ej. `base.css`, `portada.css`, `mis-estudios.css`); no sustituyen al enfoque mobile-first.
 
 ```css
 /* Correcto */
@@ -322,7 +324,7 @@ renderizado a la resolución visible (`renderScale`), documentado en `juegos/REA
 del manifiesto (ver Arquitectura CSS).
 - **Rutas de assets**: los iconos que se inyectan desde JS (modal de Configuración y modo) se resuelven con `utils/assets.js` (`import.meta.url` → `assets/icons/`), para que funcionen tanto desde la raíz (`index.html`) como desde subcarpetas (`mis-estudios/` y `juegos/`).
 - **Configuración**: el modal (`.modal-dialog`) se rellena desde `controllers/settings/settings.controller.js`; los controles de idioma/modo/color/fondo/dirección/velocidad y tamaño de fuente usan **delegación de eventos sobre `document`**, por lo que siguen funcionando aunque el contenido se genere dinámicamente en cada apertura. Las filas de "Dirección del degradado" y "Velocidad" son condicionales: se muestran/ocultan con `.is-hidden` según el tema de fondo elegido (dirección para temas con degradado; velocidad solo para `multicolor`). La lógica de aplicación vive en `controllers/sidebar/fnBackgroundTheme.js` (fondo, dirección y velocidad) y `fnFontScale.js`; los datos están centralizados en `utils/themeBackgrounds.js`. `applyTranslations()` (en `fnChangeLanguage.js`) actualiza el texto de `[data-lang]` y el `title`/`aria-label` de `[data-i18n-title]`/`[data-i18n-aria-label]`, de modo que los controles dinámicos cambian de idioma sin reabrir el modal.
-- **Pre-pintado del tema**: para evitar el parpadeo, el modo, el acento, el fondo y el tamaño de fuente se aplican antes del primer pintado. **Todas las páginas** (portada, `juegos/`, `mis-estudios/`, `programas/` y sus subpáginas) usan el mismo `js/theme-init.js` (script clásico síncrono en `<head>`, con la profundidad de ruta que corresponda: `../js/` o `../../js/`). Lee las mismas claves de `localStorage` que `utils/storage.js` (`theme-mode`, `theme-color-value`, `theme-background`, `gradient-direction`, `psychedelic-speed`, `font-scale`).
+- **Pre-pintado del tema**: para evitar el parpadeo, el modo, el acento, el fondo y el tamaño de fuente se aplican antes del primer pintado. **Todas las páginas del portafolio y de sus secciones** (portada, `juegos/`, `mis-estudios/`, `programas/` y los artículos/herramientas con chrome compartido) usan el mismo `js/theme-init.js` (script clásico síncrono en `<head>`, con la profundidad de ruta que corresponda: `../js/` o `../../js/`). **Se exceptúan los juegos de `juegos/<slug>/` y `programas/herramientas/dj.html`**, autocontenidos, que gestionan su propio tema. Lee las mismas claves de `localStorage` que `utils/storage.js` (`theme-mode`, `theme-color-value`, `theme-background`, `gradient-direction`, `psychedelic-speed`, `font-scale`).
 - **PWA (instalable/offline)**: `manifest.json` y `service-worker.js` en la raíz; iconos en `assets/icons/icon-192.png` e `icon-512.png` (más `icon.svg` como fuente). `main.js` registra el SW con URL derivada de `import.meta.url`; las páginas de juego lo registran con un script inline. El SW precachea todo el sitio (lista generada en `service-worker.js`) y usa network-first para navegaciones y stale-while-revalidate para assets. Al publicar cambios, subir `CACHE_NAME` (`v2`, …) para forzar el refresco. Mantener las rutas relativas al desplegar en subruta.
 
 ### CSS
@@ -334,7 +336,11 @@ del manifiesto (ver Arquitectura CSS).
   referencias (toda la familia `--color-blue/-dark/…` y los semánticos
   `--color-success/warning/error/info`, `--color-background-neutral`, `--color-border-light`,
   `--color-separator`); reflotar un alias solo al aparecer su primer uso real.
-- **Temas de color**: el acento activo se expone como `--theme-color` (variante oscura) y `--theme-color-soft` (variante clara). `controllers/sidebar/fnThemeColor.js` los sobreescribe a partir de `utils/themeColors.js` (fuente única de las 6 opciones).
+- **Escalas reservadas**: `:root` conserva escalas completas (`--text-*`, `--space-*`,
+  `--size-*`, `--n*`/`--dn*` y `--<color>-claro`) de las que hoy solo se consumen algunos
+  valores. Se mantienen como escala deliberada, igual que `--breakpoint-*` (solo referencia);
+  no purgarlas sin decidir formalmente reducir la paleta.
+- **Temas de color**: el acento activo se expone como `--theme-color` (variante oscura) y `--theme-color-soft` (variante clara). `utils/themeColors.js` es la fuente única de las 6 opciones (campo `soft`); `controllers/sidebar/fnThemeColor.js` aplica esos valores y `js/theme-init.js` deriva la variante clara del valor guardado mediante `aclarar()`. Los tokens CSS `--<color>-claro` son entradas de la paleta con usos directos puntuales (p. ej. el escáner), no la fuente del acento de la UI.
 - **Footer**: `.footer` existe solo en la portada (`index.html`) y está compuesto por la sección de tecnologías (`.footer-tech`), la de agentes de IA (`.footer-ai`), los créditos de iconos y el bloque `.footer-bottom`. Usa el acento adaptativo `--footer-accent` (`--theme-color` en modo claro y `--theme-color-soft` en modo oscuro, mismo patrón que `--enc-accent` de la enciclopedia) para que los títulos y las firmas tengan contraste en ambos modos. Las listas usan `.footer-chips` con `.footer-chip`; las firmas de IA son `.footer-chip--ai` dentro de `.footer-chips--ai`.
 - **Temas de fondo (degradados)**: el fondo de página se controla con `--page-background`, `--page-gradient`, `--page-scrim`, `--page-background-size`, `--page-background-repeat` y `--page-animation`, consumidos por `.body-container`. `utils/themeBackgrounds.js` define los 10 temas (default + 8 colores, incluido violeta, + multicolor), las 7 direcciones (4 lineales, 2 radiales y color sólido) y las 3 velocidades. El degradado usa los tokens `--<color>-oscuro` y `--neutral-background-soft`, este último redefinido en modo oscuro. El modo `multicolor` usa un arcoíris animado con `@keyframes page-rainbow` (180s lento / 30s normal / 10s rápido) que se anula con `prefers-reduced-motion`. En modo claro, `html.has-page-theme` aplica un velo neutro (`--page-scrim`) y oscurece el texto secundario para mantener el contraste.
 - **Tamaño de fuente**: `html` usa `font-size: calc(16px * var(--font-scale, 1))`; el modal fija `--font-scale` en 0.85, 1 o 1.15, por lo que escala toda la tipografía basada en `rem` sin tocar los breakpoints en `px`.

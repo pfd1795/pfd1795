@@ -266,7 +266,7 @@
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
-    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
       <span data-lang="menu">Menú</span>
       <img src="../../assets/icons/menu.svg" alt="" />
     </button>
@@ -462,7 +462,7 @@
     <header class="sidebar-header">
       <h2 data-lang="menu">Menú</h2>
 
-      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
         <span data-lang="close">Cerrar</span>
         <img src="../../assets/icons/close.svg" alt="" />
       </button>
@@ -515,7 +515,7 @@
     </nav>
 
     <footer class="sidebar-footer">
-      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
         <span data-lang="settings">Configuración</span>
         <img src="../../assets/icons/setting.svg" alt="" />
       </button>
@@ -523,7 +523,7 @@
   </aside>
 
   <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
     <div class="modal-dialog-body"></div>
   </dialog>
 
@@ -706,6 +706,23 @@
         mensaje('Documento guardado en tu dispositivo como texto plano (.txt).');
       };
 
+      /* Sanea tanto el HTML importado como el autosave recuperado: el dato
+         viene del propio navegador, pero se trata con la misma barrera. */
+      const sanitizarHTML = (texto) => {
+        const doc = new DOMParser().parseFromString(texto, 'text/html');
+        doc.querySelectorAll('script, style, link, meta, iframe, object, embed').forEach((nodo) => nodo.remove());
+        doc.querySelectorAll('*').forEach((nodo) => {
+          Array.from(nodo.attributes).forEach((atributo) => {
+            const nombre = atributo.name.toLowerCase();
+            const valor = String(atributo.value).trim().toLowerCase();
+            if (nombre.indexOf('on') === 0 || ((nombre === 'href' || nombre === 'src') && valor.indexOf('javascript:') === 0)) {
+              nodo.removeAttribute(atributo.name);
+            }
+          });
+        });
+        return doc.body ? doc.body.innerHTML : '';
+      };
+
       const abrirArchivo = (archivo) => {
         if (!archivo) return;
         const lector = new FileReader();
@@ -713,18 +730,7 @@
           try {
             const texto = String(lector.result);
             if (/\.html?$/i.test(archivo.name)) {
-              const doc = new DOMParser().parseFromString(texto, 'text/html');
-              doc.querySelectorAll('script, style, link, meta, iframe, object, embed').forEach((nodo) => nodo.remove());
-              doc.querySelectorAll('*').forEach((nodo) => {
-                Array.from(nodo.attributes).forEach((atributo) => {
-                  const nombre = atributo.name.toLowerCase();
-                  const valor = String(atributo.value).trim().toLowerCase();
-                  if (nombre.indexOf('on') === 0 || ((nombre === 'href' || nombre === 'src') && valor.indexOf('javascript:') === 0)) {
-                    nodo.removeAttribute(atributo.name);
-                  }
-                });
-              });
-              editor.innerHTML = doc.body ? doc.body.innerHTML : '';
+              editor.innerHTML = sanitizarHTML(texto);
             } else {
               editor.innerHTML = texto
                 .split(/\r?\n/)
@@ -881,7 +887,7 @@
       try {
         const datos = JSON.parse(window.localStorage.getItem(CLAVE) || 'null');
         if (datos && typeof datos.html === 'string' && datos.html.length > 0) {
-          editor.innerHTML = datos.html;
+          editor.innerHTML = sanitizarHTML(datos.html);
           if (titulo && typeof datos.titulo === 'string') titulo.value = datos.titulo;
           let fechaLegible = '';
           try { fechaLegible = new Date(datos.fecha).toLocaleString('es'); } catch (error) { fechaLegible = ''; }

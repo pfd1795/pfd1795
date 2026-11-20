@@ -332,14 +332,14 @@
     "es": {
       "descriptionLabel": "Descripción:",
       "employmentTypeLabel": "Modalidad:",
-      "technologiesLabel": "Tecnologías Utilizadas:",
+      "technologiesUsedLabel": "Tecnologías Utilizadas:",
       "skillsLabel": "Habilidades Adquiridas:",
       "visitWebsiteLabel": "Ver sitio web"
     },
     "en": {
       "descriptionLabel": "Description:",
       "employmentTypeLabel": "Employment Type:",
-      "technologiesLabel": "Technologies Used:",
+      "technologiesUsedLabel": "Technologies Used:",
       "skillsLabel": "Skills Acquired:",
       "visitWebsiteLabel": "Visit website"
     }

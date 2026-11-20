@@ -129,6 +129,11 @@
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
   }
+  /* La URL se declara aquí, en la misma hoja que consume --icon: así se
+     resuelve siempre respecto a stylesheets/, tanto en raíz como en subruta. */
+  .social-icon--linkedin { --icon: url('../assets/icons/linkedin.svg'); }
+  .social-icon--gmail { --icon: url('../assets/icons/gmail.svg'); }
+  .social-icon--github { --icon: url('../assets/icons/github.svg'); }
   .email-container {
     display: inline-block;
     position: relative;

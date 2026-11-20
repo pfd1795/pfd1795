@@ -75,5 +75,5 @@ export default function themeMode() {
     applyTheme(event.newValue, { persist: false });
   });
 
-  applyTheme(getThemeMode());
+  applyTheme(getThemeMode(), { persist: false });
 }

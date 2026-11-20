@@ -9,11 +9,12 @@ function OpenModalDialog() {
   }
 }
 
-export function ModalDialog(content = "contenido...") {
+export function ModalDialog(content = '') {
   const dialog = document.querySelector(".modal-dialog");
   const modalBody = document.querySelector(".modal-dialog-body");
 
   if (!dialog || !modalBody) return;
+  if (typeof content !== 'string' && !(content instanceof HTMLElement)) return;
 
   modalBody.innerHTML = "";
 

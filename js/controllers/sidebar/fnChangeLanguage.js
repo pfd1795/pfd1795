@@ -80,7 +80,12 @@ function changeLanguage(lang, { rerender = true } = {}) {
   updateModeText();
 
   if (rerender) {
-    reloadHomeContent();
+    /* Conservar la tarjeta de experiencia abierta: se reconstruye la grilla
+       desde cero, así que hay que recordar qué panel estaba desplegado. */
+    const expandedHeader = document.querySelector('.card-work.expanded .card-work__header');
+    const expandedPanelId = expandedHeader?.getAttribute('aria-controls') ?? null;
+
+    reloadHomeContent(expandedPanelId);
     reloadGamesContent();
   }
 }
