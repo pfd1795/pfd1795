@@ -65,14 +65,17 @@ export default function themeMode() {
     }
   });
 
-  /* Sincronización entre pestañas: si otra pestaña del sitio cambia el modo,
-     se reaplica sobre el <html>/<body> y la UI del modal. */
+  /* Sincronización entre pestañas: si otra pestaña cambia el modo, se reaplica
+     sobre el <html>/<body> y la UI del modal. event.key === null cubre
+     localStorage.clear(), que elimina la clave sin emitir su nombre. */
   window.addEventListener("storage", (event) => {
-    if (event.key !== STORAGE_KEY_THEME_MODE) return;
-    if (event.newValue !== "dark" && event.newValue !== "light") return;
-    if (event.newValue === currentMode) return;
+    if (event.key !== STORAGE_KEY_THEME_MODE && event.key !== null) return;
 
-    applyTheme(event.newValue, { persist: false });
+    const nextMode = getThemeMode();
+
+    if (nextMode === currentMode) return;
+
+    applyTheme(nextMode, { persist: false });
   });
 
   applyTheme(getThemeMode(), { persist: false });

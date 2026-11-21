@@ -1,4 +1,5 @@
 import { ModalDialog } from '../../utils/dialog.js';
+import { ICONS_URL } from '../../utils/assets.js';
 import { currentLanguage } from '../../lang/translations.config.js';
 import translations from '../../lang/translations.json' with { type: 'json' };
 
@@ -213,7 +214,7 @@ export function GridProjects() {
 
           <a href="${project.link}" class="project-button" target="_blank" rel="noopener noreferrer" title="${project.title[lang]}">
             <span data-lang="viewProject">${translations.introSection[lang].viewProject}</span>
-            <img src="./assets/icons/arrow_right.svg" alt="">
+            <img src="${ICONS_URL}arrow_right.svg" alt="">
           </a>
         </div>
       </article>

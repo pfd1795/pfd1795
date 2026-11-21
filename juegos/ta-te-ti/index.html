@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d0221">
+<meta name="description" content="Ta Te Ti: juego de tablero casual de tres en raya contra una CPU que bloquea y ataca.">
 <title>Ta Te Ti — 3 en Raya · Arcade Neón</title>
 <style>
   :root {
@@ -69,6 +71,7 @@
   .instructions h3 { margin:0 0 5px; color:var(--neon-green); font-size:13px; letter-spacing:2px; }
   .instructions p { margin:5px 0; }
   .instructions strong { color:var(--text); }
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 </style>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
@@ -93,6 +96,7 @@
   <span>JUGADOR (X)<b id="player-score">0</b></span>
   <span>VICTORIAS<b id="record">0</b></span>
   <span>CPU (O)<b id="cpu-score">0</b></span>
+  <span id="sr-status" class="sr-only" role="status" aria-live="polite"></span>
 </div>
 
 <main id="stage"><canvas id="game" aria-label="Tablero de Ta Te Ti"></canvas></main>
@@ -143,6 +147,7 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const stage = document.getElementById('stage');
 const optionsDialog = document.getElementById('options');
+const srStatus = document.getElementById('sr-status');
 
 let state = 'start'; // start, playing, paused, victory, gameover, draw
 let board = Array(9).fill('');
@@ -236,10 +241,14 @@ function afterMove() {
       state = 'gameover';
     }
     updateHud();
+    srStatus.textContent = winInfo.symbol === 'X'
+      ? '¡Victoria! Has alineado tres marcas.'
+      : 'Game over. La CPU ha alineado tres marcas.';
     return;
   }
   if (boardFull(board)) {
     state = 'draw';
+    srStatus.textContent = 'Empate. El tablero está lleno.';
     return;
   }
   turn = turn === 'player' ? 'cpu' : 'player';

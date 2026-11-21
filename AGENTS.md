@@ -6,7 +6,154 @@ Portafolio web personal desarrollado con HTML, CSS y JavaScript vanilla. Sitio e
 
 **URL de producción:** https://pfd1795.github.io/pfd1795/
 
-**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `AGENTS.md` locales en `juegos/`, `mis-estudios/` y `programas/` (reglas propias de cada carpeta; los agentes los combinan con el de la raíz), `docs/README.md` (índice de la documentación) y `juegos/README.md` (cómo agregar y documentar juegos). `docs/prompts/` contiene herramientas para desarrolladores: solo leerlas cuando se pida explícitamente. No hay fases, tareas, auditorías ni informes activos en el repositorio; el estado real está en el código y en esta guía.
+**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `AGENTS.md` locales en `juegos/`, `mis-estudios/` y `programas/` (reglas propias de cada carpeta; los agentes los combinan con el de la raíz), `docs/README.md` (índice de la documentación) y `juegos/README.md` (cómo agregar y documentar juegos). `docs/prompts/` contiene herramientas para desarrolladores: solo leerlas cuando se pida explícitamente. No hay fases ni tareas activas en el repositorio; el estado real está en el código y en esta guía. Los informes de auditoría y el tracker de trabajo pendiente, cuando se generen, viven exclusivamente en `docs/informes/`.
+
+---
+
+## Reglas obligatorias
+
+### ❌ Prohibido hacer commits o push
+
+Los agentes IA **no pueden** hacer commits, push, ni modificar el repositorio Git bajo ninguna circunstancia. Solo leer, analizar y proponer cambios. Los commits son manuales y los realiza el desarrollador.
+
+### ⏱️ Sin plazos ni estimaciones
+
+No hay fechas límite, días estimados ni urgencias. Trabajar al ritmo necesario.
+
+### 📚 Documentación exclusiva para agentes IA
+
+La documentación técnica (`AGENTS.md`, `AGENTS.md` locales, `docs/`) está escrita **exclusivamente para agentes IA, en español**. `README.md` es el único documento orientado a personas. Prohibido crear otros documentos para humanos.
+
+### 📁 Carpeta exclusiva para informes, auditorías, fases, tareas y hallazgos
+
+Los informes de auditoría, planes de trabajo, listas de pendientes, trackers y demás hallazgos se guardan **única y exclusivamente** en `docs/informes/` (la carpeta se crea la primera vez que haga falta). No crear estos archivos en ninguna otra ubicación del repo. El resto de la documentación describe **el estado actual del código**, no el proceso que llevó a él.
+
+**Tracker único de trabajo pendiente:** `docs/informes/trabajo-pendiente.md` es el único documento de tareas abiertas del repo. Toda tarea pendiente nueva se agrega ahí; al cerrar un ítem se **borra** (nunca se marca resuelto ni se anexa historial). No crear trackers ni informes paralelos.
+
+Consecuencias obligatorias:
+
+- **Nada de códigos de hallazgo.** No inventar prefijos tipo `B1`, `L-*`, `O-*`, `SEC-*`, `TAREA-*` ni escribirlos en títulos de tests o comentarios: no existe documento que los defina, así que quedan como referencias muertas.
+- **Nada de historial.** No escribir "se eliminó X", "antes hacía Y", "hasta el <fecha>". Lo que sí se conserva es la **señal anti-regresión** (`Eliminado:`, `DEPRECATED`, "no usar en código nuevo"): sin ella un agente futuro re-agrega código muerto o usa APIs deprecadas.
+- Si al trabajar aparece una limitación, se agrega a la sección "Limitaciones y problemas conocidos" de `AGENTS.md` con evidencia verificada.
+
+### 🚫 Prohibido escribir comentarios en el código
+
+Aplica a **todo el código del proyecto, existente o nuevo**: HTML, CSS y JavaScript. Toda información sobre funciones, archivos o lógica extra vive en la **documentación para agentes** (`AGENTS.md` y `docs/`), nunca en el código.
+
+- **Excepciones (únicas):** pragmas técnicos funcionales — `@ts-expect-error`, `@ts-ignore`, `@ts-nocheck`, `eslint-disable`, shebang — limitados a su función sintáctica. Prohibido usarlos para explicar código.
+- **Fuera de alcance:** archivos de configuración y plantillas operativas (`.env.example`, `docker-compose*`, templates, `package.json`), cuyos comentarios son necesarios para operar.
+- **Cumplimiento:** por disciplina, con revisión en cada cambio (sin guard automático).
+- **Estado:** la regla aplica a código nuevo y modificado; el código existente puede contener comentarios heredados, pendientes de retirar.
+
+### 🔍 No revisar historial de git
+
+Los agentes **no deben** ejecutar `git log`, `git show`, `git diff` ni ningún comando que acceda al historial de commits, a menos que el usuario lo solicite explícitamente. Trabajar únicamente con los archivos actuales del repositorio.
+
+---
+
+## Arranque de sesión y menú de trabajo
+
+### Arranque con `@pfd1795/AGENTS.md`
+
+Si el usuario envía como **único contenido escrito** la mención `@pfd1795/AGENTS.md` (con o sin espacios alrededor, y aunque el cliente expanda esa mención adjuntando el archivo), **llamar a la herramienta `question`** con un único ítem:
+
+- `question`: `Proyecto entendido. ¿En qué quieres trabajar?`
+- `header`: `Menú de trabajo`
+- `options` (en este orden):
+  1. `Auditar la documentación (consistencia interna)`
+  2. `Auditar el código del proyecto completo`
+  3. `Verificar la veracidad de la documentación contra el código`
+  4. `Ver tareas pendientes sugeridas`
+  5. `Sugerir y planificar la próxima tarea pendiente recomendada`
+
+No incluir una opción de texto libre adicional: la herramienta `question` la agrega automáticamente y cumple el rol de "Otra tarea (la describo yo)".
+
+No imprimir la lista como texto plano, no leer archivos, no ejecutar comandos y no usar herramientas distintas de `question`: este caso **no** cuenta como "empezar a trabajar" y por lo tanto **no activa** la checklist "Antes de empezar a trabajar". El texto del archivo adjuntado automáticamente por la mención no se considera una instrucción adicional. Si el mensaje incluye cualquier otra cosa además de la mención, proceder normalmente.
+
+No existe disparador por `listo` ni por variantes: `listo` significa "terminé" y **no** abre el menú. El menú solo se muestra con `@pfd1795/AGENTS.md`.
+
+Al recibir la selección, ejecutar el guion correspondiente sin pedir instrucciones adicionales. Excepciones: la opción 4 solo lista y espera elección; la opción 5 presenta el plan y espera confirmación antes de ejecutar. Si el usuario escribe su propia tarea (campo de texto libre), aplicar el guion 6.
+
+### Guiones de las opciones
+
+#### 1. Auditar la documentación (consistencia interna)
+
+Auditar la documentación de forma interna, sin compararla contra el código.
+
+Alcance: `AGENTS.md` (raíz y locales en `juegos/`, `mis-estudios/`, `programas/`), `README.md`, `docs/README.md` y `docs/prompts/*`.
+
+- Enlaces vigentes (relativos y absolutos).
+- Unicidad: `docs/` es documentación para agentes en español; no hay documento para humanos aparte de `README.md`; no hay planes, fases ni informes activos fuera de `docs/informes/`.
+- Conteos publicados: artículos en `mis-estudios/data/articulos.json`, juegos en `juegos/data/juegos.json`, herramientas en `programas/data/herramientas.json`; verificar por lectura directa, no de memoria.
+- Ausencia de historial, plazos, estimaciones, códigos de hallazgo y trackers paralelos.
+- Instrucciones claras y aplicables por un agente IA.
+
+Entregable: informe en `docs/informes/` con hallazgo, ubicación y corrección propuesta; los ítems accionables se agregan a `docs/informes/trabajo-pendiente.md`. No verificar firmas, APIs ni citas contra código: eso es la opción 3. No modificar docs de estado en esta auditoría.
+
+#### 2. Auditar el código del proyecto completo
+
+Auditar el código completo del portafolio: HTML, CSS, JavaScript y manifiestos JSON.
+
+Alcance: errores, bugs, lógica incorrecta, duplicación, código muerto, vulnerabilidades y desviaciones de las convenciones de `AGENTS.md` (estilo, rutas relativas, módulos ES, accesibilidad, PWA).
+
+Método:
+
+- Usar `grep -n` o lectura directa antes de afirmar cualquier cosa.
+- Servir por HTTP (`python -m http.server 8000`) y cargar las páginas indicadas en la tabla de verificación manual; revisar la consola de DevTools sin errores.
+- No ejecutar `git log`, `git show`, `git diff` ni ningún comando de historial.
+- No proponer reintroducir código marcado como eliminado o deprecado.
+
+Entregable: informe en `docs/informes/` con hallazgo, evidencia `archivo:línea`, impacto y corrección sugerida. Cada hallazgo accionable se agrega como ítem a `docs/informes/trabajo-pendiente.md` (una tarea = un cambio acotado), sin códigos de hallazgo, sin fechas y sin historial. No ejecutar correcciones ni hacer commits en esta tarea.
+
+#### 3. Verificar la veracidad de la documentación contra el código
+
+Verificar la veracidad de la documentación contra el código.
+
+Alcance: toda afirmación verificable de `AGENTS.md` (raíz y locales), `README.md`, `docs/**` y `juegos/README.md`.
+
+Método:
+
+- Confirmar cada afirmación con `grep -n` o lectura directa del archivo citado; no reproducir docs de memoria.
+- Revisar citas, exports, manifiestos, conteos y rutas.
+
+Entregable: informe en `docs/informes/` con tabla `documento / afirmación / evidencia / estado / corrección propuesta`, más los ítems accionables en `docs/informes/trabajo-pendiente.md`. No editar docs de estado durante esta verificación.
+
+#### 4. Ver tareas pendientes sugeridas
+
+Leer `docs/informes/trabajo-pendiente.md` si existe y listar los ítems abiertos con su alcance y un orden sugerido. Si no existe el tracker, listar la deuda técnica y las limitaciones de `AGENTS.md` (raíz y locales) como ítems sugeridos. No ejecutar ninguno: esperar a que el usuario elija un número. Nunca ejecutar todos juntos; se respeta "una tarea = un cambio acotado". Al cerrar la tarea elegida, borrarla del tracker (y de `AGENTS.md` si aplica).
+
+#### 5. Sugerir y planificar la próxima tarea pendiente recomendada
+
+Sugerir y planificar la próxima tarea pendiente recomendada, sin ejecutarla.
+
+Método:
+
+- Leer `AGENTS.md` (raíz y locales), `README.md`, `docs/README.md` y `docs/informes/trabajo-pendiente.md` si existe.
+- Excluir tareas bloqueadas o fuera de alcance.
+- Elegir UNA sola tarea por impacto, dependencias, verificabilidad con grep/lectura y posibilidad de cerrarla con verificación manual + documentación.
+- Reverificar sus citas y cifras contra el código antes de planificar.
+
+Entregable: el plan se presenta en el chat; la tarea recomendada se gestiona en `docs/informes/trabajo-pendiente.md`, que es el único registro de pendientes. No crear un archivo de plan paralelo salvo petición explícita del usuario (en ese caso, en `/home/gris/.opencode/plan`).
+
+- Tarea elegida y motivo.
+- Plan: pasos, archivos de código y docs a tocar, verificación manual (páginas a cargar y checklist).
+- Criterios de cierre: verificación manual sin errores en consola, documentación afectada actualizada, ítem borrado del tracker si aplica.
+- Detenerse e informar "listo para ejecutar el plan". No ejecutar hasta recibir confirmación.
+
+#### 6. Otra tarea
+
+Si el usuario escribió su tarea en el campo de texto libre, usar esa descripción; si no, pedir al usuario que la describa. Luego aplicar el protocolo normal: checklist "Antes de empezar a trabajar", convenciones de código, verificación manual, documentación afectada en la misma tarea.
+
+> Estos guiones son la fuente ejecutable de las opciones del menú. No depender de `docs/prompts/`: solo se leen a pedido explícito.
+
+### Antes de empezar a trabajar
+
+1. Leer `AGENTS.md` (raíz y los locales relevantes de la carpeta tocada).
+2. Leer `README.md` y `docs/README.md`.
+3. Consultar las secciones "Limitaciones y problemas conocidos" y "Deuda técnica" de `AGENTS.md`.
+4. Servir el sitio por HTTP (obligatorio) y verificar según la tabla de "Verificación manual (para agentes)".
+5. Respetar las convenciones de estilo (JS/CSS/HTML) y las reglas de mantenimiento de `AGENTS.md`.
+6. No modificar datos personales del desarrollador; la firma de IA solo va en el footer de la portada.
 
 ---
 
@@ -60,7 +207,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    - Tema sin parpadeo: tras recarga dura, el fondo y el acento correctos se pintan antes del primer frame (lo aplica `js/theme-init.js`, único en todo el sitio).
    - En `juegos/`: las tarjetas del manifiesto se renderizan, las portadas cargan y los lanzamientos abren pestaña nueva con `rel="noopener noreferrer"`.
    - En `mis-estudios/`: el tema del portafolio se respeta y el buscador filtra, actualiza el conteo del placeholder y muestra/oculta `#sin-resultados`.
-4. **Registros en consola permitidos:** los avisos de `utils/storage.js` y `theme-init.js` cuando `localStorage` está bloqueado (modo privado) son esperables; cualquier otro error sí es un problema.
+4. **Registros en consola permitidos:** los avisos de `utils/storage.js` cuando `localStorage` está bloqueado (modo privado) son esperables; cualquier otro error sí es un problema.
 
 ---
 
@@ -241,6 +388,10 @@ juego, documentadas en `juegos/README.md`, y no deben borrarse al limpiar el inv
 
 ## Estilo de Código
 
+### Comentarios
+
+Prohibido escribir comentarios en el código (HTML, CSS y JS). Toda información sobre funciones, archivos o lógica extra vive en la documentación para agentes (`AGENTS.md` y `docs/`), nunca en el código. Excepciones únicas: pragmas técnicos funcionales (`@ts-expect-error`, `@ts-ignore`, `@ts-nocheck`, `eslint-disable`, shebang) y archivos de configuración/plantillas operativas. Cumplimiento por disciplina; el código existente puede contener comentarios heredados, pendientes de retirar.
+
 ### JavaScript
 
 - **Módulos ES6**: Usar `import`/`export` (type="module")
@@ -313,15 +464,16 @@ element?.addEventListener('click', () => {
 - **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`) que despliega un `.sidebar-submenu` con 3 elementos (`data-target`: experiencia, estudios, proyectos; en `mis-estudios/` son enlaces `../index.html#seccion` o `../../index.html#seccion` desde `mis-estudios/articulos/*.html`). El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible; si es una hija, abre el submenú y añade `.has-active` al `--group`. Al abrir el menú, `sidebar.controller.js` marca el fondo como `inert` (`.navbar`, `.main-layout`/`.main-content`, `.footer`, `.modal-dialog`) y lleva el foco al botón de cierre; al cerrarlo retira el `inert` y devuelve el foco al botón que lo abrió.
 - **Enlaces externos del menú**: debajo de "Inicio" hay `<a class="sidebar-item">` para "Mis estudios" (icono `menu_book`, → `./mis-estudios/index.html`), "Juegos" (icono `gamepad`, → `./juegos/index.html`) y "Programas" (icono `build`, → `./programas/index.html`; en esas subpáginas lleva `.active` y `aria-current="page"`, y las rutas se ajustan con `../` o `../../`). No llevan `data-target`, por lo que el scrollspy los ignora; `sidebar.controller.js` cierra el menú al pulsarlos.
 - **Grillas y manifiestos**: las tres secciones (`juegos/`, `mis-estudios/`, `programas/`) siguen el mismo patrón: `index.html` con buscador (y filtros en programas), un contenedor `<seccion>-grid` vacío en el HTML, un manifiesto `<seccion>/data/*.json` y un controlador en `js/controllers/<seccion>/` (`<seccion>.controller.js` + `fn<Seccion>.js`) que renderiza las tarjetas. El controlador se monta en `main.js` solo si existe su contenedor. Para agregar contenido nuevo: archivo por `slug` en la carpeta de la sección + entrada en el manifiesto + verificación.
-- **Enciclopedia** (`mis-estudios/`): comparte la preferencia de tema del portafolio (pre-pintado con `js/theme-init.js`). Sus páginas cargan también la barra, el menú lateral y `js/main.js`, de modo que el modal de Configuración funciona igual que en la portada. La grilla se renderiza desde `mis-estudios/data/articulos.json`; los artículos viven en `mis-estudios/articulos/<slug>.html`. El buscador es el `js/buscador.js` compartido, configurado por `data-attributes` del input.
+- **Enciclopedia** (`mis-estudios/`): comparte la preferencia de tema del portafolio (pre-pintado con `js/theme-init.js`). Sus páginas cargan también la barra, el menú lateral y `js/main.js`, de modo que el modal de Configuración funciona igual que en la portada. La grilla se renderiza desde `mis-estudios/data/articulos.json`; los artículos viven en `mis-estudios/articulos/<slug>.html`. El contenido es solo en español, pero las etiquetas de UI generadas en JS (p. ej. «Próximamente») se toman de `translations.page[lang]`. El buscador es el `js/buscador.js` compartido, configurado por `data-attributes` del input.
 - **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `juegos/juegos.css`. La grilla se renderiza desde `juegos/data/juegos.json` con `controllers/juegos/`. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
-- **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `programas/programas.css`. La grilla se renderiza desde `programas/data/herramientas.json` con `controllers/programas/` (chips de filtro incluidos, generados desde las categorías del manifiesto): las herramientas `published` se convierten en enlace (botón `Abrir` con `target="_blank"` + `rel="noopener noreferrer"`, patrón de la grilla de juegos) y las `wip` conservan el estado "Próximamente". Las herramientas propias viven en `programas/herramientas/<slug>.html`, son autocontenidas y siguen el patrón de `juegos/` (guía en `docs/prompts/crear-programas-web.md`). El buscador es el `js/buscador.js` compartido; comparte el tema mediante `js/theme-init.js`.
+- **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `programas/programas.css`. La grilla se renderiza desde `programas/data/herramientas.json` con `controllers/programas/` (chips de filtro incluidos, generados desde las categorías del manifiesto): las herramientas `published` se convierten en enlace (botón «Abrir» con `target="_blank"` + `rel="noopener noreferrer"`, patrón de la grilla de juegos) y las `wip` conservan el estado «Próximamente». El contenido del manifiesto es solo en español, pero las cadenas de UI de la grilla («Abrir», «Próximamente», «Filtrar por categoría», «Todas» y la nota de pestaña nueva) se toman de `translations.page[lang]`; no se traducen títulos ni descripciones. Las herramientas propias viven en `programas/herramientas/<slug>.html`, son autocontenidas y siguen el patrón de `juegos/` (guía en `docs/prompts/crear-programas-web.md`). El buscador es el `js/buscador.js` compartido; comparte el tema mediante `js/theme-init.js`.
 El dimensionado del escenario de los juegos de marco pequeño y de la plantilla (snake,
 space-invaders, neon-racer, plataformas, dungeon-crawler, tower-defense) sigue un criterio
-común: marco máximo de 900×900 px CSS (`--game-max`/`--game-chrome`) y buffer del canvas
-renderizado a la resolución visible (`renderScale`), documentado en `juegos/README.md`
-(sección "Dimensionado del canvas"). Las portadas muestran la portada del campo `covers`
-del manifiesto (ver Arquitectura CSS).
+común: marco máximo de 900×900 px CSS (`--game-max` y, según el juego, `--game-chrome` o
+el sistema de reservas `--reserve-*`) y buffer del canvas renderizado a la resolución
+visible (`renderScale`), documentado en `juegos/README.md` (sección "Dimensionado del
+canvas"). Las portadas muestran la portada del campo `covers` del manifiesto (ver
+Arquitectura CSS).
 - **Rutas de assets**: los iconos que se inyectan desde JS (modal de Configuración y modo) se resuelven con `utils/assets.js` (`import.meta.url` → `assets/icons/`), para que funcionen tanto desde la raíz (`index.html`) como desde subcarpetas (`mis-estudios/` y `juegos/`).
 - **Configuración**: el modal (`.modal-dialog`) se rellena desde `controllers/settings/settings.controller.js`; los controles de idioma/modo/color/fondo/dirección/velocidad y tamaño de fuente usan **delegación de eventos sobre `document`**, por lo que siguen funcionando aunque el contenido se genere dinámicamente en cada apertura. Las filas de "Dirección del degradado" y "Velocidad" son condicionales: se muestran/ocultan con `.is-hidden` según el tema de fondo elegido (dirección para temas con degradado; velocidad solo para `multicolor`). La lógica de aplicación vive en `controllers/sidebar/fnBackgroundTheme.js` (fondo, dirección y velocidad) y `fnFontScale.js`; los datos están centralizados en `utils/themeBackgrounds.js`. `applyTranslations()` (en `fnChangeLanguage.js`) actualiza el texto de `[data-lang]` y el `title`/`aria-label` de `[data-i18n-title]`/`[data-i18n-aria-label]`, de modo que los controles dinámicos cambian de idioma sin reabrir el modal.
 - **Pre-pintado del tema**: para evitar el parpadeo, el modo, el acento, el fondo y el tamaño de fuente se aplican antes del primer pintado. **Todas las páginas del portafolio y de sus secciones** (portada, `juegos/`, `mis-estudios/`, `programas/` y los artículos/herramientas con chrome compartido) usan el mismo `js/theme-init.js` (script clásico síncrono en `<head>`, con la profundidad de ruta que corresponda: `../js/` o `../../js/`). **Se exceptúan los juegos de `juegos/<slug>/` y `programas/herramientas/dj.html`**, autocontenidos, que gestionan su propio tema. Lee las mismas claves de `localStorage` que `utils/storage.js` (`theme-mode`, `theme-color-value`, `theme-background`, `gradient-direction`, `psychedelic-speed`, `font-scale`).
@@ -342,7 +494,7 @@ del manifiesto (ver Arquitectura CSS).
   no purgarlas sin decidir formalmente reducir la paleta.
 - **Temas de color**: el acento activo se expone como `--theme-color` (variante oscura) y `--theme-color-soft` (variante clara). `utils/themeColors.js` es la fuente única de las 6 opciones (campo `soft`); `controllers/sidebar/fnThemeColor.js` aplica esos valores y `js/theme-init.js` deriva la variante clara del valor guardado mediante `aclarar()`. Los tokens CSS `--<color>-claro` son entradas de la paleta con usos directos puntuales (p. ej. el escáner), no la fuente del acento de la UI.
 - **Footer**: `.footer` existe solo en la portada (`index.html`) y está compuesto por la sección de tecnologías (`.footer-tech`), la de agentes de IA (`.footer-ai`), los créditos de iconos y el bloque `.footer-bottom`. Usa el acento adaptativo `--footer-accent` (`--theme-color` en modo claro y `--theme-color-soft` en modo oscuro, mismo patrón que `--enc-accent` de la enciclopedia) para que los títulos y las firmas tengan contraste en ambos modos. Las listas usan `.footer-chips` con `.footer-chip`; las firmas de IA son `.footer-chip--ai` dentro de `.footer-chips--ai`.
-- **Temas de fondo (degradados)**: el fondo de página se controla con `--page-background`, `--page-gradient`, `--page-scrim`, `--page-background-size`, `--page-background-repeat` y `--page-animation`, consumidos por `.body-container`. `utils/themeBackgrounds.js` define los 10 temas (default + 8 colores, incluido violeta, + multicolor), las 7 direcciones (4 lineales, 2 radiales y color sólido) y las 3 velocidades. El degradado usa los tokens `--<color>-oscuro` y `--neutral-background-soft`, este último redefinido en modo oscuro. El modo `multicolor` usa un arcoíris animado con `@keyframes page-rainbow` (180s lento / 30s normal / 10s rápido) que se anula con `prefers-reduced-motion`. En modo claro, `html.has-page-theme` aplica un velo neutro (`--page-scrim`) y oscurece el texto secundario para mantener el contraste.
+- **Temas de fondo (degradados)**: el fondo de página se controla con `--page-background`, `--page-gradient`, `--page-scrim`, `--page-background-size`, `--page-background-repeat` y `--page-animation`, consumidos por `.body-container`. `utils/themeBackgrounds.js` define los 10 temas (default + 8 colores, incluido violeta, + multicolor), las 7 direcciones (4 lineales, 2 radiales y color sólido) y las 3 velocidades. El degradado usa los tokens `--<color>-oscuro` y `--neutral-background-soft`, este último redefinido en modo oscuro. El modo `multicolor` usa un arcoíris animado con `@keyframes page-rainbow` (180s lento / 30s normal / 10s rápido) que se anula con `prefers-reduced-motion`. La paleta del arcoíris está duplicada a propósito en `utils/themeBackgrounds.js` (`RAINBOW_GRADIENT`) y en `js/theme-init.js` (`ARCOIRIS`): este último es un script clásico que no puede importar módulos, así que cualquier cambio de paleta debe hacerse en ambos sitios. En modo claro, `html.has-page-theme` aplica un velo neutro (`--page-scrim`) y oscurece el texto secundario para mantener el contraste.
 - **Tamaño de fuente**: `html` usa `font-size: calc(16px * var(--font-scale, 1))`; el modal fija `--font-scale` en 0.85, 1 o 1.15, por lo que escala toda la tipografía basada en `rem` sin tocar los breakpoints en `px`.
 - **Modo oscuro**: clase `.dark` en `body.dark` (portafolio) y `html.dark` (subpáginas como `mis-estudios/`, que la fijan antes de pintar); la sección `:root` de `base.css` admite ambos selectores y `fnThemeMode.js` actualiza los dos nodos. Redefine las variables semánticas (`--color-background`, `--color-surface`, `--color-text`, …), por lo que los componentes se adaptan solos.
 - **Enciclopedia**: estilos en `mis-estudios/mis-estudios.css`; conserva los nombres de clase originales y usa el acento adaptativo `--enc-accent`.
@@ -350,6 +502,7 @@ del manifiesto (ver Arquitectura CSS).
 - **Programas**: `programas/programas.css` contiene la página, los chips `.filtro` y las tarjetas (`.programa-card*`) con tokens de `base.css` y el acento adaptativo `--prog-accent`.
 - **Modal**: `.modal-dialog` usa las variables semánticas y se adapta al modo oscuro automáticamente; el botón de cierre usa `.modal-close`; el bloqueo de scroll usa `.modal-open` en `<body>`. El `<dialog>` referencia `aria-labelledby="modal-title"`, por lo que cada contenido dinámico (Configuración y educación) debe generar un elemento con `id="modal-title"` en cada apertura.
 - **Salto al contenido**: el estilo del enlace `.saltar` vive en la sección de componentes de `stylesheets/base.css` y lo comparten la portada y la enciclopedia.
+- **Encabezado del navbar**: solo `index.html` mantiene `<h1>Pablo Diaz</h1>`. Las subpáginas (secciones, artículos y herramientas) usan `<span class="navbar-name">Pablo Diaz</span>` para dejar el único `<h1>` al título real de la página; `.navbar-name` comparte estilo con el `h1` del logo en `base.css`. `dj.html` es la excepción autocontenida.
 - **Transiciones**: variables `--transition-normal`, `--ease-in-out`; se anulan con `prefers-reduced-motion: reduce`.
 
 ### Internacionalización
@@ -446,6 +599,36 @@ Orden permanente para todo agente o modelo de IA que trabaje en este repositorio
 
 Los `AGENTS.md` locales de `juegos/` y `mis-estudios/` repiten esta orden: esas carpetas no admiten
 firmas, marcas ni menciones de modelos de IA.
+
+---
+
+## Protocolo de mantenimiento de documentación
+
+**Regla de oro:** todo cambio de código que afecte APIs, firmas o comportamientos documentados **actualiza la documentación afectada en la misma tarea**.
+
+### Qué tocar por tipo de cambio
+
+| Cambio de código | Docs a actualizar |
+| --- | --- |
+| Entrada nueva en un manifiesto (`juegos/data/juegos.json`, `mis-estudios/data/articulos.json`, `programas/data/herramientas.json`) | Archivo por `slug` en la carpeta de la sección + entrada en el manifiesto + verificación por HTTP |
+| Juego nuevo | `juegos/<slug>/index.html` + `README-juego.md`, entrada en `juegos/data/juegos.json`, canon visual en `juegos/README.md` |
+| Artículo nuevo | `mis-estudios/articulos/<slug>.html`, entrada en `mis-estudios/data/articulos.json` |
+| Herramienta nueva | `programas/herramientas/<slug>.html`, entrada en `programas/data/herramientas.json` |
+| Cambio en CSS compartido | `stylesheets/base.css` (una sola vez; las hojas de sección no duplican) |
+| Cambio en tema, acento o fondo | `js/utils/storage.js`, `js/theme-init.js`, `js/utils/themeBackgrounds.js` y el inventario de claves de `AGENTS.md` |
+| Cambio en internacionalización | `js/lang/translations.json` y las cadenas renderizadas en JS |
+| Cambio en sidebar, navbar o modal | `controllers/sidebar/*`, `stylesheets/base.css` |
+| Ítem de limitación o deuda corregido | Borrar el ítem de `AGENTS.md` (y del tracker si aplica) |
+| Funcionalidad nueva o eliminada (mayor) | `README.md` y `AGENTS.md` |
+
+### Reglas anti-regresión
+
+1. **Verificar contra el código antes de escribir** (`grep -n`/lectura directa), no reproducir docs ni escribir de memoria.
+2. **Anti-API-fantasma:** antes de documentar una firma o export, verificar que existe con `grep -n`.
+3. **Atribución con grep:** documentar consumos pantalla↔componente/servicio con `grep -rn <símbolo>`, nunca de memoria.
+4. **Re-contar claims numéricos** (artículos publicados, juegos, herramientas, claves de `localStorage`) antes de cada cierre.
+5. **Concisión:** integrar solo divergencias de valor.
+6. **Documentación solo para agentes IA, en español** (excepción: `README.md` para personas); sin plazos; prohibido commits/push.
 
 ---
 

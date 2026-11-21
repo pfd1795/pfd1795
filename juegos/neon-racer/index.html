@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0d0221" />
+  <meta name="description" content="Neon Racer: carrera arcade infinita en una autopista de tres carriles donde esquivas el tráfico a velocidad creciente.">
   <title>Neon Racer</title>
   <style>
     /* ================= Variables y base ================= */
@@ -687,6 +688,19 @@
         // al soltarla el input debe liberarse aunque el dialog siga abierto
         const dir = MOVE_KEYS[e.code];
         if (dir) game.input[dir] = false;
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && game.state === State.PLAYING) {
+          game.input.left = false;
+          game.input.right = false;
+          togglePause();
+        }
+      });
+      window.addEventListener('blur', () => {
+        game.input.left = false;
+        game.input.right = false;
+        if (game.state === State.PLAYING) togglePause();
       });
 
       /* ================= Entradas: táctiles / clic ================= */

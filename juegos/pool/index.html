@@ -2,8 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d0221">
+<meta name="description" content="Pixel Pool 8: billar arcade de física en vista superior; hunde 15 bolas con la bola 8 siempre al final.">
 <title>Pixel Pool 8 — Billar arcade</title>
 <style>
   :root{
@@ -57,6 +59,7 @@
   #mRestart{border-color:var(--neon-yellow);color:var(--neon-yellow)}
   #mExit{border-color:var(--neon-pink);color:var(--neon-pink)}
   #mClose{border-color:var(--muted);color:var(--muted)}
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 </style>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
@@ -86,6 +89,7 @@
   <span>RÉCORD<b id="hudBest">0</b></span>
   <span>BOLAS<b id="hudBalls">15</b></span>
   <span>TIROS<b id="hudShots">25</b></span>
+  <span id="sr-status" class="sr-only" role="status" aria-live="polite"></span>
 </div>
 
 <main id="stage">
@@ -135,6 +139,7 @@
 'use strict';
 /* ===================== 1. CONSTANTES Y UTILIDADES ===================== */
 const $=s=>document.querySelector(s);
+const srStatus=$('#sr-status');
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const dist=(x1,y1,x2,y2)=>Math.hypot(x2-x1,y2-y1);
 const TAU=Math.PI*2;
@@ -358,6 +363,7 @@ function finish(won,reason){
   game.overReason=reason||'';
   if(game.score>game.best){game.best=game.score;game.newBest=true;store.save(game.best);}
   game.state=won?'victory':'gameover';syncBody();updateHUD();
+  srStatus.textContent=won?('¡Victoria! Has embolsado las 15 bolas con '+game.shots+' tiros restantes.'):('Game over. '+(reason?reason+'. ':'')+'Puntuación: '+game.score+'.');
 }
 function startGame(){
   ensureAudio();rack();

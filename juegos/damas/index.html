@@ -2,9 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0d0221">
 <link rel="icon" href="data:,">
+<meta name="description" content="Damas Arcade: juego de tablero con reglas españolas, capturas encadenadas, IA de tres niveles y modo para dos jugadores.">
 <title>Damas Arcade</title>
 <style>
 /* ============================================================
@@ -184,7 +185,7 @@ dialog p b{color:var(--text)}
   <span>Modo: <b id="hudMode">—</b></span>
   <span class="cap" id="capW" title="Piezas capturadas por Blancas"></span>
   <span class="cap" id="capB" title="Piezas capturadas por Negras"></span>
-  <span id="hudStatus"></span>
+  <span id="hudStatus" role="status" aria-live="polite"></span>
   <span class="spacer"></span>
   <span id="hudRecord">V 0 · D 0 · E 0</span>
   <button id="btnUndo" disabled>↶ Deshacer</button>
@@ -772,6 +773,7 @@ function endGame(end){
     ? ('Récord: V '+d.wins+' · D '+d.losses+' · E '+d.draws+' · Racha '+d.streak+' (mejor '+d.bestStreak+')')
     : 'Las partidas amistosas no alteran el récord';
   showPanel(panelOver);updateHUD();
+  setHudStatus(title+(reason?' · '+reason:''));
 }
 
 /* ---------- Movimientos ---------- */

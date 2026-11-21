@@ -7,16 +7,17 @@
    description, keywords, category, status). Las URLs de los artículos no
    van en el manifiesto: se construyen como `articulos/<slug>.html`.
 
-   El contenido es solo en español (regla de la sección), así que el render
-   usa el idioma actual con fallback a `es`. Solo se muestran las entradas
-   con slug válido; un error al editar el manifiesto no rompe la página.
+   El contenido del manifiesto es solo en español (regla de la sección), pero
+   la etiqueta de UI `comingSoon` se toma de `translations.page[lang]`. Solo se
+   muestran las entradas con slug válido; un error al editar el manifiesto no
+   rompe la página.
    ========================================================================== */
 
 import data from '../../../mis-estudios/data/articulos.json' with { type: 'json' };
+import translations from '../../lang/translations.json' with { type: 'json' };
 import { currentLanguage } from '../../lang/translations.config.js';
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
-const ESTADO_WIP = 'Próximamente';
 
 function getText(value, lang) {
   if (typeof value === 'string') return value;
@@ -46,6 +47,7 @@ function Card(item, lang) {
   const title = getText(item.title, lang);
   const description = getText(item.description, lang);
   const keywords = item.keywords ?? '';
+  const comingSoon = translations.page[lang]?.comingSoon ?? translations.page.es.comingSoon;
   const li = document.createElement('li');
 
   if (item.status === 'published') {
@@ -68,7 +70,7 @@ function Card(item, lang) {
            data-categoria="${esc(item.category ?? '')}">
         <h3 class="estudio-card__titulo">${esc(title)}</h3>
         <p class="estudio-card__descripcion">${esc(description)}</p>
-        <p class="estudio-card__estado">${ESTADO_WIP}</p>
+        <p class="estudio-card__estado">${comingSoon}</p>
       </div>
     `;
   }

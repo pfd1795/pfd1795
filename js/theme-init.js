@@ -57,12 +57,92 @@
     return Boolean(valor) && Boolean(window.CSS) && CSS.supports('color', valor);
   }
 
-  /* Deriva la variante clara del acento a partir de la oscura guardada. */
+  function canalRgb(valor) {
+    var texto = String(valor).trim();
+    var numero = parseFloat(texto);
+    var canal = texto.indexOf('%') !== -1 ? numero * 2.55 : numero;
+
+    return Math.min(255, Math.max(0, isNaN(canal) ? 0 : canal));
+  }
+
+  /* Convierte RGB a HSL y devuelve tono y saturación; la luminosidad se fija
+     después en 70% para obtener la variante clara del acento. */
+  function rgbAHsl(r, g, b) {
+    var rojo = r / 255;
+    var verde = g / 255;
+    var azul = b / 255;
+    var max = Math.max(rojo, verde, azul);
+    var min = Math.min(rojo, verde, azul);
+    var delta = max - min;
+    var tono = 0;
+    var saturacion = 0;
+
+    if (delta !== 0) {
+      saturacion = delta / (1 - Math.abs(max + min - 1));
+
+      if (max === rojo) {
+        tono = ((verde - azul) / delta) % 6;
+      } else if (max === verde) {
+        tono = (azul - rojo) / delta + 2;
+      } else {
+        tono = (rojo - verde) / delta + 4;
+      }
+
+      tono = (tono * 60 + 360) % 360;
+    }
+
+    return { h: Math.round(tono), s: Math.round(saturacion * 100) };
+  }
+
+  function hslClaro(tono, saturacion) {
+    var h = ((Number(tono) % 360) + 360) % 360;
+    var s = Math.min(100, Math.max(0, Number(saturacion)));
+
+    return 'hsl(' + h + ' ' + s + '% 70%)';
+  }
+
+  /* Deriva la variante clara del acento guardado. Acepta hsl (con comas,
+     espacios o alfa), hex y rgb/rgba; devuelve null si no puede derivarla
+     para conservar el valor por defecto de base.css. */
   function aclarar(valor) {
-    return valor.replace(
-      /hsl\(\s*([\d.]+)\s+([\d.]+)%\s+[\d.]+%\s*\)/i,
-      'hsl($1 $2% 70%)'
-    );
+    var texto = String(valor == null ? '' : valor).trim();
+    var match = texto.match(/^hsla?\(\s*(-?[\d.]+)(?:deg)?\s*(?:,\s*|\s+)(-?[\d.]+)%\s*(?:,\s*|\s+)(-?[\d.]+)%(?:\s*(?:,|\/)\s*[\d.]+%?)?\s*\)$/i);
+
+    if (match) {
+      return hslClaro(match[1], match[2]);
+    }
+
+    match = texto.match(/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i);
+    if (match) {
+      var hex = match[1];
+
+      if (hex.length <= 4) {
+        hex = hex.slice(0, 3).replace(/./g, function (c) { return c + c; });
+      } else {
+        hex = hex.slice(0, 6);
+      }
+
+      var desdeHex = rgbAHsl(
+        parseInt(hex.slice(0, 2), 16),
+        parseInt(hex.slice(2, 4), 16),
+        parseInt(hex.slice(4, 6), 16)
+      );
+
+      return hslClaro(desdeHex.h, desdeHex.s);
+    }
+
+    match = texto.match(/^rgba?\(\s*([-\d.%]+)\s*(?:,\s*|\s+)([-\d.%]+)\s*(?:,\s*|\s+)([-\d.%]+)(?:\s*(?:,|\/)\s*[\d.]+%?)?\s*\)$/i);
+    if (match) {
+      var desdeRgb = rgbAHsl(
+        canalRgb(match[1]),
+        canalRgb(match[2]),
+        canalRgb(match[3])
+      );
+
+      return hslClaro(desdeRgb.h, desdeRgb.s);
+    }
+
+    return null;
   }
 
   function aplicarModo() {
@@ -86,9 +166,10 @@
 
     var acentoClaro = aclarar(acento);
 
-    if (acentoClaro !== acento && esColorValido(acentoClaro)) {
+    if (acentoClaro !== null && esColorValido(acentoClaro)) {
       raiz.style.setProperty('--theme-color-soft', acentoClaro);
     } else {
+      /* Formato no reconocido: se conserva el default de base.css. */
       raiz.style.removeProperty('--theme-color-soft');
     }
   }

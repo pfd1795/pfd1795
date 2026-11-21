@@ -1034,6 +1034,9 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   .copy-notification.show {
     opacity: 1;
   }
+  .copy-notification--error {
+    background-color: var(--red-oscuro);
+  }
 }
 .divider {
   border: none;
@@ -1079,7 +1082,8 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
     letter-spacing: var(--tracking-tight);
     line-height: var(--leading-tight);
     transition: color var(--transition-fast) var(--ease-in-out);
-    h1 {
+    h1,
+    .navbar-name {
       font-size: var(--text-h2);
       font-weight: var(--font-bold);
     }
@@ -1090,7 +1094,8 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
       letter-spacing: var(--tracking-wide);
       text-transform: uppercase;
     }
-    &:hover h1 {
+    &:hover h1,
+    &:hover .navbar-name {
       color: var(--theme-color);
     }
   }

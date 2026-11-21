@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d0221">
+<meta name="description" content="Pong Neón: arcade deportivo clásico contra la CPU; devuelve la pelota y llega primero a 7 puntos.">
 <title>Pong Neón</title>
 <style>
   :root {
@@ -63,6 +65,7 @@
   .controls h3 { margin:0 0 5px; color:var(--neon-green); font-size:13px; letter-spacing:2px; }
   .controls p { margin:5px 0; }
   .controls strong { color:var(--text); }
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 </style>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
@@ -87,6 +90,7 @@
   <span>JUGADOR <b id="player-score">0</b></span>
   <span>RÉCORD <b id="best-score">0</b></span>
   <span>CPU <b id="cpu-score">0</b></span>
+  <span id="sr-status" class="sr-only" role="status" aria-live="polite"></span>
 </div>
 
 <main id="stage"><canvas id="game" aria-label="Juego Pong"></canvas></main>
@@ -130,6 +134,7 @@ const MAX_BALL_SPEED = 690;
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const stage = document.getElementById('stage');
+const srStatus = document.getElementById('sr-status');
 
 let state = 'start'; // start, playing, paused, gameover, victory
 let playerScore = 0;
@@ -241,10 +246,12 @@ function pointTo(scorer) {
   updateHud();
   if (playerScore >= WIN_SCORE) {
     state = 'victory';
+    srStatus.textContent = '¡Victoria! Has ganado '+playerScore+' a '+cpuScore+'.';
     return;
   }
   if (cpuScore >= WIN_SCORE) {
     state = 'gameover';
+    srStatus.textContent = 'Game over. La CPU ganó '+cpuScore+' a '+playerScore+'.';
     return;
   }
   resetBall(serveDirection);

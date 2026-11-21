@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d0221">
+<meta name="description" content="Piedra, Papel o Tijeras: juego casual arcade contra la CPU con marcador; gana quien llega primero a 5 puntos.">
 <title>Piedra, Papel o Tijeras — Arcade Neón</title>
 <style>
   :root {
@@ -41,7 +43,7 @@
   }
   #hud b { color:var(--text); font-size:15px; margin-left:5px; }
   main { flex:1; min-height:0; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:4px 8px 12px; }
-  canvas { display:block; border-radius:14px; touch-action:manipulation; }
+  canvas { display:block; border-radius:14px; touch-action:none; }
   #choices {
     display:flex; justify-content:center; gap:clamp(8px,3vw,18px);
     width:min(96vw,550px);

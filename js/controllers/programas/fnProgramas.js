@@ -9,18 +9,18 @@
    `herramientas/<slug>.html` y abren en pestaña nueva.
 
    También genera los chips de filtro (.filtro) a partir de las categorías.
-   El contenido es solo en español (regla de la sección), así que el render
-   usa el idioma actual con fallback a `es`. Solo se muestran las entradas
-   con slug válido; un error al editar el manifiesto no rompe la página.
+   El contenido del manifiesto es solo en español (regla de la sección), pero
+   las etiquetas de UI se toman de `translations.page[lang]`. Solo se muestran
+   las entradas con slug válido; un error al editar el manifiesto no rompe la
+   página.
    ========================================================================== */
 
 import data from '../../../programas/data/herramientas.json' with { type: 'json' };
+import translations from '../../lang/translations.json' with { type: 'json' };
 import { currentLanguage } from '../../lang/translations.config.js';
 import { ICONS_URL } from '../../utils/assets.js';
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
-const ESTADO_WIP = 'Próximamente';
-const NOTA_PESTANA = 'Se abre en una pestaña nueva';
 
 function getText(value, lang) {
   if (typeof value === 'string') return value;
@@ -46,7 +46,7 @@ function filtrarItemsValidos() {
   });
 }
 
-function Card(item, lang, etiquetaCategoria) {
+function Card(item, lang, texts, etiquetaCategoria) {
   const title = getText(item.title, lang);
   const description = getText(item.description, lang);
   const keywords = item.keywords ?? '';
@@ -80,26 +80,26 @@ function Card(item, lang, etiquetaCategoria) {
     ${item.status === 'published'
       ? `
         <a class="btn programa-card__abrir" href="./herramientas/${esc(item.slug)}.html" target="_blank" rel="noopener noreferrer"
-          title="${esc(title)} — ${NOTA_PESTANA}">
-          <span>Abrir</span>
+          title="${esc(title)} — ${esc(texts.openInNewTab)}">
+          <span>${esc(texts.openTool)}</span>
           <img src="${ICONS_URL}arrow_right.svg" alt="" />
         </a>
-        <p class="programa-card__nota">${NOTA_PESTANA}</p>
+        <p class="programa-card__nota">${esc(texts.openInNewTab)}</p>
       `
-      : `<p class="programa-card__estado">${ESTADO_WIP}</p>`}
+      : `<p class="programa-card__estado">${esc(texts.comingSoon)}</p>`}
   `;
 
   return div;
 }
 
-function ChipsFiltro(categorias, lang) {
+function ChipsFiltro(categorias, lang, texts) {
   const chips = document.createElement('div');
 
   chips.className = 'filtros';
   chips.setAttribute('role', 'group');
-  chips.setAttribute('aria-label', 'Filtrar por categoría');
+  chips.setAttribute('aria-label', texts.filterByCategory);
   chips.innerHTML = `
-    <button class="filtro active" type="button" data-categoria="todas" aria-pressed="true">Todas</button>
+    <button class="filtro active" type="button" data-categoria="todas" aria-pressed="true">${esc(texts.allCategories)}</button>
     ${categorias.map((categoria) => `
       <button class="filtro" type="button" data-categoria="${esc(categoria.id)}" aria-pressed="false">${esc(getText(categoria.label, lang))}</button>
     `).join('')}
@@ -108,7 +108,7 @@ function ChipsFiltro(categorias, lang) {
   return chips;
 }
 
-function Categoria(categoria, items, lang) {
+function Categoria(categoria, items, lang, texts) {
   const label = getText(categoria.label, lang);
   const section = document.createElement('section');
 
@@ -128,7 +128,7 @@ function Categoria(categoria, items, lang) {
     .forEach((item) => {
       const li = document.createElement('li');
 
-      li.appendChild(Card(item, lang, label));
+      li.appendChild(Card(item, lang, texts, label));
       lista.appendChild(li);
     });
 
@@ -141,10 +141,11 @@ export function GridProgramas() {
   if (!grid) return;
 
   const lang = currentLanguage;
+  const texts = translations.page[lang] ?? translations.page.es;
   const items = filtrarItemsValidos();
   const categorias = data.categories ?? [];
 
   grid.innerHTML = '';
-  grid.appendChild(ChipsFiltro(categorias, lang));
-  categorias.forEach((categoria) => grid.appendChild(Categoria(categoria, items, lang)));
+  grid.appendChild(ChipsFiltro(categorias, lang, texts));
+  categorias.forEach((categoria) => grid.appendChild(Categoria(categoria, items, lang, texts)));
 }

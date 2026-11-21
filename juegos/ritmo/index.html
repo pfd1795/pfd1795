@@ -2,8 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d0221">
+<meta name="description" content="Pixel Riff: juego de ritmo y música con chiptune generado en tiempo real y tres canciones de dominio público.">
 <title>Pixel Riff — Juego de ritmo</title>
 <style>
   :root{
@@ -67,6 +69,7 @@
   #mRestart{border-color:var(--neon-yellow);color:var(--neon-yellow)}
   #mExit{border-color:var(--neon-pink);color:var(--neon-pink)}
   #mClose{border-color:var(--muted);color:var(--muted)}
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 </style>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
@@ -97,6 +100,7 @@
   <span>MULTI<b id="hudMult">x1</b></span>
   <span>PRECISIÓN<b id="hudAcc">100%</b></span>
   <span>RÉCORD<b id="hudBest">0</b></span>
+  <span id="sr-status" class="sr-only" role="status" aria-live="polite"></span>
 </div>
 
 <main id="stage">
@@ -146,6 +150,7 @@
 'use strict';
 /* ===================== 1. CONSTANTES Y UTILIDADES ===================== */
 const $=s=>document.querySelector(s);
+const srStatus=$('#sr-status');
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const W=480,H=720,LANES=4,LANE_W=W/LANES;
 const HIT_Y=600,NOTE_H=30,APPROACH=1.8,SPEED=(HIT_Y+60)/APPROACH;
@@ -413,6 +418,7 @@ function finishSong(){
     game.newRecord=true;game.record=game.score;
   }else{game.newRecord=false;game.record=prev.score;}
   updateHUD();
+  srStatus.textContent='Canción terminada. Precisión '+Math.round(game.acc)+'%, rango '+game.rank+'.';
 }
 
 /* ===================== 8. FLUJO DE PANTALLAS ===================== */

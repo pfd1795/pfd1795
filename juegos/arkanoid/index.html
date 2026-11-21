@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d0221">
+<meta name="description" content="Rompebloques Neón: arcade de habilidad con 5 niveles, ladrillos plateados y dorados y cápsulas de poder.">
 <title>Rompebloques Neón — Arkanoid</title>
 <style>
 :root{--bg:#0d0221;--panel:#1a1033;--line:rgba(185,103,255,.4);--green:#39ff14;--pink:#ff2a6d;--cyan:#05d9e8;--purple:#b967ff;--text:#eaeaea;--muted:#9b8fb8}
@@ -32,6 +34,7 @@ dialog::backdrop{background:rgba(0,0,0,.72)}
 .ctrl-block h3{color:var(--green);font-size:13px;letter-spacing:2px;margin-bottom:6px}
 .ctrl-block p{color:var(--muted);margin-bottom:6px}
 .ctrl-block strong{color:var(--text)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 </style>
 <!-- Ajusta o elimina estas rutas si no usas la estructura PWA original -->
 <link rel="manifest" href="../../manifest.json">
@@ -48,6 +51,7 @@ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.ser
 <div id="hud">
   <span>PUNTOS<b id="hud-score">0</b></span><span>RÉCORD<b id="hud-record">0</b></span>
   <span>NIVEL<b id="hud-level">1</b></span><span>VIDAS<b id="hud-lives">♥♥♥</b></span>
+  <span id="sr-status" class="sr-only" role="status" aria-live="polite"></span>
 </div>
 <main id="stage"><canvas id="game" aria-label="Escenario de Arkanoid"></canvas></main>
 
@@ -136,6 +140,7 @@ function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify({record,b
 
 /* ---------- Estado ---------- */
 const canvas=$('game'),ctx=canvas.getContext('2d');
+const srStatus=$('sr-status');
 let state='start'; // start | playing | paused | over | victory
 let score=0,level=1,lives=LIVES_START;
 let bricks=[],destructible=0,balls=[],capsules=[],bullets=[],particles=[],popups=[];
@@ -171,12 +176,13 @@ function loadLevel(n){
   capsules=[];bullets=[];particles=[];popups=[];
   slowT=0;clearT=0;introT=1.4;
   paddle.expandT=paddle.shrinkT=paddle.laserT=0;paddle.w=PADDLE_W;paddle.x=GW/2-PADDLE_W/2;
-  spawnStuckBall();updateHUD();
+  spawnStuckBall();updateHUD();srStatus.textContent='Nivel '+n+'.';
 }
 function startGame(){score=0;lives=LIVES_START;loadLevel(1);state='playing';updateHUD();}
 const pauseGame=()=>{if(state==='playing')state='paused';};
 const resumeGame=()=>{if(state==='paused')state='playing';};
-function endGame(s){state=s;lockT=RESTART_LOCK;saveStore();updateHUD();beep(s==='over'?110:660,.5,'sawtooth');}
+function endGame(s){state=s;lockT=RESTART_LOCK;saveStore();updateHUD();beep(s==='over'?110:660,.5,'sawtooth');
+  srStatus.textContent=s==='victory'?('¡Victoria! Has superado los '+LEVELS.length+' niveles con '+score+' puntos.'):('Game over. Puntuación: '+score+' (récord '+record+').');}
 
 /* ---------- HUD ---------- */
 function addScore(p){score+=p;if(score>record)record=score;updateHUD();}
@@ -525,6 +531,7 @@ window.addEventListener('pointercancel',()=>{drag=null;});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
 const optionsDialog=$('options');
+let modalWasPlaying=false;
 window.addEventListener('keydown',e=>{
   if(optionsDialog.open)return;
   const k=e.key;
@@ -550,9 +557,10 @@ window.addEventListener('blur',()=>{keys.left=keys.right=false;pauseGame();});
 const sfxBtn=$('btn-sfx');
 const syncSfx=()=>{sfxBtn.textContent=sfxOn?'ACTIVADOS':'SILENCIO';};
 sfxBtn.addEventListener('click',()=>{sfxOn=!sfxOn;syncSfx();saveStore();beep(600,.08);});
-$('btn-options').addEventListener('click',function(){optionsDialog.showModal();this.blur();pauseGame();});
+$('btn-options').addEventListener('click',function(){modalWasPlaying=state==='playing';optionsDialog.showModal();this.blur();pauseGame();});
 $('btn-close').addEventListener('click',function(){optionsDialog.close();this.blur();});
 optionsDialog.addEventListener('click',e=>{if(e.target===optionsDialog)optionsDialog.close();});
+optionsDialog.addEventListener('close',()=>{if(modalWasPlaying&&state==='paused')resumeGame();modalWasPlaying=false;});
 
 document.addEventListener('visibilitychange',()=>{if(document.hidden){pauseGame();saveStore();}});
 window.addEventListener('beforeunload',saveStore);

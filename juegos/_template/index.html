@@ -3,8 +3,9 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0d0221" />
+  <meta name="description" content="Nombre del juego: arcade en Canvas 2D con estética neón, HUD, controles táctiles y récord persistente.">
   <title>Nombre del juego</title>
   <style>
     /* ================= Variables y base ================= */
@@ -391,8 +392,11 @@
       });
 
       /* ================= Opciones ================= */
+      let modalWasPlaying = false;
+
       function openModal() {
-        if (game.state === STATE.PLAYING) togglePause(); // abrir opciones pausa la partida
+        modalWasPlaying = game.state === STATE.PLAYING;
+        if (modalWasPlaying) togglePause(); // abrir opciones pausa la partida
         optionsDialog.showModal();
       }
 
@@ -402,6 +406,10 @@
       document.getElementById('btn-close-options').addEventListener('click', closeModal);
       optionsDialog.addEventListener('click', (event) => {
         if (event.target === optionsDialog) closeModal(); // clic en el backdrop
+      });
+      optionsDialog.addEventListener('close', () => {
+        if (modalWasPlaying && game.state === STATE.PAUSED) togglePause();
+        modalWasPlaying = false;
       });
 
       /* ================= Actualización ================= */

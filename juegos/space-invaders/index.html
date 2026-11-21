@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0d0221" />
+  <meta name="description" content="Space Invaders Retro: shooter arcade con oleadas infinitas de aliens, búnkeres destructibles y dificultad progresiva.">
   <title>Space Invaders Retro</title>
   <style>
     /* ================= Variables y base ================= */
@@ -945,6 +946,21 @@
         if (e.code === 'Space') game.input.fire = false;
         const dir = MOVE_KEYS[e.code];
         if (dir) game.input[dir] = false;
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && game.state === State.PLAYING) {
+          game.input.left = false;
+          game.input.right = false;
+          game.input.fire = false;
+          togglePause();
+        }
+      });
+      window.addEventListener('blur', () => {
+        game.input.left = false;
+        game.input.right = false;
+        game.input.fire = false;
+        if (game.state === State.PLAYING) togglePause();
       });
 
       /* ================= Entradas: táctiles / clic ================= */

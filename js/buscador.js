@@ -55,9 +55,32 @@
 
     var categoriaActiva = 'todas';
 
+    /* La grilla se llena desde el manifiesto después de DOMContentLoaded. Se
+       observa solo su contenedor, derivado del prefijo del selector de
+       tarjetas, para no reaccionar a cambios ajenos a la grilla. */
+    function contenedorDeTarjetas() {
+      var raiz = campo.closest('main') || document.documentElement;
+      var prefijo = selectorTarjetas.replace(/^\./, '').replace(/-card$/, '');
+      var grids = Array.prototype.slice.call(raiz.querySelectorAll('[class$="-grid"]'));
+
+      return grids.find(function (grid) {
+        return grid.className.indexOf(prefijo) !== -1;
+      }) || raiz;
+    }
+
     function filtrar() {
       var consulta = normalizar(campo.value);
       var tarjetas = Array.prototype.slice.call(document.querySelectorAll(selectorTarjetas));
+
+      /* Grilla aún vacía: es carga del manifiesto, no "sin resultados".
+         No se toca el placeholder para no mostrar un "0 de 0" transitorio. */
+      if (tarjetas.length === 0) {
+        if (mensaje) {
+          mensaje.hidden = true;
+        }
+        return;
+      }
+
       var visibles = 0;
 
       tarjetas.forEach(function (tarjeta) {
@@ -139,7 +162,7 @@
           clearTimeout(debounceTimer);
         }
         debounceTimer = setTimeout(filtrar, 50);
-      }).observe(document.body, { childList: true, subtree: true });
+      }).observe(contenedorDeTarjetas(), { childList: true, subtree: true });
     }
 
     filtrar();

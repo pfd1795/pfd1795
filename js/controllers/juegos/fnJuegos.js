@@ -79,6 +79,17 @@ function CardGame(game, lang, texts) {
   return article;
 }
 
+/* La introducción toma el número de juegos del manifiesto para que la cifra
+   nunca quede desactualizada al publicar una entrada nueva. */
+function updateGamesIntro(lang, count) {
+  const intro = document.querySelector('.juegos-intro');
+
+  if (!intro) return;
+
+  const plantilla = translations.page[lang]?.gamesIntro ?? translations.page.es.gamesIntro;
+  intro.textContent = plantilla.replace('{count}', String(count));
+}
+
 export function GridGames() {
   const grid = document.querySelector('.juegos-grid');
 
@@ -88,6 +99,7 @@ export function GridGames() {
   const texts = translations.page[lang];
   const games = getPublishedGames();
 
+  updateGamesIntro(lang, games.length);
   grid.innerHTML = '';
 
   if (!games.length) {

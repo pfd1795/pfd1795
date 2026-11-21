@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0d0221" />
+  <meta name="description" content="Neon Ninja: plataformas 2D de acción run 'n gun con tres niveles, pinchos, enemigos y shurikens.">
   <title>Neon Ninja</title>
   <style>
     /* ================= Variables y base ================= */
@@ -1084,6 +1085,23 @@
         if (FIRE_KEYS.includes(e.code)) game.input.fire = false;
         const dir = MOVE_KEYS[e.code];
         if (dir) game.input[dir] = false;
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && game.state === State.PLAYING) {
+          game.input.left = false;
+          game.input.right = false;
+          game.input.jumpHeld = false;
+          game.input.fire = false;
+          togglePause();
+        }
+      });
+      window.addEventListener('blur', () => {
+        game.input.left = false;
+        game.input.right = false;
+        game.input.jumpHeld = false;
+        game.input.fire = false;
+        if (game.state === State.PLAYING) togglePause();
       });
 
       /* ================= Entradas: táctiles / clic ================= */

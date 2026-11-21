@@ -48,4 +48,37 @@ export default function sectionNav() {
   );
 
   sections.forEach((section) => observer.observe(section));
+
+  /* Respaldo para los huecos de la banda del observer (secciones cortas,
+     footer): al hacer scroll se marca la última sección que ya cruzó el
+     punto medio del viewport. Reutiliza setActive para conservar la apertura
+     del submenú y .has-active. */
+  const marcarPorPosicion = () => {
+    const puntoMedio = window.innerHeight / 2;
+    let candidata = null;
+
+    sections.forEach((section) => {
+      if (section.getBoundingClientRect().top <= puntoMedio) {
+        candidata = section;
+      }
+    });
+
+    if (candidata) {
+      setActive(candidata.id);
+    }
+  };
+
+  let pendiente = false;
+
+  window.addEventListener("scroll", () => {
+    if (pendiente) return;
+
+    pendiente = true;
+    requestAnimationFrame(() => {
+      pendiente = false;
+      marcarPorPosicion();
+    });
+  }, { passive: true });
+
+  marcarPorPosicion();
 }

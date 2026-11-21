@@ -207,7 +207,7 @@
 
   <nav class="navbar">
     <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
-      <h1>Pablo Diaz</h1>
+      <span class="navbar-name">Pablo Diaz</span>
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
@@ -306,6 +306,8 @@
               <label><input type="checkbox" class="favicon-gen__casilla" value="512" checked> 512 × 512</label>
             </div>
           </fieldset>
+
+          <p class="favicon-gen__nota">El snippet usa rutas relativas (<code>./</code>): guarda los PNG en la misma carpeta del HTML donde lo pegues. Así funciona también si el sitio se publica en una subruta (p. ej. <code>/pfd1795/</code>).</p>
 
           <button type="submit" class="btn favicon-gen__boton">Generar favicon</button>
         </form>
@@ -506,8 +508,8 @@
 
       const construirSnippet = (tamanos) => tamanos
         .map((tamano) => tamano === 180
-          ? '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">'
-          : `<link rel="icon" type="image/png" sizes="${tamano}x${tamano}" href="/${nombreArchivo(tamano)}">`)
+          ? '<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">'
+          : `<link rel="icon" type="image/png" sizes="${tamano}x${tamano}" href="./${nombreArchivo(tamano)}">`)
         .join('\n');
 
       const construirVista = (tamano, opciones) => {
@@ -587,7 +589,7 @@
 
         const tituloSnippet = document.createElement('p');
         tituloSnippet.className = 'favicon-gen__nota';
-        tituloSnippet.textContent = 'Snippet para pegar dentro de <head> (las rutas asumen los PNG en la raíz del sitio):';
+        tituloSnippet.textContent = 'Snippet para pegar dentro de <head> (rutas relativas "./": coloca los PNG junto al HTML que usa el snippet; válido también en subrutas como /pfd1795/):';
         resultado.appendChild(tituloSnippet);
 
         const snippet = document.createElement('pre');

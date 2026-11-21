@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0d0221">
+<meta name="description" content="Dulce Explosión: puzzle match-3 con caramelos especiales, combos en cascada y niveles infinitos de dificultad creciente.">
 <title>Dulce Explosión — Match 3</title>
 <style>
 :root{--bg:#0d0221;--panel:#1a1033;--line:rgba(185,103,255,.4);--green:#39ff14;--pink:#ff2a6d;--cyan:#05d9e8;--purple:#b967ff;--text:#eaeaea;--muted:#9b8fb8}
@@ -36,6 +37,7 @@ dialog::backdrop{background:rgba(0,0,0,.72)}
 .ctrl-block h3{color:var(--green);font-size:13px;letter-spacing:2px;margin-bottom:6px}
 .ctrl-block p{color:var(--muted);margin-bottom:6px}
 .ctrl-block strong{color:var(--text)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 </style>
 <!-- Ajusta o elimina estas rutas si no usas la estructura PWA original -->
 <link rel="manifest" href="../../manifest.json">
@@ -53,6 +55,7 @@ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.ser
   <span>PUNTOS<b id="hud-score">0</b><span id="hud-target" class="muted">/1500</span></span>
   <span>RÉCORD<b id="hud-record">0</b></span><span>NIVEL<b id="hud-level">1</b></span>
   <span>MOVIMIENTOS<b id="hud-moves">20</b></span>
+  <span id="sr-status" class="sr-only" role="status" aria-live="polite"></span>
 </div>
 <div id="progress"><div id="progress-fill"></div></div>
 <main id="stage"><canvas id="game" aria-label="Tablero del juego de caramelos"></canvas></main>
@@ -144,6 +147,7 @@ function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify({record,b
 
 /* ---------- Estado ---------- */
 const canvas=$('game'),ctx=canvas.getContext('2d');
+const srStatus=$('sr-status');
 let state='start';   // start | playing | paused | over | victory
 let phase='idle';    // idle | swap | revert | clear | fall | shuffle
 let needsRealign=false,grid=[];
@@ -433,12 +437,13 @@ function resetRound(){
   tweens.length=0;view.boardAlpha=1;needsRealign=false;
   particles.length=0;popups.length=0;selected=null;hint=null;drag=null;currentClear=null;combo=1;score=0;
   moves=MOVES_PER_LEVEL;target=targetForLevel(level);
-  initBoard();state='playing';phase='idle';idleMs=0;updateHUD();
+  initBoard();state='playing';phase='idle';idleMs=0;updateHUD();srStatus.textContent='Nivel '+level+'.';
 }
 function startGame(){level=1;totalScore=0;resetRound();}
 function nextLevel(){totalScore+=score;level++;bestLevel=Math.max(bestLevel,level);saveStore();resetRound();}
 const restartLevel=()=>resetRound();
-function endState(s){state=s;phase='idle';lockT=RESTART_LOCK;saveStore();updateHUD();beep(s==='victory'?880:120,.4,s==='victory'?'triangle':'sawtooth');}
+function endState(s){state=s;phase='idle';lockT=RESTART_LOCK;saveStore();updateHUD();beep(s==='victory'?880:120,.4,s==='victory'?'triangle':'sawtooth');
+  srStatus.textContent=s==='victory'?('¡Victoria! Nivel '+level+' completado con '+totalScore+' puntos.'):('Game over. Puntuación total: '+(totalScore+score)+' (récord '+record+').');}
 const doVictory=()=>endState('victory'),doGameOver=()=>endState('over');
 function goMenu(){tweens.length=0;view.boardAlpha=1;needsRealign=false;state='start';phase='idle';selected=null;hint=null;drag=null;updateHUD();}
 const pauseGame=()=>{if(state==='playing')state='paused';};
@@ -617,6 +622,7 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---------- Entrada: teclado ---------- */
 const optionsDialog=$('options');
+let modalWasPlaying=false;
 window.addEventListener('keydown',e=>{
   if(optionsDialog.open)return;
   const k=e.key,go=k==='Enter'||k===' ';
@@ -644,9 +650,10 @@ window.addEventListener('keydown',e=>{
 /* ---------- Opciones y ciclo de vida ---------- */
 const sfxBtn=$('btn-sfx'),syncSfx=()=>{sfxBtn.textContent=sfxOn?'ACTIVADOS':'SILENCIO';};
 sfxBtn.addEventListener('click',()=>{sfxOn=!sfxOn;syncSfx();saveStore();beep(600,.08);});
-$('btn-options').addEventListener('click',function(){optionsDialog.showModal();this.blur();pauseGame();});
+$('btn-options').addEventListener('click',function(){modalWasPlaying=state==='playing';optionsDialog.showModal();this.blur();pauseGame();});
 $('btn-close').addEventListener('click',function(){optionsDialog.close();this.blur();});
 optionsDialog.addEventListener('click',e=>{if(e.target===optionsDialog)optionsDialog.close();});
+optionsDialog.addEventListener('close',()=>{if(modalWasPlaying&&state==='paused')resumeGame();modalWasPlaying=false;});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){pauseGame();saveStore();}});
 window.addEventListener('beforeunload',saveStore);
 window.addEventListener('resize',resize);

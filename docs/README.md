@@ -42,6 +42,17 @@ documentación de referencia para agentes.
 - [`prompts/portadas-juegos.md`](./prompts/portadas-juegos.md) — instrucciones para generar
   las portadas (pixel art retro arcade) de los juegos y su integración en la grilla.
 
+## Informes
+
+- `docs/informes/` — **única** ubicación para informes de auditoría, planes de trabajo, listas de
+  pendientes, trackers y demás hallazgos. Se crea la primera vez que haga falta; no hay informes
+  activos por defecto.
+- `docs/informes/trabajo-pendiente.md` — tracker único de tareas abiertas del repo. Toda tarea
+  pendiente nueva se agrega ahí; al cerrar un ítem se borra (nunca se marca resuelto ni se anexa
+  historial).
+- Consecuencias: nada de códigos de hallazgo, nada de historial ("se eliminó X", "antes hacía Y");
+  se conserva la señal anti-regresión (`Eliminado:`, `DEPRECATED`, "no usar en código nuevo").
+
 ## Convenciones
 
 - No reintroducir planes de tareas, fases ni auditorías/informes de estado: la documentación describe el

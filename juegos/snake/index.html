@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0d0221" />
+  <meta name="description" content="Snake Retro: el clásico arcade de la serpiente con estética neón; come, crece y esquiva muros y tu propia cola.">
   <title>Snake Retro</title>
   <style>
     /* ================= Variables y base ================= */
@@ -214,6 +215,7 @@
     }
     .switch input:checked + .slider::before { transform: translateX(20px); background: var(--neon-green); }
     .switch input:focus-visible + .slider { outline: 2px solid var(--neon-cyan); outline-offset: 2px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   </style>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
@@ -235,6 +237,9 @@
 
     <!-- Lienzo principal: HUD (puntuación, récord, velocidad) + tablero -->
     <canvas id="game" aria-label="Juego Snake"></canvas>
+
+    <!-- Anuncios discretos de hitos (fin de partida, victoria) para lectores de pantalla -->
+    <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
 
     <!-- D-pad táctil (solo dispositivos táctiles) -->
     <div class="dpad" id="dpad" aria-label="Controles táctiles">
@@ -303,6 +308,7 @@
       const optionsDialog = document.getElementById('options');
       const btnCloseModal = document.getElementById('btnCloseModal');
       const dpad = document.getElementById('dpad');
+      const srStatus = document.getElementById('sr-status');
       const optIncremental = document.getElementById('optIncremental');
       const optMusic = document.getElementById('optMusic');
       const optSfx = document.getElementById('optSfx');
@@ -516,6 +522,9 @@
           saveBest(game.best);
         }
         setState(State.OVER);
+        srStatus.textContent = win
+          ? '¡Victoria! Has llenado el tablero con ' + game.score + ' puntos.'
+          : 'Game over. Puntuación: ' + game.score + ' (récord ' + game.best + ').';
         playSfx(win ? 'win' : 'die');
       }
 

@@ -527,8 +527,8 @@ function buildSeq(){
   head.innerHTML=`<span class="dot"></span><span class="tname" style="color:${tr.c}">${tr.n}</span>
    <button class="msbtn m${state.tracks[i].m?' on':''}" title="Mute">M</button>
    <button class="msbtn s${state.tracks[i].s?' on':''}" title="Solo">S</button>`;
-  const vv=document.createElement('input');vv.type='range';vv.min=0;vv.max=1;vv.step=.01;vv.value=state.tracks[i].v;vv.title='Volumen';
-  const pp=document.createElement('input');pp.type='range';pp.min=-1;pp.max=1;pp.step=.02;pp.value=state.tracks[i].p;pp.title='Pan';
+  const vv=document.createElement('input');vv.type='range';vv.min=0;vv.max=1;vv.step=.01;vv.value=state.tracks[i].v;vv.title='Volumen';vv.setAttribute('aria-label','Volumen de '+tr.n);
+  const pp=document.createElement('input');pp.type='range';pp.min=-1;pp.max=1;pp.step=.02;pp.value=state.tracks[i].p;pp.title='Pan';pp.setAttribute('aria-label','Pan de '+tr.n);
   head.appendChild(vv);head.appendChild(pp);
   vv.addEventListener('input',()=>{state.tracks[i].v=+vv.value;engine.applyMix();saveSoon();});
   pp.addEventListener('input',()=>{state.tracks[i].p=+pp.value;engine.applyMix();saveSoon();});
@@ -724,6 +724,7 @@ function refreshSampler(){
  engine.samples.forEach((s,id)=>{
   const row=document.createElement('div');row.className='smprow';
   const name=document.createElement('input');name.type='text';name.value=s.name;
+  name.setAttribute('aria-label','Nombre de la muestra');
   name.addEventListener('change',()=>{s.name=name.value.trim()||s.name;db.put('samples',{id,data:s.raw?ab2b64(s.raw):null,name:s.name}).catch(()=>{});padSourceList();updatePads();});
   const dur=document.createElement('span');dur.className='hint';dur.textContent=s.dur.toFixed(2)+' s';
   const play=document.createElement('button');play.textContent='▶';play.title='Reproducir';
@@ -768,11 +769,13 @@ async function loadSamplesFromIDB(){
 }
 
 /* ============================ UI · SYNTH / ROLL / TECLADO ============================ */
+let sliderUid=0;
 function slider(label,min,max,step,val,fmt,oninput){
  const w=document.createElement('div');w.style.cssText='display:flex;flex-direction:column;gap:4px;min-width:150px';
  const l=document.createElement('label');const b=document.createElement('b');b.style.color='var(--yl)';
  l.append(document.createTextNode(label+' '),b);b.textContent=fmt(val);
  const r=document.createElement('input');r.type='range';r.min=min;r.max=max;r.step=step;r.value=val;
+ const id='dj-slider-'+(++sliderUid);r.id=id;l.htmlFor=id;
  r.addEventListener('input',()=>{const v=+r.value;b.textContent=fmt(v);oninput(v);saveSoon();});
  w.append(l,r);w._sync=v=>{r.value=v;b.textContent=fmt(v);};
  return w;
@@ -958,9 +961,9 @@ function buildMixer(){
   const vu=document.createElement('div');vu.className='vu';const fill=document.createElement('i');vu.appendChild(fill);
   const cols=document.createElement('div');cols.style.cssText='display:flex;flex-direction:column;gap:6px';
   const vol=document.createElement('input');vol.type='range';vol.min=0;vol.max=isMaster?1.2:1;vol.step=.01;
-  vol.id=isMaster?'mixMasterVol':'';
+  vol.id=isMaster?'mixMasterVol':'';vol.setAttribute('aria-label','Volumen de '+name);
   const pan=document.createElement('input');pan.type='range';pan.min=-1;pan.max=1;pan.step=.02;
-  pan.id=isMaster?'mixMasterPan':'';
+  pan.id=isMaster?'mixMasterPan':'';pan.setAttribute('aria-label','Pan de '+name);
   vol.value=state.master.v;pan.value=state.master.p;
   cols.append(vol,pan);
   faders.append(vu,cols);
@@ -1015,6 +1018,7 @@ function resetMixer(){
 
 /* ============================ UI · FX ============================ */
 let fxSliderRefs={};
+let fxRowUid=0;
 function lpPos(f){return clamp(Math.round(100*Math.log2(clamp(f,40,20000)/40)/9),0,100);}
 function buildFX(){
  const r=$('fxRack');r.innerHTML='';fxSliderRefs={};
@@ -1022,6 +1026,7 @@ function buildFX(){
   const d=document.createElement('div');d.className='fxrow';
   const l=document.createElement('label');l.textContent=label;
   const i=document.createElement('input');i.type='range';i.min=min;i.max=max;i.step=step;i.value=val;
+  const id='dj-fx-'+(++fxRowUid);i.id=id;l.htmlFor=id;
   const v=document.createElement('span');v.className='val';v.textContent=fmt(val);
   i.addEventListener('input',()=>{const x=+i.value;v.textContent=fmt(x);onf(x);saveSoon();});
   d.append(l,i,v);r.appendChild(d);

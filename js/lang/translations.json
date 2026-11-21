@@ -9,8 +9,12 @@
       "games": "Juegos",
       "programs": "Programas",
       "gamesTitle": "Juegos",
-      "gamesIntro": "Una colección de 20 juegos arcade hechos con HTML, CSS y JavaScript vanilla. Cada juego se abre en su propia página y guarda tu récord en el navegador.",
+      "gamesIntro": "Una colección de {count} juegos arcade hechos con HTML, CSS y JavaScript vanilla. Cada juego se abre en su propia página y guarda tu récord en el navegador.",
       "playGame": "Jugar",
+      "openTool": "Abrir",
+      "comingSoon": "Próximamente",
+      "filterByCategory": "Filtrar por categoría",
+      "allCategories": "Todas",
       "openInNewTab": "Se abre en una pestaña nueva",
       "gamesEmpty": "Todavía no hay juegos publicados.",
       "technologiesLabel": "Tecnologías",
@@ -83,8 +87,12 @@
       "games": "Games",
       "programs": "Programs",
       "gamesTitle": "Games",
-      "gamesIntro": "A collection of 20 arcade games built with vanilla HTML, CSS and JavaScript. Each game opens on its own page and stores your best score in the browser.",
+      "gamesIntro": "A collection of {count} arcade games built with vanilla HTML, CSS and JavaScript. Each game opens on its own page and stores your best score in the browser.",
       "playGame": "Play",
+      "openTool": "Open",
+      "comingSoon": "Coming soon",
+      "filterByCategory": "Filter by category",
+      "allCategories": "All",
       "openInNewTab": "Opens in a new tab",
       "gamesEmpty": "There are no published games yet.",
       "technologiesLabel": "Technologies",
@@ -159,7 +167,8 @@
       "end": "compromiso en cada proyecto.",
       "title": "Proyectos con Diferentes Tecnologías",
       "viewProject": "Ver Proyecto",
-      "projectSubtitle": "He desarrollado diversos proyectos utilizando frameworks y bibliotecas modernas. Cada proyecto demuestra diferentes capacidades técnicas."
+      "projectSubtitleFirst": "He desarrollado diversos proyectos utilizando frameworks y bibliotecas modernas.",
+      "projectSubtitleSecond": "Cada proyecto demuestra diferentes capacidades técnicas."
     },
     "en": {
       "welcomeMessage": "Hello World!",
@@ -170,7 +179,8 @@
       "end": "commitment in each project.",
       "title": "Projects with Different Technologies",
       "viewProject": "View Project",
-      "projectSubtitle": "I have developed various projects using modern frameworks and libraries. Each project demonstrates different technical capabilities."
+      "projectSubtitleFirst": "I have developed various projects using modern frameworks and libraries.",
+      "projectSubtitleSecond": "Each project demonstrates different technical capabilities."
     }
   },
   "projects": [
@@ -199,12 +209,14 @@
     "es": {
       "experienceTitle": "Experiencia Laboral",
       "studiesTitle": "Estudios | Cursos",
-      "copyNotification": "¡Correo copiado!"
+      "copyNotification": "¡Correo copiado!",
+      "copyEmailError": "No se pudo copiar. El correo es pfd1795@gmail.com"
     },
     "en": {
       "experienceTitle": "Work Experience",
       "studiesTitle": "Studies | Courses",
-      "copyNotification": "Email copied!"
+      "copyNotification": "Email copied!",
+      "copyEmailError": "Could not copy. The email is pfd1795@gmail.com"
     }
   },
   "workExperience": [

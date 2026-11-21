@@ -30,8 +30,10 @@ no tiene copias propias.
 
 ## Reglas para agentes
 
-1. **Contenido solo en español**: las tarjetas no usan el sistema de traducciones
-   (`translations.json`); la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN.
+1. **Contenido solo en español**: los títulos, descripciones, categorías y tecnologías de las
+   tarjetas no se traducen; la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN.
+   Las cadenas de UI generadas en la grilla (`openTool`, `comingSoon`, `filterByCategory`,
+   `allCategories` y `openInNewTab`) se toman de `translations.page[lang]`.
 2. **Pre-pintado obligatorio**: toda página nueva debe cargar `js/theme-init.js` en el
    `<head>` antes de pintar (`../js/` desde esta carpeta, `../../js/` desde
    `herramientas/`), salvo las excepciones documentadas anteriores (`dj.html`), que
@@ -56,11 +58,11 @@ no tiene copias propias.
    desde el manifiesto y sus clics los gestiona el buscador por delegación sobre
    `document` (sobreviven a los re-renders).
 7. **Tarjetas**: las herramientas `wip` del manifiesto se marcan con
-   `.programa-card__estado` "Próximamente". Al implementar una, cambiar su entrada a
-   `status: "published"` (la tarjeta se convierte en enlace automáticamente: botón
-   `Abrir` con `target="_blank"` + `rel="noopener noreferrer"` y la nota "Se abre en una
-   pestaña nueva", con los estilos `.programa-card__abrir` / `.programa-card__nota` de
-   `programas.css`), siguiendo el patrón de la grilla de juegos. Si la tarjeta describía
+   `.programa-card__estado` y la etiqueta traducida `comingSoon`. Al implementar una, cambiar su
+   entrada a `status: "published"` (la tarjeta se convierte en enlace automáticamente: botón
+   `openTool` con `target="_blank"` + `rel="noopener noreferrer"` y la nota `openInNewTab`,
+   con los estilos `.programa-card__abrir` / `.programa-card__nota` de `programas.css`),
+   siguiendo el patrón de la grilla de juegos. Si la tarjeta describía
    otra cosa (categoría, tecnologías), alinearla con la herramienta real.
 8. **Herramienta nueva**: crear `herramientas/<slug>.html` (kebab-case, autocontenida,
    sin recursos externos) y añadir su entrada a `data/herramientas.json` con

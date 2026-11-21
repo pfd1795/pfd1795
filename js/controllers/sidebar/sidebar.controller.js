@@ -96,11 +96,11 @@ export default function SidebarController() {
   /* section navigation (scrollspy) */
   sectionNav();
 
+  /* theme mode (antes del idioma: updateModeText() lee currentMode) */
+  themeMode();
+
   /* language */
   sectionLanguage();
-
-  /* theme mode */
-  themeMode();
 
   /* theme color */
   themeColor();
