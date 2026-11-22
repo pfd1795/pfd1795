@@ -1,3 +1,8 @@
+function setModalState(isOpen) {
+  document.body.classList.toggle("modal-open", isOpen);
+  document.body.classList.toggle("modal-closed", !isOpen);
+}
+
 function OpenModalDialog() {
   const dialog = document.querySelector(".modal-dialog");
 
@@ -5,7 +10,7 @@ function OpenModalDialog() {
 
   if (!dialog.open) {
     dialog.showModal();
-    document.body.classList.add("modal-open");
+    setModalState(true);
   }
 }
 
@@ -34,7 +39,7 @@ function CloseModalDialog() {
 
   if (dialog.open) {
     dialog.close();
-    document.body.classList.remove("modal-open");
+    setModalState(false);
   }
 }
 
@@ -42,6 +47,8 @@ export function InitModalDialog() {
   const dialog = document.querySelector(".modal-dialog");
 
   if (!dialog) return;
+
+  setModalState(false);
 
   const btnClose = dialog.querySelector(".modal-close");
 
@@ -54,6 +61,6 @@ export function InitModalDialog() {
   });
 
   dialog.addEventListener("close", () => {
-    document.body.classList.remove("modal-open");
+    setModalState(false);
   });
 }

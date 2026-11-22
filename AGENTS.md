@@ -330,7 +330,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | --- | --- | --- |
 | `assets.js` | `ICONS_URL` | URL absoluta de `assets/icons/` vía `import.meta.url`, válida en raíz y subcarpetas. |
 | `copyEmail.js` | `copyEmail()` | Copia el correo (fijado en el código) con `navigator.clipboard`. |
-| `dialog.js` | `ModalDialog()`, `InitModalDialog()` | Crea y conecta el `<dialog>` compartido (Configuración y educación). |
+| `dialog.js` | `ModalDialog()`, `InitModalDialog()` | Crea y conecta el `<dialog>` compartido (Configuración y educación) y mantiene el estado de `<body>` con `.modal-open` / `.modal-closed`. |
 | `storage.js` | getters/setters por clave + `STORAGE_KEY_*` | Acceso seguro a `localStorage` con valores por defecto y captura de errores. |
 | `themeBackgrounds.js` | `BACKGROUND_THEMES`, `GRADIENT_DIRECTIONS`, `PSYCHEDELIC_SPEEDS`, `FONT_SCALE_OPTIONS` | Catálogos únicos de los temas de fondo, 7 direcciones, 3 velocidades y 3 escalas. |
 | `themeColors.js` | `THEME_COLORS`, `getThemeColorDef` | Fuente única de los 6 acentos disponibles. |
@@ -501,7 +501,7 @@ Arquitectura CSS).
 - **Juegos**: `juegos/juegos.css` contiene la página y las tarjetas (`.juego-card*`) con tokens de `base.css`. Cada tarjeta muestra su portada (`.juego-card__portada`) leyendo `covers` del manifiesto: rutas relativas a `juegos/index.html`, como `../assets/images/games/<slug>/cover.jpg`. Con una sola imagen es estática; con 2–3 se activa el carrusel por CSS (`--carousel`, crossfade); sin imágenes, placeholder con degradado. La guía para generar portadas es una herramienta de desarrollo en `docs/prompts/portadas-juegos.md`.
 - **Buscador y filtros**: los estilos de `.buscador__campo`, `.buscador__mensaje`, `.filtros` y `.filtro` viven en la sección de componentes de `stylesheets/base.css` y los comparten `mis-estudios/`, `programas/` y `juegos/`. Cada hoja de sección conserva solo los overrides de acento propios: `--enc-accent` en la enciclopedia, `--prog-accent` en programas y `--theme-color` (el acento de `base.css`) en juegos.
 - **Programas**: `programas/programas.css` contiene la página, las tarjetas (`.programa-card*`) y el override de acento `--prog-accent` para los chips `.filtro`, cuyos estilos compartidos están en `base.css`.
-- **Modal**: `.modal-dialog` usa las variables semánticas y se adapta al modo oscuro automáticamente; el botón de cierre usa `.modal-close`; el bloqueo de scroll usa `.modal-open` en `<body>`. El `<dialog>` referencia `aria-labelledby="modal-title"`, por lo que cada contenido dinámico (Configuración y educación) debe generar un elemento con `id="modal-title"` en cada apertura.
+- **Modal**: `.modal-dialog` usa las variables semánticas y se adapta al modo oscuro automáticamente; el botón de cierre usa `.modal-close`; el estado se expresa con clases excluyentes en `<body>` (`.modal-open` bloquea el scroll con `overflow-y: hidden`, `.modal-closed` lo restaura con `overflow-y: visible`), gestionadas por `utils/dialog.js`. El `<dialog>` referencia `aria-labelledby="modal-title"`, por lo que cada contenido dinámico (Configuración y educación) debe generar un elemento con `id="modal-title"` en cada apertura.
 - **Salto al contenido**: el estilo del enlace `.saltar` vive en la sección de componentes de `stylesheets/base.css` y lo comparten la portada y la enciclopedia.
 - **Encabezado del navbar**: solo `index.html` mantiene `<h1>Pablo Diaz</h1>`. Las subpáginas (secciones, artículos y herramientas) usan `<span class="navbar-name">Pablo Diaz</span>` para dejar el único `<h1>` al título real de la página; `.navbar-name` comparte estilo con el `h1` del logo en `base.css`. `dj.html` es la excepción autocontenida.
 - **Transiciones**: variables `--transition-normal`, `--ease-in-out`; se anulan con `prefers-reduced-motion: reduce`.
@@ -562,7 +562,6 @@ Arquitectura CSS).
 
 ### Deuda técnica
 
-- No existe la clase `.modal-closed`; el bloqueo de scroll del modal se controla con `.modal-open` en `<body>` (añadir la clase invertida facilitaría la interfaz con `<dialog>`).
 - Cada juego tiene una sola portada (`cover.jpg`); las portadas 2 y 3 para el carrusel aún no se han generado (la guía y el código ya aceptan hasta 3 mediante `covers`).
 - No existe `updatedAt` por juego en el manifiesto.
 - El contenido de la enciclopedia no tiene traducción al inglés.

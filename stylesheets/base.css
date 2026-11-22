@@ -656,6 +656,10 @@ body.modal-open {
   overflow-y: hidden;
 }
 
+body.modal-closed {
+  overflow-y: visible;
+}
+
 .modal-dialog {
   --modal-border: var(--color-border);
   background-color: var(--color-surface);
