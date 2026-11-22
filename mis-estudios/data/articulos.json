@@ -397,7 +397,7 @@
       },
       "keywords": "editor ide depuracion debugger breakpoints vscode herramientas Herramientas del día a día y cómo depurar con método.",
       "category": "cat-herramientas",
-      "status": "wip"
+      "status": "published"
     },
     {
       "slug": "empaquetado-despliegue",
@@ -409,7 +409,7 @@
       },
       "keywords": "despliegue build variables de entorno docker ci cd produccion Builds, variables de entorno y publicación de aplicaciones.",
       "category": "cat-herramientas",
-      "status": "wip"
+      "status": "published"
     }
   ]
 }

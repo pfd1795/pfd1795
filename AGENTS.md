@@ -551,15 +551,14 @@ Arquitectura CSS).
 
 ### Contenido y assets
 
-- La enciclopedia cuenta con 26 artículos publicados y dos tarjetas marcadas como "Próximamente"; no todo el temario está desarrollado.
+- La enciclopedia cuenta con 28 artículos publicados.
 - La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
 - **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `juegos/data/juegos.json`.
 - El correo que copia `utils/copyEmail.js` está fijado en el código. Si cambia, hay que actualizarlo ahí y en la información de contacto.
 - **`assets/files/PabloDiazCV.pdf`** (238 KB) se mantiene en el repositorio sin enlazar por
-  decisión del desarrollador (2026-11-05): es material para reenlazar el CV desde
-  el sidebar o el modal si se recupera el botón de descarga. Hasta entonces, ninguna página lo
-  referencia y así debe quedar.
+  decisión del desarrollador: es material para reenlazar el CV desde el sidebar o el modal si se
+  recupera el botón de descarga. Hasta entonces, ninguna página lo referencia y así debe quedar.
 
 ### Deuda técnica
 

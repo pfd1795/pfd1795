@@ -11,10 +11,10 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 - Pie de página con las tecnologías que construyeron el sitio, la firma de los agentes de IA que colaboraron y los créditos de los iconos.
 - Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
-- Enciclopedia de informática en `mis-estudios/`, con buscador y 26 artículos publicados (varios temarios siguen "Próximamente"); la grilla se genera desde `mis-estudios/data/articulos.json`.
+- Enciclopedia de informática en `mis-estudios/`, con buscador y 28 artículos publicados; la grilla se genera desde `mis-estudios/data/articulos.json`.
 - Colección de 20 juegos arcade en `juegos/`, con una grilla generada desde `juegos/data/juegos.json`.
 - Sección de programas y herramientas en `programas/`, con grilla filtrable generada desde `programas/data/herramientas.json` y tarjetas de herramientas propias (web, Linux, Windows, CLI, DevOps).
-- Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva.- La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
+- Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva. La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
 - Accesibilidad: salto al contenido, tarjetas de estudios operables por teclado, foco gestionado en el menú lateral y avisos anunciados a lectores de pantalla.
 - Aplicación instalable (PWA): el sitio puede instalarse como app y funciona offline gracias a un Service Worker que precachea todo el contenido.
@@ -79,7 +79,7 @@ enciclopedia) y excluye el material interno (CV en `assets/files/`, documentaci�
 - Requiere un servidor HTTP local para funcionar.
 - Pensado para navegadores modernos (módulos ES, CSS nesting, `<dialog>`, `IntersectionObserver`).
 - La interfaz está traducida a español e inglés; el contenido de la enciclopedia y de los juegos solo está en español, mientras que las tarjetas de la grilla se traducen ES/EN.
-- Varias secciones de la enciclopedia están marcadas como "Próximamente".
+- Varias herramientas de la sección Programas están marcadas como "Próximamente".
 
 Los detalles técnicos y la deuda pendiente se documentan en [`AGENTS.md`](./AGENTS.md#limitaciones-y-problemas-conocidos).
 

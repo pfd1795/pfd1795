@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editores, IDEs y depuración — Estudios de informática</title>
+  <meta name="description"
+    content="Qué es un editor de texto y qué es un IDE, editores populares, entornos integrados y cómo depurar con breakpoints, step, watch y call stack.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Herramientas de desarrollo</p>
+          <h1>Editores, IDEs y depuración</h1>
+          <p class="entrada">
+            El editor es donde escribes el código; el depurador es donde entiendes por qué no
+            hace lo que esperabas. Dominar ambas herramientas acelera más que cualquier truco de
+            lenguaje.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>Un <strong>editor de texto</strong> edita archivos y se apoya en extensiones; un
+              <strong>IDE</strong> integra editor, compilador, depurador y gestor de proyecto en uno.
+            </li>
+            <li>La mayoría de los desarrolladores hoy usan un editor extensible (VS Code) que se
+              comporta casi como un IDE gracias a las extensiones.</li>
+            <li>Depurar no es «leer el código hasta ver el error»: es <strong>observar el estado real</strong>
+              del programa mientras se ejecuta.</li>
+            <li>Las herramientas básicas del depurador son <strong>breakpoints, step over/into/out,
+              watch</strong> y la <strong>pila de llamadas</strong>.</li>
+            <li>El <code>console.log</code> (o <code>print</code>) es útil, pero no sustituye al
+              depurador cuando el flujo es complejo.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es un editor y qué es un IDE?</a></li>
+            <li><a href="#editores">Editores de texto</a></li>
+            <li><a href="#ides">Entornos de desarrollo integrados (IDE)</a></li>
+            <li><a href="#depuracion">Depuración: observar el estado real</a></li>
+            <li><a href="#breakpoints">Breakpoints, step y control de flujo</a></li>
+            <li><a href="#watch-stack">Watch, call stack y variables</a></li>
+            <li><a href="#logging">Logging: el complemento práctico</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es un editor y qué es un IDE?</h2>
+          <p>
+            Un <strong>editor de texto</strong> es un programa que edita archivos de texto plano. Su
+            trabajo es ayudarte a escribir: coloreado de sintaxis, autocompletado, búsqueda y
+            reemplazo, y extensiones que añaden capacidades. No sabe nada de tu proyecto ni de cómo
+            se ejecuta.
+          </p>
+          <p>
+            Un <strong>IDE</strong> (entorno de desarrollo integrado) es un editor al que se le ha
+            unido el resto del flujo de trabajo: compilador o intérprete, depurador, gestor de
+            proyecto, control de versiones y, a menudo, diseñador de interfaces o base de datos.
+            Todo convive en una misma ventana y comparte el contexto del proyecto.
+          </p>
+          <p class="nota">
+            La frontera se ha difuminado: un editor moderno con extensiones (VS Code, Neovim) puede
+            comportarse casi como un IDE. La diferencia real no es la cantidad de funciones, sino
+            si el entorno <em>entiende tu proyecto como un todo</em> o solo edita archivos.
+          </p>
+        </section>
+
+        <section id="editores" aria-labelledby="editores-titulo">
+          <h2 id="editores-titulo">Editores de texto</h2>
+          <ul>
+            <li><strong>VS Code</strong>: el más extendido. Gratuito, multiplataforma y con un
+              ecosistema enorme de extensiones (lenguajes, temas, linters, depuradores). Su núcleo es
+              ligero; la potencia viene de las extensiones.</li>
+            <li><strong>Vim / Neovim</strong>: editores modales que se manejan desde el teclado.
+              Empiezan vacíos y se convierten en lo que tú configuras; curva de aprendizaje alta,
+              productividad muy alta para quien los domina.</li>
+            <li><strong>Sublime Text, Notepad++, Kate</strong>: editores ligeros y rápidos, ideales
+              para abrir archivos sueltos o editar en máquinas con pocos recursos.</li>
+            <li><strong>Editores del sistema</strong> (<code>nano</code>, <code>vi</code>): vienen
+              instalados en casi cualquier servidor Linux; saber lo mínimo es una habilidad de
+              supervivencia.</li>
+          </ul>
+          <p>
+            Lo que un buen editor aporta de serie: coloreado de sintaxis, autocompletado
+            (<em>IntelliSense</em>), ir a definición, renombrar símbolo, formateo y Git integrado.
+          </p>
+        </section>
+
+        <section id="ides" aria-labelledby="ides-titulo">
+          <h2 id="ides-titulo">Entornos de desarrollo integrados (IDE)</h2>
+          <ul>
+            <li><strong>Visual Studio</strong>: el IDE clásico para .NET y C++. Pesado pero muy
+              completo: depurador visual, diseñador de formularios, profiler.</li>
+            <li><strong>JetBrains (IntelliJ, PyCharm, WebStorm, Rider)</strong>: IDEs por lenguaje
+              con refactorizaciones avanzadas y análisis estático profundo. De pago, con versiones
+              gratuitas limitadas.</li>
+            <li><strong>Eclipse / NetBeans</strong>: históricos del mundo Java; hoy menos comunes
+              salvo en entornos corporativos legados.</li>
+            <li><strong>Xcode</strong>: el IDE de Apple para Swift/Objective-C y desarrollo de apps
+              para sus plataformas.</li>
+            <li><strong>Android Studio</strong>: basado en IntelliJ, el IDE oficial para Android.</li>
+          </ul>
+          <p class="nota">
+            Un IDE brilla cuando el proyecto es grande y el lenguaje es estático (Java, C#, C++):
+            el compilador y el IDE comparten un modelo del código que permite refactorizaciones
+            seguras. En lenguajes dinámicos (JavaScript, Python) un editor extensible suele bastar.
+          </p>
+        </section>
+
+        <section id="depuracion" aria-labelledby="depuracion-titulo">
+          <h2 id="depuracion-titulo">Depuración: observar el estado real</h2>
+          <p>
+            Depurar es ejecutar el programa <strong>paso a paso</strong> y observar cómo cambian las
+            variables, en lugar de adivinar leyendo el código. El flujo típico:
+          </p>
+          <ol>
+            <li>Reproduce el bug de forma fiable (si no puedes reproducirlo, no puedes arreglarlo).</li>
+            <li>Pon un <strong>breakpoint</strong> cerca de donde sospechas que falla.</li>
+            <li>Ejecuta el programa; se detendrá en el breakpoint.</li>
+            <li>Inspecciona variables, pila de llamadas y flujo.</li>
+            <li>Avanza paso a paso hasta encontrar dónde el estado deja de coincidir con lo esperado.</li>
+            <li>Corrige y vuelve a ejecutar para confirmar.</li>
+          </ol>
+          <p>
+            El depurador no arregla nada por sí solo: te da <em>información</em>. El error suele
+            estar entre el último estado correcto y el primero incorrecto.
+          </p>
+        </section>
+
+        <section id="breakpoints" aria-labelledby="breakpoints-titulo">
+          <h2 id="breakpoints-titulo">Breakpoints, step y control de flujo</h2>
+          <pre><code>// Ejemplo para depurar en el navegador (DevTools) o en VS Code.
+function calcularTotal(items) {
+  let total = 0;
+  for (const item of items) {
+    total += item.precio * item.cantidad;  // ← pon aquí un breakpoint
+  }
+  return total;
+}</code></pre>
+          <ul>
+            <li><strong>Breakpoint</strong>: pausa la ejecución en esa línea antes de ejecutarla.</li>
+            <li><strong>Conditional breakpoint</strong>: solo pausa si una condición se cumple (p. ej.
+              <code>item.precio &lt; 0</code>), útil en bucles largos.</li>
+            <li><strong>Step over (F10)</strong>: ejecuta la línea actual y pasa a la siguiente sin
+              entrar en las funciones que llama.</li>
+            <li><strong>Step into (F11)</strong>: entra dentro de la función que se llama en esa
+              línea.</li>
+            <li><strong>Step out (Shift+F11)</strong>: sale de la función actual y vuelve al
+              llamador.</li>
+            <li><strong>Continue (F5)</strong>: reanuda hasta el siguiente breakpoint.</li>
+            <li><strong>Logpoint</strong>: imprime un mensaje en consola sin modificar el código ni
+              pausar.</li>
+          </ul>
+        </section>
+
+        <section id="watch-stack" aria-labelledby="watch-stack-titulo">
+          <h2 id="watch-stack-titulo">Watch, call stack y variables</h2>
+          <ul>
+            <li><strong>Variables locales</strong>: panel que muestra el valor actual de cada variable
+              en el ámbito actual.</li>
+            <li><strong>Watch</strong>: expresiones que tú defines y que se reevalúan en cada paso
+              (p. ej. <code>items.length</code> o <code>total &gt; 100</code>).</li>
+            <li><strong>Call stack (pila de llamadas)</strong>: la cadena de funciones que llevó hasta
+              aquí. Hacer clic en un marco te lleva al código de esa función con su contexto.</li>
+            <li><strong>Scope chain</strong>: variables accesibles desde el bloque actual, incluyendo
+              los ámbitos superiores.</li>
+          </ul>
+          <p class="nota">
+            La pila de llamadas es la herramienta más infravalorada: cuando un error dice «en línea
+            42», el marco real del fallo suele estar dos o tres niveles más arriba en la pila.
+          </p>
+        </section>
+
+        <section id="logging" aria-labelledby="logging-titulo">
+          <h2 id="logging-titulo">Logging: el complemento práctico</h2>
+          <p>
+            Imprimir mensajes sigue siendo útil, sobre todo en código asíncrono, servidores o cuando
+            no hay depurador disponible (producción, CI).
+          </p>
+          <pre><code>// JavaScript
+console.log('valor:', valor);        // mensaje general
+console.warn('algo raro');            // advertencia (amarillo)
+console.error('fallo grave');         // error (rojo)
+console.table(arrayDeObjetos);        // tabla legible
+console.time('carga'); /* ... */ console.timeEnd('carga'); // medir tiempo
+
+// Python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logging.debug('valor: %s', valor)
+logging.exception('fallo')  // incluye el traceback</code></pre>
+          <ul>
+            <li>Úsalo para trazar el flujo, no para inspeccionar estado detallado (para eso, el
+              depurador).</li>
+            <li>Evita dejar <code>console.log</code> en el código final; usa un logger con niveles y
+              desactívalo en producción.</li>
+            <li>En el navegador, <code>console.log</code> acepta <em>formatters</em>:
+              <code>console.log('%c texto', 'color: red')</code>.</li>
+          </ul>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas</h2>
+          <ul>
+            <li>Aprende los atajos de teclado del depurador: ahorran más tiempo que cualquier
+              extensión.</li>
+            <li>Mantén el código formateado y con nombres claros; depurar código ofuscado es perder
+              el tiempo.</li>
+            <li>Reproduce el bug con un caso mínimo antes de depurar: menos ruido, causa más
+              visible.</li>
+            <li>No depures con <code>print</code> cuando tengas un depurador a mano; pero no
+              desprecies el logging en entornos sin depurador.</li>
+            <li>Configura <em>source maps</em> si tu código se transpila o se minifica, para depurar
+              el código original.</li>
+            <li>Usa linters y formateadores (ESLint, Prettier, Black, rustfmt) para detectar errores
+              antes de ejecutar.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <ul>
+            <li>Depurar sin reproducir primero el bug: te pierdes en el flujo normal del programa.
+            </li>
+            <li>Poner breakpoints en el lugar equivocado y concluir «no pasa nada».</li>
+            <li>Confundir <em>step over</em> con <em>step into</em> y saltarse la función que falla.
+            </li>
+            <li>Inspeccionar variables en el ámbito equivocado del call stack.</li>
+            <li>Dejar <code>console.log</code> con datos sensibles en producción.</li>
+            <li>Cambiar el código mientras depuras y perder el rastro de qué funcionaba.</li>
+          </ul>
+          <p class="aviso">
+            Si el programa «se comporta distinto» al depurar, puede ser un <em>heisenbug</em>:
+            condiciones de carrera o código que depende del tiempo. En esos casos, logging y
+            reproducibilidad controlada ayudan más que el depurador interactivo.
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Herramienta</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Breakpoint</td>
+                <td>Pausar la ejecución en una línea.</td>
+              </tr>
+              <tr>
+                <td>Step over / into / out</td>
+                <td>Avanzar sin entrar, entrar o salir de funciones.</td>
+              </tr>
+              <tr>
+                <td>Watch</td>
+                <td>Observar expresiones mientras avanzas.</td>
+              </tr>
+              <tr>
+                <td>Call stack</td>
+                <td>Ver la cadena de llamadas que llevó al punto actual.</td>
+              </tr>
+              <tr>
+                <td>Logpoint</td>
+                <td>Imprimir sin modificar código ni pausar.</td>
+              </tr>
+              <tr>
+                <td>Source map</td>
+                <td>Mapear código transpilado/minificado al original.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="javascript.html">JavaScript</a>: el DOM y cómo cambiar estilos y clases
+              dinámicamente.</li>
+            <li><a href="git.html">Git</a>: control de versiones integrado en el editor.</li>
+            <li><a href="http.html">HTTP y navegador</a>: cómo se descargan los recursos y se
+              depura la red.</li>
+            <li><a href="paradigmas.html">Paradigmas de programación</a>: cómo el paradigma influye
+              en la forma de depurar.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>
