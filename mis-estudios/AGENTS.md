@@ -27,7 +27,8 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
 
 El pre-pintado del tema y el buscador son **compartidos**: `js/theme-init.js` y
 `js/buscador.js` (configurado por `data-attributes` del input `#buscador`); esta carpeta
-no tiene copias propias.
+no tiene copias propias. Los estilos de `.buscador__*` viven en `stylesheets/base.css`
+y aquí solo se conserva el override de acento `--enc-accent`.
 
 ## Reglas para agentes
 

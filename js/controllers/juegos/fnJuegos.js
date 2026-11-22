@@ -18,6 +18,43 @@ function getText(value, lang) {
   return value?.[lang] ?? value?.es ?? '';
 }
 
+function genreKey(game) {
+  const genre = game.genre;
+
+  return typeof genre === 'string' ? genre : (genre?.es ?? '');
+}
+
+function getGenres(games) {
+  const seen = new Set();
+
+  return games.reduce((genres, game) => {
+    const key = genreKey(game);
+
+    if (!key || seen.has(key)) return genres;
+
+    seen.add(key);
+    genres.push({ key, label: game.genre });
+
+    return genres;
+  }, []);
+}
+
+function ChipsFiltro(generos, lang, texts) {
+  const chips = document.createElement('div');
+
+  chips.className = 'filtros';
+  chips.setAttribute('role', 'group');
+  chips.setAttribute('aria-label', texts.filterByCategory);
+  chips.innerHTML = `
+    <button class="filtro active" type="button" data-categoria="todas" aria-pressed="true">${esc(texts.allCategories)}</button>
+    ${generos.map((genero) => `
+      <button class="filtro" type="button" data-categoria="${esc(genero.key)}" aria-pressed="false">${esc(getText(genero.label, lang))}</button>
+    `).join('')}
+  `;
+
+  return chips;
+}
+
 /* Solo se publican entradas con un slug seguro y estado "published". Así un
    error al editar el manifiesto no rompe la página ni genera rutas extrañas. */
 function getPublishedGames() {
@@ -42,6 +79,7 @@ function CardGame(game, lang, texts) {
   const hasCarousel = covers.length > 1;
 
   article.className = 'juego-card';
+  article.setAttribute('data-categoria', genreKey(game));
 
   article.innerHTML = `
     <div class="juego-card__portada${hasCarousel ? ' juego-card__portada--carousel' : ''}${covers.length === 0 ? ' juego-card__portada--placeholder' : ''}" aria-hidden="true">
@@ -98,9 +136,16 @@ export function GridGames() {
   const lang = currentLanguage;
   const texts = translations.page[lang];
   const games = getPublishedGames();
+  const contenedorFiltros = document.getElementById('filtros-juegos');
+  const categoriaActiva = contenedorFiltros?.querySelector('.filtro.active')?.getAttribute('data-categoria') ?? 'todas';
 
   updateGamesIntro(lang, games.length);
   grid.innerHTML = '';
+
+  if (contenedorFiltros) {
+    contenedorFiltros.innerHTML = '';
+    contenedorFiltros.appendChild(ChipsFiltro(getGenres(games), lang, texts));
+  }
 
   if (!games.length) {
     grid.innerHTML = `<p class="juegos-vacio">${texts.gamesEmpty}</p>`;
@@ -110,6 +155,13 @@ export function GridGames() {
   games.forEach((game) => {
     grid.appendChild(CardGame(game, lang, texts));
   });
+
+  if (categoriaActiva !== 'todas' && contenedorFiltros) {
+    const chipActivo = Array.from(contenedorFiltros.querySelectorAll('.filtro'))
+      .find((chip) => chip.getAttribute('data-categoria') === categoriaActiva);
+
+    (chipActivo ?? contenedorFiltros.querySelector('.filtro'))?.click();
+  }
 }
 
 export function reloadGamesContent() {

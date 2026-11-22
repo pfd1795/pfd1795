@@ -12,7 +12,7 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 - Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
 - Enciclopedia de informática en `mis-estudios/`, con buscador y 28 artículos publicados; la grilla se genera desde `mis-estudios/data/articulos.json`.
-- Colección de 20 juegos arcade en `juegos/`, con una grilla generada desde `juegos/data/juegos.json`.
+- Colección de 20 juegos arcade en `juegos/`, con buscador, filtro por género y una grilla generada desde `juegos/data/juegos.json`.
 - Sección de programas y herramientas en `programas/`, con grilla filtrable generada desde `programas/data/herramientas.json` y tarjetas de herramientas propias (web, Linux, Windows, CLI, DevOps).
 - Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva. La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.

@@ -10,8 +10,8 @@ Reglas locales para agentes que trabajan en la sección Programas. Complementa e
   [`data/herramientas.json`](./data/herramientas.json) con `js/controllers/programas/`
   (se monta en `main.js` solo si existe `.programas-grid`; los chips también se generan
   desde el manifiesto).
-- `programas.css`: estilos específicos de la sección (chips `.filtro`, tarjetas
-  `.programa-card*`, acento adaptativo `--prog-accent`).
+- `programas.css`: estilos específicos de la sección (tarjetas `.programa-card*` y override
+  de acento `--prog-accent` para los chips `.filtro`, compartidos en `stylesheets/base.css`).
 - `herramientas/`: herramientas implementadas, una por archivo `<slug>.html`
   autocontenido (`convertidor-imagenes`, `dj`, `editor-text`, `escaner-dispositivos`,
   `generador-codigo-qr`, `generador-favicons`, `generador-paletas`, `pizarra-dibujo`).

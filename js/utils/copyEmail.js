@@ -1,7 +1,7 @@
 import translations from '../lang/translations.json' with { type: 'json' };
 import { currentLanguage } from '../lang/translations.config.js';
 
-let notifyTimer; // compartido entre llamadas para reiniciar el aviso en cada clic
+let notifyTimer;
 
 function showNotification(message, isError = false) {
   const notifications = document.querySelectorAll('.copy-notification');
@@ -14,26 +14,54 @@ function showNotification(message, isError = false) {
     notification.classList.add('show');
   });
 
-  clearTimeout(notifyTimer); // apaga el aviso solo 2 s después del último clic
+  clearTimeout(notifyTimer);
   notifyTimer = setTimeout(() => {
     notifications.forEach((notification) => notification.classList.remove('show'));
   }, 2000);
 }
 
-export function copyEmail() {
-  const email = 'pfd1795@gmail.com';
-  const textos = translations.header[currentLanguage] ?? translations.header.es;
+function fallbackCopy(text) {
+  const area = document.createElement('textarea');
 
-  if (!navigator.clipboard) {
-    console.warn('Clipboard API not supported');
-    showNotification(textos.copyEmailError, true);
+  area.value = text;
+  area.setAttribute('readonly', '');
+  area.style.position = 'absolute';
+  area.style.left = '-9999px';
+  document.body.appendChild(area);
+  area.select();
+
+  let copied = false;
+
+  try {
+    copied = document.execCommand('copy');
+  } catch {
+    copied = false;
+  } finally {
+    document.body.removeChild(area);
+  }
+
+  return copied;
+}
+
+function notifyResult(copied, texts) {
+  if (copied) {
+    showNotification(texts.copyNotification);
     return;
   }
 
-  navigator.clipboard.writeText(email).then(() => {
-    showNotification(textos.copyNotification);
-  }).catch((err) => {
-    console.error('Error copying email:', err);
-    showNotification(textos.copyEmailError, true);
-  });
+  showNotification(texts.copyEmailError, true);
+}
+
+export function copyEmail() {
+  const email = 'pfd1795@gmail.com';
+  const texts = translations.header[currentLanguage] ?? translations.header.es;
+
+  if (!navigator.clipboard?.writeText) {
+    notifyResult(fallbackCopy(email), texts);
+    return;
+  }
+
+  navigator.clipboard.writeText(email)
+    .then(() => notifyResult(true, texts))
+    .catch(() => notifyResult(fallbackCopy(email), texts));
 }

@@ -195,7 +195,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    | `controllers/juegos/`, `juegos/data/juegos.json` | `/juegos/` |
    | `mis-estudios/` (contenido, `mis-estudios.css`, manifiesto `data/articulos.json`) | `/mis-estudios/` y una subpágina de `articulos/` (p. ej. `/mis-estudios/articulos/css.html`) |
    | `programas/` (contenido, `programas.css`, manifiesto `data/herramientas.json`) | `/programas/` y una herramienta de `/programas/herramientas/` (p. ej. `/programas/herramientas/generador-paletas.html`) |
-   | `js/buscador.js` | `/mis-estudios/` y `/programas/` (filtro, conteo del placeholder y chips de categoría) |
+   | `js/buscador.js` | `/mis-estudios/`, `/programas/` y `/juegos/` (filtro, conteo del placeholder y chips de categoría; en juegos, de género) |
    | Modal de Configuración (`settings.controller.js`, `utils/dialog.js`) | `/` y `/juegos/` (apertura desde el footer del sidebar) |
 
 3. **Checklist funcional en el navegador:**
@@ -205,7 +205,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    - Modal de Configuración: modo claro/oscuro, acento, fondo de página (dirección/velocidad según tema), tamaño de fuente y idioma persisten tras una recarga dura.
    - Idioma ES/EN: la portada y la grilla de juegos se re-renderizan con las cadenas correctas (las cadenas generadas en JS no usan `data-lang`).
    - Tema sin parpadeo: tras recarga dura, el fondo y el acento correctos se pintan antes del primer frame (lo aplica `js/theme-init.js`, único en todo el sitio).
-   - En `juegos/`: las tarjetas del manifiesto se renderizan, las portadas cargan y los lanzamientos abren pestaña nueva con `rel="noopener noreferrer"`.
+   - En `juegos/`: las tarjetas del manifiesto se renderizan, las portadas cargan, el buscador y los chips de género filtran (incluido el cambio ES/EN) y los lanzamientos abren pestaña nueva con `rel="noopener noreferrer"`.
    - En `mis-estudios/`: el tema del portafolio se respeta y el buscador filtra, actualiza el conteo del placeholder y muestra/oculta `#sin-resultados`.
 4. **Registros en consola permitidos:** los avisos de `utils/storage.js` cuando `localStorage` está bloqueado (modo privado) son esperables; cualquier otro error sí es un problema.
 
@@ -290,7 +290,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
 | `juegos.controller.js` | `default JuegosController()` | Carga el manifiesto `juegos/data/juegos.json`, lo valida y dispara el render de la grilla. |
-| `fnJuegos.js` | `GridGames()`, `reloadGamesContent()` | Genera las tarjetas desde el manifiesto (etiquetas por idioma desde `translations.page[lang]`) y re-renderiza al cambiar de idioma. |
+| `fnJuegos.js` | `GridGames()`, `reloadGamesContent()` | Genera los chips de filtro por género y las tarjetas desde el manifiesto (etiquetas por idioma desde `translations.page[lang]`), marca `data-categoria` en cada tarjeta, preserva el género activo y re-renderiza al cambiar de idioma. |
 
 **Controladores — `controllers/mis-estudios/`**
 
@@ -349,7 +349,7 @@ Las tres grillas de sección usan el **mismo esquema de manifiesto**: una clave 
 `version` (formato) y un array `items`; en `mis-estudios/` y `programas/` hay además
 un array `categories` (`id` + `label {es}`) que ordena y agrupa las tarjetas. Cada
 entrada lleva `slug` (kebab-case, validado con un patrón), `title`, `description`,
-`status: "published" \| "wip"` y campos propios de la sección (`covers`/`year`/… en
+`status: "published" \| "wip"` y campos propios de la sección (`covers`/`year`/`genre` en
 juegos; `keywords`/`category` en artículos y herramientas; `icon`/`technologies` en
 herramientas). Solo se publican entradas con `status: "published"` y slug válido;
 las URLs no van en el manifiesto: se construyen como `<patrón de la sección>/<slug>…`.
@@ -463,9 +463,9 @@ element?.addEventListener('click', () => {
 - **Eventos**: Usar delegation cuando sea posible.
 - **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`) que despliega un `.sidebar-submenu` con 3 elementos (`data-target`: experiencia, estudios, proyectos; en `mis-estudios/` son enlaces `../index.html#seccion` o `../../index.html#seccion` desde `mis-estudios/articulos/*.html`). El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible; si es una hija, abre el submenú y añade `.has-active` al `--group`. Al abrir el menú, `sidebar.controller.js` marca el fondo como `inert` (`.navbar`, `.main-layout`/`.main-content`, `.footer`, `.modal-dialog`) y lleva el foco al botón de cierre; al cerrarlo retira el `inert` y devuelve el foco al botón que lo abrió.
 - **Enlaces externos del menú**: debajo de "Inicio" hay `<a class="sidebar-item">` para "Mis estudios" (icono `menu_book`, → `./mis-estudios/index.html`), "Juegos" (icono `gamepad`, → `./juegos/index.html`) y "Programas" (icono `build`, → `./programas/index.html`; en esas subpáginas lleva `.active` y `aria-current="page"`, y las rutas se ajustan con `../` o `../../`). No llevan `data-target`, por lo que el scrollspy los ignora; `sidebar.controller.js` cierra el menú al pulsarlos.
-- **Grillas y manifiestos**: las tres secciones (`juegos/`, `mis-estudios/`, `programas/`) siguen el mismo patrón: `index.html` con buscador (y filtros en programas), un contenedor `<seccion>-grid` vacío en el HTML, un manifiesto `<seccion>/data/*.json` y un controlador en `js/controllers/<seccion>/` (`<seccion>.controller.js` + `fn<Seccion>.js`) que renderiza las tarjetas. El controlador se monta en `main.js` solo si existe su contenedor. Para agregar contenido nuevo: archivo por `slug` en la carpeta de la sección + entrada en el manifiesto + verificación.
+- **Grillas y manifiestos**: las tres secciones (`juegos/`, `mis-estudios/`, `programas/`) siguen el mismo patrón: `index.html` con buscador (y filtros por categoría en programas y por género en juegos), un contenedor `<seccion>-grid` vacío en el HTML, un manifiesto `<seccion>/data/*.json` y un controlador en `js/controllers/<seccion>/` (`<seccion>.controller.js` + `fn<Seccion>.js`) que renderiza las tarjetas. El controlador se monta en `main.js` solo si existe su contenedor. Para agregar contenido nuevo: archivo por `slug` en la carpeta de la sección + entrada en el manifiesto + verificación.
 - **Enciclopedia** (`mis-estudios/`): comparte la preferencia de tema del portafolio (pre-pintado con `js/theme-init.js`). Sus páginas cargan también la barra, el menú lateral y `js/main.js`, de modo que el modal de Configuración funciona igual que en la portada. La grilla se renderiza desde `mis-estudios/data/articulos.json`; los artículos viven en `mis-estudios/articulos/<slug>.html`. El contenido es solo en español, pero las etiquetas de UI generadas en JS (p. ej. «Próximamente») se toman de `translations.page[lang]`. El buscador es el `js/buscador.js` compartido, configurado por `data-attributes` del input.
-- **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `juegos/juegos.css`. La grilla se renderiza desde `juegos/data/juegos.json` con `controllers/juegos/`. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
+- **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `juegos/juegos.css`. La grilla se renderiza desde `juegos/data/juegos.json` con `controllers/juegos/`. El buscador es el `js/buscador.js` compartido y los chips de filtro por género se generan en `fnJuegos.js` desde el campo `genre` del manifiesto: la clave estable es `genre.es`, que se replica en `data-categoria` de cada tarjeta; las etiquetas visibles y el género activo se conservan al cambiar de idioma. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
 - **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `programas/programas.css`. La grilla se renderiza desde `programas/data/herramientas.json` con `controllers/programas/` (chips de filtro incluidos, generados desde las categorías del manifiesto): las herramientas `published` se convierten en enlace (botón «Abrir» con `target="_blank"` + `rel="noopener noreferrer"`, patrón de la grilla de juegos) y las `wip` conservan el estado «Próximamente». El contenido del manifiesto es solo en español, pero las cadenas de UI de la grilla («Abrir», «Próximamente», «Filtrar por categoría», «Todas» y la nota de pestaña nueva) se toman de `translations.page[lang]`; no se traducen títulos ni descripciones. Las herramientas propias viven en `programas/herramientas/<slug>.html`, son autocontenidas y siguen el patrón de `juegos/` (guía en `docs/prompts/crear-programas-web.md`). El buscador es el `js/buscador.js` compartido; comparte el tema mediante `js/theme-init.js`.
 El dimensionado del escenario de los juegos de marco pequeño y de la plantilla (snake,
 space-invaders, neon-racer, plataformas, dungeon-crawler, tower-defense) sigue un criterio
@@ -499,7 +499,8 @@ Arquitectura CSS).
 - **Modo oscuro**: clase `.dark` en `body.dark` (portafolio) y `html.dark` (subpáginas como `mis-estudios/`, que la fijan antes de pintar); la sección `:root` de `base.css` admite ambos selectores y `fnThemeMode.js` actualiza los dos nodos. Redefine las variables semánticas (`--color-background`, `--color-surface`, `--color-text`, …), por lo que los componentes se adaptan solos.
 - **Enciclopedia**: estilos en `mis-estudios/mis-estudios.css`; conserva los nombres de clase originales y usa el acento adaptativo `--enc-accent`.
 - **Juegos**: `juegos/juegos.css` contiene la página y las tarjetas (`.juego-card*`) con tokens de `base.css`. Cada tarjeta muestra su portada (`.juego-card__portada`) leyendo `covers` del manifiesto: rutas relativas a `juegos/index.html`, como `../assets/images/games/<slug>/cover.jpg`. Con una sola imagen es estática; con 2–3 se activa el carrusel por CSS (`--carousel`, crossfade); sin imágenes, placeholder con degradado. La guía para generar portadas es una herramienta de desarrollo en `docs/prompts/portadas-juegos.md`.
-- **Programas**: `programas/programas.css` contiene la página, los chips `.filtro` y las tarjetas (`.programa-card*`) con tokens de `base.css` y el acento adaptativo `--prog-accent`.
+- **Buscador y filtros**: los estilos de `.buscador__campo`, `.buscador__mensaje`, `.filtros` y `.filtro` viven en la sección de componentes de `stylesheets/base.css` y los comparten `mis-estudios/`, `programas/` y `juegos/`. Cada hoja de sección conserva solo los overrides de acento propios: `--enc-accent` en la enciclopedia, `--prog-accent` en programas y `--theme-color` (el acento de `base.css`) en juegos.
+- **Programas**: `programas/programas.css` contiene la página, las tarjetas (`.programa-card*`) y el override de acento `--prog-accent` para los chips `.filtro`, cuyos estilos compartidos están en `base.css`.
 - **Modal**: `.modal-dialog` usa las variables semánticas y se adapta al modo oscuro automáticamente; el botón de cierre usa `.modal-close`; el bloqueo de scroll usa `.modal-open` en `<body>`. El `<dialog>` referencia `aria-labelledby="modal-title"`, por lo que cada contenido dinámico (Configuración y educación) debe generar un elemento con `id="modal-title"` en cada apertura.
 - **Salto al contenido**: el estilo del enlace `.saltar` vive en la sección de componentes de `stylesheets/base.css` y lo comparten la portada y la enciclopedia.
 - **Encabezado del navbar**: solo `index.html` mantiene `<h1>Pablo Diaz</h1>`. Las subpáginas (secciones, artículos y herramientas) usan `<span class="navbar-name">Pablo Diaz</span>` para dejar el único `<h1>` al título real de la página; `.navbar-name` comparte estilo con el `h1` del logo en `base.css`. `dj.html` es la excepción autocontenida.
@@ -529,7 +530,6 @@ Arquitectura CSS).
 - Requiere navegadores modernos: módulos ES, import attributes (`with { type: "json" }`), CSS nesting, `<dialog>`, `IntersectionObserver`, `color-mix()` y `@view-transition`.
 - `@view-transition` y `color-mix()` son mejoras progresivas; si el navegador no las soporta, la página sigue funcionando con menor fidelidad visual.
 - Sin `IntersectionObserver`, el scrollspy no se activa.
-- Copiar el correo depende de `navigator.clipboard`; si no está disponible, solo se registra un aviso en consola.
 
 ### Preferencias y almacenamiento
 
@@ -564,7 +564,7 @@ Arquitectura CSS).
 
 - No existe la clase `.modal-closed`; el bloqueo de scroll del modal se controla con `.modal-open` en `<body>` (añadir la clase invertida facilitaría la interfaz con `<dialog>`).
 - Cada juego tiene una sola portada (`cover.jpg`); las portadas 2 y 3 para el carrusel aún no se han generado (la guía y el código ya aceptan hasta 3 mediante `covers`).
-- No existe `updatedAt` por juego en el manifiesto y la grilla no tiene filtro por género.
+- No existe `updatedAt` por juego en el manifiesto.
 - El contenido de la enciclopedia no tiene traducción al inglés.
 
 ### Rendimiento y mantenimiento

@@ -8,7 +8,9 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
 
 - `index.html`: la grilla de juegos (chrome del portafolio). Se renderiza desde
   [`./data/juegos.json`](./data/juegos.json) con `controllers/juegos/`;
-  se monta en `main.js` solo si existe `.juegos-grid`.
+  se monta en `main.js` solo si existe `.juegos-grid`. El buscador es el
+  `js/buscador.js` compartido y los chips de género se generan en `fnJuegos.js`
+  desde el campo `genre` del manifiesto.
 - `_template/`: plantilla para juegos nuevos (no aparece en la grilla).
 - `<slug>/`: un juego por carpeta, autocontenido en un único `index.html` (+ `README-juego.md`).
 
@@ -66,3 +68,6 @@ Específico de esta carpeta, tras cualquier cambio:
    scroll, que los controles táctiles siguen visibles y que el buffer del canvas iguala el
    tamaño visible × DPR (mínimo la resolución lógica; ver la sección "Dimensionado del canvas"
    del README).
+7. El buscador filtra por término, actualiza el conteo del placeholder y muestra/oculta
+   `#sin-resultados`. Los chips de género filtran las tarjetas, conservan `aria-pressed` y
+   siguen activos tras cambiar ES/EN.
