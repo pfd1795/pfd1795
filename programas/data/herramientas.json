@@ -66,7 +66,7 @@
         "HTML",
         "JavaScript"
       ],
-      "status": "wip"
+      "status": "published"
     },
     {
       "slug": "convertidor-de-unidades",
@@ -83,7 +83,7 @@
         "HTML",
         "JavaScript"
       ],
-      "status": "wip"
+      "status": "published"
     },
     {
       "slug": "generador-favicons",
@@ -226,23 +226,6 @@
       "status": "wip"
     },
     {
-      "slug": "generador-de-gitignore",
-      "title": {
-        "es": "Generador de .gitignore"
-      },
-      "description": {
-        "es": "Genera un .gitignore según la tecnología o stack del proyecto."
-      },
-      "keywords": "gitignore generador plantilla cli terminal",
-      "category": "cat-cli",
-      "icon": "code.svg",
-      "technologies": [
-        "Node.js",
-        "CLI"
-      ],
-      "status": "wip"
-    },
-    {
       "slug": "generador-de-dockerfile",
       "title": {
         "es": "Generador de Dockerfile"
@@ -265,7 +248,7 @@
         "es": "Validador de YAML"
       },
       "description": {
-        "es": "Valida la sintaxis de archivos YAML y muestra errores."
+        "es": "Valida la sintaxis básica de YAML y muestra los errores con su número de línea."
       },
       "keywords": "yaml validador sintaxis devops",
       "category": "cat-devops",
@@ -274,7 +257,7 @@
         "YAML",
         "JavaScript"
       ],
-      "status": "wip"
+      "status": "published"
     },
     {
       "slug": "dj",

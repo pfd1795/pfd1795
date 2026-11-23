@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formateador JSON — Programas pfd1795</title>
+  <meta name="description" content="Valida, formatea y minifica JSON en tu navegador, sin enviar los datos a ningún servidor.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../programas.css">
+  <style>
+    .jsonfmt__campo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .jsonfmt__area {
+      width: 100%;
+      min-height: 16em;
+      padding: var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      resize: vertical;
+      tab-size: 2;
+    }
+
+    .jsonfmt__controles {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .jsonfmt__selector {
+      padding: var(--space-2) var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+    }
+
+    .jsonfmt__acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .jsonfmt__mensaje {
+      min-height: 1.5em;
+      margin-bottom: var(--space-3);
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    .jsonfmt__mensaje[data-estado="ok"] {
+      color: var(--green-normal);
+    }
+
+    .jsonfmt__mensaje[data-estado="error"] {
+      color: var(--red-normal);
+    }
+
+    .jsonfmt__resultado {
+      max-height: 28em;
+      margin: 0;
+      padding: var(--space-4);
+      overflow: auto;
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      tab-size: 2;
+      white-space: pre;
+    }
+
+    @media (min-width: 768px) {
+      .jsonfmt__area {
+        min-height: 22em;
+      }
+    }
+  </style>
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <h1>Formateador JSON</h1>
+      <p>Valida, formatea y minifica documentos JSON directamente en tu navegador. El contenido no se envía a ningún servidor.</p>
+
+      <section aria-labelledby="jsonfmt-entrada-titulo">
+        <h2 id="jsonfmt-entrada-titulo">Entrada</h2>
+        <form id="form-json" novalidate>
+          <div class="jsonfmt__campo">
+            <label for="json-entrada">JSON de entrada</label>
+            <textarea id="json-entrada" class="jsonfmt__area" rows="12" spellcheck="false" placeholder="{ &quot;clave&quot;: &quot;valor&quot; }"></textarea>
+          </div>
+
+          <div class="jsonfmt__controles">
+            <div class="jsonfmt__campo">
+              <label for="json-indentacion">Indentación</label>
+              <select id="json-indentacion" class="jsonfmt__selector">
+                <option value="2" selected>2 espacios</option>
+                <option value="4">4 espacios</option>
+                <option value="tab">Tabulador</option>
+              </select>
+            </div>
+
+            <div class="jsonfmt__acciones">
+              <button type="submit" class="btn">Formatear</button>
+              <button type="button" class="btn" id="json-minificar">Minificar</button>
+              <button type="button" class="btn" id="json-copiar">Copiar</button>
+              <button type="button" class="btn" id="json-limpiar">Limpiar</button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <section aria-labelledby="jsonfmt-resultado-titulo">
+        <h2 id="jsonfmt-resultado-titulo">Resultado</h2>
+        <div id="json-mensaje" class="jsonfmt__mensaje" role="status" aria-live="polite"></div>
+        <pre id="json-resultado" class="jsonfmt__resultado" tabindex="0" aria-label="JSON resultante"><code>Ingresa un JSON y pulsa «Formatear» para verlo aquí.</code></pre>
+      </section>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../mis-estudios/index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const entrada = document.querySelector('#json-entrada');
+      const indentacion = document.querySelector('#json-indentacion');
+      const resultado = document.querySelector('#json-resultado');
+      const mensaje = document.querySelector('#json-mensaje');
+      const formulario = document.querySelector('#form-json');
+      let modo = 'formatear';
+
+      const obtenerIndentacion = () => indentacion.value === 'tab' ? '\t' : Number(indentacion.value);
+
+      const avisar = (texto, estado) => {
+        mensaje.textContent = texto;
+
+        if (estado) {
+          mensaje.dataset.estado = estado;
+        } else {
+          delete mensaje.dataset.estado;
+        }
+      };
+
+      const procesar = (minificar) => {
+        modo = minificar ? 'minificar' : 'formatear';
+        const texto = entrada.value.trim();
+
+        if (!texto) {
+          avisar('Introduce un JSON para continuar.', 'error');
+          return;
+        }
+
+        try {
+          const datos = JSON.parse(texto);
+          resultado.textContent = minificar
+            ? JSON.stringify(datos)
+            : JSON.stringify(datos, null, obtenerIndentacion());
+          avisar(minificar ? 'JSON minificado correctamente.' : 'JSON formateado correctamente.', 'ok');
+        } catch (error) {
+          avisar('JSON no válido: ' + error.message, 'error');
+        }
+      };
+
+      formulario.addEventListener('submit', (event) => {
+        event.preventDefault();
+        procesar(false);
+      });
+
+      document.querySelector('#json-minificar').addEventListener('click', () => procesar(true));
+
+      indentacion.addEventListener('change', () => procesar(modo === 'minificar'));
+
+      document.querySelector('#json-copiar').addEventListener('click', async () => {
+        const texto = resultado.textContent.trim();
+
+        if (!texto || texto.startsWith('Ingresa un JSON')) {
+          avisar('No hay ningún resultado para copiar.', 'error');
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(texto);
+          avisar('Resultado copiado al portapapeles.', 'ok');
+        } catch (error) {
+          avisar('No se pudo copiar el resultado.', 'error');
+        }
+      });
+
+      document.querySelector('#json-limpiar').addEventListener('click', () => {
+        entrada.value = '';
+        resultado.textContent = 'Ingresa un JSON y pulsa «Formatear» para verlo aquí.';
+        avisar('', null);
+        entrada.focus();
+      });
+    })();
+  </script>
+</body>
+</html>

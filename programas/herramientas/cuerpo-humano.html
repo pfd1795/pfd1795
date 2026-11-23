@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El cuerpo humano por capas — Programas pfd1795</title>
+  <meta name="description" content="Explorador interactivo del cuerpo humano por capas: piel, músculos, órganos y esqueleto, con información de cada zona.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../programas.css">
+  <style>
+    /* Estilos propios de la herramienta. Usa los tokens de base.css. */
+    .herramienta__controles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      align-items: center;
+      justify-content: space-between;
+      margin-block: var(--space-4);
+    }
+    .herramienta__capas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      align-items: center;
+    }
+    .herramienta__capa[aria-pressed="true"] {
+      background-color: var(--theme-color-soft);
+      border-color: var(--theme-color);
+      font-weight: 600;
+    }
+    .herramienta__profundidad {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+      flex: 1 1 260px;
+      min-width: 240px;
+    }
+    .herramienta__profundidad label {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+    .herramienta__profundidad input[type="range"] {
+      flex: 1 1 120px;
+      min-width: 0;
+      accent-color: var(--theme-color);
+    }
+    .herramienta__profundidad output {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      min-width: 9ch;
+    }
+    .herramienta__detalle {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin: 0 0 var(--space-4);
+    }
+    .herramienta__panel {
+      display: grid;
+      grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+      gap: var(--space-4);
+      align-items: start;
+    }
+    .herramienta__figura {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .herramienta__figura svg {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      display: block;
+    }
+    .herramienta__pista {
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+      text-align: center;
+      margin: 0;
+    }
+    .herramienta__lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+    .herramienta__chip {
+      font: inherit;
+      font-size: var(--text-sm);
+      padding: 0.3rem 0.85rem;
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: 999px;
+      background-color: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      transition: background-color var(--transition-fast), border-color var(--transition-fast);
+    }
+    .herramienta__chip:hover { border-color: var(--theme-color); }
+    .herramienta__chip[aria-pressed="true"] {
+      background-color: var(--theme-color-soft);
+      border-color: var(--theme-color);
+      font-weight: 600;
+    }
+    .herramienta__chip:focus-visible,
+    .herramienta__capa:focus-visible,
+    .herramienta__reiniciar:focus-visible {
+      outline: 2px solid var(--theme-color);
+      outline-offset: 2px;
+    }
+    .herramienta__resultado {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-lg);
+      min-height: 200px;
+    }
+    .herramienta__resultado h3 {
+      margin: 0 0 var(--space-2);
+      font-size: var(--text-h4);
+    }
+    .herramienta__resultado p { margin: 0; }
+    .herramienta__etiqueta {
+      display: inline-block;
+      margin-bottom: var(--space-2);
+      padding: 0.15rem 0.7rem;
+      font-size: var(--text-xs);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background-color: var(--theme-color-soft);
+      border-radius: 999px;
+    }
+    .herramienta__datos {
+      margin: var(--space-3) 0 0;
+      padding: 0;
+      display: grid;
+      gap: var(--space-2);
+    }
+    .herramienta__dato {
+      padding-left: var(--space-3);
+      border-left: 3px solid var(--theme-color-soft);
+    }
+    .herramienta__dato dt {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-text-secondary);
+    }
+    .herramienta__dato dd {
+      margin: 0;
+      font-size: var(--text-sm);
+    }
+
+    /* Figura SVG: capas, zonas y animaciones */
+    .capa {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+      transition: opacity var(--transition-normal) var(--ease-in-out),
+        transform var(--transition-normal) var(--ease-in-out);
+    }
+    .capa--visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+    .fantasma { fill: var(--color-text); opacity: 0.07; }
+    .capa-esqueleto .fantasma { opacity: 0.1; }
+    .piel-masa { fill: #eab68c; }
+    .zona {
+      cursor: pointer;
+      transition: opacity var(--transition-fast), filter var(--transition-fast);
+    }
+    .zona:hover { filter: brightness(1.12); }
+    .zona:focus-visible {
+      filter: brightness(1.12) drop-shadow(0 0 4px var(--theme-color));
+      outline: none;
+    }
+    #figura-cuerpo.con-seleccion .zona:not(.zona--activa) { opacity: 0.35; }
+    .zona--activa { filter: brightness(1.15) drop-shadow(0 0 5px var(--theme-color)); }
+    .musculo, .organo { stroke: rgba(0, 0, 0, 0.18); stroke-width: 1; }
+    .hueso { fill: none; stroke: #e7dfca; stroke-linecap: round; }
+    .hueso-masa { fill: #e7dfca; stroke: #9a8f74; stroke-width: 1; }
+    .zona-corazon {
+      transform-box: fill-box;
+      transform-origin: 50% 60%;
+      animation: latido 1.5s ease-in-out infinite;
+    }
+    .zona-pulmones {
+      transform-box: fill-box;
+      transform-origin: 50% 12%;
+      animation: respirar 4s ease-in-out infinite alternate;
+    }
+    @keyframes latido {
+      0%, 100% { transform: scale(1); }
+      12% { transform: scale(1.08); }
+      24% { transform: scale(1); }
+      36% { transform: scale(1.05); }
+      55% { transform: scale(1); }
+    }
+    @keyframes respirar {
+      from { transform: scale(1, 1); }
+      to { transform: scale(1, 1.05); }
+    }
+    @media (max-width: 720px) {
+      .herramienta__panel { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .capa, .zona { transition: none; }
+      .zona-corazon, .zona-pulmones { animation: none; }
+    }
+  </style>
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <h1>Pablo Diaz</h1>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <h1>El cuerpo humano por capas</h1>
+      <p>Explora el cuerpo humano como si hicieras un corte en profundidad: desde la piel hasta el esqueleto. Elige una capa con los botones o el deslizador, toca una zona de la figura o de la lista y descubre qué hay debajo y cómo funciona.</p>
+
+      <section class="herramienta" aria-labelledby="cuerpo-titulo">
+        <h2 id="cuerpo-titulo">Explorador anatómico</h2>
+
+        <div class="herramienta__controles">
+          <div class="herramienta__capas" role="group" aria-label="Capas del cuerpo humano">
+            <button type="button" class="btn herramienta__capa" data-capa="0" aria-pressed="true">Piel</button>
+            <button type="button" class="btn herramienta__capa" data-capa="1" aria-pressed="false">Músculos</button>
+            <button type="button" class="btn herramienta__capa" data-capa="2" aria-pressed="false">Órganos</button>
+            <button type="button" class="btn herramienta__capa" data-capa="3" aria-pressed="false">Esqueleto</button>
+            <button type="button" class="btn herramienta__reiniciar" id="boton-reiniciar">Restablecer</button>
+          </div>
+          <div class="herramienta__profundidad">
+            <label for="profundidad">Profundidad</label>
+            <input type="range" id="profundidad" min="0" max="3" step="1" value="0" aria-valuetext="Piel">
+            <output id="profundidad-valor" for="profundidad">Piel</output>
+          </div>
+        </div>
+        <p id="capa-detalle" class="herramienta__detalle">Capa 1 de 4 · La envoltura del cuerpo: protección, temperatura y tacto.</p>
+
+        <div class="herramienta__panel">
+          <figure class="herramienta__figura">
+            <svg viewBox="0 0 300 620" role="group" aria-label="Figura interactiva del cuerpo humano. Recorre las zonas con Tab y confirma con Enter.">
+              <defs>
+                <g id="silueta-cuerpo">
+                  <ellipse cx="150" cy="56" rx="30" ry="36"/>
+                  <rect x="137" y="84" width="26" height="34" rx="9"/>
+                  <path d="M100 118 C 120 110, 180 110, 200 118 L 204 186 C 205 224, 196 244, 190 262 C 186 288, 188 312, 194 336 L 106 336 C 112 312, 114 288, 110 262 C 104 244, 95 224, 96 186 Z"/>
+                  <path d="M96 124 C 84 140, 82 170, 86 200 C 88 224, 84 258, 78 292 C 76 306, 78 318, 86 326 C 94 332, 102 328, 104 318 C 108 292, 108 258, 106 232 C 104 204, 108 168, 112 140 Z"/>
+                  <path d="M204 124 C 216 140, 218 170, 214 200 C 212 224, 216 258, 222 292 C 224 306, 222 318, 214 326 C 206 332, 198 328, 196 318 C 192 292, 192 258, 194 232 C 196 204, 192 168, 188 140 Z"/>
+                  <path d="M106 336 C 104 380, 106 430, 110 470 C 112 505, 112 545, 112 575 L 128 575 C 128 545, 128 505, 130 470 C 134 430, 138 380, 140 336 Z"/>
+                  <path d="M160 336 C 162 380, 166 430, 170 470 C 172 505, 172 545, 172 575 L 188 575 C 188 545, 188 505, 190 470 C 194 430, 196 380, 194 336 Z"/>
+                  <ellipse cx="120" cy="590" rx="16" ry="8"/>
+                  <ellipse cx="180" cy="590" rx="16" ry="8"/>
+                </g>
+              </defs>
+
+              <!-- Capa 1: piel -->
+              <g id="capa-0" class="capa capa--visible">
+                <g class="zona" data-clave="piel" role="button" tabindex="0" aria-label="Información: la piel">
+                  <use href="#silueta-cuerpo" class="piel-masa"/>
+                  <rect x="137" y="84" width="26" height="14" rx="6" fill="#c98f6d" opacity="0.5"/>
+                  <path d="M118 122 Q 134 130 146 126 M 154 126 Q 166 130 182 122" fill="none" stroke="#c98f6d" stroke-width="2" stroke-linecap="round" opacity="0.75"/>
+                  <ellipse cx="150" cy="300" rx="3" ry="4" fill="#c98f6d"/>
+                </g>
+                <g class="zona" data-clave="cabello" role="button" tabindex="0" aria-label="Información: el cabello">
+                  <path fill="#4a352a" d="M120 54 C 116 22, 136 12, 150 12 C 164 12, 184 22, 180 54 C 172 32, 162 24, 150 24 C 138 24, 128 32, 120 54 Z"/>
+                </g>
+                <g aria-hidden="true">
+                  <circle cx="139" cy="54" r="2.6" fill="#4a352a"/>
+                  <circle cx="161" cy="54" r="2.6" fill="#4a352a"/>
+                  <path d="M133 46 Q 139 43 145 46 M 155 46 Q 161 43 167 46" fill="none" stroke="#4a352a" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M143 71 Q 150 77 157 71" fill="none" stroke="#b06b4f" stroke-width="2.2" stroke-linecap="round"/>
+                </g>
+              </g>
+
+              <!-- Capa 2: músculos -->
+              <g id="capa-1" class="capa">
+                <use href="#silueta-cuerpo" class="fantasma"/>
+                <g class="zona" data-clave="deltoides" role="button" tabindex="0" aria-label="Información: deltoides">
+                  <ellipse class="musculo" fill="#b8503f" cx="104" cy="132" rx="15" ry="18" transform="rotate(-15 104 132)"/>
+                  <ellipse class="musculo" fill="#b8503f" cx="196" cy="132" rx="15" ry="18" transform="rotate(15 196 132)"/>
+                </g>
+                <g class="zona" data-clave="pectoral" role="button" tabindex="0" aria-label="Información: pectoral mayor">
+                  <path class="musculo" fill="#cf6152" d="M112 138 Q 130 128 146 136 L 146 180 Q 130 190 113 176 C 110 164 110 150 112 138 Z"/>
+                  <path class="musculo" fill="#cf6152" d="M188 138 Q 170 128 154 136 L 154 180 Q 170 190 187 176 C 190 164 190 150 188 138 Z"/>
+                </g>
+                <g class="zona" data-clave="biceps" role="button" tabindex="0" aria-label="Información: bíceps braquial">
+                  <ellipse class="musculo" fill="#bb4f42" cx="97" cy="170" rx="12" ry="26" transform="rotate(12 97 170)"/>
+                  <ellipse class="musculo" fill="#bb4f42" cx="203" cy="170" rx="12" ry="26" transform="rotate(-12 203 170)"/>
+                </g>
+                <g class="zona" data-clave="recto-abdominal" role="button" tabindex="0" aria-label="Información: recto abdominal">
+                  <rect class="musculo" fill="#d96b57" x="139" y="190" width="22" height="21" rx="7"/>
+                  <rect class="musculo" fill="#d96b57" x="139" y="215" width="22" height="21" rx="7"/>
+                  <rect class="musculo" fill="#d96b57" x="139" y="240" width="22" height="21" rx="7"/>
+                  <rect class="musculo" fill="#d96b57" x="139" y="265" width="22" height="18" rx="7"/>
+                  <path d="M150 191 L 150 282" stroke="rgba(0,0,0,0.25)" stroke-width="2"/>
+                </g>
+                <g class="zona" data-clave="oblicuos" role="button" tabindex="0" aria-label="Información: oblicuos externos">
+                  <path class="musculo" fill="#ad4a3e" d="M112 192 Q 104 232 116 268 Q 125 240 123 200 Z"/>
+                  <path class="musculo" fill="#ad4a3e" d="M188 192 Q 196 232 184 268 Q 175 240 177 200 Z"/>
+                </g>
+                <g class="zona" data-clave="cuadriceps" role="button" tabindex="0" aria-label="Información: cuádriceps femoral">
+                  <ellipse class="musculo" fill="#c65a49" cx="124" cy="410" rx="15" ry="44"/>
+                  <ellipse class="musculo" fill="#c65a49" cx="176" cy="410" rx="15" ry="44"/>
+                </g>
+              </g>
+
+              <!-- Capa 3: órganos -->
+              <g id="capa-2" class="capa">
+                <use href="#silueta-cuerpo" class="fantasma"/>
+                <g class="zona" data-clave="rinones" role="button" tabindex="0" aria-label="Información: riñones">
+                  <ellipse class="organo" fill="#a5453c" cx="116" cy="256" rx="6" ry="12" transform="rotate(8 116 256)"/>
+                  <ellipse class="organo" fill="#a5453c" cx="184" cy="256" rx="6" ry="12" transform="rotate(-8 184 256)"/>
+                </g>
+                <g class="zona" data-clave="vejiga" role="button" tabindex="0" aria-label="Información: vejiga">
+                  <ellipse class="organo" fill="#d9b23f" cx="150" cy="332" rx="11" ry="10"/>
+                </g>
+                <g class="zona" data-clave="intestino-delgado" role="button" tabindex="0" aria-label="Información: intestino delgado">
+                  <rect class="organo" fill="#e6b3a5" x="126" y="262" width="48" height="54" rx="22"/>
+                  <path d="M132 274 Q 150 266 168 274 M 130 286 Q 150 294 170 286 M 132 298 Q 150 306 168 298 M 136 310 Q 150 315 164 310" fill="none" stroke="#c98b7c" stroke-width="2" stroke-linecap="round"/>
+                </g>
+                <g class="zona" data-clave="intestino-grueso" role="button" tabindex="0" aria-label="Información: intestino grueso">
+                  <path d="M119 322 C 117 298, 117 280, 121 260 C 123 250, 131 246, 139 246 L 161 246 C 169 246, 177 250, 179 260 C 183 280, 183 298, 181 322 C 180 332, 171 336, 161 336 L 151 336" fill="none" stroke="#cf9f66" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <g class="zona" data-clave="higado" role="button" tabindex="0" aria-label="Información: hígado">
+                  <path class="organo" fill="#8a4636" d="M104 214 C 118 206, 142 204, 152 210 C 154 218, 152 230, 144 238 C 130 248, 112 246, 104 236 Z"/>
+                </g>
+                <g class="zona" data-clave="bazo" role="button" tabindex="0" aria-label="Información: bazo">
+                  <ellipse class="organo" fill="#8e5a86" cx="186" cy="246" rx="7" ry="10" transform="rotate(18 186 246)"/>
+                </g>
+                <g class="zona" data-clave="pancreas" role="button" tabindex="0" aria-label="Información: páncreas">
+                  <path class="organo" fill="#d9b26a" d="M148 254 L 170 259 C 175 261, 175 266, 170 266 L 148 262 Z"/>
+                </g>
+                <g class="zona" data-clave="estomago" role="button" tabindex="0" aria-label="Información: estómago">
+                  <path class="organo" fill="#cf9552" d="M158 220 C 168 214, 182 218, 186 232 C 190 246, 184 258, 172 262 C 162 265, 154 258, 152 248 C 150 238, 152 226, 158 220 Z"/>
+                </g>
+                <g class="zona zona-pulmones" data-clave="pulmones" role="button" tabindex="0" aria-label="Información: pulmones">
+                  <path d="M150 92 C 150 110, 150 130, 150 146" fill="none" stroke="#c9889c" stroke-width="4" stroke-linecap="round"/>
+                  <path class="organo" fill="#dd9294" d="M114 146 C 104 148, 100 166, 100 182 C 100 198, 106 206, 116 206 C 126 206, 132 198, 132 184 L 132 158 C 130 148, 122 144, 114 146 Z"/>
+                  <path class="organo" fill="#dd9294" d="M186 146 C 196 148, 200 166, 200 182 C 200 198, 194 206, 184 206 C 174 206, 168 198, 168 184 L 168 158 C 170 148, 178 144, 186 146 Z"/>
+                </g>
+                <g class="zona zona-corazon" data-clave="corazon" role="button" tabindex="0" aria-label="Información: corazón">
+                  <path class="organo" fill="#b23a3a" transform="rotate(-8 160 186)" d="M141 176 C 139 164, 151 158, 158 165 C 160 168, 163 168, 165 165 C 172 157, 183 163, 183 175 C 183 188, 177 198, 171 206 C 168 211, 164 215, 161 215 C 158 215, 155 210, 151 204 C 146 197, 143 188, 141 180 Z"/>
+                </g>
+                <g class="zona" data-clave="cerebro" role="button" tabindex="0" aria-label="Información: cerebro">
+                  <ellipse class="organo" fill="#e3aebc" cx="150" cy="50" rx="21" ry="25"/>
+                  <path d="M134 40 Q 141 32 149 38 Q 157 30 165 40 M 133 54 Q 141 47 149 53 Q 157 47 166 54 M 137 66 Q 145 60 153 66" fill="none" stroke="#c9889c" stroke-width="2" stroke-linecap="round"/>
+                  <ellipse class="organo" fill="#d494a8" cx="150" cy="76" rx="9" ry="5"/>
+                </g>
+              </g>
+
+              <!-- Capa 4: esqueleto -->
+              <g id="capa-3" class="capa capa-esqueleto">
+                <use href="#silueta-cuerpo" class="fantasma"/>
+                <g class="zona" data-clave="craneo" role="button" tabindex="0" aria-label="Información: cráneo">
+                  <ellipse class="hueso-masa" cx="150" cy="50" rx="24" ry="27"/>
+                  <rect class="hueso-masa" x="134" y="68" width="32" height="17" rx="8"/>
+                  <ellipse fill="#6f6653" cx="141" cy="49" rx="5" ry="6"/>
+                  <ellipse fill="#6f6653" cx="159" cy="49" rx="5" ry="6"/>
+                  <path fill="#6f6653" d="M147 56 L 153 56 L 150 64 Z"/>
+                  <path d="M134 30 Q 150 24 166 30" fill="none" stroke="#b3a98e" stroke-width="2"/>
+                </g>
+                <g class="zona" data-clave="columna" role="button" tabindex="0" aria-label="Información: columna vertebral">
+                  <path class="hueso" stroke-width="9" d="M150 88 L 150 330"/>
+                  <path stroke="#8e8468" stroke-width="9" stroke-dasharray="2.5 7" fill="none" d="M150 88 L 150 330"/>
+                </g>
+                <g class="zona" data-clave="torax" role="button" tabindex="0" aria-label="Información: caja torácica">
+                  <path class="hueso" stroke-width="7" d="M150 122 L 150 174"/>
+                  <path class="hueso" stroke-width="4.5" d="M148 128 C 128 126, 110 134, 108 148"/>
+                  <path class="hueso" stroke-width="4.5" d="M148 144 C 126 142, 108 152, 106 166"/>
+                  <path class="hueso" stroke-width="4.5" d="M148 160 C 126 158, 108 170, 107 182"/>
+                  <path class="hueso" stroke-width="4.5" d="M148 176 C 127 174, 110 188, 109 197"/>
+                  <path class="hueso" stroke-width="4.5" d="M148 191 C 129 189, 115 200, 114 208"/>
+                  <path class="hueso" stroke-width="4.5" d="M148 205 C 132 204, 121 212, 120 218"/>
+                  <path class="hueso" stroke-width="4.5" d="M148 219 C 135 218, 127 224, 126 228"/>
+                  <path class="hueso" stroke-width="4.5" d="M152 128 C 172 126, 190 134, 192 148"/>
+                  <path class="hueso" stroke-width="4.5" d="M152 144 C 174 142, 192 152, 194 166"/>
+                  <path class="hueso" stroke-width="4.5" d="M152 160 C 174 158, 192 170, 193 182"/>
+                  <path class="hueso" stroke-width="4.5" d="M152 176 C 173 174, 190 188, 191 197"/>
+                  <path class="hueso" stroke-width="4.5" d="M152 191 C 171 189, 185 200, 186 208"/>
+                  <path class="hueso" stroke-width="4.5" d="M152 205 C 168 204, 179 212, 180 218"/>
+                  <path class="hueso" stroke-width="4.5" d="M152 219 C 165 218, 173 224, 174 228"/>
+                </g>
+                <g class="zona" data-clave="humero" role="button" tabindex="0" aria-label="Información: húmero">
+                  <circle class="hueso-masa" cx="104" cy="126" r="6"/>
+                  <circle class="hueso-masa" cx="196" cy="126" r="6"/>
+                  <path class="hueso" stroke-width="9" d="M104 130 L 90 214"/>
+                  <path class="hueso" stroke-width="9" d="M196 130 L 210 214"/>
+                </g>
+                <g class="zona" data-clave="radio-cubito" role="button" tabindex="0" aria-label="Información: radio y cúbito">
+                  <path class="hueso" stroke-width="6" d="M92 222 L 82 296"/>
+                  <path class="hueso" stroke-width="4.5" d="M98 222 L 90 296"/>
+                  <path class="hueso" stroke-width="6" d="M208 222 L 218 296"/>
+                  <path class="hueso" stroke-width="4.5" d="M202 222 L 210 296"/>
+                </g>
+                <g class="zona" data-clave="pelvis" role="button" tabindex="0" aria-label="Información: pelvis">
+                  <path class="hueso-masa" d="M150 328 C 138 328, 128 335, 124 348 C 120 362, 128 374, 138 372 C 144 370, 148 362, 150 356 C 152 362, 156 370, 162 372 C 172 374, 180 362, 176 348 C 172 335, 162 328, 150 328 Z"/>
+                  <ellipse fill="#8e8468" opacity="0.55" cx="136" cy="353" rx="5" ry="7"/>
+                  <ellipse fill="#8e8468" opacity="0.55" cx="164" cy="353" rx="5" ry="7"/>
+                </g>
+                <g class="zona" data-clave="femur" role="button" tabindex="0" aria-label="Información: fémur">
+                  <circle class="hueso-masa" cx="127" cy="352" r="7"/>
+                  <circle class="hueso-masa" cx="173" cy="352" r="7"/>
+                  <path class="hueso" stroke-width="10" d="M127 354 L 123 462"/>
+                  <path class="hueso" stroke-width="10" d="M173 354 L 177 462"/>
+                  <circle class="hueso-masa" cx="122" cy="472" r="6"/>
+                  <circle class="hueso-masa" cx="178" cy="472" r="6"/>
+                </g>
+                <g class="zona" data-clave="tibia-perone" role="button" tabindex="0" aria-label="Información: tibia y peroné">
+                  <path class="hueso" stroke-width="8" d="M124 480 L 120 574"/>
+                  <path class="hueso" stroke-width="4.5" d="M115 480 L 112 574"/>
+                  <path class="hueso" stroke-width="8" d="M176 480 L 180 574"/>
+                  <path class="hueso" stroke-width="4.5" d="M185 480 L 188 574"/>
+                  <ellipse class="hueso-masa" cx="118" cy="584" rx="15" ry="7"/>
+                  <ellipse class="hueso-masa" cx="182" cy="584" rx="15" ry="7"/>
+                </g>
+              </g>
+            </svg>
+            <figcaption class="herramienta__pista">Usa Tab para recorrer las zonas de la figura y Enter para abrir su información.</figcaption>
+          </figure>
+
+          <div class="herramienta__col-info">
+            <div id="lista-zonas" class="herramienta__lista" role="group" aria-label="Zonas de la capa actual"></div>
+            <div id="panel-info" class="herramienta__resultado" role="status" aria-live="polite">
+              <h3>Explora el cuerpo humano</h3>
+              <p>Elige una capa con los botones o el deslizador y, después, selecciona una zona de la figura o de la lista para leer aquí su información.</p>
+            </div>
+          </div>
+        </div>
+        <noscript><p role="alert">Esta herramienta necesita JavaScript para funcionar.</p></noscript>
+      </section>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../mis-estudios/index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const CAPAS = [
+        { nombre: 'Piel', detalle: 'Capa 1 de 4 · La envoltura del cuerpo: protección, temperatura y tacto.' },
+        { nombre: 'Músculos', detalle: 'Capa 2 de 4 · Los principales músculos que mueven el esqueleto.' },
+        { nombre: 'Órganos', detalle: 'Capa 3 de 4 · Los órganos internos del tórax y el abdomen.' },
+        { nombre: 'Esqueleto', detalle: 'Capa 4 de 4 · Los huesos que sostienen el cuerpo y lo protegen.' }
+      ];
+
+      const ZONAS = {
+        'piel': {
+          capa: 0, nombre: 'La piel',
+          descripcion: 'El órgano más grande del cuerpo. Forma una barrera contra bacterias, golpes y radiación, regula la temperatura con el sudor y alberga el sentido del tacto. Se organiza en tres capas: epidermis, dermis e hipodermis.',
+          datos: [['Superficie', '≈ 2 m²'], ['Peso', '≈ 4 kg (16 % del cuerpo)'], ['Capas', 'Epidermis, dermis e hipodermis'], ['Renovación', 'Cada 28 días aprox.']]
+        },
+        'cabello': {
+          capa: 0, nombre: 'El cabello',
+          descripcion: 'Filamentos de queratina que crecen desde folículos situados en la dermis. Protegen del sol y del frío, y funcionan como sensores: al moverse, avisan de lo que roza el cuero cabelludo.',
+          datos: [['Folículos en el cuero cabelludo', '≈ 100 000'], ['Crecimiento', '≈ 1 cm al mes'], ['Componente principal', 'Queratina'], ['Ciclo vital', 'Crece, cae y se renueva']]
+        },
+        'deltoides': {
+          capa: 1, nombre: 'Deltoides',
+          descripcion: 'Músculo triangular que cubre el hombro. Eleva el brazo hacia delante y hacia los lados, y mantiene la articulación del hombro estable en cada movimiento.',
+          datos: [['Forma', 'Triángulo (de ahí su nombre)'], ['Acción principal', 'Elevar y girar el brazo'], ['Compañero', 'El manguito rotador lo estabiliza']]
+        },
+        'pectoral': {
+          capa: 1, nombre: 'Pectoral mayor',
+          descripcion: 'Músculo en abanico que cubre el pecho. Tira del húmero para acercar el brazo al cuerpo: es el protagonista de empujar, abrazar y lanzar.',
+          datos: [['Se origina en', 'Clavícula, esternón y costillas'], ['Se inserta en', 'El húmero'], ['Acción principal', 'Empujar y abrazar']]
+        },
+        'biceps': {
+          capa: 1, nombre: 'Bíceps braquial',
+          descripcion: 'Músculo frontal del brazo con dos cabezas. Flexiona el codo y gira el antebrazo para llevar la palma hacia arriba, como al mirarse la hora en un reloj de pulsera.',
+          datos: [['Cabezas', '2 (por eso «bíceps»)'], ['Acción principal', 'Flexionar el codo'], ['Detalle', 'Gira la palma hacia arriba (supinación)']]
+        },
+        'recto-abdominal': {
+          capa: 1, nombre: 'Recto abdominal',
+          descripcion: 'Par de músculos verticales que cubren el abdomen por delante. Flexionan el tronco, estabilizan la postura y sostienen los órganos internos. Las bandas tendinosas que lo cruzan dibujan el «six-pack».',
+          datos: [['Extensión', 'Del pubis a las costillas'], ['Acción principal', 'Flexionar el tronco'], ['Detalle', '3 o 4 cruces tendinosos']]
+        },
+        'oblicuos': {
+          capa: 1, nombre: 'Oblicuos externos',
+          descripcion: 'Músculos laterales del abdomen. Inclinan el tronco hacia los lados, lo giran y aprietan el abdomen para espirar con fuerza, toser o reír.',
+          datos: [['Situación', 'A los lados del abdomen'], ['Acción principal', 'Girar e inclinar el tronco'], ['Colaboración', 'Al toser y al reír']]
+        },
+        'cuadriceps': {
+          capa: 1, nombre: 'Cuádriceps femoral',
+          descripcion: 'Cuatro cabezas musculares que cubren el muslo y estiran la rodilla en cada paso. Es el músculo más potente del cuerpo.',
+          datos: [['Cabezas', '4 (por eso «cuádriceps»)'], ['Acción principal', 'Extender la rodilla'], ['Uso diario', 'Caminar, correr, subir escaleras'], ['Potencia', 'El músculo más fuerte del cuerpo']]
+        },
+        'cerebro': {
+          capa: 2, nombre: 'Cerebro',
+          descripcion: 'Centro de mando del sistema nervioso. Recibe e interpreta la información de los sentidos, ordena los movimientos y guarda la memoria, las emociones y el pensamiento.',
+          datos: [['Peso', '≈ 1,4 kg'], ['Neuronas', '≈ 86 000 millones'], ['Consumo', '≈ 20 % de la energía del cuerpo'], ['Partes', 'Cerebro, cerebelo y tronco encefálico']]
+        },
+        'pulmones': {
+          capa: 2, nombre: 'Pulmones',
+          descripcion: 'Dos esponjas de aire que pasan el oxígeno a la sangre y retiran el dióxido de carbono. El pulmón derecho tiene tres lóbulos; el izquierdo, solo dos, para dejar sitio al corazón.',
+          datos: [['Lóbulos', '3 el derecho, 2 el izquierdo'], ['Alvéolos', 'Cientos de millones'], ['Superficie de intercambio', '≈ 70 m²'], ['Respiraciones', '≈ 20 000 al día']]
+        },
+        'corazon': {
+          capa: 2, nombre: 'Corazón',
+          descripcion: 'Bomba muscular del tamaño de un puño. Impulsa la sangre por dos circuitos: la circulación menor, hacia los pulmones, y la mayor, hacia el resto del cuerpo.',
+          datos: [['Latidos', '≈ 100 000 al día'], ['Sangre bombeada', '≈ 7 000 litros al día'], ['Cavidades', '4 (dos aurículas y dos ventrículos)'], ['Peso', '≈ 300 g']]
+        },
+        'higado': {
+          capa: 2, nombre: 'Hígado',
+          descripcion: 'El órgano interno más pesado. Depura las toxinas de la sangre, fabrica la bilis para digerir las grasas, guarda glucógeno y, además, es el único órgano capaz de regenerarse.',
+          datos: [['Peso', '≈ 1,5 kg'], ['Funciones', 'Más de 500'], ['Bilis', 'La fabrica y la envía al intestino'], ['Superpoder', 'Se regenera']]
+        },
+        'estomago': {
+          capa: 2, nombre: 'Estómago',
+          descripcion: 'Bolsa muscular donde la comida se mezcla con el jugo gástrico, un ácido tan fuerte que las propias paredes del estómago se protegen con una capa de moco renovada a diario.',
+          datos: [['Acidez', 'pH entre 1,5 y 3,5'], ['Capacidad', '1-1,5 L (hasta 4 L lleno)'], ['Tiempo', '2-4 h procesando cada comida'], ['Misión', 'Digiere proteínas y elimina gérmenes']]
+        },
+        'pancreas': {
+          capa: 2, nombre: 'Páncreas',
+          descripcion: 'Glándula con doble función: vierte enzimas digestivas al intestino y suelta a la sangre las hormonas insulina y glucagón, que mantienen a raya el azúcar.',
+          datos: [['Longitud', '≈ 15 cm'], ['Situación', 'Detrás del estómago'], ['Hormonas', 'Insulina y glucagón'], ['Enzimas', 'Digieren proteínas, grasas y almidón']]
+        },
+        'bazo': {
+          capa: 2, nombre: 'Bazo',
+          descripcion: 'Filtro del sistema inmunitario: recicla los glóbulos rojos viejos, almacena linfocitos y ayuda a defenderse de las infecciones. Se puede vivir sin él.',
+          datos: [['Situación', 'Detrás del estómago'], ['Función', 'Filtrar la sangre'], ['Defensas', 'Almacena linfocitos'], ['Detalle', 'Se puede vivir sin él']]
+        },
+        'rinones': {
+          capa: 2, nombre: 'Riñones',
+          descripcion: 'Par de filtros de la sangre. Retiran los desperdicios y el agua sobrante para formar la orina, y ajustan a la vez la presión arterial y el equilibrio de sales y minerales.',
+          datos: [['Sangre filtrada', '≈ 180 L al día'], ['Orina producida', '≈ 1,5 L al día'], ['Situación', 'A cada lado de la columna'], ['Hormonas', 'Regulan la presión y los glóbulos rojos']]
+        },
+        'intestino-delgado': {
+          capa: 2, nombre: 'Intestino delgado',
+          descripcion: 'Tubo de 6 a 7 metros donde termina la digestión y se absorben casi todos los nutrientes. Sus vellosidades internas multiplican la superficie hasta el equivalente a un aula pequeña.',
+          datos: [['Longitud', '≈ 6-7 m'], ['Partes', 'Duodeno, yeyuno e íleon'], ['Superficie interna', '≈ 30 m²'], ['Misión', 'Absorber los nutrientes']]
+        },
+        'intestino-grueso': {
+          capa: 2, nombre: 'Intestino grueso',
+          descripcion: 'Último tramo del tubo digestivo. Absorbe el agua que falta, compacta los desechos y alberga billones de bacterias beneficiosas: la microbiota intestinal.',
+          datos: [['Longitud', '≈ 1,5 m'], ['Partes', 'Ciego, colon y recto'], ['Absorbe', 'Agua y sales'], ['Habitantes', 'Billones de bacterias (microbiota)']]
+        },
+        'vejiga': {
+          capa: 2, nombre: 'Vejiga',
+          descripcion: 'Bolsa elástica que almacena la orina que baja de los riñones hasta el momento de eliminarla. Sus paredes se estiran sin que aumente apenas la presión interior.',
+          datos: [['Capacidad habitual', '400-600 mL'], ['Primer aviso', 'Ganas de orinar hacia los 250-300 mL'], ['Músculo', 'El detrusor'], ['Control', 'El esfínter uretral']]
+        },
+        'craneo': {
+          capa: 3, nombre: 'Cráneo',
+          descripcion: 'Caja ósea que protege el cerebro y da forma a la cara. Sus 22 huesos están soldados por suturas fijas; solo uno, la mandíbula, se mueve.',
+          datos: [['Huesos', '22 (8 craneales y 14 faciales)'], ['Protege', 'El cerebro'], ['Uniones', 'Suturas fijas'], ['Hueso móvil', 'Solo la mandíbula']]
+        },
+        'columna': {
+          capa: 3, nombre: 'Columna vertebral',
+          descripcion: 'Eje del cuerpo: 33 vértebras apiladas que sostienen la cabeza y el tronco, protegen la médula espinal y amortiguan los impactos gracias a sus curvas en S.',
+          datos: [['Vértebras', '33 (7 cervicales, 12 torácicas, 5 lumbares, sacro y cóccix)'], ['Protege', 'La médula espinal'], ['Amortiguadores', '23 discos intervertebrales'], ['Forma', 'Curvas en S']]
+        },
+        'torax': {
+          capa: 3, nombre: 'Caja torácica',
+          descripcion: 'Jaula elástica formada por 12 pares de costillas unidos al esternón por cartílagos. Protege el corazón y los pulmones, y se abre y se cierra en cada respiración.',
+          datos: [['Costillas', '12 pares (los 2 últimos son flotantes)'], ['Protege', 'Corazón y pulmones'], ['Movimiento', 'Se expande al respirar'], ['Eje central', 'El esternón']]
+        },
+        'humero': {
+          capa: 3, nombre: 'Húmero',
+          descripcion: 'El hueso del brazo, del hombro al codo. Su cabeza esférica encaja en el hombro con muy poca sujeción: es la articulación más móvil del cuerpo y, también, la que se disloca con más facilidad.',
+          datos: [['Recorrido', 'Del hombro al codo'], ['Articulación', 'La más móvil del cuerpo'], ['Forma', 'Cabeza esférica']]
+        },
+        'radio-cubito': {
+          capa: 3, nombre: 'Radio y cúbito',
+          descripcion: 'Los dos huesos del antebrazo. Giran uno sobre el otro para voltear la palma de la mano: gracias a ellos puedes girar un pomo, escribir o dar la mano.',
+          datos: [['Huesos', '2 (radio y cúbito)'], ['Movimiento', 'Girar la palma'], ['Recorrido', 'Del codo a la muñeca']]
+        },
+        'pelvis': {
+          capa: 3, nombre: 'Pelvis',
+          descripcion: 'Anillo óseo que une la columna con las piernas: recibe todo el peso del tronco y lo reparte hacia los fémures, mientras protege la vejiga y los órganos pélvicos.',
+          datos: [['Función', 'Sostener el tronco'], ['Protege', 'La vejiga y los órganos pélvicos'], ['Articulaciones', 'Con el sacro y con cada fémur (cadera)']]
+        },
+        'femur': {
+          capa: 3, nombre: 'Fémur',
+          descripcion: 'El hueso más largo y más fuerte del cuerpo: mide cerca de la cuarta parte de la estatura. Soporta fuerzas de hasta treinta veces el peso corporal al saltar o correr.',
+          datos: [['Longitud', '≈ ¼ de la estatura'], ['Resistencia', 'Hasta 30 veces el peso corporal'], ['Articulaciones', 'Cadera y rodilla'], ['Interior', 'Fabrica células sanguíneas']]
+        },
+        'tibia-perone': {
+          capa: 3, nombre: 'Tibia y peroné',
+          descripcion: 'Los dos huesos de la pierna, entre la rodilla y el tobillo. La tibia, la famosa «espinilla», soporta casi todo el peso; el peroné estabiliza el tobillo.',
+          datos: [['Tibia', 'Soporta el peso del cuerpo'], ['Peroné', 'Estabiliza el tobillo'], ['Recorrido', 'De la rodilla al tobillo']]
+        }
+      };
+
+      const PLANTILLA_VACIA = '<h3>Explora el cuerpo humano</h3><p>Elige una capa con los botones o el deslizador y, después, selecciona una zona de la figura o de la lista para leer aquí su información.</p>';
+
+      const figura = document.getElementById('figura-cuerpo');
+      const grupos = figura ? Array.from(figura.querySelectorAll('.capa')) : [];
+      const zonas = figura ? Array.from(figura.querySelectorAll('.zona')) : [];
+      const botonesCapa = Array.from(document.querySelectorAll('.herramienta__capa'));
+      const slider = document.getElementById('profundidad');
+      const salida = document.getElementById('profundidad-valor');
+      const detalleCapa = document.getElementById('capa-detalle');
+      const lista = document.getElementById('lista-zonas');
+      const panel = document.getElementById('panel-info');
+      const botonReiniciar = document.getElementById('boton-reiniciar');
+
+      let capaActual = 0;
+      let zonaActiva = null;
+
+      const limpiarSeleccion = () => {
+        zonaActiva = null;
+        figura?.classList.remove('con-seleccion');
+        zonas.forEach((zona) => zona.classList.remove('zona--activa'));
+        lista?.querySelectorAll('.herramienta__chip').forEach((chip) => chip.setAttribute('aria-pressed', 'false'));
+        if (panel) panel.innerHTML = PLANTILLA_VACIA;
+      };
+
+      const mostrarZona = (clave) => {
+        if (!panel || !ZONAS[clave]) return;
+        const zona = ZONAS[clave];
+        const capaNombre = CAPAS[zona.capa].nombre;
+        const datos = zona.datos
+          .map(([etiqueta, valor]) => `<div class="herramienta__dato"><dt>${etiqueta}</dt><dd>${valor}</dd></div>`)
+          .join('');
+        panel.innerHTML = `<span class="herramienta__etiqueta">${capaNombre}</span><h3>${zona.nombre}</h3><p>${zona.descripcion}</p><dl class="herramienta__datos">${datos}</dl>`;
+      };
+
+      const seleccionar = (clave) => {
+        if (!ZONAS[clave]) return;
+        if (zonaActiva === clave) { limpiarSeleccion(); return; }
+        zonaActiva = clave;
+        figura?.classList.add('con-seleccion');
+        zonas.forEach((zona) => zona.classList.toggle('zona--activa', zona.dataset.clave === clave));
+        lista?.querySelectorAll('.herramienta__chip').forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.clave === clave)));
+        mostrarZona(clave);
+      };
+
+      const pintarLista = () => {
+        if (!lista) return;
+        lista.innerHTML = '';
+        Object.keys(ZONAS).forEach((clave) => {
+          if (ZONAS[clave].capa !== capaActual) return;
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'herramienta__chip';
+          chip.dataset.clave = clave;
+          chip.setAttribute('aria-pressed', 'false');
+          chip.textContent = ZONAS[clave].nombre;
+          chip.addEventListener('click', () => seleccionar(clave));
+          lista.appendChild(chip);
+        });
+      };
+
+      const setCapa = (indice) => {
+        if (!CAPAS[indice]) return;
+        capaActual = indice;
+        grupos.forEach((grupo, i) => grupo.classList.toggle('capa--visible', i === indice));
+        botonesCapa.forEach((boton, i) => boton.setAttribute('aria-pressed', String(i === indice)));
+        if (slider) {
+          slider.value = String(indice);
+          slider.setAttribute('aria-valuetext', CAPAS[indice].nombre);
+        }
+        if (salida) salida.textContent = CAPAS[indice].nombre;
+        if (detalleCapa) detalleCapa.textContent = CAPAS[indice].detalle;
+        zonas.forEach((zona) => {
+          const info = ZONAS[zona.dataset.clave];
+          zona.setAttribute('tabindex', info && info.capa === indice ? '0' : '-1');
+        });
+        pintarLista();
+        limpiarSeleccion();
+      };
+
+      zonas.forEach((zona) => {
+        zona.addEventListener('click', () => seleccionar(zona.dataset.clave));
+        zona.addEventListener('keydown', (evento) => {
+          if (evento.key === 'Enter' || evento.key === ' ') {
+            evento.preventDefault();
+            seleccionar(zona.dataset.clave);
+          }
+        });
+      });
+
+      botonesCapa.forEach((boton) => {
+        boton.addEventListener('click', () => setCapa(Number(boton.dataset.capa)));
+      });
+      slider?.addEventListener('input', () => setCapa(Number(slider.value)));
+      botonReiniciar?.addEventListener('click', () => setCapa(0));
+
+      setCapa(0);
+    })();
+  </script>
+</body>
+</html>

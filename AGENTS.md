@@ -312,7 +312,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | --- | --- | --- |
 | `sidebar.controller.js` | `default SidebarController()` | Abre/cierra el menú, marca `inert` en el fondo, gestiona el foco de retorno y marcar el enlace activo. |
 | `fnSectionNav.js` | `default sectionNav()` | Scrollspy con `IntersectionObserver`: marca `.active` y abre el submenú cuando la sección es hija. |
-| `fnChangeLanguage.js` | `sectionLanguage()` (default), `applyTranslations()` | Toggle ES/EN y actualización de `[data-lang]`, `[data-i18n-title]`, `[data-i18n-aria-label]`. |
+| `fnChangeLanguage.js` | `sectionLanguage()` (default), `applyTranslations()` | Toggle ES/EN y actualización de `[data-lang]`, `[data-i18n-title]`, `[data-i18n-aria-label]`. Las claves se resuelven desde un índice único por idioma armado con las 4 secciones en orden fijo; un aviso en consola señala cualquier colisión. |
 | `fnThemeMode.js` | `themeMode()` (default), `updateModeText()` | Alterna claro/oscuro y actualiza el texto del botón correspondiente. |
 | `fnThemeColor.js` | `default themeColor()` | Aplica el acento activo (`--theme-color`, `--theme-color-soft`) desde `utils/themeColors.js` y sincroniza el swatch seleccionado entre pestañas sin reescribir `localStorage`. |
 | `fnBackgroundTheme.js` | `default backgroundTheme()` | Aplica tema de fondo, dirección del degradado y velocidad (`--page-*`). |
@@ -541,10 +541,10 @@ Arquitectura CSS).
 
 - La interfaz tiene traducciones ES/EN, pero el contenido de la enciclopedia (`mis-estudios/`) y el de los juegos (`juegos/<slug>/`) está solo en español. Las tarjetas de la grilla de juegos sí se traducen desde el manifiesto.
 - `applyTranslations()` busca claves en `page`, `introSection`, `home` y `header`; una clave
-  nueva debe colocarse en una de esas secciones. El espacio de claves es **único entre esas 4
-  secciones): reutilizar el mismo nombre con otro texto puede resolver al valor de una
-  sección anterior del orden de búsqueda. La clave `name` no se traduce: `applyTranslations()`
-  la saltea a propósito porque es un nombre propio.
+  nueva debe colocarse en una de esas secciones. Las claves deben ser únicas entre esas 4
+  secciones: `fnChangeLanguage.js` arma un índice por idioma y avisa por consola si se
+  duplican. La clave `name` no se traduce: `applyTranslations()` la saltea a propósito
+  porque es un nombre propio.
 - Las cadenas que se renderizan desde JavaScript se traducen al generarse (por ejemplo, `GridProjects()` toma `viewProject` de `translations.introSection[lang]`, y `GridGames()` toma las etiquetas de `translations.page[lang]`), no vía `data-lang`.
 - Al cambiar de idioma se re-renderizan la portada y la grilla de juegos (`reloadHomeContent()` de `controllers/home/fnHome.js` y `reloadGamesContent()` de `controllers/juegos/fnJuegos.js`); ambas no hacen nada si su contenedor no existe.
 - Cuidar el orden entre `applyTranslations()` y las funciones que regeneran HTML (`GridWorkExperience`, `GridProjects`) al tocar idioma: las cadenas renderizadas en JS deben traducirse al generarse.

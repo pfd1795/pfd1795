@@ -9,16 +9,32 @@ const VALID_LANGUAGES = ["es", "en"];
 
 const LANGUAGE_SECTIONS = ["page", "introSection", "home", "header"];
 
-function getTranslation(lang, key) {
-  for (const section of LANGUAGE_SECTIONS) {
-    const value = translations[section]?.[lang]?.[key];
+function buildTranslationIndex(lang) {
+  const index = new Map();
 
-    if (value !== undefined) {
-      return value;
+  for (const section of LANGUAGE_SECTIONS) {
+    const sectionKeys = translations[section]?.[lang];
+
+    if (!sectionKeys) continue;
+
+    for (const key of Object.keys(sectionKeys)) {
+      if (index.has(key)) {
+        console.error(`Clave de traducción duplicada: "${key}" (${section})`);
+      } else {
+        index.set(key, sectionKeys[key]);
+      }
     }
   }
 
-  return undefined;
+  return index;
+}
+
+const TRANSLATION_INDEX = Object.fromEntries(
+  VALID_LANGUAGES.map((lang) => [lang, buildTranslationIndex(lang)])
+);
+
+function getTranslation(lang, key) {
+  return TRANSLATION_INDEX[lang]?.get(key);
 }
 
 export function applyTranslations() {

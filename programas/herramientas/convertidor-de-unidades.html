@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convertidor de unidades — Programas pfd1795</title>
+  <meta name="description" content="Convierte entre unidades de longitud, peso, temperatura y tiempo directamente en tu navegador, sin depender de servicios externos.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../programas.css">
+  <style>
+    .convunid__campos {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: var(--space-4);
+    }
+
+    .convunid__campo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .convunid__entrada,
+    .convunid__selector {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+    }
+
+    .convunid__acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .convunid__mensaje {
+      min-height: 1.5em;
+      margin-bottom: var(--space-3);
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    .convunid__mensaje[data-estado="error"] {
+      color: var(--red-normal);
+    }
+
+    .convunid__resultado {
+      margin: 0;
+      padding: var(--space-4);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      overflow-wrap: anywhere;
+    }
+
+    @media (min-width: 768px) {
+      .convunid__entrada,
+      .convunid__selector {
+        min-width: 12em;
+      }
+    }
+  </style>
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <h1>Convertidor de unidades</h1>
+      <p>Convierte valores entre unidades de longitud, peso, temperatura y tiempo. El cálculo se hace en tu navegador y no envía ningún dato a un servidor.</p>
+
+      <section aria-labelledby="convunid-entrada-titulo">
+        <h2 id="convunid-entrada-titulo">Conversión</h2>
+        <form id="form-conversion" novalidate>
+          <div class="convunid__campos">
+            <div class="convunid__campo">
+              <label for="convunid-magnitud">Magnitud</label>
+              <select id="convunid-magnitud" class="convunid__selector"></select>
+            </div>
+
+            <div class="convunid__campo">
+              <label for="convunid-valor">Valor</label>
+              <input type="number" id="convunid-valor" class="convunid__entrada" step="any" placeholder="0" inputmode="decimal">
+            </div>
+
+            <div class="convunid__campo">
+              <label for="convunid-origen">Desde</label>
+              <select id="convunid-origen" class="convunid__selector"></select>
+            </div>
+
+            <div class="convunid__campo">
+              <label for="convunid-destino">A</label>
+              <select id="convunid-destino" class="convunid__selector"></select>
+            </div>
+          </div>
+
+          <div class="convunid__acciones">
+            <button type="submit" class="btn">Convertir</button>
+            <button type="button" class="btn" id="convunid-intercambiar">Intercambiar</button>
+            <button type="button" class="btn" id="convunid-copiar">Copiar</button>
+            <button type="button" class="btn" id="convunid-limpiar">Limpiar</button>
+          </div>
+        </form>
+      </section>
+
+      <section aria-labelledby="convunid-resultado-titulo">
+        <h2 id="convunid-resultado-titulo">Resultado</h2>
+        <div id="convunid-mensaje" class="convunid__mensaje" role="status" aria-live="polite"></div>
+        <p id="convunid-resultado" class="convunid__resultado">Introduce un valor y pulsa «Convertir» para verlo aquí.</p>
+      </section>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../mis-estudios/index.html">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const MAGNITUDES = {
+        longitud: {
+          etiqueta: 'Longitud',
+          unidades: {
+            mm: { nombre: 'Milímetro (mm)', factor: 0.001 },
+            cm: { nombre: 'Centímetro (cm)', factor: 0.01 },
+            m: { nombre: 'Metro (m)', factor: 1 },
+            km: { nombre: 'Kilómetro (km)', factor: 1000 },
+            in: { nombre: 'Pulgada (in)', factor: 0.0254 },
+            ft: { nombre: 'Pie (ft)', factor: 0.3048 },
+            yd: { nombre: 'Yarda (yd)', factor: 0.9144 },
+            mi: { nombre: 'Milla (mi)', factor: 1609.344 }
+          }
+        },
+        peso: {
+          etiqueta: 'Peso',
+          unidades: {
+            mg: { nombre: 'Miligramo (mg)', factor: 0.001 },
+            g: { nombre: 'Gramo (g)', factor: 1 },
+            kg: { nombre: 'Kilogramo (kg)', factor: 1000 },
+            t: { nombre: 'Tonelada (t)', factor: 1000000 },
+            oz: { nombre: 'Onza (oz)', factor: 28.349523125 },
+            lb: { nombre: 'Libra (lb)', factor: 453.59237 }
+          }
+        },
+        temperatura: {
+          etiqueta: 'Temperatura',
+          unidades: {
+            C: { nombre: 'Celsius (°C)', aCelsius: (valor) => valor, desdeCelsius: (celsius) => celsius },
+            F: { nombre: 'Fahrenheit (°F)', aCelsius: (valor) => (valor - 32) * 5 / 9, desdeCelsius: (celsius) => celsius * 9 / 5 + 32 },
+            K: { nombre: 'Kelvin (K)', aCelsius: (valor) => valor - 273.15, desdeCelsius: (celsius) => celsius + 273.15 }
+          }
+        },
+        tiempo: {
+          etiqueta: 'Tiempo',
+          unidades: {
+            s: { nombre: 'Segundo (s)', factor: 1 },
+            min: { nombre: 'Minuto (min)', factor: 60 },
+            h: { nombre: 'Hora (h)', factor: 3600 },
+            d: { nombre: 'Día (d)', factor: 86400 },
+            sem: { nombre: 'Semana (sem)', factor: 604800 }
+          }
+        }
+      };
+
+      const magnitud = document.querySelector('#convunid-magnitud');
+      const valor = document.querySelector('#convunid-valor');
+      const origen = document.querySelector('#convunid-origen');
+      const destino = document.querySelector('#convunid-destino');
+      const mensaje = document.querySelector('#convunid-mensaje');
+      const resultado = document.querySelector('#convunid-resultado');
+      const formulario = document.querySelector('#form-conversion');
+      const textoInicial = 'Introduce un valor y pulsa «Convertir» para verlo aquí.';
+
+      const avisar = (texto, estado) => {
+        mensaje.textContent = texto;
+
+        if (estado) {
+          mensaje.dataset.estado = estado;
+        } else {
+          delete mensaje.dataset.estado;
+        }
+      };
+
+      const rellenarSelect = (select, entradas) => {
+        select.replaceChildren(...Object.entries(entradas).map(([clave, datos]) => {
+          const opcion = document.createElement('option');
+          opcion.value = clave;
+          opcion.textContent = datos.nombre;
+          return opcion;
+        }));
+      };
+
+      const cargarMagnitud = () => {
+        rellenarSelect(magnitud, Object.fromEntries(Object.entries(MAGNITUDES).map(([clave, datos]) => [clave, { nombre: datos.etiqueta }])));
+      };
+
+      const cargarUnidades = () => {
+        const unidades = MAGNITUDES[magnitud.value].unidades;
+        rellenarSelect(origen, unidades);
+        rellenarSelect(destino, unidades);
+
+        if (magnitud.value === 'longitud') {
+          origen.value = 'km';
+          destino.value = 'm';
+        } else if (magnitud.value === 'temperatura') {
+          origen.value = 'C';
+          destino.value = 'F';
+        } else {
+          destino.selectedIndex = 1;
+        }
+      };
+
+      const simbolo = (select) => {
+        const encontrado = select.selectedOptions[0].textContent.match(/\(([^)]+)\)$/);
+        return encontrado ? encontrado[1] : '';
+      };
+
+      const convertir = (cantidad) => {
+        const unidades = MAGNITUDES[magnitud.value].unidades;
+        const desde = unidades[origen.value];
+        const hasta = unidades[destino.value];
+
+        if (desde.aCelsius) {
+          return hasta.desdeCelsius(desde.aCelsius(cantidad));
+        }
+
+        return cantidad * desde.factor / hasta.factor;
+      };
+
+      const formatear = (numero) => {
+        if (!Number.isFinite(numero)) {
+          return '—';
+        }
+
+        return numero.toLocaleString('es-ES', { maximumFractionDigits: 6 });
+      };
+
+      const actualizar = () => {
+        const texto = valor.value.trim();
+
+        if (!texto) {
+          resultado.textContent = textoInicial;
+          avisar('', null);
+          return;
+        }
+
+        const cantidad = Number(texto);
+
+        if (!Number.isFinite(cantidad)) {
+          avisar('Introduce un número válido.', 'error');
+          return;
+        }
+
+        resultado.textContent = formatear(convertir(cantidad)) + ' ' + simbolo(destino);
+        avisar('', null);
+      };
+
+      cargarMagnitud();
+      cargarUnidades();
+
+      formulario.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if (!valor.value.trim()) {
+          avisar('Introduce un valor para convertir.', 'error');
+          return;
+        }
+
+        actualizar();
+      });
+
+      magnitud.addEventListener('change', () => {
+        cargarUnidades();
+        actualizar();
+      });
+
+      origen.addEventListener('change', actualizar);
+      destino.addEventListener('change', actualizar);
+      valor.addEventListener('input', actualizar);
+
+      document.querySelector('#convunid-intercambiar').addEventListener('click', () => {
+        const anterior = origen.value;
+        origen.value = destino.value;
+        destino.value = anterior;
+        actualizar();
+      });
+
+      document.querySelector('#convunid-copiar').addEventListener('click', async () => {
+        if (resultado.textContent === textoInicial) {
+          avisar('No hay ningún resultado para copiar.', 'error');
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(resultado.textContent);
+          avisar('Resultado copiado al portapapeles.', 'ok');
+        } catch (error) {
+          avisar('No se pudo copiar el resultado.', 'error');
+        }
+      });
+
+      document.querySelector('#convunid-limpiar').addEventListener('click', () => {
+        valor.value = '';
+        resultado.textContent = textoInicial;
+        avisar('', null);
+        valor.focus();
+      });
+    })();
+  </script>
+</body>
+</html>
