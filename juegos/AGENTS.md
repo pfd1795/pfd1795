@@ -68,6 +68,6 @@ Específico de esta carpeta, tras cualquier cambio:
    scroll, que los controles táctiles siguen visibles y que el buffer del canvas iguala el
    tamaño visible × DPR (mínimo la resolución lógica; ver la sección "Dimensionado del canvas"
    del README).
-7. El buscador filtra por término, actualiza el conteo del placeholder y muestra/oculta
-   `#sin-resultados`. Los chips de género filtran las tarjetas, conservan `aria-pressed` y
-   siguen activos tras cambiar ES/EN.
+7. El buscador filtra por título, descripción, tecnología y género, actualiza el conteo del
+   placeholder y muestra/oculta `#sin-resultados`. Los chips de género filtran las tarjetas,
+   conservan `aria-pressed` y siguen activos tras cambiar ES/EN.

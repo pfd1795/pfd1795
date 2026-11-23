@@ -203,9 +203,9 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    - Navegador moderno: módulos ES, `import … with { type: "json" }`, `<dialog>`, `IntersectionObserver`, `color-mix()`.
    - Sidebar: scrollspy marca la sección visible; abrir/cerrar deja `inert` solo en el fondo y devuelve el foco al botón que lo abrió.
    - Modal de Configuración: modo claro/oscuro, acento, fondo de página (dirección/velocidad según tema), tamaño de fuente y idioma persisten tras una recarga dura.
-   - Idioma ES/EN: la portada y la grilla de juegos se re-renderizan con las cadenas correctas (las cadenas generadas en JS no usan `data-lang`).
+   - Idioma ES/EN: la portada y las grillas de juegos y programas se re-renderizan con las cadenas correctas (las cadenas generadas en JS no usan `data-lang`).
    - Tema sin parpadeo: tras recarga dura, el fondo y el acento correctos se pintan antes del primer frame (lo aplica `js/theme-init.js`, único en todo el sitio).
-   - En `juegos/`: las tarjetas del manifiesto se renderizan, las portadas cargan, el buscador y los chips de género filtran (incluido el cambio ES/EN) y los lanzamientos abren pestaña nueva con `rel="noopener noreferrer"`.
+   - En `juegos/`: las tarjetas del manifiesto se renderizan, las portadas cargan, el buscador filtra por título, descripción, tecnología y género, los chips de género filtran (incluido el cambio ES/EN) y los lanzamientos abren pestaña nueva con `rel="noopener noreferrer"`.
    - En `mis-estudios/`: el tema del portafolio se respeta y el buscador filtra, actualiza el conteo del placeholder y muestra/oculta `#sin-resultados`.
 4. **Registros en consola permitidos:** los avisos de `utils/storage.js` cuando `localStorage` está bloqueado (modo privado) son esperables; cualquier otro error sí es un problema.
 
@@ -276,7 +276,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | --- | --- | --- |
 | `js/main.js` | — (script principal) | Monta `InitModalDialog`, `SidebarController` (si existe `#HomePage`), `HomeController` (si existe `.main-layout`) y los controladores de grilla (`JuegosController` si existe `.juegos-grid`, `MisEstudiosController` si existe `.estudios-grid`, `ProgramasController` si existe `.programas-grid`) tras `DOMContentLoaded`. Registra también el Service Worker (PWA). |
 | `js/theme-init.js` | IIFE clásica (no módulo) | Aplica modo, acento, fondo y escala desde `localStorage` antes del primer pintado en **todas las páginas del portafolio y sus secciones** (portada, `juegos/`, `mis-estudios/`, `programas/` y artículos/herramientas con chrome compartido). Salvo los juegos y `dj.html`, autocontenidos. Es el único script de pre-pintado; duplica las claves de `utils/storage.js` a propósito. |
-| `js/buscador.js` | IIFE clásica (no módulo) | Buscador único de las grillas: filtra las tarjetas del término (y por categoría si hay chips `.filtro`), actualiza el placeholder con el conteo y usa `#sin-resultados`. Se configura por `data-attributes` del input `#buscador` (`data-buscador-tarjetas`, `data-buscador-placeholder`); la recarga tras renders dinámicos la resuelve un `MutationObserver` y los chips por delegación sobre `document`. |
+| `js/buscador.js` | IIFE clásica (no módulo) | Buscador único de las grillas: filtra las tarjetas del término (y por categoría si hay chips `.filtro`), actualiza el placeholder con el conteo y usa `#sin-resultados`. Las tarjetas deben exponer `data-titulo`, `data-descripcion`, `data-claves` y `data-categoria`; en juegos, `data-claves` se arma con `technologies` del manifiesto. Se configura por `data-attributes` del input `#buscador` (`data-buscador-tarjetas`, `data-buscador-placeholder`); la recarga tras renders dinámicos la resuelve un `MutationObserver` y los chips por delegación sobre `document`. |
 
 **Controladores — `controllers/home/`**
 
@@ -304,7 +304,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
 | `programas.controller.js` | `default ProgramasController()` | Dispara el render de la grilla de herramientas. |
-| `fnProgramas.js` | `GridProgramas()` | Genera los chips de filtro, las categorías y las tarjetas desde `programas/data/herramientas.json` (mismo esquema que juegos.json). Contenido solo en español. |
+| `fnProgramas.js` | `GridProgramas()`, `reloadProgramasContent()` | Genera los chips de filtro, las categorías y las tarjetas desde `programas/data/herramientas.json` (mismo esquema que juegos.json). Contenido solo en español; la recarga al cambiar idioma conserva el chip de categoría activo. |
 
 **Controladores — `controllers/sidebar/`**
 
@@ -351,8 +351,10 @@ un array `categories` (`id` + `label {es}`) que ordena y agrupa las tarjetas. Ca
 entrada lleva `slug` (kebab-case, validado con un patrón), `title`, `description`,
 `status: "published" \| "wip"` y campos propios de la sección (`covers`/`year`/`genre` en
 juegos; `keywords`/`category` en artículos y herramientas; `icon`/`technologies` en
-herramientas). Solo se publican entradas con `status: "published"` y slug válido;
-las URLs no van en el manifiesto: se construyen como `<patrón de la sección>/<slug>…`.
+herramientas). En juegos solo aparecen las entradas `published` con slug válido; en
+`mis-estudios/` y `programas/` se muestran también las `wip` con la etiqueta de UI
+`comingSoon` («Próximamente») y sin enlace, siempre que el slug sea válido. Las URLs no
+van en el manifiesto: se construyen como `<patrón de la sección>/<slug>…`.
 
 | Manifiesto | Grilla | Contenido de las entradas |
 | --- | --- | --- |
@@ -465,7 +467,7 @@ element?.addEventListener('click', () => {
 - **Enlaces externos del menú**: debajo de "Inicio" hay `<a class="sidebar-item">` para "Mis estudios" (icono `menu_book`, → `./mis-estudios/index.html`), "Juegos" (icono `gamepad`, → `./juegos/index.html`) y "Programas" (icono `build`, → `./programas/index.html`; en esas subpáginas lleva `.active` y `aria-current="page"`, y las rutas se ajustan con `../` o `../../`). No llevan `data-target`, por lo que el scrollspy los ignora; `sidebar.controller.js` cierra el menú al pulsarlos.
 - **Grillas y manifiestos**: las tres secciones (`juegos/`, `mis-estudios/`, `programas/`) siguen el mismo patrón: `index.html` con buscador (y filtros por categoría en programas y por género en juegos), un contenedor `<seccion>-grid` vacío en el HTML, un manifiesto `<seccion>/data/*.json` y un controlador en `js/controllers/<seccion>/` (`<seccion>.controller.js` + `fn<Seccion>.js`) que renderiza las tarjetas. El controlador se monta en `main.js` solo si existe su contenedor. Para agregar contenido nuevo: archivo por `slug` en la carpeta de la sección + entrada en el manifiesto + verificación.
 - **Enciclopedia** (`mis-estudios/`): comparte la preferencia de tema del portafolio (pre-pintado con `js/theme-init.js`). Sus páginas cargan también la barra, el menú lateral y `js/main.js`, de modo que el modal de Configuración funciona igual que en la portada. La grilla se renderiza desde `mis-estudios/data/articulos.json`; los artículos viven en `mis-estudios/articulos/<slug>.html`. El contenido es solo en español, pero las etiquetas de UI generadas en JS (p. ej. «Próximamente») se toman de `translations.page[lang]`. El buscador es el `js/buscador.js` compartido, configurado por `data-attributes` del input.
-- **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `juegos/juegos.css`. La grilla se renderiza desde `juegos/data/juegos.json` con `controllers/juegos/`. El buscador es el `js/buscador.js` compartido y los chips de filtro por género se generan en `fnJuegos.js` desde el campo `genre` del manifiesto: la clave estable es `genre.es`, que se replica en `data-categoria` de cada tarjeta; las etiquetas visibles y el género activo se conservan al cambiar de idioma. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
+- **Juegos**: `juegos/index.html` es una subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` (compartido con la enciclopedia) y `juegos/juegos.css`. La grilla se renderiza desde `juegos/data/juegos.json` con `controllers/juegos/`. El buscador es el `js/buscador.js` compartido y los chips de filtro por género se generan en `fnJuegos.js` desde el campo `genre` del manifiesto: la clave estable es `genre.es`, que se replica en `data-categoria` de cada tarjeta; las etiquetas visibles y el género activo se conservan al cambiar de idioma. El buscador usa `data-titulo`, `data-descripcion`, `data-claves` (de `technologies`) y `data-categoria` de cada tarjeta. Cada juego vive en `juegos/<slug>/index.html`, es autocontenido y se abre en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`). El manifiesto se valida con un patrón de `slug` y solo publica entradas con `status: "published"`.
 - **Programas** (`programas/`): subpágina que reutiliza `base.css`, la barra, el sidebar y el modal; usa `.main-content` y `programas/programas.css`. La grilla se renderiza desde `programas/data/herramientas.json` con `controllers/programas/` (chips de filtro incluidos, generados desde las categorías del manifiesto): las herramientas `published` se convierten en enlace (botón «Abrir» con `target="_blank"` + `rel="noopener noreferrer"`, patrón de la grilla de juegos) y las `wip` conservan el estado «Próximamente». El contenido del manifiesto es solo en español, pero las cadenas de UI de la grilla («Abrir», «Próximamente», «Filtrar por categoría», «Todas» y la nota de pestaña nueva) se toman de `translations.page[lang]`; no se traducen títulos ni descripciones. Las herramientas propias viven en `programas/herramientas/<slug>.html`, son autocontenidas y siguen el patrón de `juegos/` (guía en `docs/prompts/crear-programas-web.md`). El buscador es el `js/buscador.js` compartido; comparte el tema mediante `js/theme-init.js`.
 El dimensionado del escenario de los juegos de marco pequeño y de la plantilla (snake,
 space-invaders, neon-racer, plataformas, dungeon-crawler, tower-defense) sigue un criterio
@@ -546,7 +548,7 @@ Arquitectura CSS).
   duplican. La clave `name` no se traduce: `applyTranslations()` la saltea a propósito
   porque es un nombre propio.
 - Las cadenas que se renderizan desde JavaScript se traducen al generarse (por ejemplo, `GridProjects()` toma `viewProject` de `translations.introSection[lang]`, y `GridGames()` toma las etiquetas de `translations.page[lang]`), no vía `data-lang`.
-- Al cambiar de idioma se re-renderizan la portada y la grilla de juegos (`reloadHomeContent()` de `controllers/home/fnHome.js` y `reloadGamesContent()` de `controllers/juegos/fnJuegos.js`); ambas no hacen nada si su contenedor no existe.
+- Al cambiar de idioma se re-renderizan la portada y las grillas de juegos y programas (`reloadHomeContent()` de `controllers/home/fnHome.js`, `reloadGamesContent()` de `controllers/juegos/fnJuegos.js` y `reloadProgramasContent()` de `controllers/programas/fnProgramas.js`); todas no hacen nada si su contenedor no existe.
 - Cuidar el orden entre `applyTranslations()` y las funciones que regeneran HTML (`GridWorkExperience`, `GridProjects`) al tocar idioma: las cadenas renderizadas en JS deben traducirse al generarse.
 
 ### Contenido y assets

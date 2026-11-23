@@ -4,6 +4,7 @@ import { getLanguage, setLanguage, STORAGE_KEY_LANGUAGE } from "../../utils/stor
 import { updateModeText } from "./fnThemeMode.js";
 import { reloadHomeContent } from "../home/fnHome.js";
 import { reloadGamesContent } from "../juegos/fnJuegos.js";
+import { reloadProgramasContent } from "../programas/fnProgramas.js";
 
 const VALID_LANGUAGES = ["es", "en"];
 
@@ -76,10 +77,6 @@ export function applyTranslations() {
   });
 }
 
-/* `rerender` controla si se vuelve a renderizar la portada y la grilla de
-   juegos. En el arranque se restaura el idioma guardado ANTES de que
-   HomeController/JuegosController monten las grillas, así que ahí se pasa
-   `rerender: false` para no renderizar la misma pantalla dos veces. */
 function changeLanguage(lang, { rerender = true } = {}) {
   if (!VALID_LANGUAGES.includes(lang)) {
     console.warn("Invalid language:", lang);
@@ -103,6 +100,7 @@ function changeLanguage(lang, { rerender = true } = {}) {
 
     reloadHomeContent(expandedPanelId);
     reloadGamesContent();
+    reloadProgramasContent();
   }
 }
 

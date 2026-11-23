@@ -79,6 +79,9 @@ function CardGame(game, lang, texts) {
   const hasCarousel = covers.length > 1;
 
   article.className = 'juego-card';
+  article.setAttribute('data-titulo', title);
+  article.setAttribute('data-descripcion', description);
+  article.setAttribute('data-claves', technologies.join(' '));
   article.setAttribute('data-categoria', genreKey(game));
 
   article.innerHTML = `

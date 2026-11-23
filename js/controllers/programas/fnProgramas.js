@@ -144,8 +144,20 @@ export function GridProgramas() {
   const texts = translations.page[lang] ?? translations.page.es;
   const items = filtrarItemsValidos();
   const categorias = data.categories ?? [];
+  const categoriaActiva = grid.querySelector('.filtro.active')?.getAttribute('data-categoria') ?? 'todas';
 
   grid.innerHTML = '';
   grid.appendChild(ChipsFiltro(categorias, lang, texts));
   categorias.forEach((categoria) => grid.appendChild(Categoria(categoria, items, lang, texts)));
+
+  if (categoriaActiva !== 'todas') {
+    const chipActivo = Array.from(grid.querySelectorAll('.filtro'))
+      .find((chip) => chip.getAttribute('data-categoria') === categoriaActiva);
+
+    (chipActivo ?? grid.querySelector('.filtro'))?.click();
+  }
+}
+
+export function reloadProgramasContent() {
+  GridProgramas();
 }

@@ -93,3 +93,7 @@ Específico de esta carpeta, tras cualquier cambio:
    DJ, editor de textos, pizarra de dibujo, validador YAML) abren su herramienta en pestaña
    nueva y las herramientas cargan sin errores de consola.
 8. Enlace "Programas" en el sidebar funciona desde portada, juegos, mis-estudios y artículos.
+9. Al cambiar ES/EN desde el modal, las cadenas de UI generadas en JS se re-renderizan
+   (`Abrir`/`Open`, `Próximamente`/`Coming soon`, `Todas`/`All` y la nota de pestaña nueva) y el
+   chip de categoría activo conserva `aria-pressed` y el filtro; las etiquetas del manifiesto
+   siguen en español.
