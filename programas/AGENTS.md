@@ -32,7 +32,8 @@ no tiene copias propias.
 ## Reglas para agentes
 
 1. **Contenido solo en español**: los títulos, descripciones, categorías y tecnologías de las
-   tarjetas no se traducen; la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN.
+   tarjetas no se traducen; la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN,
+   incluido el buscador (`aria-label`, placeholder y `#sin-resultados`).
    Las cadenas de UI generadas en la grilla (`openTool`, `comingSoon`, `filterByCategory`,
    `allCategories` y `openInNewTab`) se toman de `translations.page[lang]`.
 2. **Pre-pintado obligatorio**: toda página nueva debe cargar `js/theme-init.js` en el
@@ -55,7 +56,9 @@ no tiene copias propias.
 6. **Buscador y filtros**: el `js/buscador.js` compartido opera solo si existe
    `#buscador`; esta página lo configura con `data-buscador-tarjetas=".programa-card"` y
    su texto de placeholder. Filtra por término, actualiza el conteo del placeholder,
-   oculta categorías vacías y usa `#sin-resultados`. Los chips `.filtro` se renderizan
+   oculta categorías vacías y usa `#sin-resultados`. Los textos viven en
+   `translations.page[lang]` (claves `searchPrograms*`) y se actualizan con el evento
+   `site:languagechange`. Los chips `.filtro` se renderizan
    desde el manifiesto y sus clics los gestiona el buscador por delegación sobre
    `document` (sobreviven a los re-renders).
 7. **Tarjetas**: las herramientas `wip` del manifiesto se marcan con

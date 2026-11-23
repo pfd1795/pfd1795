@@ -65,13 +65,15 @@
           id="buscador"
           name="q"
           aria-label="Buscar juegos"
+          data-i18n-aria-label="searchGamesAria"
           data-buscador-tarjetas=".juego-card"
           data-buscador-placeholder="buscador juegos: titulo, descripcion, tecnologia o genero ({visibles} de {total} juegos)"
+          data-i18n-placeholder="searchGamesPlaceholder"
           placeholder="buscador juegos: titulo, descripcion, tecnologia o genero"
           autocomplete="off" />
         <div id="filtros-juegos"></div>
       </div>
-      <p class="buscador__mensaje" id="sin-resultados" hidden>
+      <p class="buscador__mensaje" id="sin-resultados" data-lang="searchGamesEmpty" hidden>
         No hay juegos que coincidan con tu búsqueda. Prueba con otra palabra o género.
       </p>
 

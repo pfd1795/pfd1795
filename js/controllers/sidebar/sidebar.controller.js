@@ -13,6 +13,7 @@ export default function SidebarController() {
   const closeButton = document.querySelector(".sidebar-header .btn-close");
   const expandToggle = sidebar?.querySelector(".sidebar-expand");
   const submenu = sidebar?.querySelector(".sidebar-submenu");
+  let focusBeforeOpen = null;
 
   function setSubmenuOpen(isOpen) {
     if (!expandToggle || !submenu) return;
@@ -41,6 +42,7 @@ export default function SidebarController() {
     }
 
     setBackgroundInert(true);
+    focusBeforeOpen = document.activeElement === document.body ? openButton : document.activeElement;
     closeButton?.focus();
   }
 
@@ -53,9 +55,8 @@ export default function SidebarController() {
     openButton?.setAttribute("aria-expanded", "false");
     setBackgroundInert(false);
 
-    if (sidebar?.contains(document.activeElement)) {
-      openButton?.focus();
-    }
+    (focusBeforeOpen ?? openButton)?.focus();
+    focusBeforeOpen = null;
   }
 
   openButton?.addEventListener("click", openMenu);

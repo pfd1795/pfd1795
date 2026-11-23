@@ -517,6 +517,7 @@ function buildSeq(){
  for(let s=0;s<64;s++){
   const b=document.createElement('button');b.className='rcell'+(s>=state.steps?' off':'');
   b.dataset.s=s;if(s%4===0)b.textContent=(s/4+1);
+  b.setAttribute('aria-label','Paso '+(s+1)+' del loop; clic: inicio, Alt: fin');
   rs.appendChild(b);rcells.push(b);
  }
  ruler.appendChild(rh);ruler.appendChild(rs);wrap.appendChild(ruler);
@@ -539,6 +540,8 @@ function buildSeq(){
   for(let s=0;s<64;s++){
    const b=document.createElement('button');b.className='cell'+(s>=state.steps?' off':'');
    b.dataset.t=i;b.dataset.s=s;
+   b.setAttribute('aria-label',tr.n+', paso '+(s+1));
+   b.setAttribute('aria-pressed',String(state.pattern[tr.id][s]>0));
    const v=state.pattern[tr.id][s];
    if(v>0)paintCell(b,tr.c,v);
    ts.appendChild(b);rowCells.push(b);
@@ -595,8 +598,9 @@ function paintCell(el,color,v){
  el.style.background=`rgba(${hex2rgb(color).join(',')},${a})`;
  el.style.boxShadow=v>=1?`0 0 8px rgba(${hex2rgb(color).join(',')},.9)`:'none';
  el.classList.add('on');
+ el.setAttribute('aria-pressed','true');
 }
-function clearCell(el){el.style.background='';el.style.boxShadow='';el.classList.remove('on');}
+function clearCell(el){el.style.background='';el.style.boxShadow='';el.classList.remove('on');el.setAttribute('aria-pressed','false');}
 function refreshCells(){
  TRACKS.forEach((tr,i)=>{for(let s=0;s<64;s++){
   const v=state.pattern[tr.id][s];
@@ -840,12 +844,14 @@ function buildRoll(){
  for(let r=35;r>=0;r--){
   const row=document.createElement('div');row.className='rrow';
   const lab=document.createElement('span');lab.className='rlabel'+(r%12===0?' c':'');
-  lab.textContent=NOTE_NAMES[r%12]+(2+Math.floor(r/12));
+  const note=NOTE_NAMES[r%12]+(2+Math.floor(r/12));lab.textContent=note;
   row.appendChild(lab);
   const rowCellsArr=[];
   for(let s=0;s<64;s++){
    const b=document.createElement('button');b.className='rollc'+(r%12===0?' C':'')+(s>=state.steps?' off':'');
    b.dataset.r=r;b.dataset.s=s;
+   b.setAttribute('aria-label',note+', paso '+(s+1));
+   b.setAttribute('aria-pressed',String(state.roll[r][s]>0));
    if(state.roll[r][s]>0)b.classList.add('on');
    row.appendChild(b);rowCellsArr.push(b);
   }
@@ -856,6 +862,7 @@ function buildRoll(){
 function setRoll(r,s,v){
  state.roll[r][s]=v;
  rollCells[35-r][s].classList.toggle('on',v>0);
+ rollCells[35-r][s].setAttribute('aria-pressed',String(v>0));
  saveSoon();
 }
 function refreshRoll(){
@@ -961,9 +968,9 @@ function buildMixer(){
   const vu=document.createElement('div');vu.className='vu';const fill=document.createElement('i');vu.appendChild(fill);
   const cols=document.createElement('div');cols.style.cssText='display:flex;flex-direction:column;gap:6px';
   const vol=document.createElement('input');vol.type='range';vol.min=0;vol.max=isMaster?1.2:1;vol.step=.01;
-  vol.id=isMaster?'mixMasterVol':'';vol.setAttribute('aria-label','Volumen de '+name);
+  if(isMaster)vol.id='mixMasterVol';vol.setAttribute('aria-label','Volumen de '+name);
   const pan=document.createElement('input');pan.type='range';pan.min=-1;pan.max=1;pan.step=.02;
-  pan.id=isMaster?'mixMasterPan':'';pan.setAttribute('aria-label','Pan de '+name);
+  if(isMaster)pan.id='mixMasterPan';pan.setAttribute('aria-label','Pan de '+name);
   vol.value=state.master.v;pan.value=state.master.p;
   cols.append(vol,pan);
   faders.append(vu,cols);

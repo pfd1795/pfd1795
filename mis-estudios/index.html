@@ -58,12 +58,14 @@
           id="buscador"
           name="q"
           aria-label="Buscar estudios"
+          data-i18n-aria-label="searchStudiesAria"
           data-buscador-tarjetas=".estudio-card"
           data-buscador-placeholder="buscador estudios: titulo, descripcion o palabra clave ({visibles} de {total} entradas, incluidas las próximamente)"
+          data-i18n-placeholder="searchStudiesPlaceholder"
           placeholder="buscador estudios: titulo, descripcion o palabra clave"
           autocomplete="off">
       </div>
-      <p class="buscador__mensaje" id="sin-resultados" hidden>
+      <p class="buscador__mensaje" id="sin-resultados" data-lang="searchStudiesEmpty" hidden>
         No hay estudios que coincidan con tu búsqueda. Prueba con otra palabra.
       </p>
 

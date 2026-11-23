@@ -33,7 +33,8 @@ y aquí solo se conserva el override de acento `--enc-accent`.
 ## Reglas para agentes
 
 1. **Contenido solo en español**: los artículos no usan el sistema de traducciones
-   (`translations.json`); la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN.
+   (`translations.json`); la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN,
+   incluido el buscador (`aria-label`, placeholder y `#sin-resultados`).
    La única etiqueta de UI generada en la grilla, `comingSoon` (entradas `wip`), se toma de
    `translations.page[lang]`; los títulos, descripciones, categorías y palabras clave siguen
    siendo solo español.
@@ -56,7 +57,9 @@ y aquí solo se conserva el override de acento `--enc-accent`.
 6. **Buscador**: el `js/buscador.js` compartido opera solo si existe `#buscador`; esta
    página lo configura con `data-buscador-tarjetas=".estudio-card"` y su texto de
    placeholder. Filtra por término, actualiza el conteo del placeholder, oculta categorías
-   vacías y usa `#sin-resultados`. No acoplarlo a módulos ES.
+   vacías y usa `#sin-resultados`. Los textos viven en `translations.page[lang]` (claves
+   `searchStudies*`) y se actualizan con el evento `site:languagechange`. No acoplarlo a
+   módulos ES.
 7. **Contenido educativo**: agregar un artículo es crear `articulos/<slug>.html`
    (kebab-case, sin prefijos redundantes), siguiendo la estructura de los existentes, y
    añadir su entrada a `data/articulos.json` (`status: "published"` solo si está probado).

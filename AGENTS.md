@@ -195,7 +195,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
    | `controllers/juegos/`, `juegos/data/juegos.json` | `/juegos/` |
    | `mis-estudios/` (contenido, `mis-estudios.css`, manifiesto `data/articulos.json`) | `/mis-estudios/` y una subpágina de `articulos/` (p. ej. `/mis-estudios/articulos/css.html`) |
    | `programas/` (contenido, `programas.css`, manifiesto `data/herramientas.json`) | `/programas/` y una herramienta de `/programas/herramientas/` (p. ej. `/programas/herramientas/generador-paletas.html`) |
-   | `js/buscador.js` | `/mis-estudios/`, `/programas/` y `/juegos/` (filtro, conteo del placeholder y chips de categoría; en juegos, de género) |
+   | `js/buscador.js` | `/mis-estudios/`, `/programas/` y `/juegos/` (filtro, conteo del placeholder y chips de categoría; en juegos, de género; textos ES/EN vía `site:languagechange`) |
    | Modal de Configuración (`settings.controller.js`, `utils/dialog.js`) | `/` y `/juegos/` (apertura desde el footer del sidebar) |
 
 3. **Checklist funcional en el navegador:**
@@ -276,7 +276,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | --- | --- | --- |
 | `js/main.js` | — (script principal) | Monta `InitModalDialog`, `SidebarController` (si existe `#HomePage`), `HomeController` (si existe `.main-layout`) y los controladores de grilla (`JuegosController` si existe `.juegos-grid`, `MisEstudiosController` si existe `.estudios-grid`, `ProgramasController` si existe `.programas-grid`) tras `DOMContentLoaded`. Registra también el Service Worker (PWA). |
 | `js/theme-init.js` | IIFE clásica (no módulo) | Aplica modo, acento, fondo y escala desde `localStorage` antes del primer pintado en **todas las páginas del portafolio y sus secciones** (portada, `juegos/`, `mis-estudios/`, `programas/` y artículos/herramientas con chrome compartido). Salvo los juegos y `dj.html`, autocontenidos. Es el único script de pre-pintado; duplica las claves de `utils/storage.js` a propósito. |
-| `js/buscador.js` | IIFE clásica (no módulo) | Buscador único de las grillas: filtra las tarjetas del término (y por categoría si hay chips `.filtro`), actualiza el placeholder con el conteo y usa `#sin-resultados`. Las tarjetas deben exponer `data-titulo`, `data-descripcion`, `data-claves` y `data-categoria`; en juegos, `data-claves` se arma con `technologies` del manifiesto. Se configura por `data-attributes` del input `#buscador` (`data-buscador-tarjetas`, `data-buscador-placeholder`); la recarga tras renders dinámicos la resuelve un `MutationObserver` y los chips por delegación sobre `document`. |
+| `js/buscador.js` | IIFE clásica (no módulo) | Buscador único de las grillas: filtra las tarjetas del término (y por categoría si hay chips `.filtro`), actualiza el placeholder con el conteo y usa `#sin-resultados`. Las tarjetas deben exponer `data-titulo`, `data-descripcion`, `data-claves` y `data-categoria`; en juegos, `data-claves` se arma con `technologies` del manifiesto. Se configura por `data-attributes` del input `#buscador` (`data-buscador-tarjetas`, `data-buscador-placeholder`); la recarga tras renders dinámicos la resuelve un `MutationObserver` y los chips por delegación sobre `document`. Escucha el evento DOM `site:languagechange` para volver a leer `data-buscador-placeholder` y recalcular el conteo al cambiar de idioma. |
 
 **Controladores — `controllers/home/`**
 
@@ -312,7 +312,7 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | --- | --- | --- |
 | `sidebar.controller.js` | `default SidebarController()` | Abre/cierra el menú, marca `inert` en el fondo, gestiona el foco de retorno y marcar el enlace activo. |
 | `fnSectionNav.js` | `default sectionNav()` | Scrollspy con `IntersectionObserver`: marca `.active` y abre el submenú cuando la sección es hija. |
-| `fnChangeLanguage.js` | `sectionLanguage()` (default), `applyTranslations()` | Toggle ES/EN y actualización de `[data-lang]`, `[data-i18n-title]`, `[data-i18n-aria-label]`. Las claves se resuelven desde un índice único por idioma armado con las 4 secciones en orden fijo; un aviso en consola señala cualquier colisión. |
+| `fnChangeLanguage.js` | `sectionLanguage()` (default), `applyTranslations()` | Toggle ES/EN y actualización de `[data-lang]`, `[data-i18n-title]`, `[data-i18n-aria-label]` y `[data-i18n-placeholder]` (este último escribe `data-buscador-placeholder`). Tras re-renderizar emite el evento DOM `site:languagechange` para que `js/buscador.js` recalcule su placeholder. Las claves se resuelven desde un índice único por idioma armado con las 4 secciones en orden fijo; un aviso en consola señala cualquier colisión. |
 | `fnThemeMode.js` | `themeMode()` (default), `updateModeText()` | Alterna claro/oscuro y actualiza el texto del botón correspondiente. |
 | `fnThemeColor.js` | `default themeColor()` | Aplica el acento activo (`--theme-color`, `--theme-color-soft`) desde `utils/themeColors.js` y sincroniza el swatch seleccionado entre pestañas sin reescribir `localStorage`. |
 | `fnBackgroundTheme.js` | `default backgroundTheme()` | Aplica tema de fondo, dirección del degradado y velocidad (`--page-*`). |
@@ -548,6 +548,7 @@ Arquitectura CSS).
   duplican. La clave `name` no se traduce: `applyTranslations()` la saltea a propósito
   porque es un nombre propio.
 - Las cadenas que se renderizan desde JavaScript se traducen al generarse (por ejemplo, `GridProjects()` toma `viewProject` de `translations.introSection[lang]`, y `GridGames()` toma las etiquetas de `translations.page[lang]`), no vía `data-lang`.
+- La interfaz del buscador de las tres grillas también se traduce: `aria-label` y placeholder se marcan con `data-i18n-aria-label` / `data-i18n-placeholder` (claves `search<Seccion>Aria` y `search<Seccion>Placeholder` en `translations.page[lang]`), y `#sin-resultados` usa `data-lang="search<Seccion>Empty"`. `applyTranslations()` escribe el placeholder localizado en `data-buscador-placeholder` y emite `site:languagechange`; `js/buscador.js` (script clásico) lo escucha, vuelve a leer el atributo y recalcula los contadores `{visibles}` / `{total}` sin importar módulos ES.
 - Al cambiar de idioma se re-renderizan la portada y las grillas de juegos y programas (`reloadHomeContent()` de `controllers/home/fnHome.js`, `reloadGamesContent()` de `controllers/juegos/fnJuegos.js` y `reloadProgramasContent()` de `controllers/programas/fnProgramas.js`); todas no hacen nada si su contenedor no existe.
 - Cuidar el orden entre `applyTranslations()` y las funciones que regeneran HTML (`GridWorkExperience`, `GridProjects`) al tocar idioma: las cadenas renderizadas en JS deben traducirse al generarse.
 

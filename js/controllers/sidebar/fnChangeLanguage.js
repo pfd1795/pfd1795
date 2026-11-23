@@ -75,6 +75,14 @@ export function applyTranslations() {
       element.setAttribute("aria-label", value);
     }
   });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+    const value = getTranslation(lang, element.getAttribute("data-i18n-placeholder"));
+
+    if (value !== undefined) {
+      element.setAttribute("data-buscador-placeholder", value);
+    }
+  });
 }
 
 function changeLanguage(lang, { rerender = true } = {}) {
@@ -102,6 +110,8 @@ function changeLanguage(lang, { rerender = true } = {}) {
     reloadGamesContent();
     reloadProgramasContent();
   }
+
+  document.dispatchEvent(new CustomEvent("site:languagechange"));
 }
 
 export default function sectionLanguage() {

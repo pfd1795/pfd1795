@@ -10,8 +10,6 @@
 - Ajustar la redacción de `docs/README.md` sobre `docs/informes/`.
 - Integrar o retirar `programas/herramientas/cuerpo-humano.html`: si se integra, entrada en `herramientas.json`, precache del SW con subida de `CACHE_NAME`, documentación en `programas/AGENTS.md` y cambio del `<h1>` del navbar por `.navbar-name`; si se retira, eliminar el archivo.
 - Añadir `id="figura-cuerpo"` al `<svg>` de `programas/herramientas/cuerpo-humano.html` si la herramienta se conserva.
-- Traducir el buscador de juegos, programas y estudios: claves nuevas en `translations.json`, atributos `data-lang` y `data-i18n-aria-label`, y placeholder actualizable desde `js/buscador.js` al cambiar idioma.
-- Eliminar los `id=""` de `programas/herramientas/dj.js` y dar nombre accesible a las celdas del secuenciador.
+
 - Añadir un `<h1>` accesible a `juegos/snake/index.html`.
 - Añadir `<link rel="icon">` a `juegos/_template/index.html` y a las 18 páginas de juego que no lo declaran.
-- Guardar el elemento activo al abrir el sidebar y restaurarlo al cerrar desde el overlay en `js/controllers/sidebar/sidebar.controller.js`.

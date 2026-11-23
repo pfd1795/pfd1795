@@ -58,12 +58,14 @@
           id="buscador"
           name="q"
           aria-label="Buscar programas"
+          data-i18n-aria-label="searchProgramsAria"
           data-buscador-tarjetas=".programa-card"
           data-buscador-placeholder="buscador programas: titulo, descripcion o palabra clave ({visibles} de {total} entradas, incluidas las próximamente)"
+          data-i18n-placeholder="searchProgramsPlaceholder"
           placeholder="buscador programas: titulo, descripcion o palabra clave"
           autocomplete="off">
       </div>
-      <p class="buscador__mensaje" id="sin-resultados" hidden>
+      <p class="buscador__mensaje" id="sin-resultados" data-lang="searchProgramsEmpty" hidden>
         No hay programas que coincidan con tu búsqueda. Prueba con otra palabra o categoría.
       </p>
 

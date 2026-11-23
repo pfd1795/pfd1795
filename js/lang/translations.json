@@ -76,7 +76,16 @@
       "openSettings": "Abrir configuración",
       "copyEmail": "Copiar correo",
       "closeWindow": "Cerrar ventana",
-      "closeWindowHint": "Cerrar ventana (Esc)"
+      "closeWindowHint": "Cerrar ventana (Esc)",
+      "searchGamesAria": "Buscar juegos",
+      "searchProgramsAria": "Buscar programas",
+      "searchStudiesAria": "Buscar estudios",
+      "searchGamesPlaceholder": "buscador juegos: titulo, descripcion, tecnologia o genero ({visibles} de {total} juegos)",
+      "searchProgramsPlaceholder": "buscador programas: titulo, descripcion o palabra clave ({visibles} de {total} entradas, incluidas las próximamente)",
+      "searchStudiesPlaceholder": "buscador estudios: titulo, descripcion o palabra clave ({visibles} de {total} entradas, incluidas las próximamente)",
+      "searchGamesEmpty": "No hay juegos que coincidan con tu búsqueda. Prueba con otra palabra o género.",
+      "searchProgramsEmpty": "No hay programas que coincidan con tu búsqueda. Prueba con otra palabra o categoría.",
+      "searchStudiesEmpty": "No hay estudios que coincidan con tu búsqueda. Prueba con otra palabra."
     },
     "en": {
       "web-developer": "Web Developer",
@@ -154,7 +163,16 @@
       "openSettings": "Open settings",
       "copyEmail": "Copy email",
       "closeWindow": "Close window",
-      "closeWindowHint": "Close window (Esc)"
+      "closeWindowHint": "Close window (Esc)",
+      "searchGamesAria": "Search games",
+      "searchProgramsAria": "Search programs",
+      "searchStudiesAria": "Search studies",
+      "searchGamesPlaceholder": "search games: title, description, technology or genre ({visibles} of {total} games)",
+      "searchProgramsPlaceholder": "search programs: title, description or keyword ({visibles} of {total} entries, including coming soon)",
+      "searchStudiesPlaceholder": "search studies: title, description or keyword ({visibles} of {total} entries, including coming soon)",
+      "searchGamesEmpty": "No games match your search. Try another word or genre.",
+      "searchProgramsEmpty": "No programs match your search. Try another word or category.",
+      "searchStudiesEmpty": "No articles match your search. Try another word."
     }
   },
   "introSection": {

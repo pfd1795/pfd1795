@@ -153,6 +153,11 @@
 
     campo.addEventListener('input', filtrar);
 
+    document.addEventListener('site:languagechange', function () {
+      textoPlaceholder = campo.getAttribute('data-buscador-placeholder') || textoPlaceholder;
+      filtrar();
+    });
+
     /* Las grillas renderizadas desde manifiestos rellenan el DOM después de
        DOMContentLoaded; el observer dispara el primer conteo correcto. */
     if (window.MutationObserver) {
