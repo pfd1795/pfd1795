@@ -85,9 +85,6 @@ con script; conteos verificados contra los manifiestos.
 
 ## Observaciones no accionables
 
-- `docs/prompts/portadas-juegos.md` incluye ejemplos para 15 de los 20 juegos. El documento se
-  declara independiente del repositorio, así que no es una inconsistencia; si se quiere usar como
-  banco de portadas, faltan `card-match`, `dodge-arena`, `neon-maze`, `neon-rally` y `tetris`.
 - `docs/prompts/crear-videojuegos.md` usa «Fase 1…4» como flujo de trabajo del prompt; no es un
   plan de proyecto ni incumple la regla.
 - `docs/informes/trabajo-pendiente.md` contiene solo el título: correcto como tracker vacío.

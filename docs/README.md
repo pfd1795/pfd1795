@@ -39,8 +39,6 @@ documentación de referencia para agentes.
   un juego nuevo integrado en el portafolio.
 - [`prompts/crear-programas-web.md`](./prompts/crear-programas-web.md) — instrucciones para
   generar una herramienta web para la sección Programas (pregunta primero qué herramienta crear).
-- [`prompts/portadas-juegos.md`](./prompts/portadas-juegos.md) — instrucciones para generar
-  las portadas (pixel art retro arcade) de los juegos y su integración en la grilla.
 
 ## Informes
 

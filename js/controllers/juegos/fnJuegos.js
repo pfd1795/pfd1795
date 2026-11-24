@@ -75,8 +75,7 @@ function CardGame(game, lang, texts) {
   const description = getText(game.description, lang);
   const controls = getText(game.controls, lang);
   const technologies = Array.isArray(game.technologies) ? game.technologies : [];
-  const covers = Array.isArray(game.covers) ? game.covers.filter(Boolean) : [];
-  const hasCarousel = covers.length > 1;
+  const cover = typeof game.cover === 'string' ? game.cover.trim() : '';
 
   article.className = 'juego-card';
   article.setAttribute('data-titulo', title);
@@ -85,9 +84,9 @@ function CardGame(game, lang, texts) {
   article.setAttribute('data-categoria', genreKey(game));
 
   article.innerHTML = `
-    <div class="juego-card__portada${hasCarousel ? ' juego-card__portada--carousel' : ''}${covers.length === 0 ? ' juego-card__portada--placeholder' : ''}" aria-hidden="true">
-      ${covers.length
-        ? covers.map((src) => `<img class="juego-card__portada-img" src="${esc(src)}" alt="" loading="lazy" decoding="async" />`).join('')
+    <div class="juego-card__portada${cover ? '' : ' juego-card__portada--placeholder'}" aria-hidden="true">
+      ${cover
+        ? `<img class="juego-card__portada-img" src="${esc(cover)}" alt="" loading="lazy" decoding="async" />`
         : ''}
     </div>
 

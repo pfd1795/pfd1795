@@ -4,7 +4,7 @@
 > toda la información que necesitas (rutas, clases CSS, categorías, artículos existentes y reglas)
 > está aquí. No necesitas leer el repositorio ni conocer al autor del proyecto.
 >
-> A diferencia de `crear-videojuegos.md` y `portadas-juegos.md`, que son genéricos, este prompt
+> A diferencia de `crear-videojuegos.md`, que es genérico, este prompt
 > describe el chrome real de la enciclopedia de `pfd1795`. Úsalo tal cual: pega la ficha de un
 > tema y obtén el artículo listo para guardar.
 

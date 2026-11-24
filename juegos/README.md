@@ -86,7 +86,7 @@ Edita [`data/juegos.json`](./data/juegos.json) y agrega un objeto:
     "es": "Flechas / WASD · botones táctiles",
     "en": "Arrows / WASD · touch buttons"
   },
-  "covers": ["../assets/images/games/mi-juego/cover.jpg"],
+  "cover": "../assets/images/games/mi-juego/cover.jpg",
   "status": "published"
 }
 ```
@@ -109,7 +109,7 @@ Abre `http://localhost:8000/juegos/` y comprueba:
 ### 5. Actualizar la documentación
 
 - Añade el juego a la tabla de catálogo de este README (sección siguiente).
-- Genera su portada y añádela al manifiesto (ver `docs/prompts/portadas-juegos.md`, herramienta de desarrollo).
+- Añade la portada del juego al manifiesto en el campo `cover` (ruta relativa a `juegos/index.html`, por ejemplo `../assets/images/games/<slug>/cover.jpg`).
 - Mantén sincronizados `README.md`, `AGENTS.md` y `juegos/README.md` del portafolio.
 
 ---
@@ -127,13 +127,13 @@ Es la **única fuente de verdad** de la grilla. La página no contiene tarjetas 
 | `year` | number | No | Año de publicación; se muestra en la cabecera. |
 | `technologies` | string[] | No | Chips de tecnologías. |
 | `controls` | `{ es, en }` | No | Resumen de controles. |
-| `covers` | string[] | No | Rutas relativas a las portadas (`../assets/images/games/<slug>/cover.jpg`). Con una imagen la tarjeta la muestra estática; con 2–3 activa un carrusel por CSS; sin imágenes o con el campo ausente, placeholder con degradado. |
+| `cover` | string | No | Ruta relativa a la portada (`../assets/images/games/<slug>/cover.jpg`). Si falta o está vacía, la tarjeta muestra un placeholder con degradado. |
 | `status` | `"published"` \| `"wip"` | Sí | Solo `published` aparece en la grilla. |
 
 Notas:
 
 - El archivo tiene una clave raíz `version` (formato del manifiesto) y el array `items`; no los elimines. Es el mismo esquema que usan `mis-estudios/data/articulos.json` y `programas/data/herramientas.json` (que añaden un array `categories` para agrupar las tarjetas).
-- El enlace para jugar se construye automáticamente como `./<slug>/index.html`; no guardes la URL del juego en el JSON (las rutas del campo `covers` sí van en el JSON).
+- El enlace para jugar se construye automáticamente como `./<slug>/index.html`; no guardes la URL del juego en el JSON (la ruta del campo `cover` sí va en el JSON).
 - Si un `slug` no cumple el patrón o falta `status`, el juego se omite y se registra un aviso en
   la consola. La página sigue funcionando.
 - Los textos deben existir en español e inglés. Si falta un idioma, se usa el español.

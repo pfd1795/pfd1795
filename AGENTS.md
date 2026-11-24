@@ -223,8 +223,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 │       ├── crear-estudios.md        # Prompt para crear artículos de la enciclopedia
 │       ├── fichas-estudios.md       # Fichas de trabajo de los artículos (tema, slug, categoría)
 │       ├── crear-videojuegos.md     # Prompt para crear juegos integrados
-│       ├── crear-programas-web.md   # Prompt para crear herramientas de la sección programas
-│       └── portadas-juegos.md       # Guía para generar portadas de la grilla
+│       └── crear-programas-web.md   # Prompt para crear herramientas de la sección programas
 ├── index.html              # Entrada principal (portada)
 ├── manifest.json           # Manifiesto de instalación PWA
 ├── service-worker.js       # Precaching y respuestas offline de la PWA
@@ -353,7 +352,7 @@ Las tres grillas de sección usan el **mismo esquema de manifiesto**: una clave 
 `version` (formato) y un array `items`; en `mis-estudios/` y `programas/` hay además
 un array `categories` (`id` + `label {es}`) que ordena y agrupa las tarjetas. Cada
 entrada lleva `slug` (kebab-case, validado con un patrón), `title`, `description`,
-`status: "published" \| "wip"` y campos propios de la sección (`covers`/`year`/`genre` en
+`status: "published" \| "wip"` y campos propios de la sección (`cover`/`year`/`genre` en
 juegos; `keywords`/`category` en artículos y herramientas; `icon`/`technologies` en
 herramientas). En juegos solo aparecen las entradas `published` con slug válido; en
 `mis-estudios/` y `programas/` se muestran también las `wip` con la etiqueta de UI
@@ -478,8 +477,7 @@ space-invaders, neon-racer, plataformas, dungeon-crawler, tower-defense) sigue u
 común: marco máximo de 900×900 px CSS (`--game-max` y, según el juego, `--game-chrome` o
 el sistema de reservas `--reserve-*`) y buffer del canvas renderizado a la resolución
 visible (`renderScale`), documentado en `juegos/README.md` (sección "Dimensionado del
-canvas"). Las portadas muestran la portada del campo `covers` del manifiesto (ver
-Arquitectura CSS).
+canvas"). Las tarjetas muestran una sola portada por juego desde el campo `cover` del manifiesto.
 - **Rutas de assets**: los iconos que se inyectan desde JS (modal de Configuración y modo) se resuelven con `utils/assets.js` (`import.meta.url` → `assets/icons/`), para que funcionen tanto desde la raíz (`index.html`) como desde subcarpetas (`mis-estudios/` y `juegos/`).
 - **Configuración**: el modal (`.modal-dialog`) se rellena desde `controllers/settings/settings.controller.js`; los controles de idioma/modo/color/fondo/dirección/velocidad y tamaño de fuente usan **delegación de eventos sobre `document`**, por lo que siguen funcionando aunque el contenido se genere dinámicamente en cada apertura. Las filas de "Dirección del degradado" y "Velocidad" son condicionales: se muestran/ocultan con `.is-hidden` según el tema de fondo elegido (dirección para temas con degradado; velocidad solo para `multicolor`). La lógica de aplicación vive en `controllers/sidebar/fnBackgroundTheme.js` (fondo, dirección y velocidad) y `fnFontScale.js`; los datos están centralizados en `utils/themeBackgrounds.js`. `applyTranslations()` (en `fnChangeLanguage.js`) actualiza el texto de `[data-lang]` y el `title`/`aria-label` de `[data-i18n-title]`/`[data-i18n-aria-label]`, de modo que los controles dinámicos cambian de idioma sin reabrir el modal.
 - **Pre-pintado del tema**: para evitar el parpadeo, el modo, el acento, el fondo y el tamaño de fuente se aplican antes del primer pintado. **Todas las páginas del portafolio y de sus secciones** (portada, `juegos/`, `mis-estudios/`, `programas/` y los artículos/herramientas con chrome compartido) usan el mismo `js/theme-init.js` (script clásico síncrono en `<head>`, con la profundidad de ruta que corresponda: `../js/` o `../../js/`). **Se exceptúan los juegos de `juegos/<slug>/` y `programas/herramientas/dj.html`**, autocontenidos, que gestionan su propio tema. Lee las mismas claves de `localStorage` que `utils/storage.js` (`theme-mode`, `theme-color-value`, `theme-background`, `gradient-direction`, `psychedelic-speed`, `font-scale`).
@@ -504,7 +502,7 @@ Arquitectura CSS).
 - **Tamaño de fuente**: `html` usa `font-size: calc(16px * var(--font-scale, 1))`; el modal fija `--font-scale` en 0.85, 1 o 1.15, por lo que escala toda la tipografía basada en `rem` sin tocar los breakpoints en `px`.
 - **Modo oscuro**: clase `.dark` en `body.dark` (portafolio) y `html.dark` (subpáginas como `mis-estudios/`, que la fijan antes de pintar); la sección `:root` de `base.css` admite ambos selectores y `fnThemeMode.js` actualiza los dos nodos. Redefine las variables semánticas (`--color-background`, `--color-surface`, `--color-text`, …), por lo que los componentes se adaptan solos.
 - **Enciclopedia**: estilos en `mis-estudios/mis-estudios.css`; conserva los nombres de clase originales y usa el acento adaptativo `--enc-accent`.
-- **Juegos**: `juegos/juegos.css` contiene la página y las tarjetas (`.juego-card*`) con tokens de `base.css`. Cada tarjeta muestra su portada (`.juego-card__portada`) leyendo `covers` del manifiesto: rutas relativas a `juegos/index.html`, como `../assets/images/games/<slug>/cover.jpg`. Con una sola imagen es estática; con 2–3 se activa el carrusel por CSS (`--carousel`, crossfade); sin imágenes, placeholder con degradado. La guía para generar portadas es una herramienta de desarrollo en `docs/prompts/portadas-juegos.md`.
+- **Juegos**: `juegos/juegos.css` contiene la página y las tarjetas (`.juego-card*`) con tokens de `base.css`. Cada tarjeta muestra una sola portada (`.juego-card__portada`) leyendo `cover` del manifiesto: ruta relativa a `juegos/index.html`, como `../assets/images/games/<slug>/cover.jpg`; si falta o está vacía, usa placeholder con degradado.
 - **Buscador y filtros**: los estilos de `.buscador__campo`, `.buscador__mensaje`, `.filtros` y `.filtro` viven en la sección de componentes de `stylesheets/base.css` y los comparten `mis-estudios/`, `programas/` y `juegos/`. Cada hoja de sección conserva solo los overrides de acento propios: `--enc-accent` en la enciclopedia, `--prog-accent` en programas y `--theme-color` (el acento de `base.css`) en juegos.
 - **Programas**: `programas/programas.css` contiene la página, las tarjetas (`.programa-card*`) y el override de acento `--prog-accent` para los chips `.filtro`, cuyos estilos compartidos están en `base.css`.
 - **Modal**: `.modal-dialog` usa las variables semánticas y se adapta al modo oscuro automáticamente; el botón de cierre usa `.modal-close`; el estado se expresa con clases excluyentes en `<body>` (`.modal-open` bloquea el scroll con `overflow-y: hidden`, `.modal-closed` lo restaura con `overflow-y: visible`), gestionadas por `utils/dialog.js`. El `<dialog>` referencia `aria-labelledby="modal-title"`, por lo que cada contenido dinámico (Configuración y educación) debe generar un elemento con `id="modal-title"` en cada apertura.
@@ -569,7 +567,6 @@ Arquitectura CSS).
 
 ### Deuda técnica
 
-- Cada juego tiene una sola portada (`cover.jpg`); las portadas 2 y 3 para el carrusel aún no se han generado (la guía y el código ya aceptan hasta 3 mediante `covers`).
 - No existe `updatedAt` por juego en el manifiesto.
 - El contenido de la enciclopedia no tiene traducción al inglés.
 
