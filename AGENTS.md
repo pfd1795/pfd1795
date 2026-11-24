@@ -218,6 +218,7 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 ├── AGENTS.md               # Guía técnica para agentes
 ├── docs/                   # Documentación organizada
 │   ├── README.md           # Índice de la documentación
+│   ├── informes/           # Informes de auditoría y tracker de trabajo pendiente
 │   └── prompts/            # Herramientas de desarrollo (leer solo a pedido)
 │       ├── crear-estudios.md        # Prompt para crear artículos de la enciclopedia
 │       ├── fichas-estudios.md       # Fichas de trabajo de los artículos (tema, slug, categoría)
@@ -225,6 +226,9 @@ El proyecto no tiene tests ni linting; validar los cambios de esta forma:
 │       ├── crear-programas-web.md   # Prompt para crear herramientas de la sección programas
 │       └── portadas-juegos.md       # Guía para generar portadas de la grilla
 ├── index.html              # Entrada principal (portada)
+├── manifest.json           # Manifiesto de instalación PWA
+├── service-worker.js       # Precaching y respuestas offline de la PWA
+├── favicon.svg             # Icono del sitio
 ├── mis-estudios/           # Enciclopedia de informática (contenido educativo)
 │   ├── AGENTS.md           # Reglas locales de la enciclopedia para agentes
 │   ├── index.html          # Índice con buscador; grilla generada desde data/articulos.json
@@ -554,7 +558,7 @@ Arquitectura CSS).
 
 ### Contenido y assets
 
-- La enciclopedia cuenta con 28 artículos publicados.
+- La enciclopedia cuenta con 36 artículos publicados.
 - La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
 - **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `juegos/data/juegos.json`.
@@ -638,7 +642,7 @@ firmas, marcas ni menciones de modelos de IA.
 - **Sin frameworks ni build**: Vanilla JS/CSS únicamente; no introducir bundlers, frameworks ni backend.
 - **GitHub Pages**: mantener rutas relativas y compatibilidad con despliegue estático desde `main`.
 - **Performance**: usar `loading="lazy"` en imágenes.
-- **Documentación**: mantener `README.md`, `AGENTS.md` (raíz y los locales de `juegos/` y `mis-estudios/`), `docs/README.md` y `juegos/README.md` sincronizados con el código. No reintroducir planes de tareas, fases ni informes de estado: la documentación describe el estado real del código.
+- **Documentación**: mantener `README.md`, `AGENTS.md` (raíz y los locales de `juegos/`, `mis-estudios/` y `programas/`), `docs/README.md` y `juegos/README.md` sincronizados con el código. No reintroducir planes de tareas, fases ni informes de estado: la documentación describe el estado real del código.
 - **Juegos**: un juego nuevo se integra copiando su carpeta a `juegos/<slug>/` siguiendo el canon visual retro-arcade (`_template/` como base, `snake/` como referencia), añadiendo su entrada a `juegos/data/juegos.json` (con `status: "published"` solo si está probado) y documentándolo con `README-juego.md`; no se edita el juego para adaptarlo al chrome del portafolio.
 - **Información personal**: no modificar los datos personales del desarrollador.
 - **Firma de IA**: todo agente o modelo de IA que aporte al proyecto firma **solo** en el footer de la portada (ver "Firma de agentes IA en el footer"); en ningún otro lugar del sitio puede dejar marcas, comentarios, código o recursos propios.

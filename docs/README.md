@@ -33,8 +33,8 @@ documentación de referencia para agentes.
   artículo de la enciclopedia: contexto del proyecto (rutas, clases CSS, categorías, artículos
   publicados), ficha de trabajo, esqueleto canónico, checklist de calidad y contrato de salida.
 - [`prompts/fichas-estudios.md`](./prompts/fichas-estudios.md) — fichas de trabajo (tema, slug,
-  categoría, objetivo, secciones) de los artículos pendientes y de los nuevos, listas para pegar
-  en el prompt anterior.
+  categoría, objetivo, secciones) de los temas de la enciclopedia, listas para pegar en el prompt
+  anterior.
 - [`prompts/crear-videojuegos.md`](./prompts/crear-videojuegos.md) — instrucciones para generar
   un juego nuevo integrado en el portafolio.
 - [`prompts/crear-programas-web.md`](./prompts/crear-programas-web.md) — instrucciones para
@@ -45,8 +45,8 @@ documentación de referencia para agentes.
 ## Informes
 
 - `docs/informes/` — **única** ubicación para informes de auditoría, planes de trabajo, listas de
-  pendientes, trackers y demás hallazgos. Se crea la primera vez que haga falta; no hay informes
-  activos por defecto.
+  pendientes, trackers y demás hallazgos. Contiene el tracker de trabajo pendiente y los informes
+  que se generan.
 - `docs/informes/trabajo-pendiente.md` — tracker único de tareas abiertas del repo. Toda tarea
   pendiente nueva se agrega ahí; al cerrar un ítem se borra (nunca se marca resuelto ni se anexa
   historial).

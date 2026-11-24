@@ -11,7 +11,7 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 - Pie de página con las tecnologías que construyeron el sitio, la firma de los agentes de IA que colaboraron y los créditos de los iconos.
 - Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
-- Enciclopedia de informática en `mis-estudios/`, con buscador y 28 artículos publicados; la grilla se genera desde `mis-estudios/data/articulos.json`.
+- Enciclopedia de informática en `mis-estudios/`, con buscador y 36 artículos publicados; la grilla se genera desde `mis-estudios/data/articulos.json`.
 - Colección de 20 juegos arcade en `juegos/`, con buscador, filtro por género y una grilla generada desde `juegos/data/juegos.json`.
 - Sección de programas y herramientas en `programas/`, con grilla filtrable generada desde `programas/data/herramientas.json` y tarjetas de herramientas propias (web, Linux, Windows, CLI, DevOps).
 - Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva. La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
@@ -39,6 +39,9 @@ Luego abre `http://localhost:8000/`.
 
 ```text
 ├── index.html              # Portada
+├── manifest.json           # Manifiesto PWA
+├── service-worker.js       # Caché para funcionamiento offline
+├── favicon.svg             # Icono del sitio
 ├── docs/                   # Documentación organizada (índice y herramientas de desarrollo)
 ├── mis-estudios/           # Enciclopedia de informática (articulos/, data/articulos.json, mis-estudios.css)
 ├── juegos/                 # Grilla y juegos arcade (data/juegos.json, juegos.css; ver juegos/README.md)

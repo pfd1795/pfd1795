@@ -2,7 +2,7 @@
 // Precachea todo el sitio (lista generada con las mismas exclusiones del
 // workflow de despliegue: sin documentación, CV ni plantilla de juegos).
 // Bump CACHE_NAME (v2, v3, ...) al actualizar el sitio para forzar refresco.
-const CACHE_NAME = 'pwa-cache-v19';
+const CACHE_NAME = 'pwa-cache-v29';
 const PRECACHE_URLS = [
   "./assets/icons/arrow_right.svg",
   "./assets/icons/build.svg",
@@ -110,8 +110,10 @@ const PRECACHE_URLS = [
   "./mis-estudios/articulos/apis.html",
   "./mis-estudios/articulos/aprendizaje-automatico.html",
   "./mis-estudios/articulos/c-memoria.html",
+  "./mis-estudios/articulos/ci-cd.html",
   "./mis-estudios/articulos/criptografia.html",
   "./mis-estudios/articulos/css.html",
+  "./mis-estudios/articulos/docker.html",
   "./mis-estudios/articulos/empaquetado-despliegue.html",
   "./mis-estudios/articulos/editores-ides-depuracion.html",
   "./mis-estudios/articulos/frameworks-backend.html",
@@ -121,6 +123,7 @@ const PRECACHE_URLS = [
   "./mis-estudios/articulos/http.html",
   "./mis-estudios/articulos/inteligencia-artificial.html",
   "./mis-estudios/articulos/javascript.html",
+  "./mis-estudios/articulos/linux-servidores.html",
   "./mis-estudios/articulos/logica-booleana.html",
   "./mis-estudios/articulos/modelado-datos.html",
   "./mis-estudios/articulos/paradigmas.html",
@@ -128,13 +131,18 @@ const PRECACHE_URLS = [
   "./mis-estudios/articulos/python.html",
   "./mis-estudios/articulos/redes-neuronales.html",
   "./mis-estudios/articulos/redes.html",
+  "./mis-estudios/articulos/regex.html",
   "./mis-estudios/articulos/seguridad-web.html",
   "./mis-estudios/articulos/sistemas-numericos.html",
   "./mis-estudios/articulos/sistemas-operativos.html",
   "./mis-estudios/articulos/solid.html",
   "./mis-estudios/articulos/sql.html",
   "./mis-estudios/articulos/terminal.html",
+  "./mis-estudios/articulos/testing.html",
   "./mis-estudios/articulos/tls.html",
+  "./mis-estudios/articulos/typescript.html",
+  "./mis-estudios/articulos/accesibilidad.html",
+  "./mis-estudios/articulos/nosql.html",
   "./mis-estudios/data/articulos.json",
   "./mis-estudios/index.html",
   "./mis-estudios/js/copiar.js",

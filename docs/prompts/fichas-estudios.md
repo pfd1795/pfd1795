@@ -15,31 +15,8 @@
    integración y las notas.
 4. Repite con la siguiente ficha. No hace falta cerrar la conversación.
 
-Las fichas cubren **los siete temas que el manifiesto del índice anunciaba como
-«Próximamente»** (cinco ya publicados) y **ocho temas nuevos** que completan el temario.
-
-## Orden de publicación recomendado
-
-Publica primero los que cierran huecos ya anunciados y después los nuevos: así el «Ver
-también» de los primeros puede enlazar con los segundos cuando ya estén publicados.
-
-| # | Tema | Archivo | Categoría | Estado en el manifiesto |
-| --- | --- | --- | --- | --- |
-| 1 | Lógica digital y álgebra de Boole | `logica-booleana.html` | Fundamentos de computación | Publicado |
-| 2 | C y gestión de memoria | `c-memoria.html` | Lenguajes de programación | Publicado |
-| 3 | Frameworks de front-end | `frameworks-frontend.html` | Frameworks | Publicado |
-| 4 | Frameworks de back-end | `frameworks-backend.html` | Frameworks | Publicado |
-| 5 | Principios de diseño y SOLID | `solid.html` | Arquitectura y diseño de software | Publicado |
-| 6 | Editores, IDEs y depuración | `editores-ides-depuracion.html` | Herramientas | Próximamente |
-| 7 | Empaquetado y despliegue | `empaquetado-despliegue.html` | Herramientas | Próximamente |
-| 8 | TypeScript | `typescript.html` | Lenguajes de programación | Nuevo |
-| 9 | Accesibilidad web | `accesibilidad.html` | Web (HTML, CSS y JavaScript) | Nuevo |
-| 10 | Bases de datos NoSQL | `nosql.html` | Bases de datos | Nuevo |
-| 11 | Testing automatizado | `testing.html` | Herramientas | Nuevo |
-| 12 | GitHub Actions y CI/CD | `ci-cd.html` | Control de versiones | Nuevo |
-| 13 | Docker y contenedores | `docker.html` | Herramientas | Nuevo |
-| 14 | Linux y servidores | `linux-servidores.html` | Comandos y terminal | Nuevo |
-| 15 | Expresiones regulares | `regex.html` | Lenguajes de programación | Nuevo |
+Las fichas cubren quince temas de la enciclopedia. Los ocho temas pendientes se gestionan en
+[`docs/informes/trabajo-pendiente.md`](../informes/trabajo-pendiente.md).
 
 > Las fichas solo enlazan a artículos **ya publicados** (los que figuran en el roster del
 > prompt). Cuando termines la tanda, puedes añadir enlaces entre los artículos nuevos desde el
@@ -263,7 +240,7 @@ VER TAMBIÉN: JavaScript, Patrones de diseño, Git
 
 ```text
 TEMA: GitHub Actions y CI/CD
-SLUG: ci_cd
+SLUG: ci-cd
 CATEGORÍA: Control de versiones
 OBJETIVO: Que el lector entienda qué es la integración y entrega continua, cómo se declara un
            flujo de trabajo en GitHub Actions y cómo designing un pipeline con etapas de
@@ -348,6 +325,7 @@ Cuando hayas publicado los artículos, el proyecto necesita estos tres ajustes:
    manifiesto: no editar tarjetas estáticas en `mis-estudios/index.html`.
 2. **Service Worker** (`service-worker.js`): añadir cada artículo nuevo
    (`./mis-estudios/articulos/<slug>.html`) a `PRECACHE_URLS` y subir `CACHE_NAME`
-   (actualmente v6: v6 → v7) para forzar el refresco del precache.
+   un nivel respecto al valor actual de `service-worker.js` (`pwa-cache-vN`) para
+   forzar el refresco del precache.
 3. **Documentación**: actualizar el número de artículos publicados y el listado de temas en
    `mis-estudios/AGENTS.md` y en el `AGENTS.md` de la raíz.

@@ -410,6 +410,102 @@
       "keywords": "despliegue build variables de entorno docker ci cd produccion Builds, variables de entorno y publicación de aplicaciones.",
       "category": "cat-herramientas",
       "status": "published"
+    },
+    {
+      "slug": "testing",
+      "title": {
+        "es": "Testing automatizado"
+      },
+      "description": {
+        "es": "Pruebas unitarias, de integración y extremo a extremo."
+      },
+      "keywords": "testing pruebas automatizadas unitarias integracion extremo a extremo e2e aserciones mocks stubs cobertura regresiones tdd piramide de pruebas Pruebas automatizadas: diseño, tipos y buenas prácticas.",
+      "category": "cat-herramientas",
+      "status": "published"
+    },
+    {
+      "slug": "ci-cd",
+      "title": {
+        "es": "GitHub Actions y CI/CD"
+      },
+      "description": {
+        "es": "Workflows, pruebas y despliegue automatizado con GitHub Actions."
+      },
+      "keywords": "github actions ci cd integracion continua entrega continua workflow jobs steps runner artefactos cache secretos permisos entornos proteccion de ramas Automatiza pruebas y despliegues con GitHub Actions.",
+      "category": "cat-herramientas",
+      "status": "published"
+    },
+    {
+      "slug": "docker",
+      "title": {
+        "es": "Docker y contenedores"
+      },
+      "description": {
+        "es": "Imágenes, capas, volúmenes, redes y Docker Compose."
+      },
+      "keywords": "docker contenedores imagenes capas dockerfile multietapa volumenes redes compose secretos registro buildx Aísla y publica aplicaciones con contenedores Docker.",
+      "category": "cat-herramientas",
+      "status": "published"
+    },
+    {
+      "slug": "linux-servidores",
+      "title": {
+        "es": "Linux y servidores"
+      },
+      "description": {
+        "es": "Usuarios, servicios, red, SSH y diagnóstico en Linux."
+      },
+      "keywords": "linux servidores administracion systemd journalctl ssh sudo usuarios permisos red cortafuegos cron paquetes diagnostico Gestiona un servidor Linux con criterio y seguridad.",
+      "category": "cat-herramientas",
+      "status": "published"
+    },
+    {
+      "slug": "typescript",
+      "title": {
+        "es": "TypeScript"
+      },
+      "description": {
+        "es": "Tipos, inferencia, interfaces, genéricos y narrowing."
+      },
+      "keywords": "typescript tipos inferencia interfaces genericos uniones narrowing compilador migracion Tipos estáticos sobre JavaScript: anotaciones, interfaces, genéricos y comprobación antes de ejecutar.",
+      "category": "cat-lenguajes",
+      "status": "published"
+    },
+    {
+      "slug": "accesibilidad",
+      "title": {
+        "es": "Accesibilidad web"
+      },
+      "description": {
+        "es": "Semántica, foco, teclado, contraste y pruebas."
+      },
+      "keywords": "accesibilidad web wcag semantica foco teclado contraste aria formularios lector pantalla Diseno de paginas usable con teclado, lector de pantalla y contraste reducido.",
+      "category": "cat-web",
+      "status": "published"
+    },
+    {
+      "slug": "nosql",
+      "title": {
+        "es": "Bases de datos NoSQL"
+      },
+      "description": {
+        "es": "Modelos, consistencia, modelado e índices."
+      },
+      "keywords": "nosql mongodb redis neo4j cassandra documentos clave valor columnas grafos cap consistencia desnormalizacion indices Bases de datos no relacionales y cuando elegirlas frente a SQL.",
+      "category": "cat-bd",
+      "status": "published"
+    },
+    {
+      "slug": "regex",
+      "title": {
+        "es": "Expresiones regulares"
+      },
+      "description": {
+        "es": "Patrones, grupos, validación y rendimiento con regex."
+      },
+      "keywords": "regex expresiones regulares patrones sintaxis grupos capturas cuantificadores anclas grep JavaScript RegExp Python re validacion redos rendimiento Busca valida y sustituye texto con expresiones regulares.",
+      "category": "cat-herramientas",
+      "status": "published"
     }
   ]
 }

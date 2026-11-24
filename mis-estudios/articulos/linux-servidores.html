@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linux y servidores — Estudios de informática</title>
+  <meta name="description" content="Administración de servidores Linux: sistema de archivos, usuarios y sudo, servicios con systemd, red, SSH, tareas programadas, actualizaciones y diagnóstico.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Herramientas</p>
+          <h1>Linux y servidores</h1>
+          <p class="entrada">
+            Un servidor Linux es un sistema pensado para estar encendido mucho tiempo, atender
+            peticiones y hacerlo de forma predecible. Administrarlo consiste menos en memorizar
+            comandos y más en saber qué proceso escucha, qué usuario lo ejecuta, dónde escribe sus
+            registros y qué cambió justo antes de que algo fallara.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>El kernel es el núcleo del sistema; una distribución añade gestor de paquetes, servicios y herramientas de administración.</li>
+            <li>Trabajar con el menor privilegio posible es la regla básica: usuario propio, <code>sudo</code> para lo necesario y acceso root por SSH desactivado.</li>
+            <li><code>systemctl</code> controla servicios y <code>journalctl</code> lee sus registros; <code>enable</code> y <code>start</code> son acciones distintas.</li>
+            <li>Antes de culpar a la aplicación, comprueba red, disco, memoria, permisos y hora del sistema.</li>
+            <li>Toda intervención en producción necesita una idea clara de cómo comprobar el resultado y cómo volver atrás.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">Qué significa administrar un servidor</a></li>
+            <li><a href="#archivos">Sistema de archivos y configuración</a></li>
+            <li><a href="#usuarios">Usuarios, grupos y sudo</a></li>
+            <li><a href="#servicios">Servicios con systemd</a></li>
+            <li><a href="#red">Red y puertos</a></li>
+            <li><a href="#ssh">Acceso remoto con SSH</a></li>
+            <li><a href="#tareas">Tareas programadas</a></li>
+            <li><a href="#paquetes">Paquetes y actualizaciones</a></li>
+            <li><a href="#diagnostico">Diagnóstico inicial</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">Qué significa administrar un servidor</h2>
+          <p>
+            Linux es el <strong>kernel</strong> y una <strong>distribución</strong> es ese kernel junto con
+            bibliotecas, gestor de paquetes, servicios y herramientas: Debian, Ubuntu, Fedora, Alpine
+            o Rocky, entre otras. Un servidor suele funcionar sin entorno gráfico: todo se hace por
+            consola, de forma local o a través de una conexión remota.
+          </p>
+          <p>
+            Administrarlo implica mantener cuatro cosas bajo control: quién puede entrar, qué procesos
+            se ejecutan, qué recursos consumen y qué ocurre cuando algo cambia. La mayoría de las
+            incidencias se reducen a una de esas preguntas. Por eso conviene conocer el estado normal
+            del sistema antes de tocarlo: cuántos servicios hay, cuánto disco se usa y qué registros
+            aparecen en una mañana cualquiera.
+          </p>
+          <p class="nota">
+            La terminal es la herramienta de trabajo, pero este artículo no es un catálogo de
+            comandos. Para navegación, archivos, permisos y tuberías, consulta
+            <a href="terminal.html">Terminal y línea de comandos</a>; aquí el foco está en lo que se
+            hace en una máquina que presta un servicio a otras.
+          </p>
+        </section>
+
+        <section id="archivos" aria-labelledby="archivos-titulo">
+          <h2 id="archivos-titulo">Sistema de archivos y configuración</h2>
+          <p>
+            Linux organiza todo en un único árbol que empieza en <code>/</code>. Saber qué hay en cada
+            directorio evita editar el archivo equivocado y ayuda a encontrar la configuración de un
+            servicio.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Ruta</th>
+                <th scope="col">Contenido habitual</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/etc</code></td>
+                <td>Configuración del sistema y de los servicios.</td>
+              </tr>
+              <tr>
+                <td><code>/var/log</code></td>
+                <td>Registros de aplicaciones y del sistema.</td>
+              </tr>
+              <tr>
+                <td><code>/home</code></td>
+                <td>Directorios personales de los usuarios.</td>
+              </tr>
+              <tr>
+                <td><code>/srv</code></td>
+                <td>Datos servidos por el propio sistema.</td>
+              </tr>
+              <tr>
+                <td><code>/usr</code></td>
+                <td>Programas y bibliotecas instalados.</td>
+              </tr>
+              <tr>
+                <td><code>/proc</code></td>
+                <td>Información del kernel y de los procesos, generada al leerla.</td>
+              </tr>
+            </tbody>
+          </table>
+          <pre><code>ls -la /etc/nginx
+cat /etc/os-release
+df -h
+find /var/log -maxdepth 1 -type f</code></pre>
+          <p>
+            Antes de modificar un archivo de configuración conviene copiarlo y saber cómo recargar el
+            servicio. Muchas configuraciones tienen una orden de comprobación propia, como
+            <code>nginx -t</code>, que valida el archivo antes de aplicarlo. Cambiar, comprobar y
+            recargar es mejor que cambiar y reiniciar a ciegas.
+          </p>
+          <p class="aviso">
+            Los archivos bajo <code>/proc</code> no son archivos normales: los genera el kernel al
+            leerlos. No se editan. Si necesitas cambiar un parámetro del kernel, usa la interfaz
+            prevista para ello y documenta el cambio.
+          </p>
+        </section>
+
+        <section id="usuarios" aria-labelledby="usuarios-titulo">
+          <h2 id="usuarios-titulo">Usuarios, grupos y sudo</h2>
+          <p>
+            Cada proceso pertenece a un usuario y a un grupo. Esa identidad decide qué archivos puede
+            leer o escribir y qué acciones puede realizar. El usuario <code>root</code> tiene todos los
+            permisos; el trabajo diario debe hacerse con un usuario normal y elevar privilegios solo
+            para la orden concreta que lo necesita.
+          </p>
+          <pre><code>whoami
+id
+sudo -l
+passwd
+getent group sudo</code></pre>
+          <p>
+            <code>sudo</code> permite ejecutar una orden como otro usuario, normalmente root, y deja
+            constancia en los registros. No es lo mismo que iniciar sesión como root: mantiene una
+            identidad auditada y limita el alcance de cada elevación. Conviene que cada persona tenga
+            su propio usuario, así se puede revocar el acceso sin afectar a las demás.
+          </p>
+          <p>
+            Los datos de cuentas locales viven en <code>/etc/passwd</code> y los hashes de contraseñas
+            en <code>/etc/shadow</code>, con permisos restringidos. En entornos grandes se usan
+            directorios centralizados, pero la idea es la misma: una identidad por persona o servicio
+            y privilegios mínimos.
+          </p>
+          <ul>
+            <li>Crear usuarios específicos para servicios que no necesitan login interactivo.</li>
+            <li>No compartir contraseñas: usar claves SSH y cuentas individuales.</li>
+            <li>Revisar periódicamente quién pertenece a los grupos con privilegios.</li>
+            <li>Evitar <code>sudo</code> en scripts que no necesitan elevación; reducir el alcance reduce el riesgo.</li>
+          </ul>
+        </section>
+
+        <section id="servicios" aria-labelledby="servicios-titulo">
+          <h2 id="servicios-titulo">Servicios con systemd</h2>
+          <p>
+            En la mayoría de las distribuciones actuales, <code>systemd</code> es el iniciador del
+            sistema y gestiona los servicios mediante <em>unidades</em>. Una unidad describe qué
+            orden arranca, con qué usuario, en qué condiciones y qué hacer si termina de forma
+            inesperada.
+          </p>
+          <pre><code>systemctl status nginx
+sudo systemctl start nginx
+sudo systemctl stop nginx
+sudo systemctl restart nginx
+sudo systemctl enable nginx
+systemctl is-enabled nginx</code></pre>
+          <p>
+            <code>start</code> arranca el servicio ahora; <code>enable</code> hace que arranque en el
+            próximo reinicio. Son decisiones independientes: una aplicación puede estar funcionando
+            y no sobrevivir a un reinicio, o estar habilitada y detenida. Después de cambiar una
+            unidad hay que recargar la configuración de systemd con
+            <code>sudo systemctl daemon-reload</code>.
+          </p>
+          <p>
+            Los registros de las unidades se consultan con <code>journalctl</code>. Filtrar por
+            servicio y por fecha es la forma más rápida de relacionar un fallo con un cambio.
+          </p>
+          <pre><code>journalctl -u nginx -f
+journalctl -u nginx --since '1 hour ago'
+journalctl -p err --since today
+systemctl list-units --type=service --state=failed</code></pre>
+          <p class="nota">
+            No todos los servicios son unidades de systemd. Un proceso lanzado a mano, un contenedor
+            o una tarea en segundo plano pueden escapar a <code>systemctl</code>. Si un servicio no
+            aparece ahí, busca primero cómo se arranca realmente.
+          </p>
+        </section>
+
+        <section id="red" aria-labelledby="red-titulo">
+          <h2 id="red-titulo">Red y puertos</h2>
+          <p>
+            Un servidor ofrece servicios a través de puertos. Saber qué interfaz escucha cada proceso
+            y qué reglas de cortafuegos permiten el tráfico evita muchos diagnósticos erróneos: una
+            aplicación puede estar perfectamente arrancada y ser inalcanzable desde fuera.
+          </p>
+          <pre><code>ip addr
+ip route
+ss -tulpn
+curl -I http://127.0.0.1:3000
+dig ejemplo.com</code></pre>
+          <p>
+            <code>ss -tulpn</code> lista los puertos en escucha y el proceso asociado. Es la primera
+            comprobación cuando algo «no responde». Si el proceso escucha solo en
+            <code>127.0.0.1</code>, el tráfico externo no llegará aunque el cortafuegos esté abierto;
+            si escucha en <code>0.0.0.0</code>, conviene revisar quién puede alcanzarlo.
+          </p>
+          <p>
+            El cortafuegos se gestiona con herramientas como <code>ufw</code> o
+            <code>firewalld</code>, según la distribución. Regla general: permitir el tráfico que
+            hace falta y nada más.
+          </p>
+          <pre><code>sudo ufw status
+sudo ufw allow 22/tcp
+sudo ufw allow 80/tcp
+sudo ufw enable</code></pre>
+          <p>
+            Antes de abrir un puerto público conviene confirmar que el servicio está detrás de TLS o
+            de un proxy que lo termina. Los conceptos de puertos, DNS y capas se explican con detalle
+            en <a href="redes.html">Redes</a> y la configuración segura de certificados en
+            <a href="tls.html">TLS</a>.
+          </p>
+        </section>
+
+        <section id="ssh" aria-labelledby="ssh-titulo">
+          <h2 id="ssh-titulo">Acceso remoto con SSH</h2>
+          <p>
+            SSH es la puerta de entrada habitual a un servidor. Usa criptografía para autenticar y
+            cifrar la sesión, y admite contraseñas o claves. Las claves son la opción preferida: son
+            más difíciles de adivinar, se pueden revocar y permiten automatizar accesos sin guardar
+            contraseñas.
+          </p>
+          <pre><code>ssh-keygen -t ed25519
+ssh-copy-id deploy@servidor
+ssh deploy@servidor</code></pre>
+          <p>
+            La clave pública se copia al servidor y la privada se queda en la máquina cliente. Un
+            archivo <code>~/.ssh/config</code> permite dar nombres cortos a los servidores y fijar
+            usuario, puerto y clave, de modo que no haya que repetirlos en cada conexión.
+          </p>
+          <pre><code>Host produccion
+  HostName 203.0.113.10
+  User deploy
+  IdentityFile ~/.ssh/id_ed25519</code></pre>
+          <p>
+            La configuración del demonio SSH vive normalmente en
+            <code>/etc/ssh/sshd_config</code>. Tres ajustes habituales en un servidor expuesto son
+            desactivar la autenticación por contraseña, prohibir el acceso directo como root y
+            limitar qué usuarios o grupos pueden entrar. Después de cambiarlos se valida la
+            configuración y se recarga el servicio, manteniendo abierta una sesión existente hasta
+            comprobar que se puede volver a entrar.
+          </p>
+          <pre><code>sudo sshd -t
+sudo systemctl reload ssh</code></pre>
+          <p class="aviso">
+            El nombre del servicio puede ser <code>ssh</code> o <code>sshd</code> según la
+            distribución. Cierra la sesión antigua solo después de haber comprobado una conexión
+            nueva con la configuración aplicada; de lo contrario puedes quedarte fuera.
+          </p>
+        </section>
+
+        <section id="tareas" aria-labelledby="tareas-titulo">
+          <h2 id="tareas-titulo">Tareas programadas</h2>
+          <p>
+            Muchas operaciones de mantenimiento se repiten: copias, rotación de registros, limpieza
+            de archivos temporales o comprobaciones de salud. <code>cron</code> es el mecanismo
+            clásico y sigue siendo habitual; los temporizadores de systemd son la alternativa
+            moderna cuando la tarea depende de un servicio o necesita registrar mejor su estado.
+          </p>
+          <pre><code>0 3 * * * /usr/local/bin/backup.sh
+*/15 * * * * /usr/local/bin/comprobar-salud.sh</code></pre>
+          <p>
+            Los cinco campos de una línea de cron indican minuto, hora, día del mes, mes y día de la
+            semana. El primer ejemplo se ejecuta a las 03:00 cada día; el segundo, cada quince
+            minutos. La hora se interpreta según la zona horaria del servidor, otro detalle que
+            conviene comprobar cuando una tarea «no aparece» cuando se espera.
+          </p>
+          <pre><code>timedatectl
+crontab -l
+sudo systemctl list-timers</code></pre>
+          <p>
+            Una tarea programada debe ser corta, escribir en un registro y avisar si falla. Si dos
+            ejecuciones pueden solaparse, hace falta un bloqueo o un temporizador con
+            <code>Persistent=true</code>. Y si la tarea modifica datos, su diseño debe incluir cómo
+            verificar que terminó bien.
+          </p>
+        </section>
+
+        <section id="paquetes" aria-labelledby="paquetes-titulo">
+          <h2 id="paquetes-titulo">Paquetes y actualizaciones</h2>
+          <p>
+            El gestor de paquetes instala, actualiza y elimina software de forma consistente. En la
+            familia de Debian se usa <code>apt</code>; en Fedora y Rocky, <code>dnf</code>. Mantener
+            el sistema actualizado corrige vulnerabilidades, pero también puede cambiar
+            comportamientos, así que en producción se planifica.
+          </p>
+          <pre><code>sudo apt update
+sudo apt upgrade
+sudo apt install nginx
+apt list --upgradable</code></pre>
+          <p>
+            <code>update</code> refresca el índice de paquetes disponibles; <code>upgrade</code>
+            instala las versiones nuevas. Son pasos distintos. Para actualizaciones automáticas hay
+            que decidir qué se instala sin revisión y qué requiere intervención; los parches de
+            seguridad suelen automatizarse y los cambios de versión mayor, planificarse.
+          </p>
+          <p>
+            Antes de actualizar conviene saber si hay una copia y cómo se reinicia el servicio.
+            Después, comprobar versión, registros y pruebas básicas. Si el servidor forma parte de un
+            despliegue, la configuración debería estar en código y no solo en la máquina, para poder
+            reconstruirla. Ese es el mismo principio que se aplica al construir imágenes en
+            <a href="docker.html">Docker y contenedores</a>.
+          </p>
+        </section>
+
+        <section id="diagnostico" aria-labelledby="diagnostico-titulo">
+          <h2 id="diagnostico-titulo">Diagnóstico inicial</h2>
+          <p>
+            Cuando un servidor falla, resiste la tentación de reiniciar de inmediato: el estado
+            actual es evidencia. Empieza por acotar el problema y recoger datos en este orden.
+          </p>
+          <ol>
+            <li><strong>Qué cambió</strong>: despliegue, configuración, actualización o cambio de red recientes.</li>
+            <li><strong>Quién está conectado</strong>: <code>who</code> y <code>last</code> muestran sesiones y accesos previos.</li>
+            <li><strong>Recursos</strong>: <code>uptime</code>, <code>free -h</code>, <code>df -h</code> y <code>top</code> descartan CPU, memoria y disco lleno.</li>
+            <li><strong>Servicios</strong>: <code>systemctl --failed</code> y <code>journalctl -p err</code> señalan qué se ha roto.</li>
+            <li><strong>Red</strong>: <code>ss -tulpn</code> y <code>curl</code> comprueban que el puerto está abierto y responde.</li>
+            <li><strong>Hora</strong>: <code>timedatectl</code> explica certificados caducados y tareas que no disparan.</li>
+          </ol>
+          <pre><code>who
+last -n 10
+uptime
+free -h
+df -h
+systemctl --failed
+journalctl -p err --since '1 hour ago'</code></pre>
+          <p>
+            Anota los valores antes de intervenir. Si el disco está al 99 %, borrar registros sin
+            entender por qué crecieron puede destruir la pista que explicaba el fallo. Después de
+            aplicar una corrección, vuelve a ejecutar las mismas comprobaciones y deja constancia de
+            qué cambió.
+          </p>
+          <p class="nota">
+            El diagnóstico es la misma disciplina que se aplica al código: reproducir, observar,
+            cambiar una sola cosa y verificar. Las pruebas automatizadas de
+            <a href="testing.html">Testing automatizado</a> y las canalizaciones de
+            <a href="ci-cd.html">GitHub Actions y CI/CD</a> sirven para que muchos de estos fallos se
+            detecten antes de llegar al servidor.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <ul>
+            <li>Usar <code>start</code> cuando se quería <code>enable</code>, y descubrir que el servicio no arranca tras un reinicio.</li>
+            <li>Editar un archivo de configuración sin copia ni comprobación previa.</li>
+            <li>Dejar sesiones root compartidas en lugar de usuarios individuales con <code>sudo</code>.</li>
+            <li>Cerrar la conexión SSH antes de comprobar que la nueva configuración permite volver a entrar.</li>
+            <li>Mirar solo el proceso de la aplicación cuando el puerto, el cortafuegos o el DNS son los culpables.</li>
+            <li>Ignorar la zona horaria al interpretar registros y tareas programadas.</li>
+            <li>Instalar paquetes sin control de versiones en la configuración y no poder reconstruir la máquina.</li>
+            <li>Reiniciar antes de recoger registros y perder la causa del fallo.</li>
+          </ul>
+          <p class="aviso">
+            Un cambio en producción sin forma de verificarlo ni de deshacerlo no es una corrección,
+            es una apuesta. Decide antes qué comprobarás y cuál será el plan de vuelta atrás.
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concepto</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Distribución</td>
+                <td>Kernel más herramientas, paquetes y configuración del sistema.</td>
+              </tr>
+              <tr>
+                <td>Unidad</td>
+                <td>Descripción de un servicio o recurso para systemd.</td>
+              </tr>
+              <tr>
+                <td><code>systemctl</code></td>
+                <td>Arrancar, detener, habilitar e inspeccionar servicios.</td>
+              </tr>
+              <tr>
+                <td><code>journalctl</code></td>
+                <td>Consultar los registros del diario del sistema.</td>
+              </tr>
+              <tr>
+                <td><code>ss</code></td>
+                <td>Ver conexiones y puertos en escucha.</td>
+              </tr>
+              <tr>
+                <td><code>sudo</code></td>
+                <td>Elevar privilegios para una orden concreta.</td>
+              </tr>
+              <tr>
+                <td>cron</td>
+                <td>Ejecutar tareas de forma periódica.</td>
+              </tr>
+              <tr>
+                <td>SSH</td>
+                <td>Acceso remoto cifrado a la máquina.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="terminal.html">Terminal y línea de comandos</a>: navegación, permisos y tuberías desde la shell.</li>
+            <li><a href="sistemas-operativos.html">Sistemas operativos</a>: procesos, memoria y sistema de archivos a nivel teórico.</li>
+            <li><a href="redes.html">Redes</a>: direcciones, puertos, DNS y diagnóstico de conectividad.</li>
+            <li><a href="docker.html">Docker y contenedores</a>: el mismo sistema visto desde el aislamiento de procesos.</li>
+            <li><a href="ci-cd.html">GitHub Actions y CI/CD</a>: automatizar comprobaciones antes de publicar.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

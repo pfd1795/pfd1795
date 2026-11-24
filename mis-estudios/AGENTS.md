@@ -16,9 +16,9 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
   Python, Patrones de diseño, Inteligencia artificial, Aprendizaje automático, Redes
   neuronales, Lógica digital y álgebra de Boole, C y gestión de memoria, Frameworks de
   front-end, Frameworks de back-end, Principios de diseño y SOLID, Editores, IDEs y
-  depuración). Las entradas `wip` del
-  manifiesto se muestran con la etiqueta de UI `comingSoon` de `translations.page[lang]`
-  («Próximamente» / «Coming soon»).
+  depuración, Empaquetado y despliegue, TypeScript, Accesibilidad web, Bases de datos NoSQL, Testing automatizado, GitHub Actions y CI/CD, Docker y contenedores, Linux y servidores, Expresiones regulares).
+  Las entradas `wip` del manifiesto se muestran con la etiqueta de UI `comingSoon` de
+  `translations.page[lang]` («Próximamente» / «Coming soon»).
 - `data/articulos.json`: manifiesto de la grilla (mismo esquema que `juegos.json`:
   `version` + `categories` + `items`).
 - `js/copiar.js`: botón «Copiar» sobre los bloques de código de los artículos (script
@@ -81,7 +81,7 @@ Específico de esta carpeta, tras cualquier cambio:
    `http://localhost:8000/mis-estudios/`.
 2. El tema (modo, acento, fondo, escala) se pinta sin parpadeo y coincide con el del portafolio.
 3. El modal de Configuración funciona desde el footer del sidebar y persiste los cambios.
-4. La grilla renderiza desde `data/articulos.json`: 28 artículos publicados, agrupados en las categorías del manifiesto.
+4. La grilla renderiza desde `data/articulos.json`: 36 artículos publicados, agrupados en las categorías del manifiesto.
 5. El buscador filtra por término, actualiza el conteo del placeholder y muestra/oculta
    `#sin-resultados`.
 6. En `articulos/*.html`: enlaces de vuelta correctos (`../index.html`, `../../index.html`),

@@ -202,6 +202,11 @@ Solo puedes enlazar a estos desde «Ver también». No inventes nombres de archi
 | Modelado de datos y normalización | `modelado-datos.html` |
 | Seguridad en aplicaciones web | `seguridad-web.html` |
 | Criptografía básica | `criptografia.html` |
+| Editores, IDEs y depuración | `editores-ides-depuracion.html` |
+| Empaquetado y despliegue | `empaquetado-despliegue.html` |
+| TypeScript | `typescript.html` |
+| Accesibilidad web | `accesibilidad.html` |
+| Bases de datos NoSQL | `nosql.html` |
 
 Si un tema relacionado **todavía no existe**, menciónalo como texto plano («el artículo de
 Docker se forthcoming» no: mejor «todavía no hay un artículo sobre Docker en esta enciclopedia»)
@@ -618,9 +623,12 @@ los datos de tu artículo:
      mis-estudios/index.html.
 
 2.2) service-worker.js: añade "./mis-estudios/articulos/SLUG.html" a PRECACHE_URLS
-     y sube CACHE_NAME (actualmente v6: v6 → v7) para forzar el refresco del precache.
+     y sube CACHE_NAME un nivel respecto al valor actual de service-worker.js
+     (`pwa-cache-vN`) para forzar el refresco del precache.
 
 2.3) Actualiza el número de artículos publicados en mis-estudios/AGENTS.md y en AGENTS.md (raíz).
+2.4) Añade el artículo nuevo al roster de «Artículos ya publicados» de este prompt
+     con su título y su archivo `<slug>.html`.
 ```
 
 **3. Notas de la entrega** (máximo 5 líneas): qué dedujiste por defecto (categoría, objetivo,

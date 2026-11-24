@@ -14,7 +14,7 @@ revisar consola, red, búsqueda, filtros, idioma y preferencias. No se han aplic
   código y cadenas generadas en JS.
 - Conteos verificados contra los manifiestos: 20 juegos `published`, 28 artículos `published`,
   11 herramientas `published` y 5 `wip`. Los archivos de las entradas `published` existen y el
-  precache del Service Worker cubre todas las páginas excepto un archivo huérfano (hallazgo 3).
+  precache del Service Worker cubre todas las páginas.
 - Sin claves `localStorage` colisionantes entre el sitio y los juegos; sin dependencias externas;
   sin rutas absolutas reales; sin `target="_blank"` sin `rel="noopener noreferrer"`.
 
@@ -52,26 +52,7 @@ revisar consola, red, búsqueda, filtros, idioma y preferencias. No se han aplic
   `rerender` de `fnChangeLanguage.js`, junto a las otras dos recargas. Actualizar
   `AGENTS.md:549` y el mapa de módulos con el nuevo export.
 
-### 3. `cuerpo-humano.html` es una herramienta huérfana y su interactividad está rota
-
-- **Ubicación:** `programas/herramientas/cuerpo-humano.html:231,245,269,686`.
-- **Evidencia:** el archivo no aparece en `programas/data/herramientas.json`, en la lista de
-  precache de `service-worker.js:143-155`, en `programas/AGENTS.md` ni en ningún enlace del sitio
-  (búsqueda global del slug sin resultados). El `<svg>` de la línea 269 no lleva el atributo
-  `id="figura-cuerpo"` que exige la regla CSS de la línea 184 y la consulta de la línea 686;
-  `figura` es `null`, por lo que `grupos` y `zonas` quedan vacíos. Las capas visuales nunca cambian
-  y las zonas del SVG no reciben `click` ni `keydown` (`cuerpo-humano.html:743-771`). Además hay
-  dos `<h1>`: el del navbar (231) y el del título de la herramienta (245).
-- **Impacto:** una página completa del repositorio es inalcanzable desde la navegación, no se
-  cachea offline y, si se abre por URL directa, la interacción principal no responde. El doble
-  `<h1>` rompe la jerarquía de encabezados.
-- **Corrección sugerida:** decidir su integración o su retirada. Si se integra: entrada en
-  `herramientas.json`, entrada en el precache con subida de `CACHE_NAME`, documentación en
-  `programas/AGENTS.md`, `id="figura-cuerpo"` en el `<svg>` y `<span class="navbar-name">` en el
-  navbar. Si se retira: eliminar el archivo. Son dos cambios acotados distintos (integración y
-  corrección del SVG).
-
-### 4. El buscador de las tres secciones sigue en español con `lang="en"`
+### 3. El buscador de las tres secciones sigue en español con `lang="en"`
 
 - **Ubicación:** `juegos/index.html:67,69,74`, `programas/index.html:60,62,66` y
   `mis-estudios/index.html:60,62,66`.
@@ -87,7 +68,7 @@ revisar consola, red, búsqueda, filtros, idioma y preferencias. No se han aplic
   mover el texto del placeholder a una clave con `{visibles}` y `{total}`, y hacer que
   `buscador.js` vuelva a aplicar el placeholder traducido cuando cambie el idioma.
 
-### 5. Accesibilidad insuficiente en el secuenciador de `dj.html`
+### 4. Accesibilidad insuficiente en el secuenciador de `dj.html`
 
 - **Ubicación:** `programas/herramientas/dj.js:509-540,964,966`.
 - **Evidencia:** `vol.id` y `pan.id` reciben `''` cuando el control no es máster, lo que genera 28
@@ -100,7 +81,7 @@ revisar consola, red, búsqueda, filtros, idioma y preferencias. No se han aplic
   existente; dar a cada celda un `aria-label` con pista y paso (o un `role="grid"` con filas y
   encabezados etiquetados en el contenedor del secuenciador).
 
-### 6. `snake` no tiene `<h1>`
+### 5. `snake` no tiene `<h1>`
 
 - **Ubicación:** `juegos/snake/index.html:233-254`.
 - **Evidencia:** es el único juego sin elemento `<h1>`; el título «Snake Retro» solo existe en el
@@ -112,7 +93,7 @@ revisar consola, red, búsqueda, filtros, idioma y preferencias. No se han aplic
   o con la clase de ocultación accesible ya usada en el proyecto, sin modificar el canvas ni su
   lógica.
 
-### 7. `AGENTS.md` describe mal el estado `wip` de los manifiestos
+### 6. `AGENTS.md` describe mal el estado `wip` de los manifiestos
 
 - **Ubicación:** `AGENTS.md:354`; en contraste con `js/controllers/programas/fnProgramas.js:80-89`,
   `js/controllers/mis-estudios/fnMisEstudios.js:53-73` y `programas/AGENTS.md:61-63`.
@@ -125,7 +106,7 @@ revisar consola, red, búsqueda, filtros, idioma y preferencias. No se han aplic
 - **Corrección sugerida:** acotar la frase a `juegos/data/juegos.json` y añadir que programas y
   mis-estudios renderizan también las entradas `wip` como «Próximamente» sin enlace.
 
-### 8. Las páginas de juego no declaran icono
+### 7. Las páginas de juego no declaran icono
 
 - **Ubicación:** `juegos/arkanoid/index.html:1-9` y otras 18 carpetas de juego, incluida
   `juegos/_template/index.html`.
@@ -138,7 +119,7 @@ revisar consola, red, búsqueda, filtros, idioma y preferencias. No se han aplic
   en la plantilla y en las páginas de juego que no lo tengan, o un `href="data:,"` si se prefiere
   no mostrar icono.
 
-### 9. El cierre del sidebar desde el overlay no devuelve el foco
+### 8. El cierre del sidebar desde el overlay no devuelve el foco
 
 - **Ubicación:** `js/controllers/sidebar/sidebar.controller.js:47-59,65`.
 - **Evidencia:** `closeMenu()` solo llama a `openButton?.focus()` si
