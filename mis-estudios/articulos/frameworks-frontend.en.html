@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Front-end frameworks — Computer science studies</title>
+  <meta name="description" content="What a front-end framework is, how components and state work, and how React, Vue and Svelte compare.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="frameworks-frontend.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Frameworks</p>
+          <h1>Front-end frameworks</h1>
+          <p class="entrada">
+            A front-end framework offers conventions and tools for building web interfaces from reusable pieces. React, Vue and Svelte let you organize the interface through components and respond to data changes, but they differ in their model and in the work they do during execution or compilation. Choosing one depends on the project, the team and how much behavior the interface needs.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>A front-end framework or library helps structure dynamic interfaces; it does not replace HTML, CSS or JavaScript.</li>
+            <li>A component encapsulates a part of the interface and can receive data to represent different cases.</li>
+            <li>State holds data that can change and whose update should be reflected in the interface.</li>
+            <li>React, Vue and Svelte share the component-based approach, but their APIs, tools and update models are different.</li>
+            <li>Not every page needs a framework: for mainly static content, HTML, CSS and JavaScript can be enough.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is it?</a></li>
+            <li><a href="#por-que">Why use a framework?</a></li>
+            <li><a href="#componentes">The concept of component</a></li>
+            <li><a href="#estado">State and data flow</a></li>
+            <li><a href="#comparativa">React, Vue and Svelte</a></li>
+            <li><a href="#virtual-dom">Virtual DOM and rendering</a></li>
+            <li><a href="#ejemplos">A counter in React, Vue and Svelte</a></li>
+            <li><a href="#cuando-no">When not to use a framework</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is it?</h2>
+          <p>
+            The <strong>front-end</strong> is the part of a web application the user interacts with: content, controls, navigation and responses to actions. It is built on web technologies such as HTML, CSS and JavaScript.
+          </p>
+          <p>
+            A <strong>front-end framework</strong> organizes how those interfaces are built and updated. It usually offers a way to divide the screen into components, relate data to what is shown and manage changes. Some projects use «framework» as a general term; others distinguish framework from library by the scope of the tools or by how much they prescribe the architecture.
+          </p>
+          <p>
+            React is usually described as a library for user interfaces, although it is part of a broad ecosystem of tools. Vue and Svelte are presented as frameworks for building interfaces, with their own conventions and tools. In practice, all three can be used to create component-based interfaces; their development model is not identical.
+          </p>
+          <p>
+            These systems do not automatically generate a complete application nor solve design, accessibility, data storage or security on their own. Those responsibilities still require explicit decisions.
+          </p>
+        </section>
+
+        <section id="por-que" aria-labelledby="por-que-titulo">
+          <h2 id="por-que-titulo">Why use a framework?</h2>
+          <p>
+            When an interface contains many views, interactions and changing data, maintaining the DOM manually can become difficult. A framework establishes a consistent way of associating data with the interface and of dividing work into reusable pieces.
+          </p>
+          <ul>
+            <li><strong>Organization:</strong> divides a large interface into components with more focused responsibilities.</li>
+            <li><strong>Reuse:</strong> lets the same piece be shown with different data, for example several rows of a list.</li>
+            <li><strong>Updating:</strong> helps reflect state changes in the interface without having to modify each element manually.</li>
+            <li><strong>Shared conventions:</strong> makes it easier for a team to follow common patterns for building and reviewing interface features.</li>
+            <li><strong>Ecosystem tools:</strong> can integrate with development, testing, routing or build tools, depending on the project's needs.</li>
+          </ul>
+          <p>
+            These advantages come at a cost: there is a model to learn, dependencies to maintain, tools to configure and updates to follow. The framework adds value when the project's complexity justifies that cost.
+          </p>
+        </section>
+
+        <section id="componentes" aria-labelledby="componentes-titulo">
+          <h2 id="componentes-titulo">The concept of component</h2>
+          <p>
+            A <strong>component</strong> is an interface unit that can combine structure, behavior and, depending on the framework, styles or related logic. A button, a product card or a navigation bar can be components. Granularity should help understand and maintain the project; splitting everything into tiny pieces does not always improve the design.
+          </p>
+          <p>
+            Many components receive <strong>properties</strong> (often called <em>props</em>): values provided by whoever uses them to determine what to show. For example, a <code>Greeting</code> component could receive a name and present a personalized message. Properties are usually treated as inputs, not as data the component modifies directly.
+          </p>
+          <p>
+            Composition of components lets you build a more complex view from small pieces. The diagram summarizes a common flow: the application delivers properties to a component; this combines those inputs with its state and produces a representation of the interface.
+          </p>
+          <figure class="diagrama" aria-labelledby="fig-flujo-titulo">
+            <figcaption id="fig-flujo-titulo">Component data flow: properties, state and view.</figcaption>
+            <svg viewBox="0 0 720 235" role="img" aria-labelledby="flujo-titulo flujo-descripcion">
+              <title id="flujo-titulo">Data flow of an interface component</title>
+              <desc id="flujo-descripcion">The application delivers properties to a component. The component combines properties and state to produce a view. A user action can trigger a state update and a new view.</desc>
+
+              <rect class="caja" x="25" y="55" width="150" height="70" rx="8"></rect>
+              <text class="texto" x="100" y="85" text-anchor="middle">Application</text>
+              <text class="texto-secundario" x="100" y="108" text-anchor="middle">data and structure</text>
+
+              <path class="flecha" d="M175 90 H260"></path>
+              <text class="texto-secundario" x="218" y="76" text-anchor="middle">properties</text>
+
+              <rect class="caja-destacada" x="260" y="40" width="190" height="100" rx="8"></rect>
+              <text class="texto-acentuado" x="355" y="75" text-anchor="middle">Component</text>
+              <text class="texto-secundario" x="355" y="100" text-anchor="middle">properties + state</text>
+              <text class="texto-secundario" x="355" y="122" text-anchor="middle">presentation rules</text>
+
+              <path class="flecha-acentuada" d="M450 90 H535"></path>
+              <text class="texto-secundario" x="492" y="76" text-anchor="middle">represents</text>
+
+              <rect class="caja" x="535" y="55" width="155" height="70" rx="8"></rect>
+              <text class="texto" x="612" y="85" text-anchor="middle">Interface</text>
+              <text class="texto-secundario" x="612" y="108" text-anchor="middle">what is shown</text>
+
+              <path class="flecha" d="M612 125 V190 H355 V140"></path>
+              <text class="texto-secundario" x="490" y="183" text-anchor="middle">action → state update</text>
+            </svg>
+          </figure>
+          <p>
+            The figure expresses a general idea, not an API identical to all frameworks. Each tool defines its own mechanisms for declaring components, receiving properties, managing state and responding to events.
+          </p>
+        </section>
+
+        <section id="estado" aria-labelledby="estado-titulo">
+          <h2 id="estado-titulo">State and data flow</h2>
+          <p>
+            <strong>State</strong> is information that can change while the application runs and that affects what is shown. A counter, the text of a field or the open/closed state of a menu are examples. When state changes through the mechanism provided by the framework, it can update the corresponding interface.
+          </p>
+          <p>
+            In a <strong>unidirectional data flow</strong> pattern, data flows down from parent components to descendant components through properties. A child component communicates an action to the parent through a function or an event; the component that owns the state decides how to update it.
+          </p>
+          <p>
+            This pattern makes it easier to trace where data comes from and who can modify it. It does not mean every application must concentrate state in a single place. Keeping each datum close to the components that need it usually reduces complexity, while shared state can be lifted or managed with an appropriate tool.
+          </p>
+          <ul>
+            <li><strong>Properties:</strong> inputs the component receives from whoever invokes it.</li>
+            <li><strong>State:</strong> data that changes and whose update may affect the interface.</li>
+            <li><strong>Event or action:</strong> interaction that expresses an intention, such as pressing a button.</li>
+            <li><strong>Update:</strong> state change that may produce a new visual representation.</li>
+          </ul>
+          <p class="nota">
+            Avoid duplicating the same datum in several independent states when it can be derived from a single source. Copies can fall out of sync when one of them changes and the others do not.
+          </p>
+        </section>
+
+        <section id="comparativa" aria-labelledby="comparativa-titulo">
+          <h2 id="comparativa-titulo">React, Vue and Svelte</h2>
+          <p>
+            React, Vue and Svelte let you build interfaces with components, but they use different models and conventions. The following comparison is conceptual: concrete APIs can change between versions and projects can add external tools.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Aspect</th>
+                <th scope="col">React</th>
+                <th scope="col">Vue</th>
+                <th scope="col">Svelte</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Approach</td>
+                <td>Interface library based on components; usually combined with ecosystem tools.</td>
+                <td>Progressive framework with components and options to adopt more structure as the project needs it.</td>
+                <td>Component framework that compiles components to produce code that updates the interface.</td>
+              </tr>
+              <tr>
+                <td>How the interface is written</td>
+                <td>Frequently with JSX, a syntax combining JavaScript and a markup-like description.</td>
+                <td>Frequently with component files that separate template, logic and styles.</td>
+                <td>With component files combining markup, logic and styles, processed by its tools.</td>
+              </tr>
+              <tr>
+                <td>State</td>
+                <td>Managed through mechanisms such as local state, properties and, if needed, shared solutions.</td>
+                <td>Can be declared with Options API or Composition API options, depending on the chosen style.</td>
+                <td>Declared with the reactivity syntax and conventions of the version and configuration used.</td>
+              </tr>
+              <tr>
+                <td>Interface update</td>
+                <td>React computes interface changes from a new description; uses reconciliation and an element tree model.</td>
+                <td>Vue tracks reactive dependencies and updates affected parts through its rendering system.</td>
+                <td>The compiler analyzes components and generates update mechanisms for the detected changes.</td>
+              </tr>
+              <tr>
+                <td>Frequent choice</td>
+                <td>May fit when the team needs its ecosystem, patterns or prior experience.</td>
+                <td>May appeal when seeking gradual adoption and integrated structure.</td>
+                <td>May interest teams that value its compilation model and component syntax.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            There is no universally better option. Team experience, accessibility needs, required support, ecosystem, technical constraints and maintainability are more useful criteria than an isolated claim about speed or popularity.
+          </p>
+        </section>
+
+        <section id="virtual-dom" aria-labelledby="virtual-dom-titulo">
+          <h2 id="virtual-dom-titulo">Virtual DOM and rendering</h2>
+          <p>
+            The <strong>DOM</strong> is the representation the browser exposes for the HTML document. Changing it lets you update a page, but managing many modifications manually can be complicated.
+          </p>
+          <p>
+            The term <strong>Virtual DOM</strong> usually refers to an in-memory representation of the interface that certain systems compare between updates to decide which changes to apply to the real DOM. React uses a reconciliation process based on its element representation. Vue also uses a virtual DOM in its rendering system.
+          </p>
+          <p>
+            Svelte follows a compilation approach: it processes components during the build and generates code that updates the interface when data changes. That is why it is usually explained as a compilation-based alternative, not simply as another framework that works the same way as React or Vue.
+          </p>
+          <p>
+            These descriptions alone do not allow concluding which will be faster in a specific application. Performance depends on the usage pattern, code size, updates, browser, configuration and other decisions. To choose by performance, measure a representative load of the project instead of relying only on the name of a technique.
+          </p>
+          <p class="nota">
+            Rendering can also refer to producing HTML on the server, rendering in the browser or generating static output during the build. They are different delivery strategies, and some ecosystems support several.
+          </p>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">A counter in React, Vue and Svelte</h2>
+          <p>
+            The following examples represent the same interaction: showing a number and increasing it when a button is pressed. They are brief examples for comparing models; they require a configured project for each tool and are not standalone HTML files.
+          </p>
+
+          <h3>React</h3>
+          <pre><code>import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;section&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        Add
+      &lt;/button&gt;
+    &lt;/section&gt;
+  );
+}</code></pre>
+          <p>
+            Local state is declared with <code>useState</code>. When the update function is called, React receives the new state and reprocesses the component according to its rules.
+          </p>
+
+          <h3>Vue</h3>
+          <pre><code>&lt;script setup&gt;
+import { ref } from 'vue';
+
+const count = ref(0);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section&gt;
+    &lt;p&gt;Count: {{ count }}&lt;/p&gt;
+    &lt;button @click="count++"&gt;
+      Add
+    &lt;/button&gt;
+  &lt;/section&gt;
+&lt;/template&gt;</code></pre>
+          <p>
+            In this example with the Composition API, <code>ref</code> creates a reactive value. In the template, Vue updates the view when that value changes; inside the JavaScript block it is accessed through <code>.value</code> in contexts where the template's automatic unwrapping does not apply.
+          </p>
+
+          <h3>Svelte</h3>
+          <pre><code>&lt;script&gt;
+  let count = 0;
+&lt;/script&gt;
+
+&lt;section&gt;
+  &lt;p&gt;Count: {count}&lt;/p&gt;
+  &lt;button on:click={() =&gt; count += 1}&gt;
+    Add
+  &lt;/button&gt;
+&lt;/section&gt;</code></pre>
+          <p>
+            This example illustrates Svelte's classic event syntax. The concrete syntax may vary depending on the compiler version and the project's current conventions; when starting a project, follow the documentation for the installed version.
+          </p>
+        </section>
+
+        <section id="cuando-no" aria-labelledby="cuando-no-titulo">
+          <h2 id="cuando-no-titulo">When not to use a framework</h2>
+          <p>
+            A framework is not a requirement for creating a website. Adding one can increase the size of the delivered code, configuration complexity and maintenance effort. If the site has few interactions and mainly static content, semantic HTML, CSS and simple JavaScript can be enough.
+          </p>
+          <p>
+            It may also not be suitable if the team has no time to learn and maintain the tool, if the project must integrate with an existing incompatible base or if the benefits do not offset the cost. The decision should consider the project's lifetime, not just the speed of writing the first screen.
+          </p>
+          <p>
+            An intermediate strategy is to incorporate dynamic behavior only in the parts that need it, without turning every page into a complex application. The architecture depends on the site, its requirements and the team's capabilities.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it causes problems</th>
+                <th scope="col">Better approach</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Choosing by a general performance claim.</td>
+                <td>The result depends on the project, its configuration and how the interface is updated.</td>
+                <td>Compare a representative load and measure with appropriate tools.</td>
+              </tr>
+              <tr>
+                <td>Storing the same datum in several states without need.</td>
+                <td>Copies can diverge and show contradictory information.</td>
+                <td>Define a single source and compute derived values when possible.</td>
+              </tr>
+              <tr>
+                <td>Creating components that are too large or too small.</td>
+                <td>At one extreme responsibilities mix; at the other, composition becomes hard to follow.</td>
+                <td>Split by clear responsibilities and real reuse.</td>
+              </tr>
+              <tr>
+                <td>Modifying the DOM directly without considering the framework's model.</td>
+                <td>Can desynchronize the interface from the state the application keeps.</td>
+                <td>Use the mechanisms provided by the tool and reserve direct manipulation for cases that justify it.</td>
+              </tr>
+              <tr>
+                <td>Treating properties as state modifiable by the child component.</td>
+                <td>It becomes unclear who is responsible for updating the data.</td>
+                <td>The child communicates an action and the owner of the data decides the change.</td>
+              </tr>
+              <tr>
+                <td>Using a framework even though the page does not need it.</td>
+                <td>Adds dependencies and concepts the project may not use.</td>
+                <td>Evaluate the amount of interaction, maintenance and team capabilities.</td>
+              </tr>
+              <tr>
+                <td>Copying examples without checking the version.</td>
+                <td>Syntax, tools and conventions can change.</td>
+                <td>Check the documentation for the version the project uses.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="javascript.en.html">JavaScript</a>: language that supports the logic of many interactive web interfaces.</li>
+            <li><a href="html.en.html">HTML</a>: markup language used to structure documents and web content.</li>
+            <li><a href="css.en.html">CSS</a>: style language for defining the visual presentation of an interface.</li>
+            <li><a href="solid.html">Design principles and SOLID</a>: design criteria applicable to components and interface state.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="frameworks-frontend.html">Versión en español</a></p>
+    </main>
+
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTTP and the web browser — Computer science studies</title>
+  <meta name="description" content="HTTP and the browser: full page cycle, cache, CORS, storage and DevTools.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="http.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Web (HTML, CSS and JavaScript)</p>
+          <h1>HTTP and the web browser</h1>
+          <p class="entrada">
+            Between typing a URL and seeing the page on screen, everything happens: DNS, TCP, TLS,
+            an HTTP request, parallel downloads, DOM construction, style resolution...
+            If you understand that cycle and the tools that inspect it, the browser stops being
+            a black box.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>A typical page triggers <strong>dozens of requests</strong>: HTML, CSS, images, scripts, fonts and API calls.</li>
+            <li>A request is method + path + headers; the response is status code + headers + body.</li>
+            <li>The browser builds the <strong>DOM</strong> (from HTML) and the <strong>CSSOM</strong> (from CSS), and only then paints.</li>
+            <li>Cache, compression and CDN avoid repeating work: <code>Cache-Control</code> is where that is decided.</li>
+            <li><strong>CORS</strong> decides whether a page may read responses from another origin; it is negotiated with headers, not with «blocks» the server applies on a whim.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#ciclo">The full page cycle</a></li>
+            <li><a href="#render">From HTML to pixels: how the browser renders</a></li>
+            <li><a href="#recursos">Resources, order and blocking</a></li>
+            <li><a href="#cache">Cache and headers</a></li>
+            <li><a href="#cors">CORS: reading responses from another origin</a></li>
+            <li><a href="#almacenamiento">Client storage</a></li>
+            <li><a href="#http2-http3">HTTP/2 and HTTP/3</a></li>
+            <li><a href="#devtools">DevTools: the Network tab</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="ciclo" aria-labelledby="ciclo-titulo">
+          <h2 id="ciclo-titulo">The full page cycle</h2>
+          <p>Steps from pressing Enter until the page works:</p>
+          <ol>
+            <li><strong>Name resolution</strong>: the browser asks DNS for the IP of <code>example.com</code> (OS, router and DNS server cache).</li>
+            <li><strong>Connection</strong>: opens TCP to port 80/443; if HTTPS, TLS handshake first (<a href="tls.en.html">see TLS</a>).</li>
+            <li><strong>Request</strong>: sends <code>GET / HTTP/1.1</code> with headers (<code>Host</code>, <code>Accept</code>, cookies…).</li>
+            <li><strong>Response</strong>: the server replies with code + headers + HTML.</li>
+            <li><strong>Parsing and derived loads</strong>: while reading the HTML, it discovers CSS, scripts, images and fonts, and requests each one (see the blocking section).</li>
+            <li><strong>Render</strong>: builds the render tree and paints.</li>
+            <li><strong>Execution</strong>: runs the scripts; they may issue more <code>fetch</code> calls and repeat the cycle.</li>
+          </ol>
+
+          <figure class="diagrama" aria-labelledby="diagrama-ciclo-titulo">
+            <figcaption id="diagrama-ciclo-titulo">Page cycle: client, network and server.</figcaption>
+            <svg viewBox="0 0 640 250" role="img" aria-labelledby="diagrama-ciclo-titulo">
+              <!-- browser -->
+              <rect class="caja-destacada" x="20" y="90" width="130" height="70" rx="8"></rect>
+              <text class="texto" x="85" y="120" text-anchor="middle">Browser</text>
+              <text class="texto-secundario" x="85" y="140" text-anchor="middle">DOM · CSSOM · JS</text>
+              <!-- server -->
+              <rect class="caja-destacada" x="490" y="90" width="130" height="70" rx="8"></rect>
+              <text class="texto" x="555" y="120" text-anchor="middle">Server</text>
+              <text class="texto-secundario" x="555" y="140" text-anchor="middle">HTTP · statics</text>
+              <!-- arrows -->
+              <path class="flecha" d="M155 110 L485 110"></path>
+              <polygon class="flecha" points="485,110 475,104 475,116"></polygon>
+              <text class="texto-secundario" x="320" y="102" text-anchor="middle">GET / · cookies</text>
+              <path class="flecha" d="M485 145 L155 145"></path>
+              <polygon class="flecha" points="155,145 165,139 165,151"></polygon>
+              <text class="texto-secundario" x="320" y="163" text-anchor="middle">200 · HTML</text>
+              <!-- lower steps -->
+              <rect class="caja" x="60" y="195" width="120" height="34" rx="6"></rect>
+              <text class="texto-secundario" x="120" y="217" text-anchor="middle">1. DNS</text>
+              <rect class="caja" x="260" y="195" width="120" height="34" rx="6"></rect>
+              <text class="texto-secundario" x="320" y="217" text-anchor="middle">2. TCP / TLS</text>
+              <rect class="caja" x="460" y="195" width="120" height="34" rx="6"></rect>
+              <text class="texto-secundario" x="520" y="217" text-anchor="middle">3. Resources + render</text>
+            </svg>
+          </figure>
+        </section>
+
+        <section id="render" aria-labelledby="render-titulo">
+          <h2 id="render-titulo">From HTML to pixels: how the browser renders</h2>
+          <p>
+            The rendering engine performs four steps, in this order, for every visual refresh:
+          </p>
+          <ol>
+            <li><strong>HTML parsing → DOM</strong>: parses tags and builds the node tree.</li>
+            <li><strong>CSS parsing → CSSOM</strong>: turns rules into a style tree.</li>
+            <li><strong>Render tree</strong>: combines both (layout: size and position of each box) and discards the invisible (<code>display: none</code>, <code>hidden</code> elements).</li>
+            <li><strong>Painting and compositing</strong>: draws layers and composites them with the GPU.</li>
+          </ol>
+          <figure class="diagrama" aria-labelledby="diagrama-render-titulo">
+            <figcaption id="diagrama-render-titulo">From document to screen.</figcaption>
+            <svg viewBox="0 0 640 120" role="img" aria-labelledby="diagrama-render-titulo">
+              <rect class="caja" x="16" y="40" width="128" height="40" rx="8"></rect>
+              <text class="texto" x="80" y="65" text-anchor="middle">HTML</text>
+              <rect class="caja" x="176" y="40" width="128" height="40" rx="8"></rect>
+              <text class="texto" x="240" y="65" text-anchor="middle">CSS</text>
+              <rect class="caja-destacada" x="336" y="40" width="128" height="40" rx="8"></rect>
+              <text class="texto" x="400" y="65" text-anchor="middle">Render tree</text>
+              <rect class="caja" x="496" y="40" width="128" height="40" rx="8"></rect>
+              <text class="texto" x="560" y="65" text-anchor="middle">Pixels</text>
+              <path class="flecha" d="M148 60 L172 60"></path>
+              <polygon class="flecha" points="172,60 162,54 162,66"></polygon>
+              <path class="flecha" d="M304 60 L332 60"></path>
+              <polygon class="flecha" points="332,60 322,54 322,66"></polygon>
+              <path class="flecha-acentuada" d="M464 60 L492 60"></path>
+              <polygon class="flecha-acentuada" points="492,60 482,54 482,66"></polygon>
+              <text class="texto-secundario" x="240" y="30" text-anchor="middle">text</text>
+              <text class="texto-secundario" x="400" y="30" text-anchor="middle">layout</text>
+              <text class="texto-secundario" x="560" y="30" text-anchor="middle">paint</text>
+            </svg>
+          </figure>
+          <p class="nota">
+            Changing properties that only affect painting (<code>color</code>, <code>background</code>)
+            is cheap; changing size or position forces a layout recalculation (<em>reflow</em>) and is
+            more expensive. Animating <code>transform</code> and <code>opacity</code> is recommended.
+          </p>
+        </section>
+
+        <section id="recursos" aria-labelledby="recursos-titulo">
+          <h2 id="recursos-titulo">Resources, order and blocking</h2>
+          <p>
+            Not all resources load the same way while the parser is reading the HTML:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Resource</th>
+                <th scope="col">Default behavior</th>
+                <th scope="col">How to control it</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>CSS (<code>&lt;link&gt;</code>)</td><td>Blocks rendering until downloaded and parsed</td><td><code>media</code> for specific profiles; small critical sheets</td></tr>
+              <tr><td>Classic script (<code>&lt;script src&gt;</code>)</td><td>Stops parsing, downloads, runs, then continues</td><td><code>defer</code>: after parsing, in order. <code>async</code>: as soon as it arrives, no order</td></tr>
+              <tr><td><code>type="module"</code></td><td>Is <code>defer</code> by default</td><td>Needs an HTTP server (<code>file://</code> blocks it via CORS)</td></tr>
+              <tr><td>Images</td><td>Do not block parsing; space is reserved only when measured</td><td><code>loading="lazy"</code>, <code>width</code>/<code>height</code> to avoid jumps</td></tr>
+              <tr><td>Remote fonts</td><td>Can leave text invisible while loading</td><td><code>font-display: swap</code>, preload with <code>preload</code></td></tr>
+            </tbody>
+          </table>
+          <pre><code>&lt;!-- runs in order, after parsing the document --&gt;
+  &lt;script defer src="app-a.js"&gt;&lt;/script&gt;
+  &lt;script defer src="app-b.js"&gt;&lt;/script&gt;
+
+  &lt;!-- independent: does not wait for parser or other scripts --&gt;
+  &lt;script async src="analytics.js"&gt;&lt;/script&gt;</code></pre>
+          <p class="nota">
+            <code>async</code> and <code>defer</code> only work with external scripts. Inline ones run
+            where they belong and block.
+          </p>
+        </section>
+
+        <section id="cache" aria-labelledby="cache-titulo">
+          <h2 id="cache-titulo">Cache and headers</h2>
+          <p>
+            The browser keeps copies of resources. The policy is dictated by response headers:
+          </p>
+          <pre><code>Cache-Control: max-age=31536000, immutable   # good for CSS/JS with hash in the name
+  Cache-Control: no-cache                       # always revalidate before use
+  Cache-Control: no-store                       # store nothing (sensitive data)
+  ETag: "v18b2"                                 # identifier version » If-None-Match
+  Last-Modified: Thu, 05 Nov 2026 10:00:00 GMT  # » If-Modified-Since</code></pre>
+          <ul>
+            <li><strong>200 response</strong>: the resource comes in full.</li>
+            <li><strong>304 Not Modified</strong>: unchanged; the local copy is used (with <code>ETag</code> or <code>Last-Modified</code> in the validation request).</li>
+            <li><strong>Typical pattern</strong>: statics are served with a «hashed» name (<code>bundle.a8f3e2.css</code>) and cached for a year safely; HTML is not cached, so it always announces the latest version.</li>
+          </ul>
+          <p>Quick check:</p>
+          <pre><code>curl -sI https://pfd1795.github.io/ | grep -iE 'cache-control|etag'
+  curl -sI -H 'If-Modified-Since: Thu, 05 Nov 2026 10:00:00 GMT' \
+    https://pfd1795.github.io/ | head -3</code></pre>
+        </section>
+
+        <section id="cors" aria-labelledby="cors-titulo">
+          <h2 id="cors-titulo">CORS: reading responses from another origin</h2>
+          <p>
+            An <strong>origin</strong> is the combination of <code>scheme + domain + port</code>.
+            By default, the browser lets cross-origin requests be sent (with
+            limitations), but <strong>does not give your JavaScript access to the response</strong> if the
+            server does not explicitly authorize it. That is CORS: Cross-Origin Resource Sharing.
+          </p>
+          <p>Typical scenario — your front at <code>app.example</code> — your API at <code>api.example</code>:</p>
+          <pre><code># simple request (GET, form POSTs): the browser sends it as is
+  GET https://api.example/data  Origin: https://app.example
+  # response: the server MUST authorize the origin
+  Access-Control-Allow-Origin: https://app.example</code></pre>
+          <pre><code># non-simple request (PUT, custom headers, JSON): first a preflight
+  OPTIONS /data  Origin: https://app.example
+                  Access-Control-Request-Method: PUT
+                  Access-Control-Request-Headers: authorization
+  # preflight response
+  Access-Control-Allow-Origin: https://app.example
+  Access-Control-Allow-Methods: PUT, POST
+  Access-Control-Allow-Headers: authorization</code></pre>
+          <ul>
+            <li><code>*</code> (any origin) does not work together with credentials (cookies): the specific origin must be listed.</li>
+            <li>CORS is <strong>configured on the server side</strong>: from the front there is nothing to «fix», except asking the API to enable your origin.</li>
+            <li>Typical errors: «blocked by CORS policy», preflight 404 (the server does not handle <code>OPTIONS</code>), missing <code>Allow-Headers</code>.</li>
+          </ul>
+          <p class="nota">
+            CORS protects <em>users</em>, not the server: it prevents JavaScript from a malicious
+            site from reading data from another site where the victim is authenticated. Known
+            hierarchy it coexists with: <code>SameSite</code> cookies (<a href="seguridad-web.en.html#cookies-sesiones">Security · Session cookies</a>) and CSP protections.
+          </p>
+        </section>
+
+        <section id="almacenamiento" aria-labelledby="almacenamiento-titulo">
+          <h2 id="almacenamiento-titulo">Client storage</h2>
+          <p>Where to store data in the browser:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Space</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Sent to server</th>
+                <th scope="col">For what</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Cookies</td><td>~4 KiB</td><td>Yes, on every request to the domain</td><td>Session, small preferences</td></tr>
+              <tr><td><code>localStorage</code></td><td>~5 MB</td><td>No</td><td>Persistent preferences (theme, language)</td></tr>
+              <tr><td><code>sessionStorage</code></td><td>~5 MB</td><td>No</td><td>Data for the current tab</td></tr>
+              <tr><td>IndexedDB</td><td>Hundreds of MB+</td><td>No</td><td>Offline apps, large volumes</td></tr>
+              <tr><td>Cache API</td><td>Large</td><td>No</td><td>Precached HTTP responses (PWA)</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            All client-side storage is <strong>readable by JavaScript in your origin</strong>:
+            sensitive data does not go there (see <a href="seguridad-web.en.html#cookies-sesiones">Security · Session cookies</a>).
+            This portfolio uses <code>localStorage</code> for theme, language and game records.
+          </p>
+          <pre><code>localStorage.setItem('theme', 'dark');
+  localStorage.getItem('theme');     // 'dark'
+  localStorage.removeItem('theme');  // remove</code></pre>
+        </section>
+
+        <section id="http2-http3" aria-labelledby="http2-http3-titulo">
+          <h2 id="http2-http3-titulo">HTTP/2 and HTTP/3</h2>
+          <ul>
+            <li><strong>HTTP/2</strong> (2015, over TLS): multiplexes several requests over one connection, compresses headers and lets the server «push» resources. <code>Alt-Svc</code>, <code>h2</code>.</li>
+            <li><strong>HTTP/3</strong> (2022, QUIC over UDP): like HTTP/2 but without TCP head-of-line blocking, faster handshake incorporating TLS 1.3. Improves perceived speed on mobile.</li>
+            <li>CDNs and modern hostings serve both by default; from the browser you only notice a faster connection.</li>
+          </ul>
+          <pre><code># check the version used (transparent)
+  curl -sI -o /dev/null -w '%{http_version}\n' https://pfd1795.github.io/</code></pre>
+        </section>
+
+        <section id="devtools" aria-labelledby="devtools-titulo">
+          <h2 id="devtools-titulo">DevTools: the Network tab</h2>
+          <p>Useful habits when debugging network performance and errors (F12 → Network):</p>
+          <ul>
+            <li>Disable cache with DevTools open, to always see server responses.</li>
+            <li>Sort by size/latency; look at the <em>time</em> column and the <em>waterfall</em>.</li>
+            <li><em>Size</em> column: <code>(disk cache)</code> means it was served from local memory.</li>
+            <li>Filter by <code>XHR/Fetch</code> to see only API calls, and inspect «Initiator» to see who requested the resource.</li>
+            <li>«Throttling» (Fast 3G) to simulate mobile; «Block request URL» to check whether your site works without third-party CDNs.</li>
+          </ul>
+          <pre><code># command-line equivalents for the same
+  curl -o /dev/null -s -w 'total: %{time_total}s · size: %{size_download}B\n' URL
+  curl -w '@-' -o /dev/null -s URL &lt;&lt;'EOF'
+             dns:  %{time_namelookup}s
+             tcp:  %{time_connect}s
+             tls:  %{time_appconnect}s
+             1 byte: %{time_starttransfer}s
+EOF</code></pre>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Fewer requests weigh more than optimizing one at a time: combine, minify and use sprites for fonts and icons.</li>
+            <li>Cache statics aggressively (with hash in the name) and nothing dynamic.</li>
+            <li>Define <code>width</code> and <code>height</code> on images to avoid layout shifts (CLS).</li>
+            <li><code>defer</code> (or modules) for your scripts unless they are truly needed instantly.</li>
+            <li>Enable compression (<code>gzip</code>/<code>brotli</code>) on your server or ask the CDN to apply it.</li>
+            <li>Learn to diagnose first with Network and <code>curl</code>: less guessing, more measuring.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="redes.en.html#http">Networking · HTTP over TCP</a>: syntax and status of requests.</li>
+            <li><a href="tls.en.html">Network security and TLS</a>: the layer that encrypts the channel.</li>
+            <li><a href="apis.en.html">Client-server and APIs</a>: what the browser requests and how the server is designed.</li>
+            <li><a href="seguridad-web.en.html#cabeceras">Security · Security headers</a>: another facet of HTTP headers.</li>
+            <li><a href="html.en.html#estructura">HTML · Minimal structure</a>: what travels in the response and how it is parsed.</li>
+            <li><a href="javascript.en.html#asincronia">JavaScript · Asynchrony</a>: <code>fetch</code> on the client.</li>
+            <li><a href="frameworks-backend.html">Back-end frameworks</a>: the server side that implements these requests.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="http.html">Versión en español</a></p>
+    </main>
+
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html

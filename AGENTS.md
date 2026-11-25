@@ -6,7 +6,7 @@ Portafolio web personal desarrollado con HTML, CSS y JavaScript vanilla. Sitio e
 
 **URL de producción:** https://pfd1795.github.io/pfd1795/
 
-**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `AGENTS.md` locales en `juegos/`, `mis-estudios/` y `programas/` (reglas propias de cada carpeta; los agentes los combinan con el de la raíz), `docs/README.md` (índice de la documentación) y `juegos/README.md` (cómo agregar y documentar juegos). `docs/prompts/` contiene herramientas para desarrolladores: solo leerlas cuando se pida explícitamente. No hay fases ni tareas activas en el repositorio; el estado real está en el código y en esta guía. Los informes de auditoría y el tracker de trabajo pendiente, cuando se generen, viven exclusivamente en `docs/informes/`.
+**Documentación vigente:** `README.md` (introducción y ejecución para personas), `AGENTS.md` (arquitectura, convenciones y limitaciones para agentes), `AGENTS.md` locales en `juegos/`, `mis-estudios/` y `programas/` (reglas propias de cada carpeta; los agentes los combinan con el de la raíz), `docs/README.md` (índice de la documentación), `juegos/README.md` (cómo agregar y documentar juegos), `docs/HUMANOS.md` (apuntes para desarrolladores humanos, bajo demanda), `docs/INVARIANTES.md` (decisiones no deducibles) y `docs/LIMITACIONES.md` (limitaciones verificadas). `docs/prompts/` contiene herramientas para desarrolladores: solo leerlas cuando se pida explícitamente. No hay fases ni tareas activas en el repositorio; el estado real está en el código y en esta guía. Los informes de auditoría y el tracker de trabajo pendiente, cuando se generen, viven exclusivamente en `docs/informes/`.
 
 ---
 
@@ -22,7 +22,7 @@ No hay fechas límite, días estimados ni urgencias. Trabajar al ritmo necesario
 
 ### 📚 Documentación exclusiva para agentes IA
 
-La documentación técnica (`AGENTS.md`, `AGENTS.md` locales, `docs/`) está escrita **exclusivamente para agentes IA, en español**. `README.md` es el único documento orientado a personas. Prohibido crear otros documentos para humanos.
+La documentación técnica (`AGENTS.md`, `AGENTS.md` locales, `docs/`) está escrita **exclusivamente para agentes IA, en español**, salvo `docs/HUMANOS.md`, que es un **documento de apoyo para desarrolladores humanos** (apuntes de onboarding: decisiones, objetivos, módulos y aclaraciones). No es fuente de verdad: no se consulta ni se actualiza en planes de agentes ni en tareas automáticas; solo se edita a petición explícita. Los documentos para personas son `README.md` (oficial) y `docs/HUMANOS.md`. Prohibido crear otros documentos para humanos.
 
 ### 📁 Carpeta exclusiva para informes, auditorías, fases, tareas y hallazgos
 
@@ -34,7 +34,7 @@ Consecuencias obligatorias:
 
 - **Nada de códigos de hallazgo.** No inventar prefijos tipo `B1`, `L-*`, `O-*`, `SEC-*`, `TAREA-*` ni escribirlos en títulos de tests o comentarios: no existe documento que los defina, así que quedan como referencias muertas.
 - **Nada de historial.** No escribir "se eliminó X", "antes hacía Y", "hasta el <fecha>". Lo que sí se conserva es la **señal anti-regresión** (`Eliminado:`, `DEPRECATED`, "no usar en código nuevo"): sin ella un agente futuro re-agrega código muerto o usa APIs deprecadas.
-- Si al trabajar aparece una limitación, se agrega a la sección "Limitaciones y problemas conocidos" de `AGENTS.md` con evidencia verificada.
+- Si al trabajar aparece una limitación, se agrega a `docs/LIMITACIONES.md` con evidencia verificada.
 
 ### 🚫 Prohibido escribir comentarios en el código
 
@@ -48,6 +48,10 @@ Aplica a **todo el código del proyecto, existente o nuevo**: HTML, CSS y JavaSc
 ### 🔍 No revisar historial de git
 
 Los agentes **no deben** ejecutar `git log`, `git show`, `git diff` ni ningún comando que acceda al historial de commits, a menos que el usuario lo solicite explícitamente. Trabajar únicamente con los archivos actuales del repositorio.
+
+### 💬 Interacción con el usuario mediante menús
+
+En toda bifurcación, decisión, planificación, resolución o cierre de tarea, el agente **debe** usar la herramienta `question` con 2-4 opciones concretas cuando sea posible, en lugar de pedir texto libre. La opción recomendada va **primera** y lleva `(Recomendado)`. No imprimir el menú como texto plano ni depender de que el usuario escriba la opción. Al terminar una tarea o una planificación, preguntar si continuar o concluir, con opciones sugeridas, por ejemplo: `Siguiente tarea recomendada (Recomendado)`, `Otra tarea`, `Auditar/verificar`, `Concluir la sesión`. Si el usuario elige concluir, informar que la sesión puede cerrarse y no proponer más trabajo salvo nueva instrucción. Esta regla no sustituye el disparador `@AGENTS.md`: ese menú sigue siendo el único que se abre con la mención exacta.
 
 ---
 
@@ -80,10 +84,10 @@ Al recibir la selección, ejecutar el guion correspondiente sin pedir instruccio
 
 Auditar la documentación de forma interna, sin compararla contra el código.
 
-Alcance: `AGENTS.md` (raíz y locales en `juegos/`, `mis-estudios/`, `programas/`), `README.md`, `docs/README.md` y `docs/prompts/*`.
+Alcance: `AGENTS.md` (raíz y locales en `juegos/`, `mis-estudios/`, `programas/`), `README.md`, `docs/README.md`, `docs/INVARIANTES.md`, `docs/LIMITACIONES.md` y `docs/prompts/*` (excepto `docs/HUMANOS.md`).
 
 - Enlaces vigentes (relativos y absolutos).
-- Unicidad: `docs/` es documentación para agentes en español; no hay documento para humanos aparte de `README.md`; no hay planes, fases ni informes activos fuera de `docs/informes/`.
+- Unicidad: `docs/` es documentación para agentes en español (salvo `docs/HUMANOS.md` de apoyo); documentos para humanos = `README.md` y `docs/HUMANOS.md`; no hay planes, fases ni informes activos fuera de `docs/informes/`.
 - Conteos publicados: artículos en `mis-estudios/data/articulos.json`, juegos en `juegos/data/juegos.json`, herramientas en `programas/data/herramientas.json`; verificar por lectura directa, no de memoria.
 - Ausencia de historial, plazos, estimaciones, códigos de hallazgo y trackers paralelos.
 - Instrucciones claras y aplicables por un agente IA.
@@ -109,7 +113,7 @@ Entregable: informe en `docs/informes/` con hallazgo, evidencia `archivo:línea`
 
 Verificar la veracidad de la documentación contra el código.
 
-Alcance: toda afirmación verificable de `AGENTS.md` (raíz y locales), `README.md`, `docs/**` y `juegos/README.md`.
+Alcance: toda afirmación verificable de `AGENTS.md` (raíz y locales), `README.md`, `docs/**` (excepto `docs/HUMANOS.md`), `docs/INVARIANTES.md`, `docs/LIMITACIONES.md` y `juegos/README.md`.
 
 Método:
 
@@ -133,7 +137,7 @@ Método:
 - Elegir UNA sola tarea por impacto, dependencias, verificabilidad con grep/lectura y posibilidad de cerrarla con verificación manual + documentación.
 - Reverificar sus citas y cifras contra el código antes de planificar.
 
-Entregable: el plan se presenta en el chat; la tarea recomendada se gestiona en `docs/informes/trabajo-pendiente.md`, que es el único registro de pendientes. No crear un archivo de plan paralelo salvo petición explícita del usuario (en ese caso, en `/home/gris/.opencode/plan`).
+Entregable: el plan se presenta en el chat; la tarea recomendada se gestiona en `docs/informes/trabajo-pendiente.md`, que es el único registro de pendientes. Los planes de trabajo se guardan dentro del proyecto, en `docs/informes/`. No dejar planes fuera del proyecto salvo petición explícita del usuario.
 
 - Tarea elegida y motivo.
 - Plan: pasos, archivos de código y docs a tocar, verificación manual (páginas a cargar y checklist).
@@ -150,7 +154,7 @@ Si el usuario escribió su tarea en el campo de texto libre, usar esa descripci�
 
 1. Leer `AGENTS.md` (raíz y los locales relevantes de la carpeta tocada).
 2. Leer `README.md` y `docs/README.md`.
-3. Consultar las secciones "Limitaciones y problemas conocidos" y "Deuda técnica" de `AGENTS.md`.
+3. Consultar `docs/LIMITACIONES.md` y `docs/INVARIANTES.md` antes de tocar áreas críticas (tema, i18n, manifiestos, juegos, PWA).
 4. Servir el sitio por HTTP (obligatorio) y verificar según la tabla de "Verificación manual (para agentes)".
 5. Respetar las convenciones de estilo (JS/CSS/HTML) y las reglas de mantenimiento de `AGENTS.md`.
 6. No modificar datos personales del desarrollador; la firma de IA solo va en el footer de la portada.
@@ -523,58 +527,7 @@ canvas"). Las tarjetas muestran una sola portada por juego desde el campo `cover
 
 ## Limitaciones y problemas conocidos
 
-### Arquitectura y ejecución
-
-- Sitio completamente estático: sin backend, API, base de datos ni autenticación.
-- Sin build, sin gestor de dependencias, sin tests automatizados y sin linting. La única automatización es el despliegue de GitHub Pages.
-- Es obligatorio servir por HTTP. `file://` bloquea los módulos ES y la importación de JSON por CORS.
-- GitHub Pages publica el repositorio en una subruta; todas las rutas deben ser relativas.
-- No hay configuración por entorno ni variables de entorno.
-
-### Compatibilidad de navegador
-
-- Requiere navegadores modernos: módulos ES, import attributes (`with { type: "json" }`), CSS nesting, `<dialog>`, `color-mix()` y `@view-transition`.
-- `@view-transition` y `color-mix()` son mejoras progresivas; si el navegador no las soporta, la página sigue funcionando con menor fidelidad visual. El scrollspy usa `IntersectionObserver` cuando está disponible y un respaldo por posición al hacer scroll cuando no lo está.
-
-### Preferencias y almacenamiento
-
-- Tema, idioma, fondo, dirección, velocidad y escala se guardan en `localStorage`. Si el navegador lo bloquea, se usan los valores por defecto y no se persiste nada.
-- `js/theme-init.js` es el único script de pre-pintado y duplica la lectura de las claves a propósito. Cualquier clave de tema nueva debe añadirse en él y en `js/utils/storage.js`.
-- Los juegos usan claves propias con el patrón `<slug>_best_v1`, sin colisionar con las del sitio. Todos comparten el canon visual retro-arcade (paleta neón oscura, modal `<dialog>`, scanlines CRT) documentado en `juegos/README.md`.
-
-### Internacionalización
-
-- La interfaz tiene traducciones ES/EN, pero el contenido de la enciclopedia (`mis-estudios/`) y el de los juegos (`juegos/<slug>/`) está solo en español. Las tarjetas de la grilla de juegos sí se traducen desde el manifiesto.
-- `applyTranslations()` busca claves en `page`, `introSection`, `home` y `header`; una clave
-  nueva debe colocarse en una de esas secciones. Las claves deben ser únicas entre esas 4
-  secciones: `fnChangeLanguage.js` arma un índice por idioma y avisa por consola si se
-  duplican. La clave `name` no se traduce: `applyTranslations()` la saltea a propósito
-  porque es un nombre propio.
-- Las cadenas que se renderizan desde JavaScript se traducen al generarse (por ejemplo, `GridProjects()` toma `viewProject` de `translations.introSection[lang]`, y `GridGames()` toma las etiquetas de `translations.page[lang]`), no vía `data-lang`.
-- La interfaz del buscador de las tres grillas también se traduce: `aria-label` y placeholder se marcan con `data-i18n-aria-label` / `data-i18n-placeholder` (claves `search<Seccion>Aria` y `search<Seccion>Placeholder` en `translations.page[lang]`), y `#sin-resultados` usa `data-lang="search<Seccion>Empty"`. `applyTranslations()` escribe el placeholder localizado en `data-buscador-placeholder` y emite `site:languagechange`; `js/buscador.js` (script clásico) lo escucha, vuelve a leer el atributo y recalcula los contadores `{visibles}` / `{total}` sin importar módulos ES.
-- Al cambiar de idioma se re-renderizan la portada y las grillas de juegos y programas (`reloadHomeContent()` de `controllers/home/fnHome.js`, `reloadGamesContent()` de `controllers/juegos/fnJuegos.js` y `reloadProgramasContent()` de `controllers/programas/fnProgramas.js`); todas no hacen nada si su contenedor no existe.
-- Cuidar el orden entre `applyTranslations()` y las funciones que regeneran HTML (`GridWorkExperience`, `GridProjects`) al tocar idioma: las cadenas renderizadas en JS deben traducirse al generarse.
-
-### Contenido y assets
-
-- La enciclopedia cuenta con 36 artículos publicados.
-- La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
-- Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
-- **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `juegos/data/juegos.json`.
-- El correo que copia `utils/copyEmail.js` está fijado en el código. Si cambia, hay que actualizarlo ahí y en la información de contacto.
-- **`assets/files/PabloDiazCV.pdf`** (238 KB) se mantiene en el repositorio sin enlazar por
-  decisión del desarrollador: es material para reenlazar el CV desde el sidebar o el modal si se
-  recupera el botón de descarga. Hasta entonces, ninguna página lo referencia y así debe quedar.
-
-### Deuda técnica
-
-- El contenido de la enciclopedia no tiene traducción al inglés.
-
-### Rendimiento y mantenimiento
-
-- No hay minificación, bundling ni caché personalizada; es intencional para mantener el sitio simple.
-- Usar `loading="lazy"` en imágenes y evitar dependencias externas.
-- Cualquier cambio en el sistema de temas debe reflejarse en `utils/storage.js`, `utils/themeBackgrounds.js` y `theme-init.js` (único script de pre-pintado).
+Las limitaciones verificadas viven en [`docs/LIMITACIONES.md`](docs/LIMITACIONES.md). Las invariantes técnicas viven en [`docs/INVARIANTES.md`](docs/INVARIANTES.md). Consultar ambos antes de tocar áreas críticas.
 
 ---
 

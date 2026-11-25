@@ -7,12 +7,16 @@ mantenerlos sincronizados con el código es parte del mantenimiento (ver `AGENTS
 
 - [`README.md`](../README.md) — introducción, características, ejecución local, estructura,
   despliegue, limitaciones y contacto.
+- [`HUMANOS.md`](./HUMANOS.md) — apuntes para desarrolladores humanos (bajo demanda): decisiones,
+  objetivos, módulos y aclaraciones. No es fuente de verdad para agentes.
 
 ## Para agentes y mantenimiento
 
 - [`AGENTS.md`](../AGENTS.md) — arquitectura, mapa de módulos, inventario de claves de
   `localStorage`, convenciones de código, verificación manual, limitaciones conocidas y reglas de
   mantenimiento.
+- [`INVARIANTES.md`](./INVARIANTES.md) — decisiones técnicas no deducibles del código.
+- [`LIMITACIONES.md`](./LIMITACIONES.md) — limitaciones y deuda técnica verificadas.
 - `AGENTS.md` locales por carpeta (la raíz es la referencia; los locales solo añaden reglas propias):
   - [`juegos/AGENTS.md`](../juegos/AGENTS.md) — reglas de la grilla y de los juegos integrados.
   - [`mis-estudios/AGENTS.md`](../mis-estudios/AGENTS.md) — reglas de la enciclopedia.

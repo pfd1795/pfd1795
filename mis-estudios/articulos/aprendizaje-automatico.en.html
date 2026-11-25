@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Machine learning — Computer science studies</title>
+  <meta name="description" content="Introduction to machine learning: what it is, types of learning, how to train and evaluate a model, overfitting, metrics and best practices.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="aprendizaje-automatico.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Artificial intelligence</p>
+          <h1>Machine learning</h1>
+          <p class="entrada">
+            Machine learning is the area of artificial intelligence that lets a system adjust a model from data, instead of programming all the rules by hand. In this article you will see what it is, what types of learning exist, how a model is trained and evaluated, and which mistakes to avoid when applying it.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>Instead of writing rules manually, examples are provided and the system adjusts a model.</li>
+            <li>Supervised learning uses labeled examples; unsupervised learning looks for structure; reinforcement learning learns by trial and error.</li>
+            <li>Training and evaluation are distinct stages: evaluation needs data the model has not seen.</li>
+            <li>A model that memorizes the training data (overfitting) fails on new examples.</li>
+            <li>A model's usefulness depends on the data, the chosen metric and the context of use.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is machine learning?</a></li>
+            <li><a href="#conceptos">Key concepts</a></li>
+            <li><a href="#tipos">Types of learning</a></li>
+            <li><a href="#como-funciona">How a model is trained</a></li>
+            <li><a href="#generalizacion">Generalization and overfitting</a></li>
+            <li><a href="#ejemplos">Illustrative examples</a></li>
+            <li><a href="#metricas">Evaluation metrics</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is machine learning?</h2>
+          <p>
+            <strong>Machine learning</strong> is a set of techniques that let a system improve its behavior on a task from <strong>data</strong>, without a person specifying every rule. In classical programming, the person writes the rules and the program applies them to the data; in machine learning, examples are provided and the training process produces the model that solves the task.
+          </p>
+          <p>
+            It is one of the areas within <strong>artificial intelligence</strong>, and today it is the basis of applications such as spam filters, recommenders, speech recognition and generative systems. Not every AI system uses machine learning: there are rule-based or search-based methods that do not learn from data.
+          </p>
+          <p class="nota">
+            <strong>Key idea:</strong> in classical programming, rules are written that transform data into answers; in machine learning, data and answers are used to obtain the rules (the model).
+          </p>
+        </section>
+
+        <section id="conceptos" aria-labelledby="conceptos-titulo">
+          <h2 id="conceptos-titulo">Key concepts</h2>
+          <ul>
+            <li>
+              <strong>Example or instance:</strong> a concrete case of the task, for example an image or a row in a table.
+            </li>
+            <li>
+              <strong>Feature:</strong> each measurable property of an example, such as the size of a house or a user's age.
+            </li>
+            <li>
+              <strong>Label:</strong> the expected answer for an example in supervised tasks, such as the category of an image.
+            </li>
+            <li>
+              <strong>Model:</strong> mathematical representation that transforms inputs into outputs and is adjusted during training.
+            </li>
+            <li>
+              <strong>Parameters:</strong> internal values of the model that training modifies, such as the weights of a line or a neural network.
+            </li>
+            <li>
+              <strong>Hyperparameters:</strong> values that a person configures before training, such as the number of neighbors or the learning rate.
+            </li>
+            <li>
+              <strong>Loss or cost function:</strong> measure of the error between what the model predicts and what is expected; training seeks to minimize it.
+            </li>
+            <li>
+              <strong>Optimization:</strong> process of adjusting parameters to reduce the loss, for example through gradient descent.
+            </li>
+            <li>
+              <strong>Datasets:</strong> partitions of the examples used to train, validate and evaluate the model.
+            </li>
+            <li>
+              <strong>Inference:</strong> use of the already trained model to produce outputs on new inputs.
+            </li>
+            <li>
+              <strong>Generalization:</strong> ability of the model to perform well on data that was not part of training.
+            </li>
+          </ul>
+        </section>
+
+        <section id="tipos" aria-labelledby="tipos-titulo">
+          <h2 id="tipos-titulo">Types of learning</h2>
+
+          <h3>Supervised learning</h3>
+          <p>
+            It is trained with examples that include the correct <strong>label</strong>. If the label is a category, the task is <strong>classification</strong> (for example, deciding whether an email is spam or not); if it is a numeric value, the task is <strong>regression</strong> (for example, estimating a price).
+          </p>
+
+          <h3>Unsupervised learning</h3>
+          <p>
+            The examples have no labels and the goal is to discover <strong>structure</strong>: grouping similar cases (<em>clustering</em>), reducing the number of dimensions while keeping what matters, or finding association rules between items.
+          </p>
+
+          <h3>Reinforcement learning</h3>
+          <p>
+            An <strong>agent</strong> takes decisions in an <strong>environment</strong> and learns from <strong>rewards</strong> or penalties, without labeled examples. It is used in sequential tasks such as process control or games.
+          </p>
+
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Type</th>
+                <th scope="col">What it receives</th>
+                <th scope="col">What it produces</th>
+                <th scope="col">Typical tasks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Supervised</td>
+                <td>Examples with labels</td>
+                <td>Model that predicts the label</td>
+                <td>Classify images, estimate prices</td>
+              </tr>
+              <tr>
+                <td>Unsupervised</td>
+                <td>Examples without labels</td>
+                <td>Structure: groups, dimensions, associations</td>
+                <td>Segment customers, compress data</td>
+              </tr>
+              <tr>
+                <td>Reinforcement</td>
+                <td>Interactions with an environment</td>
+                <td>Decision policy</td>
+                <td>Games, control, robotics</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="como-funciona" aria-labelledby="como-funciona-titulo">
+          <h2 id="como-funciona-titulo">How a model is trained</h2>
+          <p>
+            In a typical supervised learning flow, training consists of adjusting the model's parameters so that its predictions get closer to the examples' labels. The process usually follows these steps:
+          </p>
+          <ol>
+            <li><strong>Define the task:</strong> state what input the system receives, what output is expected and how success will be measured.</li>
+            <li><strong>Gather and prepare the data:</strong> select features, review errors and missing values.</li>
+            <li><strong>Split the data:</strong> set aside examples for evaluation that the model will not use during training.</li>
+            <li><strong>Train:</strong> adjust parameters minimizing the loss function on the training data.</li>
+            <li><strong>Evaluate:</strong> measure behavior with the held-out data and analyze the errors.</li>
+            <li><strong>Use and monitor:</strong> apply the model in its context and watch that it remains adequate.</li>
+          </ol>
+          <p class="aviso">
+            Any future information that leaks into training invalidates the evaluation: this is <strong>data leakage</strong>. For example, using variables to predict a month's sales that are only known after the month closes.
+          </p>
+        </section>
+
+        <section id="generalizacion" aria-labelledby="generalizacion-titulo">
+          <h2 id="generalizacion-titulo">Generalization and overfitting</h2>
+          <p>
+            The goal is not to be right on the training data, but to <strong>generalize</strong> to new examples. When a model fits the training examples so well that it memorizes their particularities, it suffers <strong>overfitting</strong>: its performance on new data gets worse. At the opposite extreme, a model that is too simple suffers <strong>underfitting</strong>: it does not even describe the training data well.
+          </p>
+          <p>
+            To detect it, compare metrics on training and evaluation: a large difference usually indicates overfitting. Common techniques to mitigate it include using more data, simplifying the model or applying regularization.
+          </p>
+          <p class="nota">
+            <strong>Golden rule:</strong> never evaluate a model with the same data it was trained on, and do not tune hyperparameters using the test set.
+          </p>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">Illustrative examples</h2>
+          <p>
+            These examples use basic Python, without machine learning libraries, to show the underlying ideas. In real projects, libraries such as <code>scikit-learn</code> are used.
+          </p>
+
+          <h3>Training is adjusting parameters: a line by least squares</h3>
+          <p>
+            The simplest model with parameters is a line <code>y = slope·x + intercept</code>. «Training» consists of computing the two parameters that minimize the squared error against the examples.
+          </p>
+          <pre><code># Fit a line y = slope * x + intercept to the examples
+# (least squares). "Training" here is computing those two numbers.
+xs = [1, 2, 3, 4, 5]
+ys = [2.1, 4.0, 6.2, 7.9, 10.1]
+
+n = len(xs)
+mean_x = sum(xs) / n
+mean_y = sum(ys) / n
+
+slope = sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys))
+slope /= sum((x - mean_x) ** 2 for x in xs)
+intercept = mean_y - slope * mean_x
+
+print(intercept, slope)  # ≈ 0.09 1.99
+
+def predict(x):
+    return slope * x + intercept
+
+print(predict(6))        # ≈ 12.03</code></pre>
+
+          <h3>A model based on examples: nearest neighbors</h3>
+          <p>
+            In <strong>nearest neighbors</strong> (<em>k-NN</em>) the «model» is the stored examples themselves: to classify a new point, the <code>k</code> closest examples are found and their majority class is voted.
+          </p>
+          <pre><code>import math
+
+# The "model" is the known examples.
+points = [
+    {"x": 1, "y": 1, "class": "A"},
+    {"x": 2, "y": 1, "class": "A"},
+    {"x": 1, "y": 2, "class": "A"},
+    {"x": 6, "y": 6, "class": "B"},
+    {"x": 7, "y": 6, "class": "B"},
+    {"x": 6, "y": 7, "class": "B"},
+    {"x": 7, "y": 7, "class": "B"},
+]
+
+def distance(a, b):
+    return math.sqrt((a["x"] - b["x"]) ** 2 + (a["y"] - b["y"]) ** 2)
+
+def classify(point, examples, k=3):
+    # Find the k closest examples and vote their majority class.
+    ordered = sorted(examples, key=lambda e: distance(e, point))
+    votes = [e["class"] for e in ordered[:k]]
+    return max(set(votes), key=votes.count)
+
+new = {"x": 2, "y": 2, "class": "?"}
+print(classify(new, points))  # A</code></pre>
+
+          <h3>Evaluate with unseen data</h3>
+          <p>
+            Evaluation measures how the model behaves on held-out examples that did not take part in training. Here the «training» is the stored points.
+          </p>
+          <pre><code># Set aside examples for evaluation: the model must not have "seen" them.
+training = points[:5]
+evaluation = points[5:]
+
+correct = 0
+for example in evaluation:
+    if classify(example, training) == example["class"]:
+        correct += 1
+
+print("Accuracy:", correct / len(evaluation))</code></pre>
+          <p class="nota">
+            With very few examples, the evaluation result is unreliable. In practice, hundreds or thousands of examples are used and the evaluation is repeated to obtain stable measures.
+          </p>
+        </section>
+
+        <section id="metricas" aria-labelledby="metricas-titulo">
+          <h2 id="metricas-titulo">Evaluation metrics</h2>
+          <p>
+            The choice of metric depends on the task and on the cost of being wrong. For classification, <strong>accuracy</strong>, <strong>precision</strong>, <strong>recall</strong> and their combination <strong>F1</strong> are used; for regression, errors such as the mean absolute error or the mean squared error.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Metric</th>
+                <th scope="col">What it measures</th>
+                <th scope="col">Caution</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>accuracy</code></td>
+                <td>Proportion of correct predictions over the total.</td>
+                <td>Misleading with imbalanced classes: always predicting the majority class can give a high value.</td>
+              </tr>
+              <tr>
+                <td><code>precision</code></td>
+                <td>Of the times the model predicted a class, how many were right.</td>
+                <td>Says nothing about the positive cases the model missed.</td>
+              </tr>
+              <tr>
+                <td><code>recall</code></td>
+                <td>Of the real cases of a class, how many the model detected.</td>
+                <td>Can rise at the cost of generating more false positives.</td>
+              </tr>
+              <tr>
+                <td><code>F1</code></td>
+                <td>Harmonic mean between precision and recall.</td>
+                <td>Summarizes two aspects, but hides which of the two fails.</td>
+              </tr>
+              <tr>
+                <td><code>mean squared error</code></td>
+                <td>Average error of a numeric prediction, penalizing larger errors more.</td>
+                <td>Its units are squared; to interpret it, the mean absolute error is also useful.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            To understand these values it helps to review the <strong>confusion matrix</strong>, which breaks down hits and errors by class, and to analyze concrete examples where the model fails.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Start with the question: define the task, the expected outcome and the cost of errors before choosing the model.</li>
+            <li>Know the data before training it: review ranges, missing values and labeling errors.</li>
+            <li>Always separate an evaluation set and do not touch it until the final measurement.</li>
+            <li>Choose metrics suited to the problem and to class imbalance.</li>
+            <li>Compare against a simple baseline before using complex models.</li>
+            <li>Record versions of data, hyperparameters and results so training can be reproduced.</li>
+            <li>Review the model's errors and who they affect, not just the global metric.</li>
+            <li>Re-evaluate the model when data or the context of use change.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it is a problem</th>
+                <th scope="col">What to do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Evaluating with the training data</td>
+                <td>The model may have memorized them; the measure does not reflect generalization.</td>
+                <td>Set aside examples that training does not use.</td>
+              </tr>
+              <tr>
+                <td>Tuning hyperparameters with the test set</td>
+                <td>The test set stops being an impartial measurement.</td>
+                <td>Use a third validation set or cross-validation.</td>
+              </tr>
+              <tr>
+                <td>Relying only on accuracy with imbalanced classes</td>
+                <td>A trivial model can look good without detecting the minority class.</td>
+                <td>Complement with precision, recall and confusion matrix.</td>
+              </tr>
+              <tr>
+                <td>Always seeking the most complex model</td>
+                <td>Increases overfitting risk and maintenance cost.</td>
+                <td>Compare against a simple baseline and justify the extra complexity.</td>
+              </tr>
+              <tr>
+                <td>Letting future information enter training</td>
+                <td>Evaluation gives unrealistic results that will not hold in use.</td>
+                <td>Review what information is available at prediction time.</td>
+              </tr>
+              <tr>
+                <td>Ignoring data drift</td>
+                <td>Real-world data change and the model becomes outdated.</td>
+                <td>Monitor performance and retrain when needed.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Term</th>
+                <th scope="col">Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>feature</code></td>
+                <td>Measurable property of an example used as input to the model.</td>
+              </tr>
+              <tr>
+                <td><code>label</code></td>
+                <td>Expected answer of an example in supervised learning.</td>
+              </tr>
+              <tr>
+                <td><code>parameters</code></td>
+                <td>Internal values of the model adjusted by training.</td>
+              </tr>
+              <tr>
+                <td><code>hyperparameters</code></td>
+                <td>Values configured before training that the model does not learn.</td>
+              </tr>
+              <tr>
+                <td><code>loss function</code></td>
+                <td>Measure of the error that training tries to minimize.</td>
+              </tr>
+              <tr>
+                <td><code>overfitting</code></td>
+                <td>The model memorizes training and performs worse on new data.</td>
+              </tr>
+              <tr>
+                <td><code>underfitting</code></td>
+                <td>The model is too simple and does not even describe the training data.</td>
+              </tr>
+              <tr>
+                <td><code>test set</code></td>
+                <td>Examples set aside to measure the model without interfering with its adjustment.</td>
+              </tr>
+              <tr>
+                <td><code>data leakage</code></td>
+                <td>Information not available at prediction time that contaminates training or evaluation.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="inteligencia-artificial.en.html">Artificial intelligence</a>: general overview of the field and its limits.</li>
+            <li><a href="redes-neuronales.html">Neural networks</a>: neurons, layers and backpropagation.</li>
+            <li><a href="python.html">Python</a>: language used in the examples.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="aprendizaje-automatico.html">Versión en español</a></p>
+    </main>
+
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

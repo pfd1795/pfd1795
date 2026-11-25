@@ -77,6 +77,8 @@ no tiene copias propias.
    admitida está en el footer de la portada (`../index.html`), según la regla del
    [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).
 
+10. **Interacción con el usuario**: sigue la regla del [`AGENTS.md` raíz](../AGENTS.md#interacción-con-el-usuario-mediante-menús): usar `question` con opciones sugeridas en cada decisión y cierre.
+
 ## Verificación local
 
 Ver el procedimiento general en el [`AGENTS.md` raíz](../AGENTS.md#verificación-manual-para-agentes).

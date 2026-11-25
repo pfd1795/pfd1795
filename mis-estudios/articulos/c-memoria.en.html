@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C and memory management — Computer science studies</title>
+  <meta name="description" content="Learn how C uses variables, pointers, stack and heap, and how to manage dynamic memory safely.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="c-memoria.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Programming languages</p>
+          <h1>C and memory management</h1>
+          <p class="entrada">
+            C is a compiled programming language that offers direct control over the representation and lifetime of data. That control makes it possible to build efficient software, but it also requires understanding pointers, memory limits and resource release. Knowing the difference between the stack and the heap helps write safer programs and avoid errors such as leaks, invalid accesses and buffer overflows.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>C lets you work close to memory, but the programmer must respect types, object limits and lifetimes.</li>
+            <li>A pointer holds an address; using it requires that address to be valid and the object it points to to still exist.</li>
+            <li>The stack usually holds data with automatic lifetime, while dynamic memory is requested on the heap and must be managed explicitly.</li>
+            <li>Every successful dynamic allocation must have a clear release plan, and the program must check whether allocation failed.</li>
+            <li>Out-of-bounds accesses, dangling pointers and unterminated strings can cause undefined behavior and vulnerabilities.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is it?</a></li>
+            <li><a href="#compilacion">Compilation and program structure</a></li>
+            <li><a href="#tipos-variables">Types and variable declaration</a></li>
+            <li><a href="#punteros">Pointers and memory addresses</a></li>
+            <li><a href="#pila-monton">Stack vs heap</a></li>
+            <li><a href="#memoria-dinamica">Dynamic memory with malloc and free</a></li>
+            <li><a href="#cadenas">Character strings</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is it?</h2>
+          <p>
+            C is a general-purpose language used, among other fields, in operating systems, drivers, development tools and programs where resource control matters. Source code is compiled into instructions that a platform can execute. C offers operations on values and also tools for working with memory addresses.
+          </p>
+          <p>
+            <strong>Memory</strong> is the space where a program keeps instructions and data while it runs. A variable represents an object with a type and a lifetime. The type determines what kind of value it can hold and how it is interpreted; the lifetime indicates during which part of the execution that object exists.
+          </p>
+          <p>
+            In C, the programmer can declare objects with automatic, static or dynamic lifetime. In practice, people often talk about the <strong>stack</strong> and the <strong>heap</strong> to explain two common ways of organizing memory, although those terms describe implementation conventions and do not replace the formal rules of the language.
+          </p>
+          <p>
+            A memory error can be subtle: the program may compile and work in a test, but fail with other data or on another platform. Some errors produce wrong results; others imply <strong>undefined behavior</strong>, that is, the C standard does not establish what should happen. That is why one should not rely on an invalid access always causing a visible failure.
+          </p>
+          <p class="nota">
+            In C, memory control does not mean the program can safely access any address. Only valid objects, within their limits and during their lifetime, should be used.
+          </p>
+        </section>
+
+        <section id="compilacion" aria-labelledby="compilacion-titulo">
+          <h2 id="compilacion-titulo">Compilation and program structure</h2>
+          <p>
+            A C source file usually has the <code>.c</code> extension. The build process includes preprocessing directives such as <code>#include</code>, compiling the code and linking the resulting objects with the needed libraries. The concrete tools and options depend on the platform.
+          </p>
+          <p>
+            This minimal program includes the declaration of a standard function for printing text and a <code>main</code> function, which is the usual entry point of an application:
+          </p>
+          <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    int quantity = 3;
+    printf("Quantity: %d\n", quantity);
+    return 0;
+}</code></pre>
+          <p>
+            In an environment that has a GCC-compatible compiler available, an example command to compile it would be:
+          </p>
+          <pre><code>cc -std=c17 -Wall -Wextra -Wpedantic program.c -o program</code></pre>
+          <p>
+            <code>-std=c17</code> requests a C17 standard mode in compilers that support it, and the <code>-Wall</code>, <code>-Wextra</code> and <code>-Wpedantic</code> options enable groups of useful warnings. A warning does not always indicate an error, but it is worth understanding before ignoring it.
+          </p>
+          <p>
+            The function returns an integer value to the environment. By convention, <code>0</code> usually indicates successful completion. For small programs, keeping input, processing and resource release organized makes it easier to follow the execution flow.
+          </p>
+          <p class="aviso">
+            The compile command is illustrative: the compiler name, available options and program execution may change depending on the operating system and the installed toolchain.
+          </p>
+        </section>
+
+        <section id="tipos-variables" aria-labelledby="tipos-variables-titulo">
+          <h2 id="tipos-variables-titulo">Types and variable declaration</h2>
+          <p>
+            Every object in C has a type. Integer types, such as <code>int</code> and <code>size_t</code>, represent whole numbers; floating-point types, such as <code>double</code>, represent approximate values with a fractional part; and derived types, such as arrays and structures, group data. The <code>char</code> type can represent a character unit and is also used when working with bytes.
+          </p>
+          <p>
+            A declaration gives a name and a type to an object. If the object can change, it is usually called a variable. Initializing it at declaration avoids depending on an indeterminate value:
+          </p>
+          <pre><code>int attempts = 0;
+double temperature = 21.5;
+char initial = 'M';</code></pre>
+          <p>
+            An <strong>array</strong> contains a fixed number of elements of the same type, placed consecutively. C indices start at zero. An array of four elements has valid indices from <code>0</code> to <code>3</code>; accessing <code>4</code> is out of bounds.
+          </p>
+          <pre><code>int scores[4] = {12, 18, 15, 20};
+
+for (size_t i = 0; i &lt; 4; i++) {
+    printf("%d\n", scores[i]);
+}</code></pre>
+          <p>
+            In the example, <code>size_t</code> is an unsigned integer type commonly used for sizes and indices. When iterating over an array, the loop bound must match the actual number of elements. C does not automatically check array bounds at runtime.
+          </p>
+        </section>
+
+        <section id="punteros" aria-labelledby="punteros-titulo">
+          <h2 id="punteros-titulo">Pointers and memory addresses</h2>
+          <p>
+            A normal variable holds a value. A <strong>pointer</strong> is an object whose value can be the address of another object, as long as the pointer's type is compatible. The declaration <code>int *p</code> indicates that <code>p</code> can point to an <code>int</code>.
+          </p>
+          <p>
+            The <code>&amp;</code> operator obtains the address of an object, and the <code>*</code> operator, when applied to a valid pointer, allows access to the pointed-to object. Using <code>*</code> to declare a pointer and to dereference it is related, but its concrete meaning depends on context.
+          </p>
+          <pre><code>int temperature = 18;
+int *pointer = &amp;temperature;
+
+*pointer = 19;
+printf("%d\n", temperature);</code></pre>
+          <p>
+            <code>pointer</code> holds the address of <code>temperature</code>. Writing <code>*pointer = 19</code> modifies the pointed-to object; therefore, afterwards, <code>temperature</code> is <code>19</code>. A null, indeterminate or no-longer-alive pointer must not be dereferenced.
+          </p>
+          <p>
+            The special value <code>NULL</code> represents a pointer that points to no object. It can be used to indicate «no object» and to check whether a function returned a valid pointer. It is not an address that can be read or written.
+          </p>
+          <p>
+            Pointers also appear when passing data to functions. C passes arguments by value: a function receives a copy of the argument. If a function is to modify an object of the caller, a pointer to that object can be passed:
+          </p>
+          <pre><code>void increment(int *value) {
+    if (value != NULL) {
+        *value += 1;
+    }
+}</code></pre>
+          <p>
+            The function checks that the pointer is not null before using it. That check cannot prove that any non-null address is valid, but it does avoid the specific case of receiving <code>NULL</code>.
+          </p>
+        </section>
+
+        <section id="pila-monton" aria-labelledby="pila-monton-titulo">
+          <h2 id="pila-monton-titulo">Stack vs heap</h2>
+          <p>
+            The <strong>stack</strong> is usually associated with function calls and objects with automatic lifetime. When entering a function, its automatic local variables cease to exist when their block ends. By contrast, <strong>dynamic memory</strong> is requested during execution and keeps its lifetime until it is freed or the program ends.
+          </p>
+          <p>
+            «Heap» is the usual name for the region managed by C's dynamic allocation functions. The language standard defines the behavior of those functions and the lifetime of objects, but does not require an implementation to physically organize memory as a stack or a heap in a specific way.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Aspect</th>
+                <th scope="col">Automatic lifetime (often on the stack)</th>
+                <th scope="col">Dynamic memory (often on the heap)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>How it is obtained</td>
+                <td>On entering the block where the object is declared.</td>
+                <td>Through functions such as <code>malloc</code> or <code>calloc</code>.</td>
+              </tr>
+              <tr>
+                <td>End of life</td>
+                <td>On leaving the block, according to the language rules.</td>
+                <td>On calling <code>free</code> with the allocation's pointer.</td>
+              </tr>
+              <tr>
+                <td>Usual control</td>
+                <td>Managed by the flow of blocks and functions.</td>
+                <td>The program must organize the release.</td>
+              </tr>
+              <tr>
+                <td>Frequent use</td>
+                <td>Local variables of known size and lifetime.</td>
+                <td>Data whose size or lifetime is determined at runtime.</td>
+              </tr>
+              <tr>
+                <td>Typical risk</td>
+                <td>Returning or keeping the address of an object that no longer exists.</td>
+                <td>Forgetting to free, freeing twice or using the object after freeing.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            The table describes the usual programming model, not a promise about the exact physical location of each object. For example, compilers may optimize storage as long as observable behavior follows the language rules.
+          </p>
+          <p>
+            The following diagram represents the conceptual relationship between a function that uses a local datum and a dynamically allocated object. It does not represent real addresses or a mandatory layout:
+          </p>
+          <figure class="diagrama" aria-labelledby="fig-memoria-titulo">
+            <figcaption id="fig-memoria-titulo">Relationship between automatic memory (stack) and dynamic memory (heap).</figcaption>
+            <svg viewBox="0 0 700 255" role="img" aria-labelledby="memoria-titulo memoria-descripcion">
+              <title id="memoria-titulo">Conceptual representation of automatic and dynamic memory</title>
+              <desc id="memoria-descripcion">A function frame contains a local variable and a pointer. The pointer points to a separate dynamic block. When the function ends, the local variable ceases to exist; the dynamic block stays reserved until freed.</desc>
+              <rect class="caja" x="35" y="45" width="260" height="150" rx="8"></rect>
+              <text class="texto" x="165" y="72" text-anchor="middle">Automatic lifetime</text>
+              <rect class="caja-destacada" x="65" y="95" width="90" height="60" rx="6"></rect>
+              <text class="texto-acentuado" x="110" y="120" text-anchor="middle">local</text>
+              <text class="texto-secundario" x="110" y="142" text-anchor="middle">value</text>
+              <rect class="caja" x="175" y="95" width="90" height="60" rx="6"></rect>
+              <text class="texto" x="220" y="120" text-anchor="middle">pointer</text>
+              <text class="texto-secundario" x="220" y="142" text-anchor="middle">address</text>
+              <rect class="caja" x="430" y="85" width="230" height="95" rx="8"></rect>
+              <text class="texto" x="545" y="112" text-anchor="middle">Dynamic memory</text>
+              <text class="texto-secundario" x="545" y="143" text-anchor="middle">reserved object</text>
+              <path class="flecha-acentuada" d="M265 125 H430"></path>
+              <text class="texto-secundario" x="350" y="113" text-anchor="middle">points to</text>
+              <text class="texto-secundario" x="165" y="222" text-anchor="middle">ends when leaving the block</text>
+              <text class="texto-secundario" x="545" y="222" text-anchor="middle">free with free</text>
+            </svg>
+          </figure>
+        </section>
+
+        <section id="memoria-dinamica" aria-labelledby="memoria-dinamica-titulo">
+          <h2 id="memoria-dinamica-titulo">Dynamic memory with malloc and free</h2>
+          <p>
+            The <code>malloc</code> function, declared in <code>&lt;stdlib.h&gt;</code>, requests a number of bytes and returns a pointer to the reserved block. If it cannot satisfy the request, it returns <code>NULL</code>. Memory obtained with <code>malloc</code> is not initialized: its contents must not be read until valid values have been written.
+          </p>
+          <p>
+            This example reserves space for five integers, checks the result, initializes the elements, uses them and frees the block. The size check avoids multiplications that exceed the range of <code>size_t</code>.
+          </p>
+          <pre><code>#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void) {
+    size_t count = 5;
+
+    if (count &gt; SIZE_MAX / sizeof(int)) {
+        return 1;
+    }
+
+    int *values = malloc(count * sizeof *values);
+    if (values == NULL) {
+        return 1;
+    }
+
+    for (size_t i = 0; i &lt; count; i++) {
+        values[i] = (int)(i * 10);
+    }
+
+    for (size_t i = 0; i &lt; count; i++) {
+        printf("%d\n", values[i]);
+    }
+
+    free(values);
+    return 0;
+}</code></pre>
+          <p>
+            The expression <code>sizeof *values</code> obtains the size of the type pointed to by <code>values</code>. That way, if the pointer's type changes, the type does not need to be repeated in the calculation. The conversion of <code>i</code> to <code>int</code> is explicit; in this example the range is small and known.
+          </p>
+          <p>
+            <code>free</code> must receive a pointer returned by a dynamic allocation function that has not yet been freed. Freeing an automatic object, passing an incorrect address or freeing the same block again has undefined behavior. After freeing a block, the pointers that pointed to it become dangling: they must no longer be used to access the object.
+          </p>
+          <p>
+            Assigning <code>NULL</code> to a pointer variable after <code>free</code> can help prevent that variable from keeping an obsolete value:
+          </p>
+          <pre><code>free(values);
+values = NULL;</code></pre>
+          <p>
+            This only clears that variable. If copies of the pointer exist, they also become dangling and must stop being used. Zeroing a pointer does not free memory by itself; the release happens in the valid call to <code>free</code>.
+          </p>
+          <p>
+            To reserve memory initialized to zero there is <code>calloc</code>, which receives a count of elements and the size of each. To change the size of a block there is <code>realloc</code>, but it must be used carefully: if it fails, it returns <code>NULL</code> and the original block stays reserved. Saving its result first in a temporary pointer avoids losing the only reference to the original block.
+          </p>
+          <pre><code>int *temp = realloc(values, new_count * sizeof *values);
+
+if (temp != NULL) {
+    values = temp;
+} else {
+    /* values still points to the original block */
+}</code></pre>
+          <p class="aviso">
+            The <code>realloc</code> example is a partial pattern: before computing the new size the multiplication should also be checked for overflow, and the program must define how to handle failure. Do not use the original block after a resize operation has succeeded if its previous address is no longer valid.
+          </p>
+        </section>
+
+        <section id="cadenas" aria-labelledby="cadenas-titulo">
+          <h2 id="cadenas-titulo">Character strings</h2>
+          <p>
+            C does not have a built-in string type equivalent to those of some high-level languages. A conventional string is an array of <code>char</code> that ends with the null character <code>'\0'</code>. That terminator marks where the text ends; it must not be confused with the character <code>'0'</code>.
+          </p>
+          <p>
+            To store the text <code>sol</code> four positions are needed: three letters and the terminator. The following declaration leaves room for that terminator:
+          </p>
+          <pre><code>char word[] = "sol";</code></pre>
+          <p>
+            When copying or building strings, enough space must be reserved for all characters and the terminator. Standard library functions may require the programmer to guarantee that space; not all of them receive the destination's size or can check its bounds automatically.
+          </p>
+          <p>
+            A string that does not contain a terminator within its array can make a function keep reading beyond the object. An array that is too small can cause writes out of bounds. Both errors can lead to undefined behavior, crashes or vulnerabilities.
+          </p>
+          <p>
+            For text input, one option is to read a line with <code>fgets</code>, providing the buffer size:
+          </p>
+          <pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    char name[32];
+
+    if (fgets(name, sizeof name, stdin) != NULL) {
+        printf("Text received: %s", name);
+    }
+
+    return 0;
+}</code></pre>
+          <p>
+            <code>fgets</code> reads at most one character less than the given capacity and terminates the result with <code>'\0'</code> if the read succeeds. If the line is longer, text may remain pending in the stream; a program that needs to process long inputs must define how to detect and handle that situation.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li><strong>Initialize objects before reading them.</strong> Do not use the contents of an automatic variable without assigning it a valid value.</li>
+            <li><strong>Check allocation results.</strong> Verify whether <code>malloc</code>, <code>calloc</code> or <code>realloc</code> returned <code>NULL</code>.</li>
+            <li><strong>Compute sizes carefully.</strong> Check that the count multiplied by the size of each element does not exceed the range of <code>size_t</code>.</li>
+            <li><strong>Document who is responsible for freeing.</strong> Every dynamic block needs a clear owner and a release path, even when an error occurs.</li>
+            <li><strong>Respect array and string bounds.</strong> Use the destination's real capacity and leave room for the null terminator of strings.</li>
+            <li><strong>Do not keep addresses of objects that cease to exist.</strong> An address does not extend the lifetime of a local variable.</li>
+            <li><strong>Avoid freeing twice or using after free.</strong> After freeing an object, treat all copies of its pointer as invalid.</li>
+            <li><strong>Enable compiler warnings and analysis tools.</strong> They help detect some errors, but do not replace design review nor guarantee the program is correct.</li>
+            <li><strong>Use automatic allocation when appropriate.</strong> If the size and lifetime are known, a local array can be simpler than dynamic memory, taking into account the platform's resource limits.</li>
+          </ul>
+          <p class="nota">
+            Design the error flow before adding dynamic allocations. A simple release structure prevents an early exit from leaving resources unfreed.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">What may happen</th>
+                <th scope="col">How to prevent it</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dereferencing a null or indeterminate pointer.</td>
+                <td>Invalid access and undefined behavior.</td>
+                <td>Initialize pointers and check results before using them.</td>
+              </tr>
+              <tr>
+                <td>Writing past the end of an array.</td>
+                <td>Other data is corrupted or the program crashes; it can also open a vulnerability.</td>
+                <td>Control the index and always compare against the real element count.</td>
+              </tr>
+              <tr>
+                <td>Forgetting to free dynamic memory.</td>
+                <td>The program retains memory it no longer needs while the block stays reserved.</td>
+                <td>Define ownership of the block and make sure to free it on all appropriate paths.</td>
+              </tr>
+              <tr>
+                <td>Using a pointer after <code>free</code>.</td>
+                <td>The pointer becomes dangling and can no longer be used to access the object.</td>
+                <td>Invalidate all aliases and assign <code>NULL</code> to the variable that was freed.</td>
+              </tr>
+              <tr>
+                <td>Freeing the same block twice.</td>
+                <td>Undefined behavior.</td>
+                <td>Centralize freeing and change the owner's state after freeing.</td>
+              </tr>
+              <tr>
+                <td>Reading memory returned by <code>malloc</code> before initializing it.</td>
+                <td>An indeterminate value is used.</td>
+                <td>Write valid values before reading the block or use an initializing allocation function when appropriate.</td>
+              </tr>
+              <tr>
+                <td>Computing the allocation size with an unchecked multiplication.</td>
+                <td>The size can overflow and reserve less space than needed.</td>
+                <td>Check the multiplication limit before calling the allocation function.</td>
+              </tr>
+              <tr>
+                <td>Returning the address of an automatic local variable.</td>
+                <td>The variable ceases to exist when leaving the function and the pointer becomes invalid.</td>
+                <td>Return a value by copy, use an object with suitable lifetime or clearly define a dynamic ownership strategy.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Element</th>
+                <th scope="col">Common use</th>
+                <th scope="col">Caution</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>&amp;object</code></td><td>Obtain the address of an object.</td><td>The object must exist in that context.</td></tr>
+              <tr><td><code>*pointer</code></td><td>Access the pointed-to object.</td><td>The pointer must be valid and the object still alive.</td></tr>
+              <tr><td><code>NULL</code></td><td>Represent that no object is pointed to.</td><td>Cannot be dereferenced.</td></tr>
+              <tr><td><code>malloc(bytes)</code></td><td>Request dynamic memory without initializing it.</td><td>Check the result and compute the size without overflow.</td></tr>
+              <tr><td><code>calloc(n, size)</code></td><td>Request memory for elements initialized to zero in their bytes.</td><td>Check the result and use appropriate types.</td></tr>
+              <tr><td><code>realloc(p, bytes)</code></td><td>Attempt to resize a dynamic allocation.</td><td>Use a temporary pointer and handle failure.</td></tr>
+              <tr><td><code>free(p)</code></td><td>Return a dynamic allocation that is still reserved.</td><td>Do not free automatic objects, invalid pointers or already freed blocks.</td></tr>
+              <tr><td><code>'\0'</code></td><td>Mark the end of a C string.</td><td>Reserve space for the terminator and do not confuse it with the character <code>'0'</code>.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="paradigmas.en.html">Programming paradigms</a>: context on different ways to organize and express programs.</li>
+            <li><a href="sistemas-operativos.en.html">Operating systems</a>: relation to low-level programs and system resource management.</li>
+            <li><a href="terminal.en.html">Terminal and command line</a>: compiling with gcc and observing memory from the shell.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="c-memoria.html">Versión en español</a></p>
+    </main>
+
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

@@ -54,7 +54,7 @@ Luego abre `http://localhost:8000/`.
 
 La guía técnica detallada, las convenciones y las limitaciones conocidas están en [`AGENTS.md`](./AGENTS.md).
 
-La documentación organizada del proyecto está en [`docs/README.md`](./docs/README.md).
+La documentación organizada del proyecto está en [`docs/README.md`](./docs/README.md). Los apuntes de onboarding para desarrolladores humanos están en [`docs/HUMANOS.md`](./docs/HUMANOS.md) (bajo demanda).
 
 ## Juegos
 
@@ -84,7 +84,7 @@ enciclopedia) y excluye el material interno (CV en `assets/files/`, documentaci�
 - La interfaz está traducida a español e inglés; el contenido de la enciclopedia y de los juegos solo está en español, mientras que las tarjetas de la grilla se traducen ES/EN.
 - Varias herramientas de la sección Programas están marcadas como "Próximamente".
 
-Los detalles técnicos y la deuda pendiente se documentan en [`AGENTS.md`](./AGENTS.md#limitaciones-y-problemas-conocidos).
+Los detalles técnicos y la deuda pendiente se documentan en [`docs/LIMITACIONES.md`](./docs/LIMITACIONES.md).
 
 ## Contacto
 
