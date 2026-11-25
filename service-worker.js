@@ -2,7 +2,7 @@
 // Precachea todo el sitio (lista generada con las mismas exclusiones del
 // workflow de despliegue: sin documentación, CV ni plantilla de juegos).
 // Bump CACHE_NAME (v2, v3, ...) al actualizar el sitio para forzar refresco.
-const CACHE_NAME = 'pwa-cache-v33';
+const CACHE_NAME = 'pwa-cache-v34';
 const PRECACHE_URLS = [
   "./assets/icons/arrow_right.svg",
   "./assets/icons/build.svg",
@@ -139,6 +139,7 @@ const PRECACHE_URLS = [
   "./mis-estudios/articulos/sql.html",
   "./mis-estudios/articulos/terminal.html",
   "./mis-estudios/articulos/testing.html",
+  "./mis-estudios/articulos/testing.en.html",
   "./mis-estudios/articulos/tls.html",
   "./mis-estudios/articulos/typescript.html",
   "./mis-estudios/articulos/accesibilidad.html",
