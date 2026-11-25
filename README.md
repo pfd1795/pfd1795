@@ -80,7 +80,7 @@ enciclopedia) y excluye el material interno (CV en `assets/files/`, documentaci�
 - Sitio completamente estático: sin backend, API, autenticación ni base de datos.
 - Sin tests automatizados, linting ni build; la única automatización es el despliegue.
 - Requiere un servidor HTTP local para funcionar.
-- Pensado para navegadores modernos (módulos ES, CSS nesting, `<dialog>`, `IntersectionObserver`).
+- Pensado para navegadores modernos (módulos ES, CSS nesting, `<dialog>`).
 - La interfaz está traducida a español e inglés; el contenido de la enciclopedia y de los juegos solo está en español, mientras que las tarjetas de la grilla se traducen ES/EN.
 - Varias herramientas de la sección Programas están marcadas como "Próximamente".
 

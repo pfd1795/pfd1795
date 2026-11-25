@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cryptography basics — Computer science studies</title>
+  <meta name="description" content="Cryptography for programmers: hash, symmetric and asymmetric encryption, digital signatures, password hashing and secret management.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="criptografia.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Security</p>
+          <h1>Cryptography basics</h1>
+          <p class="entrada">
+            Cryptography makes data unintelligible to anyone without the key. As a programmer you will
+            not invent algorithms — and it is best that you do not try — but you do need to know
+            <strong>which tool to choose in each case</strong>: hash to verify, encryption to hide,
+            signature to authenticate.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#hash-vs-cifrado">Hash and encryption: not the same thing</a></li>
+            <li><a href="#hash">Hash functions</a></li>
+            <li><a href="#contrasenas">Storing passwords</a></li>
+            <li><a href="#simetrico">Symmetric encryption</a></li>
+            <li><a href="#asimetrico">Asymmetric encryption</a></li>
+            <li><a href="#firmas">Digital signatures</a></li>
+            <li><a href="#secretos">Secret management</a></li>
+            <li><a href="#comandos">Verification commands</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="hash-vs-cifrado" aria-labelledby="hash-vs-cifrado-titulo">
+          <h2 id="hash-vs-cifrado-titulo">Hash and encryption: not the same thing</h2>
+          <p>The most common confusion in security. They serve opposite purposes:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Characteristic</th>
+                <th scope="col">Hash</th>
+                <th scope="col">Encryption</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Is it reversible</td><td>No: one-way only (impossible to reverse)</td><td>Yes: decrypt with the key</td></tr>
+              <tr><td>Returns</td><td>A fixed-size «fingerprint»</td><td>Roughly the same size as the original</td></tr>
+              <tr><td>Purpose</td><td><strong>Verify</strong> integrity or identity</td><td><strong>Hide</strong> the content</td></tr>
+              <tr><td>Uses a key</td><td>No (in basic use)</td><td>Always</td></tr>
+              <tr><td>Example use</td><td>Passwords, checksums, deduplication</td><td>TLS, disks, encrypted databases</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            «Encrypting passwords» is a classic mistake: if the server holds the key, an attacker who
+            steals it decrypts them all. Passwords are <strong>hashed with a salt</strong>. (See
+            <a href="#contrasenas">Storing passwords</a>.)
+          </p>
+        </section>
+
+        <section id="hash" aria-labelledby="hash-titulo">
+          <h2 id="hash-titulo">Hash functions</h2>
+          <p>
+            A hash turns any input into a fixed-length string, deterministically: the same input always
+            gives the same output, but the input cannot be deduced from the output. Changing a single bit
+            of the original completely changes the hash <em>(avalanche effect)</em>.
+          </p>
+          <ul>
+            <li><strong>SHA-256 / SHA-3</strong>: the recommended ones today.</li>
+            <li><strong>MD5 and SHA-1</strong>: broken for security (only useful for compatibility checksums).</li>
+            <li>A collision (two different inputs, same hash) is theoretically possible; in SHA-256 it is computationally infeasible.</li>
+          </ul>
+          <pre><code>echo -n "pfd1795" | sha256sum
+  # b94d5a...  (64 hexadecimal characters = 256 bits)</code></pre>
+          <p>Typical use: check that a downloaded file is identical to the original:</p>
+          <pre><code>sha256sum ubuntu.iso
+  # compare the result with the value published by the provider</code></pre>
+        </section>
+
+        <section id="contrasenas" aria-labelledby="contrasenas-titulo">
+          <h2 id="contrasenas-titulo">Storing passwords</h2>
+          <p>
+            A user database must not store passwords, not even hashed with plain SHA-256: they are so
+            fast that an attacker tries billions of passwords per second with graphics cards. You need
+            hashes that are <strong>deliberately slow and salted</strong>:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Algorithm</th>
+                <th scope="col">Comment</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>bcrypt</td><td>Very widespread; includes a salt and an adjustable cost factor.</td></tr>
+              <tr><td>argon2id</td><td>Winner of the «Password Hashing» competition; recommended option today.</td></tr>
+              <tr><td>scrypt</td><td>Similar, designed to resist specialised hardware (GPU/ASIC).</td></tr>
+              <tr><td>PBKDF2</td><td>Acceptable, although the least protected of the list.</td></tr>
+              <tr><td>MD5 / SHA-1 / SHA-256 alone</td><td><strong>Never</strong> for passwords.</td></tr>
+            </tbody>
+          </table>
+          <pre><code>// bcrypt: the "cost factor" makes the hash 2^cost times slower
+  import bcrypt from 'bcryptjs';
+
+  const hash = await bcrypt.hash(password, 12);      // on registration
+  const ok = await bcrypt.compare(password, hash);   // on login</code></pre>
+          <p>The resulting hash already includes the salt embedded:</p>
+          <pre><code>$2a$12$R9h/cIPz0gi.URNNX3BkhO0qEHdZ8mG6bI7j1tXnSjW09pSmH8ED6
+   |   |  |                       |
+   |   |  |                       └ hash (with the salt inside)
+   |   |  └ cost factor (2^12 iterations)
+   |   └ bcrypt algorithm
+   └ format prefix</code></pre>
+          <p class="nota">
+            The <strong>salt</strong> is a random value mixed with the password before hashing. It prevents
+            two users with the same password from sharing a hash, and prevents the attacker from using
+            precomputed tables (rainbow tables).
+          </p>
+        </section>
+
+        <section id="simetrico" aria-labelledby="simetrico-titulo">
+          <h2 id="simetrico-titulo">Symmetric encryption</h2>
+          <p>
+            The same key encrypts and decrypts. It is <strong>fast</strong> and works for any volume of
+            data, but there is a logistical problem: how to get the key to the recipient without anyone
+            intercepting it.
+          </p>
+          <ul>
+            <li><strong>AES</strong>: the current standard (AES-128 or AES-256).</li>
+            <li><strong>ChaCha20-Poly1305</strong>: preferable on mobiles for its efficiency (TLS 1.3 uses it too).</li>
+            <li>Old ones (DES, 3DES, RC4): replaced, do not use in new projects.</li>
+          </ul>
+          <pre><code>openssl enc -aes-256-cbc -salt -in secret.txt -out secret.enc
+  openssl enc -d -aes-256-cbc -in secret.enc -out secret.txt</code></pre>
+          <p class="nota">
+            The mode matters as much as the algorithm: <strong>GCM</strong> (authenticated) is the
+            default option; CBC modes without a MAC are vulnerable to tampering. In practice, use
+            verified libraries and let them choose mode and padding.
+          </p>
+        </section>
+
+        <section id="asimetrico" aria-labelledby="asimetrico-titulo">
+          <h2 id="asimetrico-titulo">Asymmetric encryption</h2>
+          <p>
+            It solves the symmetric problem with a <strong>key pair</strong>: what one encrypts, only the
+            other decrypts. You distribute the public one to everyone; the private one never leaves your
+            machine.
+          </p>
+          <ul>
+            <li>To <strong>receive</strong> messages: anyone encrypts with your public key; only you decrypt with the private one.</li>
+            <li>To <strong>prove identity</strong>: the private key signs; anyone verifies with the public one.</li>
+            <li>Current algorithms: RSA (minimum 2048 bits), ECDSA, Ed25519, X25519.</li>
+          </ul>
+          <pre><code># Generate an SSH pair (ed25519 type, modern)
+  ssh-keygen -t ed25519 -C "you@email.com"
+  # id_ed25519     → private key (never share it)
+  # id_ed25519.pub → public key (publish it on GitHub / servers)</code></pre>
+          <p>
+            On the web, HTTPS uses asymmetric only to <em>establish</em> the connection (exchange or
+            agree on a key), and then encrypts everything else with symmetric, which is much faster.
+            More details in <a href="tls.en.html">Network security and TLS</a>.
+          </p>
+        </section>
+
+        <section id="firmas" aria-labelledby="firmas-titulo">
+          <h2 id="firmas-titulo">Digital signatures</h2>
+          <p>
+            A signature proves <strong>who</strong> issued the data and that it <strong>did not change</strong>
+            since. You sign with the private key; anyone can verify with the public one:
+          </p>
+          <ol>
+            <li>The hash of the document is computed.</li>
+            <li>The hash is encrypted with the private key → the signature.</li>
+            <li>The recipient recomputes the hash and decrypts the signature with the public key: if it matches, it is authentic and intact.</li>
+          </ol>
+          <p>Real use: software updates (the operating system verifies the package signature), signed packages, JWT (the server signs the token and thus detects modifications), TLS certificates and Git commits:</p>
+          <pre><code># Verifiable signed commits on GitHub
+  git commit -S -m "Change"
+  git log --show-signature</code></pre>
+          <p class="nota">
+            Encrypting <strong>or</strong> signing are different things: encryption protects
+            confidentiality; signing protects authenticity and integrity. They can be combined: sign
+            and then encrypt.
+          </p>
+        </section>
+
+        <section id="secretos" aria-labelledby="secretos-titulo">
+          <h2 id="secretos-titulo">Secret management</h2>
+          <p>A cryptographic key protects nothing if it lives in the repository. Basic rules:</p>
+          <ul>
+            <li>No credentials in source code — use environment variables or a manager</li>
+            <li>Key auto-rotation: plan what to do when (not «if») one leaks</li>
+            <li><code>.env</code> is ignored in Git (<code>.gitignore</code>) and a <code>.env.example</code> without real values is documented.</li>
+            <li>Production secrets do not share values with development.</li>
+          </ul>
+          <pre><code># Check whether a key ended up stuck in Git history
+  git log --all -S 'AKIA' --oneline     # AWS access
+  git log --all -S 'API_KEY' --oneline</code></pre>
+        </section>
+
+        <section id="comandos" aria-labelledby="comandos-titulo">
+          <h2 id="comandos-titulo">Verification commands</h2>
+          <p>Tools you already have installed to work with hashes and keys:</p>
+          <pre><code># Verify the integrity of a downloaded file
+  sha256sum file.iso
+
+  # Generate a salt or cryptographic randomness (for seeds, session IDs)
+  openssl rand -hex 32
+  openssl rand -base64 24
+
+  # Generate a strong API key for your projects
+  openssl rand -hex 32 | cut -c1-32
+
+  # Check which hash a Linux system password file uses
+  sudo cat /etc/shadow | head -1   # $6$ = SHA-512 with salt; $y$ = yescrypt</code></pre>
+          <p>And for the HTTPS connection, continue in
+          <a href="tls.en.html#comandos">Network security · Verifying TLS certificates</a>.</p>
+          <p class="nota">
+            Test evaluation tools only on your own systems or with explicit authorisation. More checks
+            on the web side in <a href="seguridad-web.en.html#comprobaciones">Security · Checking your own site</a>.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Do not invent cryptographic schemes: use reviewed libs such as <code>crypto</code>, <code>openssl</code> or <code>sodium</code>.</li>
+            <li>Passwords: bcrypt or argon2id with salt and a generous cost factor.</li>
+            <li>Distinguish goals: hash to verify, encrypt to hide, sign to authenticate.</li>
+            <li>AES with GCM mode (authenticated) if you must encrypt with your own libraries.</li>
+            <li>RSA keys of 2048+ bits, preferably Ed25519 for new use.</li>
+            <li>Secrets outside the repo; rotate what leaked, do not just «delete» it in the next commit.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="tls.en.html">Network security and TLS</a>: cryptography in action on every HTTPS connection.</li>
+            <li><a href="seguridad-web.en.html">Web application security</a>: the threats surrounding all of this.</li>
+            <li><a href="git.en.html">Git</a>: <code>git commit -S</code> and signing history.</li>
+            <li><a href="terminal.en.html#referencia">Terminal · Quick reference</a>: <code>sha256sum</code> and general <code>openssl</code> use.</li>
+            <li><a href="sistemas-numericos.en.html">Number systems and data representation</a>: bytes, hex and encoding underlying encryption.</li>
+            <li><a href="logica-booleana.en.html">Digital logic and Boolean algebra</a>: AND, OR and XOR in symmetric encryption and hashing.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="criptografia.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

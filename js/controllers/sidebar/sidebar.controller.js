@@ -84,7 +84,6 @@ export default function SidebarController() {
     });
   });
 
-  /* Los items que navegan a otra página (p. ej. "Mis estudios") cierran el menú. */
   sidebar?.querySelectorAll(".sidebar-item[href]").forEach((link) => {
     link.addEventListener("click", closeMenu);
   });
@@ -94,21 +93,15 @@ export default function SidebarController() {
     openSettingsModal();
   });
 
-  /* section navigation (scrollspy) */
   sectionNav();
 
-  /* theme mode (antes del idioma: updateModeText() lee currentMode) */
   themeMode();
 
-  /* language */
   sectionLanguage();
 
-  /* theme color */
   themeColor();
 
-  /* background theme (gradients) */
   backgroundTheme();
 
-  /* font size */
   fontSize();
 }

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Artificial intelligence — Computer science studies</title>
+  <meta name="description" content="Introduction to the fundamentals of artificial intelligence, its methods, applications, limitations and best practices.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="inteligencia-artificial.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Fundamentals of computing</p>
+          <h1>Artificial intelligence</h1>
+          <p class="entrada">
+            Artificial intelligence (AI) brings together methods that let computer systems perform tasks
+            that usually require capabilities associated with human intelligence. In this article you will
+            learn its fundamental concepts, how a model learns and which limits are worth keeping in mind
+            when using it.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>AI is a broad field; machine learning is one of its areas.</li>
+            <li>A model learns patterns from data and uses them to produce results.</li>
+            <li>Training a model and using it to infer are distinct stages.</li>
+            <li>Data quality and evaluation influence the usefulness of the system.</li>
+            <li>AI outputs can be inaccurate, biased or unsuitable for the context.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is artificial intelligence?</a></li>
+            <li><a href="#conceptos">Key concepts</a></li>
+            <li><a href="#como-funciona">How an AI system works</a></li>
+            <li><a href="#ejemplos">Illustrative examples</a></li>
+            <li><a href="#aplicaciones">Applications and limits</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is artificial intelligence?</h2>
+          <p>
+            <strong>Artificial intelligence</strong> is the area of computing that studies and builds
+            systems able to perform tasks such as classifying information, recognising patterns,
+            generating content, recommending options or planning actions. There is no single AI
+            technique: the field includes rule-based methods, search, optimisation and learning from
+            data.
+          </p>
+          <p>
+            An AI system does not necessarily think or understand like a person. In many cases it
+            computes an output from an input and from patterns that were defined manually or learned
+            during training.
+          </p>
+          <p class="nota">
+            <strong>Key idea:</strong> that a system produces a convincing answer does not, by itself,
+            prove that the answer is correct or that the system understands the subject.
+          </p>
+        </section>
+
+        <section id="conceptos" aria-labelledby="conceptos-titulo">
+          <h2 id="conceptos-titulo">Key concepts</h2>
+          <ul>
+            <li><strong>Machine learning:</strong> set of methods that let a system adjust a model using data, instead of specifying all the rules manually.</li>
+            <li><strong>Supervised learning:</strong> training with examples that include inputs and expected answers, such as images labelled by category.</li>
+            <li><strong>Unsupervised learning:</strong> searching for structures or groups in data without labels provided in advance.</li>
+            <li><strong>Reinforcement learning:</strong> learning through interactions and reward or penalty signals.</li>
+            <li><strong>Model:</strong> mathematical representation adjusted to produce results from inputs.</li>
+            <li><strong>Training:</strong> process of adjusting the model's parameters with data.</li>
+            <li><strong>Inference:</strong> using a trained model to produce a prediction or answer.</li>
+            <li><strong>Neural network:</strong> family of models made of connected units that transform data through layers of operations.</li>
+            <li><strong>Deep learning:</strong> area of machine learning that uses neural networks with multiple layers.</li>
+            <li><strong>Training data:</strong> examples used to adjust the model; their coverage and quality affect what the model can learn.</li>
+          </ul>
+          <p>
+            Generative AI is a category of systems that produce content — for example text, images or
+            audio — from learned patterns. Its output can be useful, but it must be checked against the
+            intended use.
+          </p>
+        </section>
+
+        <section id="como-funciona" aria-labelledby="como-funciona-titulo">
+          <h2 id="como-funciona-titulo">How an AI system works</h2>
+          <p>
+            In a typical machine-learning system, data is prepared and used to adjust a model. Then the
+            model is evaluated with examples that were not used for training. If its performance is
+            adequate for the task, it can be used to infer results on new inputs.
+          </p>
+          <ol>
+            <li><strong>Define the task:</strong> specify what input the system receives and what result is expected.</li>
+            <li><strong>Prepare the data:</strong> review, organise and, when appropriate, label the examples.</li>
+            <li><strong>Train:</strong> adjust the model so it finds useful patterns in the data.</li>
+            <li><strong>Evaluate:</strong> measure its behaviour on separate data and analyse its errors.</li>
+            <li><strong>Use and monitor:</strong> apply the model in a defined context and review whether it remains appropriate.</li>
+          </ol>
+          <p class="aviso">
+            A good result on the training data does not guarantee that the model will work well on new
+            examples. It is also important to check whether the evaluation data represents the real
+            context of use.
+          </p>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">Illustrative examples</h2>
+          <h3>Classification with simple rules</h3>
+          <p>
+            This example does not train a model: it uses a rule written by a person to classify a numeric
+            signal. It serves to contrast a rule-based solution with one that learns patterns from data.
+          </p>
+          <pre><code>def classify_temperature(celsius):
+    if celsius &lt; 10:
+        return "cold"
+    if celsius &lt; 25:
+        return "mild"
+    return "warm"
+
+print(classify_temperature(18))  # mild</code></pre>
+
+          <h3>Separating data to evaluate a model</h3>
+          <p>
+            The following snippet shows the idea of separating examples before evaluating. It is
+            illustrative: it does not implement training or depend on a machine-learning library.
+          </p>
+          <pre><code>data = [
+    {"input": "example 1", "label": "A"},
+    {"input": "example 2", "label": "B"},
+    {"input": "example 3", "label": "A"},
+    {"input": "example 4", "label": "B"},
+]
+
+# In a real project, the split is usually done reproducibly
+# and taking into account the size and distribution of the data.
+training_data = data[:3]
+evaluation_data = data[3:]
+
+print("Training:", len(training_data))
+print("Evaluation:", len(evaluation_data))</code></pre>
+          <p class="nota">
+            These examples use basic Python to explain ideas. They are not a production-ready AI model
+            and do not measure the quality of a prediction.
+          </p>
+        </section>
+
+        <section id="aplicaciones" aria-labelledby="aplicaciones-titulo">
+          <h2 id="aplicaciones-titulo">Applications and limits</h2>
+          <p>
+            AI techniques are used in diverse tasks, such as filtering spam, recognising objects in
+            images, recommending content, transcribing speech or helping explore large data sets. The
+            suitability of each method depends on the task, the available data and the impact of errors.
+          </p>
+          <p>
+            Among its limits are dependence on data, difficulty explaining some decisions, possible
+            bias, variation in output quality and the lack of any guarantee that a generative system
+            provides true information.
+          </p>
+          <p class="aviso">
+            In high-impact decisions — for example those related to health, employment, credit or
+            access to services — it is not advisable to treat the model's output as a final decision
+            without appropriate controls, evaluation and supervision.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Clearly define the task and the conditions in which the system will be used.</li>
+            <li>Check that the data is relevant, sufficiently representative and obtained appropriately.</li>
+            <li>Separate the evaluation data from the data used to train the model.</li>
+            <li>Measure more than one aspect of performance when a single metric can hide important errors.</li>
+            <li>Review incorrect examples and analyse who those errors affect.</li>
+            <li>Protect personal data and limit its use to what is necessary.</li>
+            <li>Disclose when an output was generated or assisted by AI, if the context requires it.</li>
+            <li>Keep human supervision when the impact of an output is significant.</li>
+            <li>Re-evaluate the system if the data, context or objectives change.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it is a problem</th>
+                <th scope="col">What to do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Confusing AI with machine learning</td>
+                <td>Machine learning is a part of the field, not a synonym for all of AI.</td>
+                <td>Identify the concrete technique that performs the task.</td>
+              </tr>
+              <tr>
+                <td>Assuming a fluent answer is true</td>
+                <td>The way something is expressed does not guarantee accuracy or understanding.</td>
+                <td>Verify important data against appropriate sources.</td>
+              </tr>
+              <tr>
+                <td>Evaluating only on training data</td>
+                <td>It can hide that the model does not generalise to new examples.</td>
+                <td>Use separate data to evaluate and analyse the errors.</td>
+              </tr>
+              <tr>
+                <td>Ignoring the quality and origin of the data</td>
+                <td>Problems in the data can be reflected in the predictions.</td>
+                <td>Document, review and protect the data used.</td>
+              </tr>
+              <tr>
+                <td>Automating a decision without supervision</td>
+                <td>Errors can have disproportionate consequences.</td>
+                <td>Establish controls suited to the risk of the task.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Term</th>
+                <th scope="col">Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>AI</code></td><td>Field devoted to systems that perform tasks associated with intelligent capabilities.</td></tr>
+              <tr><td><code>Machine learning</code></td><td>Methods that adjust models from data.</td></tr>
+              <tr><td><code>Training</code></td><td>Adjusting a model using examples.</td></tr>
+              <tr><td><code>Inference</code></td><td>Producing results with an already trained model.</td></tr>
+              <tr><td><code>Overfitting</code></td><td>Situation in which the model adapts too much to the training data and performs worse on new data.</td></tr>
+              <tr><td><code>Evaluation</code></td><td>Measuring and analysing the system's behaviour on relevant examples.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="aprendizaje-automatico.html">Machine learning</a>: types of learning, training and evaluation.</li>
+            <li><a href="redes-neuronales.html">Neural networks</a>: neurons, layers and backpropagation.</li>
+            <li><a href="python.html">Python</a>: language used in the examples.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="inteligencia-artificial.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

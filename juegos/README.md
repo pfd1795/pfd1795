@@ -87,9 +87,12 @@ Edita [`data/juegos.json`](./data/juegos.json) y agrega un objeto:
     "en": "Arrows / WASD · touch buttons"
   },
   "cover": "../assets/images/games/mi-juego/cover.jpg",
-  "status": "published"
+  "status": "published",
+  "updatedAt": null
 }
 ```
+
+Al publicar o modificar un juego, escribe en `updatedAt` la fecha ISO del cambio (`YYYY-MM-DD`); usa `null` solo cuando no haya una fecha registrada.
 
 ### 4. Servir el sitio y probar
 
@@ -129,6 +132,7 @@ Es la **única fuente de verdad** de la grilla. La página no contiene tarjetas 
 | `controls` | `{ es, en }` | No | Resumen de controles. |
 | `cover` | string | No | Ruta relativa a la portada (`../assets/images/games/<slug>/cover.jpg`). Si falta o está vacía, la tarjeta muestra un placeholder con degradado. |
 | `status` | `"published"` \| `"wip"` | Sí | Solo `published` aparece en la grilla. |
+| `updatedAt` | `string` \| `null` | Sí | Fecha ISO `YYYY-MM-DD` del último cambio; `null` si no hay fecha registrada. |
 
 Notas:
 
@@ -185,6 +189,7 @@ Notas:
 - [ ] Tiene su `README-juego.md` con descripción, mecánicas, controles, arquitectura,
       persistencia y posibles mejoras.
 - [ ] Está añadido al manifiesto y probado por HTTP.
+- [ ] La entrada del manifiesto tiene `updatedAt` con la fecha ISO del cambio (o `null` si no hay fecha registrada).
 - [ ] Sigue el canon visual retro-arcade (sección siguiente): paleta neón oscura, modal de
       opciones con `<dialog>`, scanlines CRT y clave de récord `<slug>_best_v1`.
 - [ ] Usa el dimensionado del canon (sección "Dimensionado del canvas"): regla de `width: min()`

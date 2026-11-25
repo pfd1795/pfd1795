@@ -44,8 +44,6 @@ export function applyTranslations() {
   document.querySelectorAll("[data-lang]").forEach((element) => {
     const key = element.getAttribute("data-lang");
 
-    /* El nombre "Pablo" no se traduce: es un nombre propio y debe quedar
-       literal en todos los idiomas, por eso se saltea esta clave. */
     if (key === "name") {
       return;
     }
@@ -57,9 +55,6 @@ export function applyTranslations() {
     }
   });
 
-  /* Atributos localizados de controles generados dinámicamente (muestras de
-     tema, direcciones, velocidad y fuente). Así el title y el aria-label
-     cambian de idioma sin necesidad de reabrir el modal. */
   document.querySelectorAll("[data-i18n-title]").forEach((element) => {
     const value = getTranslation(lang, element.getAttribute("data-i18n-title"));
 
@@ -101,8 +96,6 @@ function changeLanguage(lang, { rerender = true } = {}) {
   updateModeText();
 
   if (rerender) {
-    /* Conservar la tarjeta de experiencia abierta: se reconstruye la grilla
-       desde cero, así que hay que recordar qué panel estaba desplegado. */
     const expandedHeader = document.querySelector('.card-work.expanded .card-work__header');
     const expandedPanelId = expandedHeader?.getAttribute('aria-controls') ?? null;
 
@@ -129,8 +122,6 @@ export default function sectionLanguage() {
     });
   });
 
-  /* Sincronización entre pestañas: si otra pestaña del sitio cambia el
-     idioma, se re-aplica el estado y se re-renderizan las grillas aquí. */
   window.addEventListener("storage", (event) => {
     if (event.key !== STORAGE_KEY_LANGUAGE) return;
     if (!VALID_LANGUAGES.includes(event.newValue)) return;

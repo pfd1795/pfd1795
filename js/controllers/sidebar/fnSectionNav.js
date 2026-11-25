@@ -7,7 +7,7 @@ export default function sectionNav() {
     .map((item) => document.getElementById(item.dataset.target))
     .filter(Boolean);
 
-  if (!sections.length || !("IntersectionObserver" in window)) return;
+  if (!sections.length) return;
 
   const group = document.querySelector(".sidebar-item--group");
   const submenu = document.querySelector(".sidebar-submenu");
@@ -27,32 +27,28 @@ export default function sectionNav() {
       submenu.classList.add("is-open");
       expand?.setAttribute("aria-expanded", "true");
     } else {
-      /* Al volver a una sección padre (Inicio, …) el submenú se repliega:
-         se mantiene cerrado salvo que otra hija vuelva a ser visible. */
       submenu?.classList.remove("is-open");
       expand?.setAttribute("aria-expanded", "false");
     }
   };
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-      if (visible) {
-        setActive(visible.target.id);
-      }
-    },
-    { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
-  );
+        if (visible) {
+          setActive(visible.target.id);
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+    );
 
-  sections.forEach((section) => observer.observe(section));
+    sections.forEach((section) => observer.observe(section));
+  }
 
-  /* Respaldo para los huecos de la banda del observer (secciones cortas,
-     footer): al hacer scroll se marca la última sección que ya cruzó el
-     punto medio del viewport. Reutiliza setActive para conservar la apertura
-     del submenú y .has-active. */
   const marcarPorPosicion = () => {
     const puntoMedio = window.innerHeight / 2;
     let candidata = null;

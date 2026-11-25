@@ -36,8 +36,6 @@ export default function fontSize() {
     markSelected(scale);
   });
 
-  /* Refleja en la UI los cambios hechos en otra pestaña. El CSS ya lo aplica
-     theme-init.js con su propio listener; aquí no se reescribe storage. */
   window.addEventListener("storage", (event) => {
     if (event.key !== STORAGE_KEY_FONT_SCALE && event.key !== null) return;
 

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Number systems and data representation — Computer science studies</title>
+  <meta name="description" content="Number systems: binary, hexadecimal, bits, bytes, signed integers, floating point and text encoding.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="sistemas-numericos.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Fundamentals of computing</p>
+          <h1>Number systems and data representation</h1>
+          <p class="entrada">
+            Everything a computer does comes down to bits: 0 and 1. Number systems and encodings are
+            how we make sense of those sequences: integers, decimals, text, images. Understanding them
+            explains why <code>0.1 + 0.2 !== 0.3</code>, why a char takes 1 or 4 bytes, or why a color
+            is written <code>#ff5733</code>.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>The computer only understands <strong>bits</strong> (0/1); everything else is a convention of interpretation.</li>
+            <li><strong>Binary, octal and hexadecimal</strong> are the same information in different bases; hex is the compact form of binary.</li>
+            <li><strong>Signed integers</strong> use two's complement, which allows addition without special cases.</li>
+            <li><strong>Decimals</strong> in floating point (IEEE 754) are approximations: not every decimal is representable.</li>
+            <li><strong>Text</strong> is encoded (ASCII → UTF-8/Unicode); a "character" may occupy several bytes.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#bits">Bits, bytes and units</a></li>
+            <li><a href="#bases">Binary, octal and hexadecimal</a></li>
+            <li><a href="#enteros">Signed integers: two's complement</a></li>
+            <li><a href="#flotante">Floating point (IEEE 754)</a></li>
+            <li><a href="#texto">Text encoding</a></li>
+            <li><a href="#endianness">Endianness and alignment</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="bits" aria-labelledby="bits-titulo">
+          <h2 id="bits-titulo">Bits, bytes and units</h2>
+          <p>
+            A <strong>bit</strong> is the smallest unit: 0 or 1. They are grouped into <strong>bytes</strong>
+            of 8 bits, which is the addressable unit of memory. Everything is built on bytes: numbers,
+            text, instructions.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Unit</th>
+                <th scope="col">Bits</th>
+                <th scope="col">Bytes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1 byte</td><td>8</td><td>1</td></tr>
+              <tr><td>1 KiB</td><td>8 192</td><td>1 024</td></tr>
+              <tr><td>1 MiB</td><td>8 388 608</td><td>1 048 576</td></tr>
+              <tr><td>1 GiB</td><td>8 589 934 592</td><td>1 073 741 824</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            Watch out for units: in disk storage, "GB" is usually decimal (10⁹ bytes), while memory uses
+            binary (GiB = 2³⁰). The difference explains why a "1 TB" disk shows less available space in
+            the OS.
+          </p>
+        </section>
+
+        <section id="bases" aria-labelledby="bases-titulo">
+          <h2 id="bases-titulo">Binary, octal and hexadecimal</h2>
+          <p>
+            The base indicates how many symbols each position uses. Binary (base 2) uses 0/1; octal
+            (base 8) uses 0–7; hexadecimal (base 16) uses 0–9 and A–F. Hexadecimal is the compact
+            form of binary: each hex digit equals 4 bits.
+          </p>
+          <pre><code>Decimal  Binary      Octal  Hex
+0        0000         0      0
+5        0101         5      5
+10       1010         12     A
+15       1111         17     F
+16       10000        20     10
+255      11111111     377    FF</code></pre>
+          <p>
+            Quick conversions: to go from hex to binary, replace each digit with its 4 bits; to go
+            from binary to hex, group in 4s from the right. CSS colors (<code>#ff5733</code>) are three
+            bytes in hex: red, green, blue.
+          </p>
+        </section>
+
+        <section id="enteros" aria-labelledby="enteros-titulo">
+          <h2 id="enteros-titulo">Signed integers: two's complement</h2>
+          <p>
+            With N bits, 2ᴺ values are representable. Unsigned, they range from 0 to 2ᴺ−1. Signed, the
+            most common convention is <strong>two's complement</strong>: the most significant bit
+            indicates the sign (0 positive, 1 negative) and negatives are obtained by inverting the
+            bits and adding 1.
+          </p>
+          <pre><code>// 8 bits
++5  = 00000101
+-5  = 11111011   (invert 00000101 → 11111010, +1)
+
+// Sum 5 + (-5):
+  00000101
++ 11111011
+-----------
+ 100000000   → carry discarded → 00000000</code></pre>
+          <p>
+            Advantage: addition works the same for positives and negatives, with no special circuits.
+            The range of a signed N-bit integer goes from −2^(N−1) to 2^(N−1)−1 (in 32 bits:
+            −2 147 483 648 to 2 147 483 647).
+          </p>
+          <p class="nota">
+            Avoid "sign-magnitude" (sign bit + magnitude) and "one's complement": they have two
+            representations of zero and complicate arithmetic. Two's complement is the standard.
+          </p>
+        </section>
+
+        <section id="flotante" aria-labelledby="flotante-titulo">
+          <h2 id="flotante-titulo">Floating point (IEEE 754)</h2>
+          <p>
+            To represent decimals, scientific notation in binary is used: sign, mantissa and exponent.
+            The IEEE 754 standard defines 32-bit (float) and 64-bit (double) formats.
+          </p>
+          <ul>
+            <li><strong>float (32 bits)</strong>: 1 sign bit, 8 exponent, 23 mantissa (~7 decimal digits).</li>
+            <li><strong>double (64 bits)</strong>: 1 sign bit, 11 exponent, 52 mantissa (~15-17 digits).</li>
+            <li><strong>Special values</strong>: <code>Infinity</code>, <code>-Infinity</code>, <code>NaN</code>.</li>
+          </ul>
+          <pre><code>// JavaScript uses double (64 bits) for all numbers
+0.1 + 0.2;            // 0.30000000000000004
+(0.1 + 0.2).toFixed(2); // "0.30"
+
+// For money, better use integers (cents) or decimal libraries
+const price = 1999; // cents = 19.99</code></pre>
+          <p class="nota">
+            Not every decimal is representable in binary (just like 1/3 in decimal). That is why float
+            comparisons must use tolerance (<code>Math.abs(a-b) < epsilon</code>), and money must be
+            handled in integers or with decimal types.
+          </p>
+        </section>
+
+        <section id="texto" aria-labelledby="texto-titulo">
+          <h2 id="texto-titulo">Text encoding</h2>
+          <p>
+            Text is stored as byte sequences according to an encoding. ASCII (7 bits) covers basic
+            English. Unicode assigns a number (code point) to every character in the world; UTF-8 is
+            the variable-length encoding that represents it in 1–4 bytes.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Encoding</th>
+                <th scope="col">Bytes per character</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ASCII</td><td>1</td><td>Basic English only (0–127).</td></tr>
+              <tr><td>Latin-1 (ISO-8859-1)</td><td>1</td><td>Western European; no emoji.</td></tr>
+              <tr><td>UTF-8</td><td>1–4</td><td>Web standard; ASCII-compatible.</td></tr>
+              <tr><td>UTF-16</td><td>2 or 4</td><td>Used by Java/Windows; optional BOM.</td></tr>
+              <tr><td>UTF-32</td><td>4</td><td>Fixed; simple but heavy.</td></tr>
+            </tbody>
+          </table>
+          <pre><code>// UTF-8: 'ñ' takes 2 bytes, emoji 4 bytes
+const bytes = new TextEncoder().encode('café');
+console.log(bytes); // Uint8Array [99, 97, 102, 195, 169]
+
+// Length in characters vs bytes
+'😀'.length;        // 2 (UTF-16 code units)
+[...'😀'].length;   // 1 (code point)</code></pre>
+          <p class="nota">
+            A visible "character" (grapheme) may be several code points (emoji with modifiers, combined
+            accents). To count user characters, use <code>Intl.Segmenter</code>.
+          </p>
+        </section>
+
+        <section id="endianness" aria-labelledby="endianness-titulo">
+          <h2 id="endianness-titulo">Endianness and alignment</h2>
+          <p>
+            In multi-byte memory, <strong>endianness</strong> defines the byte order: little-endian
+            stores the least significant byte first (x86, ARM); big-endian stores the most significant
+            byte first (networks, some file formats).
+          </p>
+          <ul>
+            <li>Network protocols use big-endian ("network byte order").</li>
+            <li>File formats (PNG, JPEG) specify their order; it must be respected.</li>
+            <li><strong>Alignment</strong>: accessing data at addresses that are multiples of their size is faster and sometimes required.</li>
+          </ul>
+          <p class="nota">
+            When parsing binaries, explicitly define the byte order (DataView in JS has a
+            <code>littleEndian</code> parameter). Do not assume the host's.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Declare the encoding in HTML: <code>&lt;meta charset="utf-8"&gt;</code>.</li>
+            <li>Use UTF-8 in files, databases and APIs; avoid Latin-1 except for legacy.</li>
+            <li>For money and exact amounts, use integers or decimal types, not float.</li>
+            <li>When serializing numbers to text, fix the precision (<code>toFixed</code>, formatting).</li>
+            <li>When reading binaries, specify endianness and size; validate ranges.</li>
+            <li>Do not confuse character length with bytes when truncating or validating input.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it is wrong</th>
+                <th scope="col">What to do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Comparing floats with <code>===</code></td>
+                <td>Rounding errors produce false negatives.</td>
+                <td>Use tolerance or round to N decimals.</td>
+              </tr>
+              <tr>
+                <td>Using float for money</td>
+                <td>Accumulated precision loss in sums.</td>
+                <td>Integers in the smallest unit (cents) or Decimal.</td>
+              </tr>
+              <tr>
+                <td>Confusing bytes and characters</td>
+                <td>Truncating in the middle of a UTF-8 character breaks the text.</td>
+                <td>Operate on code points or graphemes, not bytes.</td>
+              </tr>
+              <tr>
+                <td>Assuming ASCII in user input</td>
+                <td>Names with accents/emoji fail or get corrupted.</td>
+                <td>Validate and store in UTF-8.</td>
+              </tr>
+              <tr>
+                <td>Forgetting the BOM or endianness when reading files</td>
+                <td>The first bytes get interpreted as data.</td>
+                <td>Detect/remove the BOM and specify the order.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concept</th>
+                <th scope="col">Key</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Bit</td><td>Binary digit (0/1).</td></tr>
+              <tr><td>Byte</td><td>8 bits.</td></tr>
+              <tr><td>Hex</td><td>Base 16; 1 digit = 4 bits.</td></tr>
+              <tr><td>Two's complement</td><td>Standard representation of signed integers.</td></tr>
+              <tr><td>IEEE 754</td><td>Floating point standard (float/double).</td></tr>
+              <tr><td>UTF-8</td><td>Variable 1–4 byte encoding, ASCII-compatible.</td></tr>
+              <tr><td>Endianness</td><td>Byte order in memory (little/big).</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="redes.en.html">Networking fundamentals</a>: IP addresses, ports and bytes on the network.</li>
+            <li><a href="criptografia.en.html">Basic cryptography</a>: hashes and ciphers operate on bytes.</li>
+            <li><a href="tls.en.html">Network security and TLS</a>: certificates and key representation.</li>
+            <li><a href="javascript.en.html">JavaScript</a>: double numbers and <code>TextEncoder</code>.</li>
+            <li><a href="logica-booleana.en.html">Digital logic and Boolean algebra</a>: the logical operations behind data representation.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="sistemas-numericos.html">Versión en español</a></p>
+    </main>
+
+      </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

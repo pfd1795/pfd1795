@@ -1,1 +1,3 @@
 # Trabajo pendiente
+
+- Traducción al inglés de la enciclopedia: 19 artículos restantes (convención: `mis-estudios/articulos/<slug>.en.html`, paralelo al `<slug>.html` en español; enlace de cambio de idioma en `.volver`; manifiesto sin duplicar slug). Realizados: `sistemas-numericos`, `logica-booleana`, `terminal`, `html`, `css`, `redes`, `javascript`, `tls`, `modelado-datos`, `criptografia`, `inteligencia-artificial`, `patrones`, `paradigmas`, `seguridad-web`, `apis`, `git`, `sistemas-operativos`.

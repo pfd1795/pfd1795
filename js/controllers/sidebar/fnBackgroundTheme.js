@@ -40,8 +40,6 @@ function markSelected(selector, attribute, value) {
   });
 }
 
-/* La fila de dirección solo aplica a temas con degradado lineal/radial y la
-   de velocidad solo al tema multicolor (misma lógica que fortunista). */
 function syncConditionalRows(theme) {
   const directionRow = document.querySelector(".settings-row--direction");
   const speedRow = document.querySelector(".settings-row--speed");
@@ -113,9 +111,6 @@ export default function backgroundTheme() {
     }
   });
 
-  /* Sincroniza el estado local y los anillos de selección cuando el tema se
-     cambia en otra pestaña. El CSS ya lo actualiza theme-init.js con
-     su propio listener; aquí no se vuelve a escribir en localStorage. */
   window.addEventListener("storage", (event) => {
     let changed = false;
 

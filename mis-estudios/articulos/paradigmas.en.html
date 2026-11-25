@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Programming paradigms — Computer science studies</title>
+  <meta name="description" content="Programming paradigms: imperative, object-oriented, functional and declarative.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="paradigmas.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Programming languages</p>
+          <h1>Programming paradigms</h1>
+          <p class="entrada">
+            A paradigm is a way of thinking about and structuring a program: which entities exist
+            (variables, functions, objects), how control flow is managed and how data is handled. It is
+            not the same as a language: a language can support several paradigms. Understanding them
+            lets you choose the right tool and read other people's code with less friction.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>The <strong>imperative paradigm</strong> describes step by step how to change the program's state.</li>
+            <li><strong>Object-oriented programming</strong> groups data and behaviour into objects with encapsulation, inheritance and polymorphism.</li>
+            <li>The <strong>functional paradigm</strong> treats functions as values, avoids mutable state and favours composition.</li>
+            <li>The <strong>declarative paradigm</strong> describes the desired result; the engine decides how (SQL, HTML, JSX).</li>
+            <li>Most modern languages are <strong>multi-paradigm</strong>; they are mixed according to the problem.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is a paradigm?</a></li>
+            <li><a href="#imperativo">The imperative paradigm</a></li>
+            <li><a href="#oop">Object-oriented programming</a></li>
+            <li><a href="#funcional">The functional paradigm</a></li>
+            <li><a href="#declarativo">The declarative paradigm</a></li>
+            <li><a href="#comparacion">Practical comparison</a></li>
+            <li><a href="#elegir">When to choose each one</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is a paradigm?</h2>
+          <p>A programming paradigm is a style of solving problems with code. It defines:</p>
+          <ul>
+            <li>The available <strong>abstractions</strong> (variables, functions, classes, processes).</li>
+            <li>The <strong>control flow</strong> (sequence, conditionals, recursion, events).</li>
+            <li><strong>State management</strong> (mutable, immutable, shared, isolated).</li>
+            <li><strong>Composition</strong> (how the pieces are combined).</li>
+          </ul>
+          <p class="nota">
+            A language is not a paradigm. JavaScript supports imperative, OOP and functional; SQL is
+            declarative; Haskell is purely functional. Learning paradigms makes you better in any
+            language.
+          </p>
+        </section>
+
+        <section id="imperativo" aria-labelledby="imperativo-titulo">
+          <h2 id="imperativo-titulo">The imperative paradigm</h2>
+          <p>
+            The program is a sequence of instructions that modify state. It is the paradigm closest to
+            the hardware and the first one usually learned.
+          </p>
+          <pre><code>// Imperative: sum of the even numbers
+const numbers = [1, 2, 3, 4, 5];
+let sum = 0;
+for (let i = 0; i < numbers.length; i++) {
+  if (numbers[i] % 2 === 0) {
+    sum += numbers[i];
+  }
+}
+console.log(sum); // 6</code></pre>
+          <p>
+            Strengths: fine control, predictable performance, easy to follow step by step. Risks: mutable
+            shared state, side effects and code that is hard to test as it grows.
+          </p>
+        </section>
+
+        <section id="oop" aria-labelledby="oop-titulo">
+          <h2 id="oop-titulo">Object-oriented programming</h2>
+          <p>
+            It organises code into <strong>objects</strong>: entities that encapsulate data (attributes) and
+            behaviour (methods). The key principles:
+          </p>
+          <ul>
+            <li><strong>Encapsulation</strong>: hide internal state and expose only what is needed.</li>
+            <li><strong>Inheritance</strong>: create new classes from existing ones (reuse).</li>
+            <li><strong>Polymorphism</strong>: treat different objects uniformly if they share an interface.</li>
+            <li><strong>Abstraction</strong>: model the essentials of the domain.</li>
+          </ul>
+          <pre><code>class BankAccount {
+  #balance = 0; // private
+  deposit(amount) { this.#balance += amount; }
+  withdraw(amount) {
+    if (amount > this.#balance) throw new Error('Insufficient balance');
+    this.#balance -= amount;
+  }
+  get balance() { return this.#balance; }
+}
+
+const c = new BankAccount();
+c.deposit(100);
+c.withdraw(30);
+console.log(c.balance); // 70</code></pre>
+          <p>
+            Strengths: models domains with entities and rules well; eases extension. Risks: deep
+            hierarchies, coupling through inheritance and shared mutable state. That is why composition is
+            preferred over inheritance today.
+          </p>
+        </section>
+
+        <section id="funcional" aria-labelledby="funcional-titulo">
+          <h2 id="funcional-titulo">The functional paradigm</h2>
+          <p>It treats computation as the evaluation of mathematical functions. Central ideas:</p>
+          <ul>
+            <li><strong>Pure functions</strong>: same input → same output; no side effects.</li>
+            <li><strong>Immutability</strong>: data is not modified; new data is created.</li>
+            <li><strong>Higher-order functions</strong>: receive or return other functions.</li>
+            <li><strong>Composition</strong>: combine small functions to form others.</li>
+          </ul>
+          <pre><code>// Functional: sum of the even numbers
+const numbers = [1, 2, 3, 4, 5];
+const isEven = (n) => n % 2 === 0;
+const add = (a, b) => a + b;
+const result = numbers.filter(isEven).reduce(add, 0);
+console.log(result); // 6</code></pre>
+          <p>
+            Strengths: easy to test, parallelise and reason about; ideal for data transformation. Risks:
+            performance from creating many copies; learning curve (recursion, monads).
+          </p>
+        </section>
+
+        <section id="declarativo" aria-labelledby="declarativo-titulo">
+          <h2 id="declarativo-titulo">The declarative paradigm</h2>
+          <p>
+            It describes <em>what</em> is wanted, not <em>how</em>. The engine decides the execution.
+            Everyday examples:
+          </p>
+          <ul>
+            <li><strong>SQL</strong>: <code>SELECT name FROM customer WHERE active = true;</code></li>
+            <li><strong>HTML</strong>: describes the structure, not the drawing.</li>
+            <li><strong>React/JSX</strong>: describes the UI from state.</li>
+            <li><strong>CSS</strong>: declares styles, the browser applies them.</li>
+          </ul>
+          <p class="nota">
+            Declarative code is usually shorter and more expressive, but it depends on the engine
+            (database, browser) being well optimised.
+          </p>
+        </section>
+
+        <section id="comparacion" aria-labelledby="comparacion-titulo">
+          <h2 id="comparacion-titulo">Practical comparison</h2>
+          <p>The same problem (sum of the even numbers in a list) in each style:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Paradigm</th>
+                <th scope="col">Approach</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Imperative</td><td>Loop, condition and mutable accumulator.</td></tr>
+              <tr><td>OOP</td><td>A <code>Summator</code> object with a method that encapsulates state.</td></tr>
+              <tr><td>Functional</td><td><code>filter</code> + <code>reduce</code> with pure functions.</td></tr>
+              <tr><td>Declarative</td><td>Query or expression that describes the result.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="elegir" aria-labelledby="elegir-titulo">
+          <h2 id="elegir-titulo">When to choose each one</h2>
+          <ul>
+            <li><strong>Imperative</strong>: scripts, automation, code close to the hardware, critical performance.</li>
+            <li><strong>OOP</strong>: domains with clear entities, large systems with teams, extensions via plugins.</li>
+            <li><strong>Functional</strong>: data transformation, pipelines, concurrency, code that must be easy to test.</li>
+            <li><strong>Declarative</strong>: queries, UI, configuration, business rules expressible as data.</li>
+          </ul>
+          <p class="nota">
+            In practice they are mixed: a JavaScript backend may use OOP for the domain and functional
+            for processing lists; SQL for persistence; JSX for the UI.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Choose the paradigm by the problem, not by fashion.</li>
+            <li>Keep functions small and with a single purpose.</li>
+            <li>Prefer immutability when it does not cost performance.</li>
+            <li>Avoid shared mutable state; if you need it, synchronise.</li>
+            <li>Use composition before deep inheritance.</li>
+            <li>Write code that reads like the intent, not like the steps.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it is wrong</th>
+                <th scope="col">What to do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Using OOP for everything, even simple scripts</td>
+                <td>Unnecessary boilerplate and forced abstractions.</td>
+                <td>Start simple; introduce classes when there is real state and behaviour.</td>
+              </tr>
+              <tr>
+                <td>Mutating data in «pure» functions</td>
+                <td>Hidden side effects and hard-to-reproduce bugs.</td>
+                <td>Return copies; document if there are effects.</td>
+              </tr>
+              <tr>
+                <td>Deep inheritance</td>
+                <td>Fragile coupling; changes in the base break descendants.</td>
+                <td>Prefer composition and interfaces.</td>
+              </tr>
+              <tr>
+                <td>Mixing paradigms without criteria</td>
+                <td>Inconsistent code that is hard to maintain.</td>
+                <td>Define conventions per layer (OOP domain, functional data, declarative UI).</td>
+              </tr>
+              <tr>
+                <td>Ignoring the cost of immutability</td>
+                <td>Massive copies in hot loops degrade performance.</td>
+                <td>Measure; use local mutation when it is safe and isolated.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concept</th>
+                <th scope="col">Key point</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Imperative</td><td>Sequence of instructions that modify state.</td></tr>
+              <tr><td>OOP</td><td>Objects with encapsulation, inheritance and polymorphism.</td></tr>
+              <tr><td>Functional</td><td>Pure functions, immutability, composition.</td></tr>
+              <tr><td>Declarative</td><td>Describes the result; the engine executes.</td></tr>
+              <tr><td>HOF</td><td>Function that receives or returns another function.</td></tr>
+              <tr><td>Multi-paradigm</td><td>Language that supports several paradigms.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="javascript.en.html">JavaScript</a>: multi-paradigm language used in the examples.</li>
+            <li><a href="sql.html">SQL and relational databases</a>: example of the declarative paradigm.</li>
+            <li><a href="html.en.html">HTML</a>: declarative markup for structure.</li>
+            <li><a href="python.html">Python</a>: multi-paradigm language oriented to readability.</li>
+            <li><a href="patrones.en.html">Design patterns</a>: reusable solutions built on the paradigms.</li>
+            <li><a href="solid.html">Design principles and SOLID</a>: design criteria for software that rely on the object-oriented paradigm.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="paradigmas.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

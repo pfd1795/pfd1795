@@ -9,7 +9,7 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
   desde [`data/articulos.json`](./data/articulos.json) con `js/controllers/mis-estudios/`
   (se monta en `main.js` solo si existe `.estudios-grid`).
 - `mis-estudios.css`: estilos específicos de la sección (acento adaptativo `--enc-accent`).
-- `articulos/*.html`: artículos educativos estáticos, un archivo `<slug>.html` por artículo
+- `articulos/*.html`: artículos educativos estáticos, un archivo `<slug>.html` por artículo (y, opcionalmente, `<slug>.en.html` para la versión en inglés, según la regla 8)
   (HTML, Git, Terminal, JavaScript, Redes, CSS, HTTP y navegador, Cliente-servidor y APIs,
   SQL, Seguridad web, Criptografía, TLS, Sistemas operativos, Modelado de datos y
   normalización, Paradigmas de programación, Sistemas numéricos y representación de datos,
@@ -67,7 +67,17 @@ y aquí solo se conserva el override de acento `--enc-accent`.
    (los artículos ya publicados sin ella se respetan), y —si
    ayudan— diagramas SVG inline con las clases de `mis-estudios.css` (`.diagrama`); nada de
    imágenes remotas ni librerías externas.
-8. **Sin firmas de IA**: un artículo no incluye marcas de agua, comentarios-firma, nombres
+8. **Traducción al inglés (convención)**: un artículo puede tener una versión en inglés en
+   `articulos/<slug>.en.html`, paralela al `<slug>.html` en español. La versión en inglés
+   comparte el mismo chrome (base.css, mis-estudios.css, sidebar, main.js, copiar.js,
+   theme-init.js, PWA) y traduce solo el contenido del artículo; los enlaces internos
+   («Ver también») apuntan a la versión en inglés cuando exista (`.en.html`) y, si no, a
+   la versión en español. Ambas versiones enlazan entre sí mediante un enlace de cambio
+   de idioma en el bloque `.volver` («English version» / «Versión en español»). El
+   manifiesto (`data/articulos.json`) sigue un solo slug por artículo: no se duplican
+   entradas por idioma. El contenido de la enciclopedia sigue siendo solo español por
+   defecto; la versión en inglés es opcional y se añade artículo por artículo.
+9. **Sin firmas de IA**: un artículo no incluye marcas de agua, comentarios-firma, nombres
    de modelos de IA, código ni recursos propios de un agente. La única firma admitida está
    en el footer de la portada (`../index.html`), según la regla del
    [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).

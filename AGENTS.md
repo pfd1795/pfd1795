@@ -314,12 +314,14 @@ el propósito de un módulo, actualizar esta tabla como parte del cambio.
 | Archivo | Exporta | Responsabilidad |
 | --- | --- | --- |
 | `sidebar.controller.js` | `default SidebarController()` | Abre/cierra el menú, marca `inert` en el fondo, gestiona el foco de retorno y marcar el enlace activo. |
-| `fnSectionNav.js` | `default sectionNav()` | Scrollspy con `IntersectionObserver`: marca `.active` y abre el submenú cuando la sección es hija. |
+| `fnSectionNav.js` | `default sectionNav()` | Scrollspy con `IntersectionObserver` y respaldo por posición cuando no está disponible: marca `.active` y abre el submenú cuando la sección es hija. |
 | `fnChangeLanguage.js` | `sectionLanguage()` (default), `applyTranslations()` | Toggle ES/EN y actualización de `[data-lang]`, `[data-i18n-title]`, `[data-i18n-aria-label]` y `[data-i18n-placeholder]` (este último escribe `data-buscador-placeholder`). Tras re-renderizar emite el evento DOM `site:languagechange` para que `js/buscador.js` recalcule su placeholder. Las claves se resuelven desde un índice único por idioma armado con las 4 secciones en orden fijo; un aviso en consola señala cualquier colisión. |
 | `fnThemeMode.js` | `themeMode()` (default), `updateModeText()` | Alterna claro/oscuro y actualiza el texto del botón correspondiente. |
-| `fnThemeColor.js` | `default themeColor()` | Aplica el acento activo (`--theme-color`, `--theme-color-soft`) desde `utils/themeColors.js` y sincroniza el swatch seleccionado entre pestañas sin reescribir `localStorage`. |
+| `fnThemeColor.js` | `default themeColor()` | Aplica el acento activo (`--theme-color`, `--theme-color-soft`) desde `utils/themeColors.js`; el nombre guardado solo decide qué swatch queda marcado y el color pintado sale de `theme-color-value` para evitar un salto tras el pre-pintado. La variante clara se deriva con `color-mix()` para valores no canónicos. |
 | `fnBackgroundTheme.js` | `default backgroundTheme()` | Aplica tema de fondo, dirección del degradado y velocidad (`--page-*`). |
 | `fnFontScale.js` | `default fontSize()` | Aplica la escala tipográfica (`--font-scale`) de 0.85 / 1 / 1.15. |
+
+Los controladores de idioma, modo, acento, fondo y escala también reaplican el estado al recibir un evento `storage` (incluido `event.key === null`, que cubre `localStorage.clear()`), sin reescribir la clave afectada.
 
 **Controladores — `controllers/settings/`**
 
@@ -352,7 +354,7 @@ Las tres grillas de sección usan el **mismo esquema de manifiesto**: una clave 
 `version` (formato) y un array `items`; en `mis-estudios/` y `programas/` hay además
 un array `categories` (`id` + `label {es}`) que ordena y agrupa las tarjetas. Cada
 entrada lleva `slug` (kebab-case, validado con un patrón), `title`, `description`,
-`status: "published" \| "wip"` y campos propios de la sección (`cover`/`year`/`genre` en
+`status: "published" \| "wip"` y campos propios de la sección (`cover`/`year`/`genre`/`updatedAt` en
 juegos; `keywords`/`category` en artículos y herramientas; `icon`/`technologies` en
 herramientas). En juegos solo aparecen las entradas `published` con slug válido; en
 `mis-estudios/` y `programas/` se muestran también las `wip` con la etiqueta de UI
@@ -466,7 +468,7 @@ element?.addEventListener('click', () => {
 - **Utils**: Funciones puras exportadas nombradas.
 - **DOM**: Verificar existencia antes de manipular (`if (element)`).
 - **Eventos**: Usar delegation cuando sea posible.
-- **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`) que despliega un `.sidebar-submenu` con 3 elementos (`data-target`: experiencia, estudios, proyectos; en `mis-estudios/` son enlaces `../index.html#seccion` o `../../index.html#seccion` desde `mis-estudios/articulos/*.html`). El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible; si es una hija, abre el submenú y añade `.has-active` al `--group`. Al abrir el menú, `sidebar.controller.js` marca el fondo como `inert` (`.navbar`, `.main-layout`/`.main-content`, `.footer`, `.modal-dialog`) y lleva el foco al botón de cierre; al cerrarlo retira el `inert` y devuelve el foco al botón que lo abrió.
+- **Menú lateral**: `.sidebar` se compone de header, `nav.sidebar-menu` y `footer` con el botón de ajustes. Dentro de `nav.sidebar-menu` hay un `.sidebar-item--group` que contiene dos botones hermanos: la fila "Inicio" (`.sidebar-item` con icono `home` + `data-target="inicio"`) y el botón `.sidebar-expand` (chevron con `aria-expanded`/`aria-controls`) que despliega un `.sidebar-submenu` con 3 elementos (`data-target`: experiencia, estudios, proyectos; en `mis-estudios/` son enlaces `../index.html#seccion` o `../../index.html#seccion` desde `mis-estudios/articulos/*.html`). El scrollspy (`controllers/sidebar/fnSectionNav.js`) marca el item `.active` según la sección visible (con `IntersectionObserver` o, si no está, por posición al hacer scroll); si es una hija, abre el submenú y añade `.has-active` al `--group`. Al abrir el menú, `sidebar.controller.js` marca el fondo como `inert` (`.navbar`, `.main-layout`/`.main-content`, `.footer`, `.modal-dialog`) y lleva el foco al botón de cierre; al cerrarlo retira el `inert` y devuelve el foco al botón que lo abrió.
 - **Enlaces externos del menú**: debajo de "Inicio" hay `<a class="sidebar-item">` para "Mis estudios" (icono `menu_book`, → `./mis-estudios/index.html`), "Juegos" (icono `gamepad`, → `./juegos/index.html`) y "Programas" (icono `build`, → `./programas/index.html`; en esas subpáginas lleva `.active` y `aria-current="page"`, y las rutas se ajustan con `../` o `../../`). No llevan `data-target`, por lo que el scrollspy los ignora; `sidebar.controller.js` cierra el menú al pulsarlos.
 - **Grillas y manifiestos**: las tres secciones (`juegos/`, `mis-estudios/`, `programas/`) siguen el mismo patrón: `index.html` con buscador (y filtros por categoría en programas y por género en juegos), un contenedor `<seccion>-grid` vacío en el HTML, un manifiesto `<seccion>/data/*.json` y un controlador en `js/controllers/<seccion>/` (`<seccion>.controller.js` + `fn<Seccion>.js`) que renderiza las tarjetas. El controlador se monta en `main.js` solo si existe su contenedor. Para agregar contenido nuevo: archivo por `slug` en la carpeta de la sección + entrada en el manifiesto + verificación.
 - **Enciclopedia** (`mis-estudios/`): comparte la preferencia de tema del portafolio (pre-pintado con `js/theme-init.js`). Sus páginas cargan también la barra, el menú lateral y `js/main.js`, de modo que el modal de Configuración funciona igual que en la portada. La grilla se renderiza desde `mis-estudios/data/articulos.json`; los artículos viven en `mis-estudios/articulos/<slug>.html`. El contenido es solo en español, pero las etiquetas de UI generadas en JS (p. ej. «Próximamente») se toman de `translations.page[lang]`. El buscador es el `js/buscador.js` compartido, configurado por `data-attributes` del input.
@@ -531,9 +533,8 @@ canvas"). Las tarjetas muestran una sola portada por juego desde el campo `cover
 
 ### Compatibilidad de navegador
 
-- Requiere navegadores modernos: módulos ES, import attributes (`with { type: "json" }`), CSS nesting, `<dialog>`, `IntersectionObserver`, `color-mix()` y `@view-transition`.
-- `@view-transition` y `color-mix()` son mejoras progresivas; si el navegador no las soporta, la página sigue funcionando con menor fidelidad visual.
-- Sin `IntersectionObserver`, el scrollspy no se activa.
+- Requiere navegadores modernos: módulos ES, import attributes (`with { type: "json" }`), CSS nesting, `<dialog>`, `color-mix()` y `@view-transition`.
+- `@view-transition` y `color-mix()` son mejoras progresivas; si el navegador no las soporta, la página sigue funcionando con menor fidelidad visual. El scrollspy usa `IntersectionObserver` cuando está disponible y un respaldo por posición al hacer scroll cuando no lo está.
 
 ### Preferencias y almacenamiento
 
@@ -567,7 +568,6 @@ canvas"). Las tarjetas muestran una sola portada por juego desde el campo `cover
 
 ### Deuda técnica
 
-- No existe `updatedAt` por juego en el manifiesto.
 - El contenido de la enciclopedia no tiene traducción al inglés.
 
 ### Rendimiento y mantenimiento

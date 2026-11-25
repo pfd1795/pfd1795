@@ -27,6 +27,7 @@
         "en": "Arrows / WASD · touch D-pad"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/snake/cover.jpg"
     },
     {
@@ -55,6 +56,7 @@
         "en": "Arrows / A-D · Space · touch buttons"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/space-invaders/cover.jpg"
     },
     {
@@ -83,6 +85,7 @@
         "en": "Click / touch · Arrows + Enter (keyboard) · U undo · Esc pause"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/ajedrez/cover.jpg"
     },
     {
@@ -111,6 +114,7 @@
         "en": "Click / touch · U undo · Esc pause"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/damas/cover.jpg"
     },
     {
@@ -139,6 +143,7 @@
         "en": "WASD / arrows · Space attack · touch D-pad"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/dungeon-crawler/cover.jpg"
     },
     {
@@ -167,6 +172,7 @@
         "en": "Arrows / A-D · touch buttons"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/neon-racer/cover.jpg"
     },
     {
@@ -195,6 +201,7 @@
         "en": "Arrows / WASD · Space jump · X shuriken"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/plataformas/cover.jpg"
     },
     {
@@ -223,6 +230,7 @@
         "en": "Click to place · 1-4 towers · U upgrade · V sell"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/tower-defense/cover.jpg"
     },
     {
@@ -251,6 +259,7 @@
         "en": "Click / drag · arrows and Enter · touch"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/match-3/cover.jpg"
     },
     {
@@ -279,6 +288,7 @@
         "en": "Arrows / A-D · mouse · tap to launch"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/arkanoid/cover.jpg"
     },
     {
@@ -308,6 +318,7 @@
         "en": "D F J K · arrows · touch buttons"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/ritmo/cover.jpg"
     },
     {
@@ -336,6 +347,7 @@
         "en": "W/S · arrows · drag on mobile"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/pong/cover.jpg"
     },
     {
@@ -364,6 +376,7 @@
         "en": "Keys 1-2-3 or buttons · Enter play"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/piedras-papel-tijeras/cover.jpg"
     },
     {
@@ -393,6 +406,7 @@
         "en": "Drag and release (slingshot) · touch"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/pool/cover.jpg"
     },
     {
@@ -421,6 +435,7 @@
         "en": "Click / touch · keys 1-9"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/ta-te-ti/cover.jpg"
     },
     {
@@ -449,6 +464,7 @@
         "en": "Click / tap flip · H PEEK · P/Esc pause · Enter/Space play"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/card-match/cover.jpg"
     },
     {
@@ -477,6 +493,7 @@
         "en": "WASD/Arrows move · Space/Shift dash · P/Esc pause · Enter play"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/dodge-arena/cover.jpg"
     },
     {
@@ -505,6 +522,7 @@
         "en": "WASD/Arrows move · P/Esc pause · Enter play"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/neon-maze/cover.jpg"
     },
     {
@@ -533,6 +551,7 @@
         "en": "W/A/S/D or arrows drive · Space turbo · P/Esc pause · Enter play"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/neon-rally/cover.jpg"
     },
     {
@@ -561,6 +580,7 @@
         "en": "Arrows/A-D move · ↑/W/X rotate · ↓/S soft drop · Space hard drop · C/Shift hold · P/Esc pause"
       },
       "status": "published",
+      "updatedAt": null,
       "cover": "../assets/images/games/tetris/cover.jpg"
     }
   ]

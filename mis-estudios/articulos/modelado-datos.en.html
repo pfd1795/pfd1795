@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data modelling and normalisation — Computer science studies</title>
+  <meta name="description" content="Data modelling and normalisation: entities, relationships, keys and normal forms.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="modelado-datos.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Databases</p>
+          <h1>Data modelling and normalisation</h1>
+          <p class="entrada">
+            Before writing <code>CREATE TABLE</code>, you have to decide which entities exist, what
+            attributes they have and how they relate. A good model avoids duplicated data,
+            inconsistencies and anomalies when inserting, updating or deleting. Normalisation is the
+            systematic process for reaching that model.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>Modelling is <strong>describing reality</strong> as entities, attributes and relationships, not as tables from the start.</li>
+            <li><strong>Redundancy</strong> causes anomalies: the same data repeated gets out of sync when updated.</li>
+            <li><strong>Keys</strong> (primary, foreign) identify rows and connect tables.</li>
+            <li><strong>Normal forms</strong> (1NF, 2NF, 3NF, BCNF) eliminate partial and transitive dependencies.</li>
+            <li>Deliberate denormalisation can improve read performance, at a maintenance cost.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is data modelling?</a></li>
+            <li><a href="#anomalias">Anomalies and redundancy</a></li>
+            <li><a href="#claves">Keys</a></li>
+            <li><a href="#formas-normales">Normal forms</a></li>
+            <li><a href="#desnormalizar">When to denormalise</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is data modelling?</h2>
+          <p>
+            A data model describes the information a system handles and its rules. You start from
+            reality (customers, orders, products) and end up with a table schema. The basic concepts:
+          </p>
+          <ul>
+            <li><strong>Entity</strong>: thing or object of the domain (Customer, Order).</li>
+            <li><strong>Attribute</strong>: property of the entity (name, date, price).</li>
+            <li><strong>Relationship</strong>: link between entities (one customer places many orders).</li>
+            <li><strong>Cardinality</strong>: how many instances take part (1:1, 1:N, N:M).</li>
+          </ul>
+          <figure class="diagrama" aria-labelledby="diagrama-er-titulo">
+            <figcaption id="diagrama-er-titulo">Simplified entity-relationship model.</figcaption>
+            <svg viewBox="0 0 640 180" role="img" aria-labelledby="diagrama-er-titulo">
+              <rect class="caja-destacada" x="40" y="60" width="120" height="60" rx="8"></rect>
+              <text class="texto" x="100" y="85" text-anchor="middle">Customer</text>
+              <text class="texto-secundario" x="100" y="105" text-anchor="middle">id, name, email</text>
+
+              <rect class="caja-destacada" x="260" y="60" width="120" height="60" rx="8"></rect>
+              <text class="texto" x="320" y="85" text-anchor="middle">Order</text>
+              <text class="texto-secundario" x="320" y="105" text-anchor="middle">id, date, total</text>
+
+              <rect class="caja-destacada" x="480" y="60" width="120" height="60" rx="8"></rect>
+              <text class="texto" x="540" y="85" text-anchor="middle">Product</text>
+              <text class="texto-secundario" x="540" y="105" text-anchor="middle">id, name, price</text>
+
+              <path class="flecha-acentuada" d="M160 90 L255 90"></path>
+              <polygon class="flecha-acentuada" points="255,90 245,84 245,96"></polygon>
+              <text class="texto-secundario" x="207" y="82" text-anchor="middle">1:N</text>
+
+              <path class="flecha-acentuada" d="M380 90 L475 90"></path>
+              <polygon class="flecha-acentuada" points="475,90 465,84 465,96"></polygon>
+              <text class="texto-secundario" x="427" y="82" text-anchor="middle">N:M</text>
+            </svg>
+          </figure>
+          <p>
+            An N:M relationship (order-product) is resolved with an intermediate table
+            (order_product) containing the foreign keys of both. That step is essential before
+            creating tables.
+          </p>
+        </section>
+
+        <section id="anomalias" aria-labelledby="anomalias-titulo">
+          <h2 id="anomalias-titulo">Anomalies and redundancy</h2>
+          <p>
+            Imagine a single <code>orders</code> table that repeats the customer data in every row:
+          </p>
+          <pre><code>order_id | customer_name | customer_email | product | quantity
+1         | Ana            | ana@mail.com  | Book     | 2
+2         | Ana            | ana@mail.com  | Pencil   | 5</code></pre>
+          <p>
+            If Ana changes her email, every one of her rows has to be updated; if one is forgotten,
+            two different emails remain for the same customer. That is an <strong>update anomaly</strong>.
+            There are also <strong>insertion</strong> anomalies (you cannot register a customer without an
+            order) and <strong>deletion</strong> anomalies (deleting the last order also deletes the
+            customer). The common cause is <strong>redundancy</strong>: the same data stored several times.
+          </p>
+        </section>
+
+        <section id="claves" aria-labelledby="claves-titulo">
+          <h2 id="claves-titulo">Keys</h2>
+          <ul>
+            <li><strong>Primary key (PK)</strong>: uniquely identifies each row. Not null and without duplicates.</li>
+            <li><strong>Foreign key (FK)</strong>: column referencing the PK of another table; keeps referential integrity.</li>
+            <li><strong>Candidate key</strong>: any set of columns that could be a PK; one is chosen as primary.</li>
+            <li><strong>Composite key</strong>: PK formed by several columns (e.g. order line).</li>
+            <li><strong>Surrogate key</strong>: artificial identifier (auto-increment/UUID) when there is no stable natural key.</li>
+          </ul>
+          <p class="nota">
+            Prefer surrogate keys for internal PKs and natural keys (email, ID number) as additional
+            unique constraints. FKs should be indexed to speed up JOINs and cascades.
+          </p>
+        </section>
+
+        <section id="formas-normales" aria-labelledby="formas-normales-titulo">
+          <h2 id="formas-normales-titulo">Normal forms</h2>
+          <p>
+            Normalisation applies progressive rules. Each normal form (NF) eliminates one kind of
+            problematic dependency.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Normal form</th>
+                <th scope="col">Rule</th>
+                <th scope="col">What it removes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1NF</td><td>Atomic values; no repeated groups; each row unique.</td><td>Lists inside a cell; duplicate rows.</td></tr>
+              <tr><td>2NF</td><td>1NF + no non-key attribute depends on part of a composite PK.</td><td>Partial dependencies.</td></tr>
+              <tr><td>3NF</td><td>2NF + no non-key attribute depends on another non-key attribute.</td><td>Transitive dependencies.</td></tr>
+              <tr><td>BCNF</td><td>Every functional dependency X→Y implies X is a candidate key.</td><td>Edge cases 3NF does not cover.</td></tr>
+            </tbody>
+          </table>
+          <h3>Example: from a single table to 3NF</h3>
+          <p>Original table (denormalised):</p>
+          <pre><code>order (order_id, customer_name, customer_email, product_name, price, quantity)</code></pre>
+          <p>Steps:</p>
+          <ol>
+            <li><strong>1NF</strong>: already atomic; split the order line if an order has several products.</li>
+            <li><strong>2NF</strong>: <code>customer_name</code> and <code>customer_email</code> depend only on <code>order_id</code> (not on the composite PK order_id+product). They move to <code>customer</code>.</li>
+            <li><strong>3NF</strong>: <code>price</code> depends on <code>product</code>, not on the order. It moves to <code>product</code>.</li>
+          </ol>
+          <p>Result:</p>
+          <pre><code>customer (customer_id, name, email)
+order (order_id, customer_id, date)
+product (product_id, name, price)
+order_product (order_id, product_id, quantity)</code></pre>
+        </section>
+
+        <section id="desnormalizar" aria-labelledby="desnormalizar-titulo">
+          <h2 id="desnormalizar-titulo">When to denormalise</h2>
+          <p>
+            Normalisation optimises writing and consistency. But read queries (reports, dashboards) may
+            require many JOINs. In those cases you denormalise deliberately: you duplicate a computed
+            field or create an aggregate table. Always with a process that keeps the copy in sync
+            (triggers, jobs, or recomputation).
+          </p>
+          <p class="nota">
+            Practical rule: normalise first; measure; denormalise only where the JOIN is the real
+            bottleneck and document the source of truth.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Start with a conceptual model (entities/relationships) and then move to tables.</li>
+            <li>Use clear, consistent names (singular or plural, but only one).</li>
+            <li>Define PK and FK from the start; add <code>NOT NULL</code> and <code>UNIQUE</code> constraints.</li>
+            <li>Normalise to 3NF by default; justify any deviation.</li>
+            <li>Version the schema (migrations) and document the changes.</li>
+            <li>Index the columns used in JOIN, WHERE and ORDER BY.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it is wrong</th>
+                <th scope="col">What to do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Storing lists in a column (CSV)</td>
+                <td>Violates 1NF; cannot be queried or indexed well.</td>
+                <td>Create a child table with one row per element.</td>
+              </tr>
+              <tr>
+                <td>Repeating customer data in every order</td>
+                <td>Update anomalies and inconsistencies.</td>
+                <td>Split into a <code>customer</code> table with an FK.</td>
+              </tr>
+              <tr>
+                <td>Not defining foreign keys</td>
+                <td>Orphaned data and broken integrity.</td>
+                <td>Declare FKs and decide ON DELETE/UPDATE.</td>
+              </tr>
+              <tr>
+                <td>Over-normalising (dozens of tables for everything)</td>
+                <td>Complex and slow queries; costly maintenance.</td>
+                <td>Balance with real use cases and denormalise if needed.</td>
+              </tr>
+              <tr>
+                <td>Using mutable data as PK</td>
+                <td>Changing the PK forces massive cascades.</td>
+                <td>Use a surrogate key (id) and a unique constraint on the natural data.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concept</th>
+                <th scope="col">Key point</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Entity</td><td>Object of the domain with its own identity.</td></tr>
+              <tr><td>Attribute</td><td>Property of an entity.</td></tr>
+              <tr><td>Relationship</td><td>Link between entities (1:1, 1:N, N:M).</td></tr>
+              <tr><td>PK</td><td>Uniquely identifies a row.</td></tr>
+              <tr><td>FK</td><td>References the PK of another table.</td></tr>
+              <tr><td>1NF</td><td>Atomic values, no repeated groups.</td></tr>
+              <tr><td>3NF</td><td>No transitive dependencies among non-keys.</td></tr>
+              <tr><td>BCNF</td><td>Every functional dependency starts from a candidate key.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="sql.html">SQL and relational databases</a>: how to query the model once created.</li>
+            <li><a href="apis.en.html">Client-server and APIs</a>: how to expose the data through endpoints.</li>
+            <li><a href="seguridad-web.en.html">Web application security</a>: SQL injection and validation.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="modelado-datos.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

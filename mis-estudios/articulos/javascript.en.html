@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JavaScript — Computer science studies</title>
+  <meta name="description" content="JavaScript: types, variables, functions, the DOM, events, asynchrony and best practices.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="javascript.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Web (HTML, CSS and JavaScript)</p>
+          <h1>JavaScript</h1>
+          <p class="entrada">
+            JavaScript is the programming language that adds behaviour to web pages: it reacts to events,
+            modifies the DOM and communicates with servers. Today it is also used outside the browser.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What it is and where it runs</a></li>
+            <li><a href="#variables-y-tipos">Variables and types</a></li>
+            <li><a href="#funciones">Functions and scope</a></li>
+            <li><a href="#dom">The DOM and events</a></li>
+            <li><a href="#asincronia">Asynchrony</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What it is and where it runs</h2>
+          <p>
+            JavaScript (JS) runs in an <em>engine</em> (V8 in Chrome, SpiderMonkey in Firefox). Inside the
+            browser it has access to APIs such as the DOM and events; outside, in Node.js, it accesses the
+            server's file system and network.
+          </p>
+          <p>It is included in a page with the <code>&lt;script&gt;</code> tag:</p>
+          <pre><code>&lt;!-- At the end of the body: the DOM already exists when it runs --&gt;
+  &lt;script src="js/app.js"&gt;&lt;/script&gt;</code></pre>
+          <p class="nota">
+            The <code>defer</code> attribute downloads the script in parallel and runs it once the HTML has
+            been parsed, without blocking the page from being painted.
+          </p>
+        </section>
+
+        <section id="variables-y-tipos" aria-labelledby="variables-y-tipos-titulo">
+          <h2 id="variables-y-tipos-titulo">Variables and types</h2>
+          <p>
+            Declare with <code>const</code> whenever you can and with <code>let</code> if the value will
+            change. Avoid <code>var</code> because of its confusing scope.
+          </p>
+          <pre><code>const name = 'Ana';          // string
+  let counter = 0;             // number
+  const active = true;         // boolean
+  const empty = null;          // intentional absence of a value
+  let undefinedValue;          // undefined
+
+  // Comparisons: use === (strict), not == (converts types)
+  1 == '1';   // true  (avoid it)
+  1 === '1';  // false (correct)
+
+  // Template literals with backticks
+  console.log(`Hello, ${name}: ${counter + 1} messages`);</code></pre>
+          <p>
+            The primitive types are <code>string</code>, <code>number</code>, <code>boolean</code>,
+            <code>null</code>, <code>undefined</code>, <code>bigint</code> and <code>symbol</code>.
+            Everything else (objects, arrays, functions) is by reference.
+          </p>
+        </section>
+
+        <section id="funciones" aria-labelledby="funciones-titulo">
+          <h2 id="funciones-titulo">Functions and scope</h2>
+          <pre><code>// Classic declaration
+  function sum(a, b) {
+    return a + b;
+  }
+
+  // Arrow function, shorter (and without its own this)
+  const double = (n) => n * 2;
+
+  // Array of objects + array methods
+  const tasks = [
+    { text: 'Study', done: false },
+    { text: 'Review', done: true }
+  ];
+
+  const pending = tasks
+    .filter((t) => !t.done)   // filter
+    .map((t) => t.text);       // transform
+
+  console.log(pending); // ['Study']</code></pre>
+          <p>
+            A function has access to the variables of its own scope and of the scopes that contain it
+            (<em>closure</em>). Each module or block creates a scope with <code>let</code> and
+            <code>const</code>.
+          </p>
+        </section>
+
+        <section id="dom" aria-labelledby="dom-titulo">
+          <h2 id="dom-titulo">The DOM and events</h2>
+          <p>
+            The DOM is the in-memory representation of the <a href="html.en.html">HTML</a>. JS can read
+            it, modify it and react to what the user does.
+          </p>
+          <pre><code>const input = document.querySelector('#buscador');
+  const list = document.querySelector('.lista-estudios');
+
+  // React to the user typing
+  input.addEventListener('input', (event) =&gt; {
+    const value = event.target.value.toLowerCase();
+
+    list.querySelectorAll('li').forEach((item) =&gt; {
+      const matches = item.textContent.toLowerCase().includes(value);
+      item.hidden = !matches; // change the DOM based on the text
+    });
+  });</code></pre>
+          <p>
+            Use <code>querySelector</code> and <code>addEventListener</code> instead of
+            <code>onclick</code> attributes in the HTML: it separates behaviour from content.
+          </p>
+        </section>
+
+        <section id="asincronia" aria-labelledby="asincronia-titulo">
+          <h2 id="asincronia-titulo">Asynchrony</h2>
+          <p>
+            JavaScript is single-threaded, but it does not block: slow operations (network, timers) are
+            delegated and resumed when they finish.
+          </p>
+          <pre><code>// async/await: written sequentially, executed asynchronously
+  async function getUsers() {
+    try {
+      const response = await fetch('/api/users');
+      if (!response.ok) {
+        throw new Error('HTTP error ' + response.status);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Could not load users:', error);
+    }
+  }</code></pre>
+          <p class="nota">
+            <code>await</code> can only be used inside an <code>async</code> function or at the top level
+            of a module. Always wrap it in <code>try/catch</code> to handle failures.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Use <code>const</code> by default and <code>let</code> only when the value will change.</li>
+            <li>Always compare with <code>===</code> and <code>!==</code>.</li>
+            <li>Avoid global variables: wrap the code in functions or modules.</li>
+            <li>Separate DOM logic from data logic.</li>
+            <li>Handle errors explicitly instead of silencing them.</li>
+            <li>Run the code after the DOM has loaded (<code>defer</code> or <code>DOMContentLoaded</code>).</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <ul>
+            <li>Using <code>==</code> and being surprised by type conversions.</li>
+            <li>Confusing <code>null</code> with <code>undefined</code> when checking values.</li>
+            <li>Modifying an array while iterating over it.</li>
+            <li>Thinking an <code>async</code> function blocks: it always returns a promise.</li>
+            <li>Forgetting <code>preventDefault()</code> on a form and reloading the page unintentionally.</li>
+            <li>Unexpected mutations from sharing references between objects.</li>
+          </ul>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Expression</th>
+                <th scope="col">What it is for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>const</code> / <code>let</code></td><td>Declare immutable and mutable variables.</td></tr>
+              <tr><td><code>typeof x</code></td><td>Find out the type of a value.</td></tr>
+              <tr><td><code>array.map(fn)</code></td><td>Create a new array by transforming each element.</td></tr>
+              <tr><td><code>array.filter(fn)</code></td><td>Keep the elements that meet the condition.</td></tr>
+              <tr><td><code>document.querySelector</code></td><td>Get the first element matching a CSS selector.</td></tr>
+              <tr><td><code>elemento.addEventListener</code></td><td>Run code when an event occurs.</td></tr>
+              <tr><td><code>await</code> / <code>async</code></td><td>Write asynchronous code sequentially.</td></tr>
+              <tr><td><code>JSON.parse</code> / <code>stringify</code></td><td>Convert between JSON text and objects.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="html.en.html">HTML</a>: the markup that JS reads and transforms.</li>
+            <li><a href="html.en.html#formularios">HTML · Forms</a>: validation and submission from JS.</li>
+            <li><a href="css.en.html#selectores">CSS · Selectors</a>: the same selectors used by <code>querySelector</code>.</li>
+            <li><a href="redes.en.html#http">Networks · HTTP</a>: what really happens behind <code>fetch</code>.</li>
+            <li><a href="seguridad-web.en.html#xss">Security · XSS</a>: be careful when injecting HTML from JS (<code>innerHTML</code>, <code>textContent</code>).</li>
+            <li><a href="paradigmas.en.html">Programming paradigms</a>: why JS allows imperative, OOP and functional styles.</li>
+            <li><a href="python.html">Python</a>: syntax and ecosystem comparison with JS.</li>
+            <li><a href="frameworks-frontend.html">Front-end frameworks</a>: what React, Vue and Svelte add on top of the language.</li>
+            <li><a href="regex.html">Regular expressions</a>: <code>RegExp</code> and the string methods that use it.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="javascript.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

@@ -35,7 +35,8 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
    tres. Si un juego cambia de clave de récord, debe migrar la clave antigua automáticamente
    (copiar el valor a la clave nueva y borrar la antigua al abrir el juego).
 4. **Manifiesto** (`data/juegos.json`): un solo juego por entrada; textos `es`/`en`
-   en el objeto; `status: "published"` solo si el juego está probado; `cover` con ruta relativa
+   en el objeto; `status: "published"` solo si el juego está probado; `updatedAt` con fecha ISO
+   `YYYY-MM-DD` del último cambio o `null` si no hay fecha registrada; `cover` con ruta relativa
    a `juegos/index.html` (por ejemplo `../assets/images/games/<slug>/cover.jpg`). Si falta o está
    vacía, la tarjeta usa placeholder. El filtro de la grilla solo publica entradas con
    `status: "published"` y slug válido.
