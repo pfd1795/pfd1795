@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Packaging and deployment — Computer science studies</title>
+  <meta name="description"
+    content="How to go from code to production: builds, environment variables, containers with Docker, continuous integration and delivery (CI/CD) and release strategies.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="empaquetado-despliegue.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Development tools</p>
+          <h1>Packaging and deployment</h1>
+          <p class="entrada">
+            That it works on your machine is only the beginning. Packaging turns code into a reproducible
+            artifact; deploying puts it at other people's disposal without the process depending on who
+            runs it.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li><strong>Packaging</strong> means producing an artifact (a directory, a compressed file or a
+              container image) that contains everything needed to run the application.</li>
+            <li>A <strong>build</strong> must be reproducible: the same inputs always produce the same
+              result, regardless of the machine it runs on.</li>
+            <li><strong>Environment variables</strong> separate configuration from code; secrets are never
+              written into the repository.</li>
+            <li><strong>Docker</strong> packages the application with its environment; an image is
+              immutable and a container is a running instance of that image.</li>
+            <li><strong>CI/CD</strong> automates verification and publication: every change goes through
+              the same tests and reaches production in a predictable way.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What packaging and deploying mean</a></li>
+            <li><a href="#build">The build process</a></li>
+            <li><a href="#variables-entorno">Environment variables and secrets</a></li>
+            <li><a href="#docker">Containers with Docker</a></li>
+            <li><a href="#ci-cd">Continuous integration and delivery (CI/CD)</a></li>
+            <li><a href="#publicacion">Release strategies</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What packaging and deploying mean</h2>
+          <p>
+            During development you run the code directly: you open a file, start a local server and see the
+            result instantly. In production nobody needs to have the same tools or the same versions
+            installed. That is why two moments are separated.
+          </p>
+          <p>
+            <strong>Packaging</strong> means transforming source code into an <em>artifact</em>: a
+            directory of static files, a compressed archive, an npm package or a container image. That
+            artifact is self-contained and can be moved from one environment to another.
+          </p>
+          <p>
+            <strong>Deploying</strong> means taking that artifact and making it run in the target
+            environment: uploading it to a server, creating the containers, applying the migrations and
+            leaving the application answering requests.
+          </p>
+          <p class="nota">
+            The important boundary between the two is <em>reproducibility</em>. If the deployment
+            recompiles the code with a different version of the dependencies, you are no longer publishing
+            what you tested: you tested one thing and published another.
+          </p>
+        </section>
+
+        <section id="build" aria-labelledby="build-titulo">
+          <h2 id="build-titulo">The build process</h2>
+          <p>
+            A build gathers the dependencies, transforms the code and generates the final files. In a
+            modern web application it can include several tasks:
+          </p>
+          <ul>
+            <li><strong>Install dependencies</strong> from a lock file (<code>package-lock.json</code>,
+              <code>pnpm-lock.yaml</code>, a pinned <code>requirements.txt</code>).</li>
+            <li><strong>Compile or transpile</strong>: TypeScript to JavaScript, JSX to function calls,
+              Sass to CSS.</li>
+            <li><strong>Bundle and minify</strong>: join modules and reduce size so the browser downloads
+              fewer files.</li>
+            <li><strong>Process resources</strong>: optimise images, copy fonts and resolve asset paths.</li>
+            <li><strong>Generate the version manifest</strong>, with the commit hash and the build date,
+              to know what is deployed.</li>
+          </ul>
+          <pre><code>npm ci                  # install exactly what the lockfile says
+npm run test            # fail the build if tests fail
+npm run build           # generate the dist/ directory
+ls -lh dist/            # inspect the resulting artifact</code></pre>
+          <p class="aviso">
+            Use <code>npm ci</code> (or your manager's equivalent) in automation: it respects the lock
+            file and fails if it changed. <code>npm install</code> may resolve different versions on each
+            run.
+          </p>
+        </section>
+
+        <section id="variables-entorno" aria-labelledby="variables-entorno-titulo">
+          <h2 id="variables-entorno-titulo">Environment variables and secrets</h2>
+          <p>
+            The same application needs different values depending on where it runs: the API URL, the port,
+            the database credentials or the debug mode. Those values are read from
+            <strong>environment variables</strong>, not written into the code.
+          </p>
+          <pre><code>DATABASE_URL=postgres://user:pass@localhost:5432/app
+API_BASE_URL=https://api.example.com
+NODE_ENV=production
+LOG_LEVEL=info</code></pre>
+          <p>
+            Locally they are usually loaded from a <code>.env</code> file that is never pushed to the
+            repository; in production the platform or the orchestrator injects them. The code only knows
+            the variable name:
+          </p>
+          <pre><code>const apiUrl = process.env.API_BASE_URL;
+if (!apiUrl) {
+  throw new Error('Missing API_BASE_URL');
+}</code></pre>
+          <p class="nota">
+            A <code>.env.example</code> file with the names and example values is versioned: it documents
+            what must be configured without exposing real credentials. Add <code>.env</code> to
+            <code>.gitignore</code> from the first commit.
+          </p>
+          <p>
+            There is an important distinction in frontend applications: everything included in a
+            JavaScript bundle is <strong>public</strong>, even if the variable is called
+            <code>SECRET_KEY</code>. Real secrets must live only on the server.
+          </p>
+        </section>
+
+        <section id="docker" aria-labelledby="docker-titulo">
+          <h2 id="docker-titulo">Containers with Docker</h2>
+          <p>
+            A container packages the application together with its runtime environment: base system,
+            system dependencies, libraries and code. That way the server only needs Docker instead of an
+            exact list of manually installed versions.
+          </p>
+          <p>
+            Two concepts worth not confusing: the <strong>image</strong> is an immutable template built
+            from a <code>Dockerfile</code>; the <strong>container</strong> is a running instance of that
+            image.
+          </p>
+          <pre><code>FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY dist/ ./dist/
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "dist/server.js"]</code></pre>
+          <p>
+            The order of the instructions matters because each one creates a <em>layer</em> that is cached.
+            Copying the dependency files first allows reusing the <code>npm ci</code> layer when only the
+            code changes.
+          </p>
+          <pre><code>docker build -t my-app:1.4.0 .
+docker run --rm -p 3000:3000 --env-file .env my-app:1.4.0</code></pre>
+          <p>
+            For applications with several services (API, database, cache) a
+            <code>docker-compose.yml</code> is used, which describes the network, the volumes and the
+            variables of each service in a single file.
+          </p>
+          <p class="aviso">
+            Tag images with a version or the commit hash, not just <code>latest</code>. Without a unique
+            tag you cannot know which version is running or go back to it.
+          </p>
+        </section>
+
+        <section id="ci-cd" aria-labelledby="ci-cd-titulo">
+          <h2 id="ci-cd-titulo">Continuous integration and delivery (CI/CD)</h2>
+          <p>
+            <strong>Continuous integration</strong> automatically runs the checks every time someone
+            opens a change: formatting, linting, tests and build. <strong>Continuous delivery</strong>
+            takes that already verified artifact to an environment, and <strong>continuous
+            deployment</strong> publishes it to production without manual intervention.
+          </p>
+          <pre><code>name: deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/</code></pre>
+          <p>
+            The key is that the same artifact is promoted across environments: the package that passed
+            the tests is the one that goes to production. Recompiling in each environment opens the door
+            to subtle differences.
+          </p>
+          <p class="nota">
+            Protecting the main branch and requiring the checks to pass before merging turns CI into a
+            safety net: the error is detected when the change is small, not days later.
+          </p>
+        </section>
+
+        <section id="publicacion" aria-labelledby="publicacion-titulo">
+          <h2 id="publicacion-titulo">Release strategies</h2>
+          <p>
+            The way to publish depends on the type of application. What matters is that the mechanism is
+            repeatable and that there is a way to go back.
+          </p>
+          <ul>
+            <li><strong>Static sites</strong>: the <code>dist/</code> directory is uploaded to a file
+              host (GitHub Pages, Netlify, Cloudflare Pages). There is no server to maintain; the
+              platform handles caching and HTTPS.</li>
+            <li><strong>Applications with a server</strong>: the image is published to a registry and the
+              container is updated on the server or in an orchestrator, usually behind a reverse proxy
+              like nginx.</li>
+            <li><strong>Platform as a service (PaaS)</strong>: the platform receives the code or the image
+              and manages the runtime environment, scaling and also the environment variables.</li>
+            <li><strong>Serverless functions</strong>: each function is deployed separately and the
+              provider runs it on demand. The artifact is usually a compressed file.</li>
+          </ul>
+          <p>
+            To reduce risk, <em>blue-green</em> deployments (two versions coexist and traffic is switched
+            from one to the other) or <em>canary</em> deployments (a small part of the traffic goes to
+            the new version) are used. Both strategies let you detect problems before they affect
+            everyone and make rollback easier.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Pin dependency versions with a lock file and use strict installation in automation.</li>
+            <li>Build once and promote the same artifact across environments.</li>
+            <li>Treat configuration as external data: environment variables, never constants in code.</li>
+            <li>Version the definition of the infrastructure and the deployment in the repository.</li>
+            <li>Make deployment idempotent: running it twice should leave the same state.</li>
+            <li>Log the version, commit hash and time of each release.</li>
+            <li>Check the application's health after publishing with a <code>/health</code> route.</li>
+            <li>Always prepare the rollback before pressing the publish button.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <ul>
+            <li>Trusting <code>npm install</code> instead of the lock file: the build stops being
+              reproducible.</li>
+            <li>Pushing a <code>.env</code> file with real credentials to the repository.</li>
+            <li>Including secrets in the frontend bundle, where anyone can read them.</li>
+            <li>Recompiling in production and publishing code different from what passed the tests.</li>
+            <li>Using <code>latest</code> images: a rebuild under the same name changes what runs.</li>
+            <li>Publishing without a health check or a rollback plan.</li>
+            <li>Mixing database migrations with application startup without controlling the order.</li>
+          </ul>
+          <p class="aviso">
+            If something works locally but not in production, first compare three things: dependency
+            versions, environment variables and runtime version. The difference is almost always there.
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concept</th>
+                <th scope="col">What it is for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Build</td>
+                <td>Transform source code into a reproducible artifact.</td>
+              </tr>
+              <tr>
+                <td>Lockfile</td>
+                <td>Pin the exact versions of dependencies.</td>
+              </tr>
+              <tr>
+                <td>Environment variable</td>
+                <td>Separate configuration from code.</td>
+              </tr>
+              <tr>
+                <td>Image</td>
+                <td>Immutable template with application and environment.</td>
+              </tr>
+              <tr>
+                <td>Container</td>
+                <td>Running instance of an image.</td>
+              </tr>
+              <tr>
+                <td>CI</td>
+                <td>Automatically verify every change.</td>
+              </tr>
+              <tr>
+                <td>CD</td>
+                <td>Automatically publish a verified artifact.</td>
+              </tr>
+              <tr>
+                <td>Blue-green</td>
+                <td>Two versions coexist to allow an immediate rollback.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="docker.html">Docker and containers</a>: images, layers and isolated execution.</li>
+            <li><a href="ci-cd.html">GitHub Actions and CI/CD</a>: automate checks and deployment.</li>
+            <li><a href="git.en.html">Git</a>: the history that identifies which version is published.</li>
+            <li><a href="terminal.en.html">Terminal</a>: commands to build and upload artifacts.</li>
+            <li><a href="sistemas-operativos.en.html">Operating systems</a>: processes, permissions and
+              runtime environments.</li>
+            <li><a href="http.en.html">HTTP and the web browser</a>: caching, HTTPS and headers in
+              production.</li>
+            <li><a href="editores-ides-depuracion.en.html">Editors, IDEs and debugging</a>: reproduce and
+              understand failures before publishing.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="empaquetado-despliegue.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

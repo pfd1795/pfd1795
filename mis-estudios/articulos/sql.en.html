@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL and relational databases — Computer science studies</title>
+  <meta name="description"
+    content="SQL and relational databases: tables, keys, queries, JOIN, aggregations, indexes and transactions.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="sql.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Databases</p>
+          <h1>SQL and relational databases</h1>
+          <p class="entrada">
+            A relational database stores data in <strong>tables</strong> that relate to each other
+            through keys. SQL is the standard language for querying and modifying that data, and it remains
+            one of the most valuable things to learn: SQLite, PostgreSQL and MySQL speak almost the same
+            dialect.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>Everything is <strong>tables</strong> (rows × columns); relationships are expressed with primary (PK) and foreign (FK) keys.</li>
+            <li><code>SELECT – FROM – WHERE – GROUP BY – HAVING – ORDER BY</code>: that is the skeleton of 90% of queries.</li>
+            <li><strong>JOIN</strong> combines tables by their keys; <em>INNER</em> keeps only matching rows, <em>LEFT</em> keeps everything on the left.</li>
+            <li><strong>Indexes</strong> speed up searches at the cost of writes and space: create them for what you query most, not "just in case".</li>
+            <li><strong>Transactions</strong> group operations into a block: either all succeed (commit) or none do (rollback).</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#tablas">Tables, keys and relationships</a></li>
+            <li><a href="#consultas">Basic queries: SELECT and WHERE</a></li>
+            <li><a href="#joins">JOIN: combining tables</a></li>
+            <li><a href="#agregacion">Aggregations: GROUP BY</a></li>
+            <li><a href="#modificar">INSERT, UPDATE, DELETE</a></li>
+            <li><a href="#indices">Indexes</a></li>
+            <li><a href="#transacciones">Transactions and ACID</a></li>
+            <li><a href="#comandos">Useful commands</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="tablas" aria-labelledby="tablas-titulo">
+          <h2 id="tablas-titulo">Tables, keys and relationships</h2>
+          <p>
+            Each table models a kind of entity. Columns have a <strong>type</strong>
+            (integer, text, date…) and each row is a unique record identified by its
+            <strong>primary key</strong>.
+          </p>
+          <pre><code>CREATE TABLE authors (
+    id          INTEGER PRIMARY KEY,
+    name        TEXT NOT NULL
+  );
+
+  CREATE TABLE articles (
+    id           INTEGER PRIMARY KEY,
+    title        TEXT NOT NULL,
+    author_id    INTEGER REFERENCES authors(id),  -- foreign key: FK
+    published    DATE,
+    views        INTEGER DEFAULT 0
+  );</code></pre>
+          <p>
+            The "one author writes many articles" (1‑N) relationship is reflected by carrying
+            <code>author_id</code> in the child table. For "many to many" (N‑M) a join table is needed:
+          </p>
+          <pre><code>CREATE TABLE article_tags (
+    article_id  INTEGER REFERENCES articles(id),
+    tag_id      INTEGER REFERENCES tags(id),
+    PRIMARY KEY (article_id, tag_id)
+  );</code></pre>
+          <figure class="diagrama" aria-labelledby="fig-relacion-titulo">
+            <figcaption id="fig-relacion-titulo">Two tables related by a foreign key.</figcaption>
+            <svg viewBox="0 0 640 220" role="img" aria-labelledby="fig-relacion-titulo">
+              <rect class="caja" x="40" y="40" width="200" height="130" rx="8"></rect>
+              <text class="texto-acentuado" x="140" y="64" text-anchor="middle">authors</text>
+              <line class="flecha" x1="60" y1="78" x2="220" y2="78"></line>
+              <text class="texto-secundario" x="60" y="98">id (PK)</text>
+              <text class="texto-secundario" x="60" y="120">name</text>
+              <rect class="caja" x="400" y="40" width="200" height="150" rx="8"></rect>
+              <text class="texto-acentuado" x="500" y="64" text-anchor="middle">articles</text>
+              <line class="flecha" x1="420" y1="78" x2="580" y2="78"></line>
+              <text class="texto-secundario" x="420" y="98">id (PK)</text>
+              <text class="texto-secundario" x="420" y="120">title</text>
+              <text class="texto" x="420" y="142">author_id (FK) →</text>
+              <text class="texto-secundario" x="420" y="164">views</text>
+              <path class="flecha-acentuada" d="M245 105 L400 118"></path>
+              <polygon class="flecha-acentuada" points="400,118 388,113 390,125"></polygon>
+              <text class="texto-secundario" x="322" y="95" text-anchor="middle">1 ── N</text>
+            </svg>
+          </figure>
+        </section>
+
+        <section id="consultas" aria-labelledby="consultas-titulo">
+          <h2 id="consultas-titulo">Basic queries: SELECT and WHERE</h2>
+          <pre><code>SELECT title, views
+    FROM articles
+    WHERE views > 100 AND published IS NOT NULL
+    ORDER BY views DESC
+    LIMIT 10 OFFSET 0;</code></pre>
+          <ul>
+            <li><code>WHERE</code> filters rows; do not confuse it with <code>HAVING</code>, which filters after grouping.</li>
+            <li><code>NULL</code> is never equal to anything: for it, use <code>IS NULL</code> / <code>IS NOT NULL</code>.</li>
+            <li><code>LIKE 'a%'</code> searches by prefix (it can use an index); a leading <code>%</code> (<code>LIKE '%a'</code>) makes the full scan slow because it disables the index.</li>
+            <li>The standard order of clauses is not optional: <code>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</code>.</li>
+          </ul>
+        </section>
+
+        <section id="joins" aria-labelledby="joins-titulo">
+          <h2 id="joins-titulo">JOIN: combining tables</h2>
+          <pre><code>SELECT a.title, au.name AS author
+    FROM articles a
+    INNER JOIN authors au ON au.id = a.author_id
+    WHERE a.views > 100;</code></pre>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Type</th>
+                <th scope="col">What it returns</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>INNER JOIN</code></td><td>Only rows that match in both tables.</td></tr>
+              <tr><td><code>LEFT JOIN</code></td><td>All rows on the left; if there is no match, right-hand columns = <code>NULL</code>.</td></tr>
+              <tr><td><code>RIGHT JOIN</code></td><td>The mirror of LEFT (less common; reorder and usually use LEFT).</td></tr>
+              <tr><td><code>FULL OUTER JOIN</code></td><td>Everything from both sides, with <code>NULL</code> where the match is missing.</td></tr>
+            </tbody>
+          </table>
+          <p>Typical use of LEFT JOIN: "all authors, even those who still have no articles":</p>
+          <pre><code>SELECT au.name, COUNT(a.id) AS total
+    FROM authors au
+    LEFT JOIN articles a ON a.author_id = au.id
+    GROUP BY au.id;</code></pre>
+          <p class="nota">
+            The <em>triangular query</em>: an oversized JOIN with WHERE on columns without an index.
+            If something "hangs", it is almost always a JOIN without an index or a <code>SELECT *</code> over
+            millions of rows: measure with <code>EXPLAIN</code>.
+          </p>
+        </section>
+
+        <section id="agregacion" aria-labelledby="agregacion-titulo">
+          <h2 id="agregacion-titulo">Aggregations: GROUP BY</h2>
+          <pre><code>SELECT au.name,
+           COUNT(*)            AS articles,
+           AVG(a.views)        AS average_views,
+           MAX(a.published)    AS latest
+    FROM articles a
+    INNER JOIN authors au ON au.id = a.author_id
+    GROUP BY au.id
+    HAVING COUNT(*) >= 3
+    ORDER BY average_views DESC;</code></pre>
+          <ul>
+            <li>Common functions: <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code>.</li>
+            <li>In strict SQL, every column in the <code>SELECT</code> outside a function must appear in <code>GROUP BY</code> — or be the grouping key.</li>
+            <li><code>HAVING</code> filters groups already computed; <code>WHERE</code> filters rows before grouping (and is cheaper).</li>
+          </ul>
+        </section>
+
+        <section id="modificar" aria-labelledby="modificar-titulo">
+          <h2 id="modificar-titulo">INSERT, UPDATE, DELETE</h2>
+          <pre><code>INSERT INTO articles (title, author_id)
+    VALUES ('Basic SQL', 7)
+    RETURNING id;                 -- PostgreSQL/SQLite: returns the new row
+
+  UPDATE articles SET views = views + 1 WHERE id = 42;
+
+  DELETE FROM articles WHERE id = 42 AND author_id = 7;</code></pre>
+          <p class="aviso">
+            An <code>UPDATE</code> or <code>DELETE</code> without <code>WHERE</code> affects
+            <strong>every row in the table</strong>. Before running it on production, run the
+            <code>SELECT</code> version with the same condition:
+          </p>
+          <pre><code>-- Check which row(s) you would touch…
+  SELECT id, title FROM articles WHERE id = 42 AND author_id = 7;
+  -- …and only then replace SELECT with UPDATE / DELETE.</code></pre>
+          <p class="nota">
+            INSERT/UPDATE/DELETE should always use <strong>prepared statements</strong> from your
+            code (parameters, never concatenation). The reason is in
+            <a href="seguridad-web.en.html#sql">Security · SQL injection</a>.
+          </p>
+        </section>
+
+        <section id="indices" aria-labelledby="indices-titulo">
+          <h2 id="indices-titulo">Indexes</h2>
+          <p>
+            An index is an ordered structure (a B‑tree) that lets you find rows without scanning the
+            whole table: it is like the index of a book:
+          </p>
+          <pre><code>CREATE INDEX articles_author_idx ON articles (author_id);
+  CREATE INDEX articles_views_idx ON articles (views DESC);
+
+  UNIQUE  INDEX articles_title_uq  ON articles (title);  -- also guarantees uniqueness</code></pre>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Pros</th>
+                <th scope="col">Cons</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Searches, JOINs and ORDER BY on those columns become much faster</td><td>Every INSERT/UPDATE/DELETE must update it</td></tr>
+              <tr><td>FK and UNIQUE indexes are created by default</td><td>They take disk space</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Index for JOINs on FKs, for frequent <code>ORDER BY</code> or <code>GROUP BY</code>,
+            and for columns with few distinct values (status, type). Do not index columns that are
+            almost always queried in full or with <code>LIKE '%…%'</code>.
+          </p>
+          <pre><code>-- PostgreSQL: the query execution plan
+  EXPLAIN ANALYZE
+    SELECT * FROM articles WHERE author_id = 7;
+
+  -- See existing indexes
+  \di articles        -- psql
+  .indexes articles   -- sqlite3</code></pre>
+        </section>
+
+        <section id="transacciones" aria-labelledby="transacciones-titulo">
+          <h2 id="transacciones-titulo">Transactions and ACID</h2>
+          <p>
+            A transaction groups operations so they are indivisible. If something fails halfway through,
+            everything before it is undone (rollback):
+          </p>
+          <pre><code>BEGIN;
+    UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+    UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+    COMMIT;        -- only if both steps succeeded
+    -- on exception: ROLLBACK;</code></pre>
+          <p>The four guarantees that define conventional database systems (<em>ACID</em>):</p>
+          <ul>
+            <li><strong>Atomicity</strong> — all or nothing.</li>
+            <li><strong>Consistency</strong> — the rules (FK, types, UNIQUE constraints) are never violated.</li>
+            <li><strong>Isolation</strong> — two concurrent transactions do not see half-finished states.</li>
+            <li><strong>Durability</strong> — a commit survives a restart or a power cut.</li>
+          </ul>
+          <p class="nota">
+            Isolation has levels (READ UNCOMMITTED → SERIALIZABLE). The default
+            <code>REPEATABLE READ</code> prevents two reads of the same transaction from returning
+            different results; set it with <code>SET TRANSACTION ISOLATION LEVEL …</code>. Ask whether
+            a different level is needed (the default is almost always fine).
+          </p>
+        </section>
+
+        <section id="comandos" aria-labelledby="comandos-titulo">
+          <h2 id="comandos-titulo">Useful commands</h2>
+          <pre><code># Lightweight client model for quick tests (SQLite ships without a server)
+  sqlite3 test.db
+    .tables             -- list tables
+    .schema articles    -- show the CREATE TABLE
+    .headers on         -- show column names
+    .mode column        -- readable column output
+
+  # PostgreSQL from psql
+  psql -U user -d db
+    \dt                 -- tables
+    \d  articles        -- structure + indexes
+    \di articles        -- indexes only
+
+  # Backup / restore (PostgreSQL)
+  pg_dump db > backup.sql
+  psql db < backup.sql</code></pre>
+          <p class="nota">
+            Client commands vary between engines (\di only in psql, .indexes only in SQLite); the only
+            invariant is standard SQL: SELECT, INSERT, UPDATE, DELETE, CREATE TABLE.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Let columns be named consistently across the project (pick <code>snake_case</code> and do not change it).</li>
+            <li>No <code>SELECT *</code> in production: request the columns you will use; it also helps the query resolve from an index (covering).</li>
+            <li>Never interpolate user values into a query: always use prepared statements.</li>
+            <li>Enforce constraints: FK, NOT NULL, UNIQUE… so the engine defends integrity, not your code.</li>
+            <li>Measure before indexing: look at plans with <code>EXPLAIN</code> and create only the evidenced ones.</li>
+            <li>Versioned migrations (`.sql` files in the repo) and never modify tables by hand in production.</li>
+            <li>Automated scheduled backups: the basis of a programmer's peace of mind.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="apis.en.html">Client-server and APIs</a>: which queries the API fires and how it is exposed.</li>
+            <li><a href="seguridad-web.en.html#sql">Security · SQL injection</a>: prepared statements and threats.</li>
+            <li><a href="terminal.en.html">Terminal and command line</a>: the environment where sqlite3 and psql live.</li>
+            <li><a href="html.en.html">HTML</a>: the forms from which data reaches the database.</li>
+            <li><a href="modelado-datos.en.html">Data modelling and normalisation</a>: how to design the schema before writing SQL.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="sql.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>
