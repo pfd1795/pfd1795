@@ -53,9 +53,9 @@ Los agentes **no deben** ejecutar `git log`, `git show`, `git diff` ni ningún c
 
 ## Arranque de sesión y menú de trabajo
 
-### Arranque con `@pfd1795/AGENTS.md`
+### Arranque con `@AGENTS.md`
 
-Si el usuario envía como **único contenido escrito** la mención `@pfd1795/AGENTS.md` (con o sin espacios alrededor, y aunque el cliente expanda esa mención adjuntando el archivo), **llamar a la herramienta `question`** con un único ítem:
+Si el usuario envía como **único contenido escrito** la mención `@AGENTS.md` (con o sin espacios alrededor, y aunque el cliente expanda esa mención adjuntando el archivo), **llamar a la herramienta `question`** con un único ítem:
 
 - `question`: `Proyecto entendido. ¿En qué quieres trabajar?`
 - `header`: `Menú de trabajo`
@@ -70,7 +70,7 @@ No incluir una opción de texto libre adicional: la herramienta `question` la ag
 
 No imprimir la lista como texto plano, no leer archivos, no ejecutar comandos y no usar herramientas distintas de `question`: este caso **no** cuenta como "empezar a trabajar" y por lo tanto **no activa** la checklist "Antes de empezar a trabajar". El texto del archivo adjuntado automáticamente por la mención no se considera una instrucción adicional. Si el mensaje incluye cualquier otra cosa además de la mención, proceder normalmente.
 
-No existe disparador por `listo` ni por variantes: `listo` significa "terminé" y **no** abre el menú. El menú solo se muestra con `@pfd1795/AGENTS.md`.
+No existe disparador por `listo` ni por variantes: `listo` significa "terminé" y **no** abre el menú. El menú solo se muestra con `@AGENTS.md`.
 
 Al recibir la selección, ejecutar el guion correspondiente sin pedir instrucciones adicionales. Excepciones: la opción 4 solo lista y espera elección; la opción 5 presenta el plan y espera confirmación antes de ejecutar. Si el usuario escribe su propia tarea (campo de texto libre), aplicar el guion 6.
 
