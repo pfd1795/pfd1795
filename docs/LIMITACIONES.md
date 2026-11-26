@@ -1,7 +1,6 @@
 # LIMITACIONES.md — Limitaciones y problemas conocidos
 
 > 📌 **Índice de las limitaciones que el sistema tiene hoy**, con evidencia verificada.
-> Migrado desde la sección "Limitaciones y problemas conocidos" de `AGENTS.md` para mantenerla fuera del índice de invariantes.
 > Si al trabajar aparece una nueva limitación, se agrega aquí con evidencia `archivo:línea`.
 
 ## Arquitectura y ejecución
@@ -26,7 +25,7 @@
 
 ## Internacionalización
 
-- La interfaz tiene traducciones ES/EN, pero el contenido de la enciclopedia (`mis-estudios/`) y el de los juegos (`juegos/<slug>/`) está solo en español. Las tarjetas de la grilla de juegos sí se traducen desde el manifiesto.
+- La interfaz tiene traducciones ES/EN, pero el contenido de la enciclopedia (`mis-estudios/`) está en español por defecto, con versiones opcionales en inglés (`<slug>.en.html`), y el de los juegos (`juegos/<slug>/`) está solo en español. Las tarjetas de la grilla de juegos sí se traducen desde el manifiesto.
 - `applyTranslations()` busca claves en `page`, `introSection`, `home` y `header`; una clave nueva debe colocarse en una de esas secciones. Las claves deben ser únicas entre esas 4 secciones: `fnChangeLanguage.js` arma un índice por idioma y avisa por consola si se duplican. La clave `name` no se traduce: `applyTranslations()` la saltea a propósito porque es un nombre propio.
 - Las cadenas que se renderizan desde JavaScript se traducen al generarse (por ejemplo, `GridProjects()` toma `viewProject` de `translations.introSection[lang]`, y `GridGames()` toma las etiquetas de `translations.page[lang]`), no vía `data-lang`.
 - La interfaz del buscador de las tres grillas también se traduce: `aria-label` y placeholder se marcan con `data-i18n-aria-label` / `data-i18n-placeholder` (claves `search<Seccion>Aria` y `search<Seccion>Placeholder` en `translations.page[lang]`), y `#sin-resultados` usa `data-lang="search<Seccion>Empty"`. `applyTranslations()` escribe el placeholder localizado en `data-buscador-placeholder` y emite `site:languagechange`; `js/buscador.js` (script clásico) lo escucha, vuelve a leer el atributo y recalcula los contadores `{visibles}` / `{total}` sin importar módulos ES.

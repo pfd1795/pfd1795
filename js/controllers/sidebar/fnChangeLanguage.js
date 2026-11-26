@@ -80,14 +80,17 @@ export function applyTranslations() {
   });
 }
 
-function changeLanguage(lang, { rerender = true } = {}) {
+function changeLanguage(lang, { rerender = true, persist = true } = {}) {
   if (!VALID_LANGUAGES.includes(lang)) {
     console.warn("Invalid language:", lang);
     return;
   }
 
   setCurrentLanguage(lang);
-  setLanguage(lang);
+
+  if (persist) {
+    setLanguage(lang);
+  }
 
   document.documentElement.lang = lang;
 
@@ -123,14 +126,17 @@ export default function sectionLanguage() {
   });
 
   window.addEventListener("storage", (event) => {
-    if (event.key !== STORAGE_KEY_LANGUAGE) return;
-    if (!VALID_LANGUAGES.includes(event.newValue)) return;
-    if (event.newValue === currentLanguage) return;
+    if (event.key !== STORAGE_KEY_LANGUAGE && event.key !== null) return;
 
-    changeLanguage(event.newValue);
+    const nextLang = event.key === null ? getLanguage() : event.newValue;
+
+    if (!VALID_LANGUAGES.includes(nextLang)) return;
+    if (nextLang === currentLanguage) return;
+
+    changeLanguage(nextLang, { persist: false });
 
     document.querySelectorAll(".segment[data-lang-value]").forEach((option) => {
-      option.classList.toggle("active", option.dataset.langValue === event.newValue);
+      option.classList.toggle("active", option.dataset.langValue === nextLang);
     });
   });
 

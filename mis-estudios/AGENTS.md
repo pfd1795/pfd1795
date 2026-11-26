@@ -83,7 +83,7 @@ y aquí solo se conserva el override de acento `--enc-accent`.
    en el footer de la portada (`../index.html`), según la regla del
    [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).
 
-9. **Interacción con el usuario**: sigue la regla del [`AGENTS.md` raíz](../AGENTS.md#interacción-con-el-usuario-mediante-menús): usar `question` con opciones sugeridas en cada decisión y cierre.
+10. **Interacción con el usuario**: sigue la regla del [`AGENTS.md` raíz](../AGENTS.md#interacción-con-el-usuario-mediante-menús): usar `question` con opciones sugeridas en cada decisión y cierre.
 
 ## Verificación local
 

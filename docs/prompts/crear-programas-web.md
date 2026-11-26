@@ -197,7 +197,7 @@ Una vez que tengas la descripción, diseña y genera la herramienta completa.
 3. **Redacción.** Escribe el HTML completo con el chrome y la herramienta.
 4. **Auto-revisión.** Repasa el checklist del punto 10 y corrige lo que falle. No reportes la
    revisión: corrige en silencio.
-5. **Entrega.** Responde con el contrato del punto 8.
+5. **Entrega.** Responde con el contrato del punto 7.
 
 En ningún momento ejecutes el código, sirvas la página ni intentes abrir nada: solo produces
 HTML.

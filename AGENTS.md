@@ -495,10 +495,10 @@ canvas"). Las tarjetas muestran una sola portada por juego desde el campo `cover
 - **Sistema de diseño**: tokens definidos en la sección `:root` de `stylesheets/base.css` — neutros (`--n100…--n900`, `--dn100…--dn900`), superficies (`--color-background`, `--color-surface`, `--color-border`), texto (`--color-text`, `--color-text-secondary`), acentos en trío (`--<color>-claro/-normal/-oscuro`), tipografía (`--text-*`, `--font-*`), radios, sombras (`--shadow-sm…--shadow-xl`) y bordes (`--border-thin/-normal/-thick`).
 - **Hojas CSS**: `stylesheets/base.css` contiene todo lo compartido (reset, variables, estilos globales, `.main-content`, modal, componentes, navbar y sidebar); `stylesheets/portada.css` añade lo específico de la portada, y cada sección es dueña de su hoja: `juegos/juegos.css`, `mis-estudios/mis-estudios.css` y `programas/programas.css`. Cada HTML carga siempre `base.css` primero y después la hoja de su página, sin `@import`; un cambio compartido se hace una sola vez en `base.css`.
 - **Alias de compatibilidad**: el único alias que queda definido y con uso real es
-  `--color-white` (→ `--n100`). Tras la última auditoría se purgaron los ~44 tokens sin
-  referencias (toda la familia `--color-blue/-dark/…` y los semánticos
+  `--color-white` (→ `--n100`). Los tokens enumerados en este apartado no tienen referencias
+  (toda la familia `--color-blue/-dark/…` y los semánticos
   `--color-success/warning/error/info`, `--color-background-neutral`, `--color-border-light`,
-  `--color-separator`); reflotar un alias solo al aparecer su primer uso real.
+  `--color-separator`); no usar en código nuevo y reflotar un alias solo al aparecer su primer uso real.
 - **Escalas reservadas**: `:root` conserva escalas completas (`--text-*`, `--space-*`,
   `--size-*`, `--n*`/`--dn*` y `--<color>-claro`) de las que hoy solo se consumen algunos
   valores. Se mantienen como escala deliberada, igual que `--breakpoint-*` (solo referencia);

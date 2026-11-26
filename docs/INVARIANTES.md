@@ -27,7 +27,7 @@
 ## 4. Claves de récord `<slug>_best_v1` y migración
 
 - **Decisión:** cada juego guarda su récord bajo `<slug>_best_v1` en `localStorage`. Los juegos que usaron otra clave migran automáticamente (copian el valor a la clave nueva y borran la antigua al abrir).
-- **Evidencia:** `AGENTS.md` § "Inventario de claves de localStorage" (línea ~369-391); `juegos/AGENTS.md:33-36`.
+- **Evidencia:** `AGENTS.md` § "Inventario de claves de localStorage" (líneas 374-396); `juegos/AGENTS.md:33-36`.
 - **Señal anti-regresión:** no renombrar slugs publicados sin actualizar carpeta, manifiesto y clave; no borrar claves antiguas sin migración.
 
 ## 5. Juegos no se adaptan al chrome del portafolio
@@ -45,5 +45,5 @@
 ## 7. Claves de `localStorage` del sitio
 
 - **Decisión:** las claves de tema/idioma/fondo/dirección/velocidad/escala son las del inventario de `AGENTS.md` § "Inventario de claves de localStorage". Una clave nueva debe reflejarse ahí, en `utils/storage.js` y en `theme-init.js`.
-- **Evidencia:** `AGENTS.md` § "Inventario de claves de localStorage" (línea ~369-391).
+- **Evidencia:** `AGENTS.md` § "Inventario de claves de localStorage" (líneas 374-396).
 - **Señal anti-regresión:** no añadir claves propias sin actualizar los tres sitios; los juegos usan el patrón `<slug>_best_v1` sin colisionar.

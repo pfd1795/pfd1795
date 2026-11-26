@@ -84,7 +84,7 @@ enciclopedia) y excluye el material interno (CV en `assets/files/`, documentaci�
 - La interfaz está traducida a español e inglés; los juegos y el contenido de la enciclopedia están en español, con versiones en inglés opcionales artículo por artículo (`<slug>.en.html`). Las cadenas de UI y las grillas de juegos y programas se traducen ES/EN; los títulos y descripciones de artículos y herramientas no se traducen.
 - Varias herramientas de la sección Programas están marcadas como "Próximamente".
 
-Los detalles técnicos y la deuda pendiente se documentan en [`docs/LIMITACIONES.md`](./docs/LIMITACIONES.md).
+Las limitaciones técnicas verificadas están en [`docs/LIMITACIONES.md`](./docs/LIMITACIONES.md). Las tareas abiertas se siguen en [`docs/informes/trabajo-pendiente.md`](./docs/informes/trabajo-pendiente.md).
 
 ## Contacto
 
