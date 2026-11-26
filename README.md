@@ -17,7 +17,7 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 - Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva. La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
 - Accesibilidad: salto al contenido, tarjetas de estudios operables por teclado, foco gestionado en el menú lateral y avisos anunciados a lectores de pantalla.
-- Aplicación instalable (PWA): el sitio puede instalarse como app y funciona offline gracias a un Service Worker que precachea todo el contenido.
+- Aplicación instalable (PWA): el sitio puede instalarse como app y funciona offline gracias a un Service Worker que precachea el sitio publicado, excepto 28 versiones en inglés de artículos que no figuran en `PRECACHE_URLS`.
 
 ## Ejecución local
 
@@ -81,7 +81,7 @@ enciclopedia) y excluye el material interno (CV en `assets/files/`, documentaci�
 - Sin tests automatizados, linting ni build; la única automatización es el despliegue.
 - Requiere un servidor HTTP local para funcionar.
 - Pensado para navegadores modernos (módulos ES, CSS nesting, `<dialog>`).
-- La interfaz está traducida a español e inglés; el contenido de la enciclopedia y de los juegos solo está en español, mientras que las tarjetas de la grilla se traducen ES/EN.
+- La interfaz está traducida a español e inglés; los juegos y el contenido de la enciclopedia están en español, con versiones en inglés opcionales artículo por artículo (`<slug>.en.html`). Las cadenas de UI y las grillas de juegos y programas se traducen ES/EN; los títulos y descripciones de artículos y herramientas no se traducen.
 - Varias herramientas de la sección Programas están marcadas como "Próximamente".
 
 Los detalles técnicos y la deuda pendiente se documentan en [`docs/LIMITACIONES.md`](./docs/LIMITACIONES.md).

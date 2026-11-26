@@ -232,9 +232,9 @@ Definida como variables CSS en `:root` de cada juego:
 
 El escenario comparte un mismo criterio de tamaño: un **marco máximo de 900×900 px CSS**, que
 respeta la proporción lógica de cada juego y renderiza el buffer a la resolución visible. La
-referencia es [`_template/index.html`](./_template/index.html); los juegos de marco pequeño
-(actualmente snake, space-invaders, neon-racer, plataformas, dungeon-crawler y tower-defense)
-lo siguen.
+referencia es [`_template/index.html`](./_template/index.html); lo siguen card-match,
+dodge-arena, dungeon-crawler, neon-maze, neon-racer, neon-rally, plataformas, snake,
+space-invaders, tetris y tower-defense.
 
 - Variables en `:root` de cada juego:
   - `--game-max: 900px` — tope de ancho **y** de alto del marco.

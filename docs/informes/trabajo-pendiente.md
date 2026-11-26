@@ -2,3 +2,6 @@
 
 - Traducción al inglés de la enciclopedia: 7 artículos restantes (`ci-cd`, `docker`, `linux-servidores`, `typescript`, `accesibilidad`, `nosql`, `regex`). Convención: `mis-estudios/articulos/<slug>.en.html`, paralelo al `<slug>.html` en español; enlace de cambio de idioma en `.volver`; manifiesto sin duplicar slug. Realizados: `sistemas-numericos`, `logica-booleana`, `terminal`, `html`, `css`, `redes`, `javascript`, `tls`, `modelado-datos`, `criptografia`, `inteligencia-artificial`, `patrones`, `paradigmas`, `seguridad-web`, `apis`, `git`, `sistemas-operativos`, `aprendizaje-automatico`, `redes-neuronales`, `http`, `python`, `c-memoria`, `frameworks-frontend`, `frameworks-backend`, `solid`, `editores-ides-depuracion`, `empaquetado-despliegue`, `sql`, `testing`.
 - Precachear en `service-worker.js` las otras 28 versiones en inglés de los artículos: solo `testing.en.html` figura en `PRECACHE_URLS`, así que el resto de las páginas `.en.html` no están disponibles offline.
+- `docs/prompts/crear-estudios.md`: añadir al roster `ci-cd`, `docker`, `linux-servidores`, `regex` y `testing`.
+- `docs/prompts/crear-estudios.md`: alinear la regla de traducción con la convención `<slug>.en.html` de `mis-estudios/AGENTS.md`.
+- `docs/prompts/fichas-estudios.md`: corregir el número de temas pendientes o remitir al tracker sin fijar una cifra.

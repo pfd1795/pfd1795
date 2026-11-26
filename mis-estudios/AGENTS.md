@@ -32,9 +32,10 @@ y aquí solo se conserva el override de acento `--enc-accent`.
 
 ## Reglas para agentes
 
-1. **Contenido solo en español**: los artículos no usan el sistema de traducciones
+1. **Contenido en español por defecto**: los artículos no usan el sistema de traducciones
    (`translations.json`); la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN,
-   incluido el buscador (`aria-label`, placeholder y `#sin-resultados`).
+   incluido el buscador (`aria-label`, placeholder y `#sin-resultados`). La versión opcional
+   en inglés (`<slug>.en.html`) se rige por la regla 8.
    La única etiqueta de UI generada en la grilla, `comingSoon` (entradas `wip`), se toma de
    `translations.page[lang]`; los títulos, descripciones, categorías y palabras clave siguen
    siendo solo español.

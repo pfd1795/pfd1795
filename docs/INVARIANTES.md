@@ -21,7 +21,7 @@
 ## 3. CV PDF sin enlazar por decisión del desarrollador
 
 - **Decisión:** `assets/files/PabloDiazCV.pdf` (238 KB) se mantiene en el repositorio **sin enlazar**. Es material para reenlazar si se recupera el botón de descarga.
-- **Evidencia:** `AGENTS.md` § "Contenido y assets" (línea ~566-568).
+- **Evidencia:** `docs/LIMITACIONES.md:43` y `assets/files/PabloDiazCV.pdf` (238116 bytes), sin referencias en HTML, JS ni CSS.
 - **Señal anti-regresión:** no borrar el PDF; no añadir enlaces a él sin petición explícita.
 
 ## 4. Claves de récord `<slug>_best_v1` y migración

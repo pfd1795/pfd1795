@@ -16,7 +16,7 @@
 
 - Requiere navegadores modernos: módulos ES, import attributes (`with { type: "json" }`), CSS nesting, `<dialog>`, `IntersectionObserver`, `color-mix()` y `@view-transition`.
 - `@view-transition` y `color-mix()` son mejoras progresivas; si el navegador no las soporta, la página sigue funcionando con menor fidelidad visual.
-- Sin `IntersectionObserver`, el scrollspy no se activa.
+- Sin `IntersectionObserver`, el scrollspy usa un respaldo por posición al hacer scroll (`js/controllers/sidebar/fnSectionNav.js`).
 
 ## Preferencias y almacenamiento
 
@@ -35,7 +35,7 @@
 
 ## Contenido y assets
 
-- La enciclopedia cuenta con 30 artículos publicados.
+- La enciclopedia cuenta con 36 artículos publicados.
 - La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
 - **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `juegos/data/juegos.json`.
@@ -45,8 +45,8 @@
 ## Deuda técnica
 
 - Cada juego tiene una sola portada (`cover.jpg`); las portadas 2 y 3 para el carrusel aún no se han generado (la guía y el código ya aceptan hasta 3 mediante `covers`).
-- No existe `updatedAt` por juego en el manifiesto.
-- El contenido de la enciclopedia no tiene traducción al inglés.
+- Ningún juego tiene fecha registrada en `updatedAt`: las 20 entradas del manifiesto usan `null`.
+- Faltan 7 artículos de la enciclopedia con versión en inglés; los otros 29 tienen su archivo `<slug>.en.html`.
 
 ## Rendimiento y mantenimiento
 
