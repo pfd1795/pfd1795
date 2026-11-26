@@ -1,95 +1,87 @@
 # Auditoría de documentación (consistencia interna)
 
-Alcance: `AGENTS.md` (raíz y locales de `juegos/`, `mis-estudios/`, `programas/`), `README.md`,
-`docs/README.md` y `docs/prompts/*`. Método: lectura directa y verificación de enlaces y anclas
-con script; conteos verificados contra los manifiestos.
+Alcance: `AGENTS.md` (raíz y locales de `juegos/`, `mis-estudios/` y `programas/`), `README.md`,
+`docs/README.md`, `docs/INVARIANTES.md`, `docs/LIMITACIONES.md` y `docs/prompts/*`. Método:
+lectura directa de los archivos, verificación de enlaces y anclas con script y recuento desde
+los manifiestos. No se comparan firmas, APIs ni citas contra el código: eso corresponde a la
+verificación de veracidad.
 
 ## Resultado global
 
-- Enlaces relativos y anclas: todos válidos en los archivos del alcance.
-- Conteos publicados verificados: 28 artículos (28/28), 20 juegos (20/20), 11 herramientas
-  publicadas + 5 `wip` (16). Coinciden con la documentación.
-- Sin fechas, plazos, estimaciones ni códigos de hallazgo.
-- Documentación en español; el único documento para personas es `README.md`; no hay trackers
-  paralelos salvo el caso del hallazgo 1.
+- Enlaces relativos y anclas: ninguno roto en los archivos del alcance. La URL absoluta de
+  producción (`https://pfd1795.github.io/pfd1795/`) responde correctamente.
+- Conteos publicados verificados por lectura directa: 36 artículos publicados, 20 juegos y
+  11 herramientas publicadas + 5 `wip`. Coinciden con `README.md:14-16`,
+  `docs/LIMITACIONES.md:38,48`, `mis-estudios/AGENTS.md:97` y `programas/AGENTS.md:91`.
+- Existen 29 archivos `<slug>.en.html` y 28 quedan fuera de `PRECACHE_URLS`, cifras coherentes
+  con `README.md:20`, `docs/LIMITACIONES.md:49` y el tracker.
+- No hay plazos, estimaciones, códigos de hallazgo ni trackers paralelos fuera de
+  `docs/informes/`. Los documentos para personas son `README.md` y `docs/HUMANOS.md`.
 
 ## Hallazgos
 
-### 1. `fichas-estudios.md` mezcla herramienta con lista de pendientes y estados obsoletos
+### Instrucciones de actualización de artículos dirigidas a una ubicación que no publica el dato
 
-- **Ubicación:** `docs/prompts/fichas-estudios.md:18-42` (descripción en `docs/README.md:35-37`).
-- **Evidencia:** dice que de los «siete temas que el manifiesto anunciaba como Próximamente» hay
-  «cinco ya publicados» y marca los temas 6 y 7 (`editores-ides-depuracion`,
-  `empaquetado-despliegue`) como «Próximamente». El manifiesto tiene 28 `published` y 0 `wip`:
-  los siete están publicados. Los ocho temas «Nuevo» son una lista de trabajo pendiente fuera de
-  `docs/informes/`, lo que contradice `AGENTS.md:29-31` y `AGENTS.md:9`. La columna «Estado en
-  el manifiesto» es historial de progreso.
-- **Corrección propuesta:** quitar la columna de estado y la sección «Orden de publicación
-  recomendado»; dejar solo las fichas como herramienta. Trasladar los ocho temas pendientes a
-  `docs/informes/trabajo-pendiente.md` y ajustar `docs/README.md:35-37`.
+- **Ubicación:** `docs/prompts/crear-estudios.md:629` y `docs/prompts/fichas-estudios.md:330-331`.
+- **Evidencia:** ambos textos piden actualizar el número de artículos publicados y el listado de
+  temas en el `AGENTS.md` de la raíz. Ese archivo no contiene ninguna de esas dos cosas: el
+  conteo está en `README.md:14` y `docs/LIMITACIONES.md:38`, y el listado de temas y su conteo
+  están en `mis-estudios/AGENTS.md:12-19,97`.
+- **Corrección propuesta:** sustituir la referencia a la raíz por `README.md` y
+  `docs/LIMITACIONES.md` para el conteo; dejar el listado de temas únicamente en
+  `mis-estudios/AGENTS.md`.
+- **Registro:** añadido al tracker único.
 
-### 2. El roster de `crear-estudios.md` está incompleto (26 de 28)
+### Numeración duplicada en las reglas locales de la enciclopedia
 
-- **Ubicación:** `docs/prompts/crear-estudios.md:173-204`.
-- **Evidencia:** faltan `editores-ides-depuracion.html` y `empaquetado-despliegue.html`, ambos
-  `published` y con archivo existente. El prompt ordena «Solo puedes enlazar a estos desde Ver
-  también» (`:206`), así que un agente no puede enlazar dos artículos ya publicados. La causa:
-  el paso de integración (`:623`) pide actualizar los conteos en los `AGENTS.md`, pero no el
-  roster.
-- **Corrección propuesta:** añadir las dos filas y agregar al bloque de integración el paso de
-  mantener el roster actualizado.
+- **Ubicación:** `mis-estudios/AGENTS.md:81` y `mis-estudios/AGENTS.md:86`.
+- **Evidencia:** la regla «Sin firmas de IA» y la regla «Interacción con el usuario» llevan
+  ambas el número 9. El resto de la numeración de esa sección es correlativa.
+- **Corrección propuesta:** renumerar a 10 la regla «Interacción con el usuario».
+- **Registro:** añadido al tracker único.
 
-### 3. La enumeración de artículos de `mis-estudios/AGENTS.md` tiene 27, no 28
+### Nota de procedencia en el índice de limitaciones
 
-- **Ubicación:** `mis-estudios/AGENTS.md:12-21`.
-- **Evidencia:** la lista entre paréntesis omite «Empaquetado y despliegue», aunque la misma
-  sección afirma 28 publicados (`:81`) y el manifiesto lo confirma.
-- **Corrección propuesta:** añadir «Empaquetado y despliegue» a la enumeración.
+- **Ubicación:** `docs/LIMITACIONES.md:4`.
+- **Evidencia:** el encabezado incluye una frase sobre el origen del archivo dentro de
+  `AGENTS.md`. `AGENTS.md:36` prohíbe escribir historial en la documentación.
+- **Corrección propuesta:** suprimir esa frase y conservar únicamente la descripción vigente
+  del archivo.
+- **Registro:** añadido al tracker único.
 
-### 4. `CACHE_NAME` incrustado y desactualizado en los prompts
+### Historial de trabajo cerrado dentro del tracker
 
-- **Ubicación:** `docs/prompts/crear-estudios.md:621` y `docs/prompts/fichas-estudios.md:350-351`.
-- **Evidencia:** ambos dicen «actualmente v6: v6 → v7»; `service-worker.js:5` usa
-  `'pwa-cache-v19'`. Es estado incrustado que caduca en cada publicación.
-- **Corrección propuesta:** sustituirlo por una instrucción relativa («sube `CACHE_NAME` un nivel
-  respecto al valor actual»), en línea con `AGENTS.md:480`.
+- **Ubicación:** `docs/informes/trabajo-pendiente.md:3`.
+- **Evidencia:** el ítem abierto de traducción incluye una lista de 29 slugs ya traducidos.
+  `AGENTS.md:31` establece que al cerrar un ítem se borra y no se anexa historial.
+- **Corrección propuesta:** quitar esa lista y conservar los 7 slugs pendientes junto con la
+  convención de traducción.
+- **Registro:** añadido al tracker único.
 
-### 5. El árbol de `docs/` en `AGENTS.md` omite `informes/`
+### Citas de línea desactualizadas en las invariantes
 
-- **Ubicación:** `AGENTS.md:219-221`.
-- **Evidencia:** el árbol solo muestra `README.md` y `prompts/`; `docs/README.md:45-52`
-  documenta `docs/informes/` y el tracker existe.
-- **Corrección propuesta:** añadir `informes/` al árbol.
+- **Ubicación:** `docs/INVARIANTES.md:30` y `docs/INVARIANTES.md:48`.
+- **Evidencia:** ambas citan el inventario de claves de `AGENTS.md` como «~369-391»; el apartado
+  real ocupa las líneas 374-396.
+- **Corrección propuesta:** actualizar el rango a 374-396 o eliminar los números de línea.
+- **Registro:** añadido al tracker único.
 
-### 6. Las reglas de mantenimiento omiten `programas/AGENTS.md`
+## Ya presentes en el tracker
 
-- **Ubicación:** `AGENTS.md:638`.
-- **Evidencia:** la lista de documentación a mantener cita «los locales de `juegos/` y
-  `mis-estudios/`», pero existe y está documentado `programas/AGENTS.md` (`AGENTS.md:9`,
-  `docs/README.md:19`).
-- **Corrección propuesta:** añadir `programas/` a esa lista.
+Estos tres hallazgos ya tenían ítem abierto y no se han duplicado:
 
-### 7. (Menor) Árboles de estructura incompletos respecto a la PWA
+- El roster de `docs/prompts/crear-estudios.md` lista 31 de 36 artículos publicados.
+- `docs/prompts/crear-estudios.md:150` contradice la convención de versiones en inglés de la
+  regla 8 de `mis-estudios/AGENTS.md`.
+- `docs/prompts/fichas-estudios.md:18` fija ocho temas pendientes cuando el tracker lista siete.
 
-- **Ubicación:** `AGENTS.md:216-265` y `README.md:40-50`.
-- **Evidencia:** ninguno lista `manifest.json`, `service-worker.js` ni `favicon.svg`, aunque
-  `AGENTS.md:480` los documenta como parte del sitio y `README.md:20` anuncia la PWA.
-- **Corrección propuesta:** añadirlos a los árboles o indicar que el árbol es parcial.
+## Verificado como correcto
 
-### 8. (Menor) Redacción de `docs/README.md:48`
-
-- **Evidencia:** dice que `docs/informes/` «se crea la primera vez que haga falta; no hay informes
-  activos por defecto», pero la carpeta ya existe con el tracker vacío.
-- **Corrección propuesta:** reescribir como «existe con el tracker vacío; los informes se añaden
-  cuando se generan».
-
-## Observaciones no accionables
-
-- `docs/prompts/crear-videojuegos.md` usa «Fase 1…4» como flujo de trabajo del prompt; no es un
-  plan de proyecto ni incumple la regla.
-- `docs/informes/trabajo-pendiente.md` contiene solo el título: correcto como tracker vacío.
-
-## Cierre
-
-No se han aplicado correcciones: la auditoría solo entrega el informe y los ítems accionables.
-Cada corrección es un cambio acotado y debe verificarse por separado.
+- Estructura de documentación: `docs/informes/` es el único lugar de informes y del tracker;
+  no hay planes, fases ni auditorías activas fuera de esa carpeta.
+- Árbol de `AGENTS.md`: incluye `docs/informes/`, `manifest.json`, `service-worker.js` y
+  `favicon.svg`; la regla de mantenimiento cita los tres `AGENTS.md` locales.
+- Inventario de `localStorage`: ocho claves del sitio y el patrón `<slug>_best_v1` de los juegos,
+  sin claves propias de agentes.
+- «Fase 1…4» de `docs/prompts/crear-videojuegos.md` describe el flujo del prompt, no fases del
+  repositorio.

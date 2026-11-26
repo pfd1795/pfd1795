@@ -5,3 +5,9 @@
 - `docs/prompts/crear-estudios.md`: añadir al roster `ci-cd`, `docker`, `linux-servidores`, `regex` y `testing`.
 - `docs/prompts/crear-estudios.md`: alinear la regla de traducción con la convención `<slug>.en.html` de `mis-estudios/AGENTS.md`.
 - `docs/prompts/fichas-estudios.md`: corregir el número de temas pendientes o remitir al tracker sin fijar una cifra.
+- `docs/prompts/crear-estudios.md:629` y `docs/prompts/fichas-estudios.md:330-331`: alinear la actualización de documentación con las ubicaciones reales; el conteo de artículos publicados está en `README.md` y `docs/LIMITACIONES.md`, y el listado de temas solo en `mis-estudios/AGENTS.md`. El `AGENTS.md` raíz no publica esas cifras.
+- `mis-estudios/AGENTS.md:86`: renumerar a 10 la regla «Interacción con el usuario»; la regla anterior ya usa el número 9 en `:81`.
+- `docs/LIMITACIONES.md:4`: quitar la frase de procedencia y conservar solo la descripción vigente del archivo.
+- `docs/informes/trabajo-pendiente.md:3`: quitar la lista de slugs ya traducidos; conservar los 7 slugs pendientes y la convención de traducción.
+- `docs/INVARIANTES.md:30` y `:48`: actualizar la cita del inventario de claves de `AGENTS.md` de `~369-391` a `374-396`, o quitar los números de línea.
+- `js/controllers/sidebar/fnChangeLanguage.js:125-130`: reaplicar el idioma al recibir un evento `storage` con `key === null`, leyendo el valor con `getLanguage()` y sin reescribir la clave cuando la reaplicación venga de otra pestaña, según `AGENTS.md:328`. Verificar que `localStorage.clear()` devuelve `document.documentElement.lang` a `es` y actualiza el segmento activo.
