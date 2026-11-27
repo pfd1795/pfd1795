@@ -2,7 +2,7 @@
   "version": 1,
   "items": [
     {
-      "slug": "snake",
+      "slug": "neon-snake",
       "title": {
         "es": "Snake Retro",
         "en": "Retro Snake"
@@ -28,10 +28,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/snake/cover.jpg"
+      "cover": "./neon-snake/cover.jpg"
     },
     {
-      "slug": "space-invaders",
+      "slug": "neon-space-invaders",
       "title": {
         "es": "Space Invaders Retro",
         "en": "Retro Space Invaders"
@@ -57,10 +57,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/space-invaders/cover.jpg"
+      "cover": "./neon-space-invaders/cover.jpg"
     },
     {
-      "slug": "ajedrez",
+      "slug": "neon-chess",
       "title": {
         "es": "Ajedrez Arcade",
         "en": "Arcade Chess"
@@ -86,10 +86,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/ajedrez/cover.jpg"
+      "cover": "./neon-chess/cover.jpg"
     },
     {
-      "slug": "damas",
+      "slug": "neon-checkers",
       "title": {
         "es": "Damas Arcade",
         "en": "Arcade Checkers"
@@ -115,10 +115,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/damas/cover.jpg"
+      "cover": "./neon-checkers/cover.jpg"
     },
     {
-      "slug": "dungeon-crawler",
+      "slug": "neon-dungeon-crawler",
       "title": {
         "es": "Neon Depths",
         "en": "Neon Depths"
@@ -144,7 +144,7 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/dungeon-crawler/cover.jpg"
+      "cover": "./neon-dungeon-crawler/cover.jpg"
     },
     {
       "slug": "neon-racer",
@@ -173,10 +173,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/neon-racer/cover.jpg"
+      "cover": "./neon-racer/cover.jpg"
     },
     {
-      "slug": "plataformas",
+      "slug": "neon-platformer",
       "title": {
         "es": "Neon Ninja",
         "en": "Neon Ninja"
@@ -202,10 +202,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/plataformas/cover.jpg"
+      "cover": "./neon-platformer/cover.jpg"
     },
     {
-      "slug": "tower-defense",
+      "slug": "neon-tower-defense",
       "title": {
         "es": "Neon Defense",
         "en": "Neon Defense"
@@ -231,10 +231,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/tower-defense/cover.jpg"
+      "cover": "./neon-tower-defense/cover.jpg"
     },
     {
-      "slug": "match-3",
+      "slug": "neon-match-3",
       "title": {
         "es": "Dulce Explosión",
         "en": "Sweet Blast"
@@ -260,10 +260,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/match-3/cover.jpg"
+      "cover": "./neon-match-3/cover.jpg"
     },
     {
-      "slug": "arkanoid",
+      "slug": "neon-arkanoid",
       "title": {
         "es": "Rompebloques Neón",
         "en": "Neon Breakout"
@@ -289,10 +289,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/arkanoid/cover.jpg"
+      "cover": "./neon-arkanoid/cover.jpg"
     },
     {
-      "slug": "ritmo",
+      "slug": "neon-rhythm",
       "title": {
         "es": "Pixel Riff",
         "en": "Pixel Riff"
@@ -319,10 +319,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/ritmo/cover.jpg"
+      "cover": "./neon-rhythm/cover.jpg"
     },
     {
-      "slug": "pong",
+      "slug": "neon-pong",
       "title": {
         "es": "Pong Neón",
         "en": "Neon Pong"
@@ -348,10 +348,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/pong/cover.jpg"
+      "cover": "./neon-pong/cover.jpg"
     },
     {
-      "slug": "piedras-papel-tijeras",
+      "slug": "neon-rock-paper-scissors",
       "title": {
         "es": "Piedra, Papel o Tijeras",
         "en": "Rock, Paper, Scissors"
@@ -377,10 +377,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/piedras-papel-tijeras/cover.jpg"
+      "cover": "./neon-rock-paper-scissors/cover.jpg"
     },
     {
-      "slug": "pool",
+      "slug": "neon-pool",
       "title": {
         "es": "Pixel Pool 8",
         "en": "Pixel Pool 8"
@@ -407,10 +407,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/pool/cover.jpg"
+      "cover": "./neon-pool/cover.jpg"
     },
     {
-      "slug": "ta-te-ti",
+      "slug": "neon-tic-tac-toe",
       "title": {
         "es": "Ta Te Ti",
         "en": "Tic-Tac-Toe"
@@ -436,10 +436,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/ta-te-ti/cover.jpg"
+      "cover": "./neon-tic-tac-toe/cover.jpg"
     },
     {
-      "slug": "card-match",
+      "slug": "neon-card-match",
       "title": {
         "es": "Card Match",
         "en": "Card Match"
@@ -465,10 +465,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/card-match/cover.jpg"
+      "cover": "./neon-card-match/cover.jpg"
     },
     {
-      "slug": "dodge-arena",
+      "slug": "neon-dodge-arena",
       "title": {
         "es": "Dodge Arena",
         "en": "Dodge Arena"
@@ -494,7 +494,7 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/dodge-arena/cover.jpg"
+      "cover": "./neon-dodge-arena/cover.jpg"
     },
     {
       "slug": "neon-maze",
@@ -523,7 +523,7 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/neon-maze/cover.jpg"
+      "cover": "./neon-maze/cover.jpg"
     },
     {
       "slug": "neon-rally",
@@ -552,10 +552,10 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/neon-rally/cover.jpg"
+      "cover": "./neon-rally/cover.jpg"
     },
     {
-      "slug": "tetris",
+      "slug": "neon-tetris",
       "title": {
         "es": "Tetris",
         "en": "Tetris"
@@ -581,7 +581,7 @@
       },
       "status": "published",
       "updatedAt": null,
-      "cover": "../assets/images/games/tetris/cover.jpg"
+      "cover": "./neon-tetris/cover.jpg"
     }
   ]
 }

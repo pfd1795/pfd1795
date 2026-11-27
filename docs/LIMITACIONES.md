@@ -35,7 +35,7 @@
 ## Contenido y assets
 
 - La enciclopedia cuenta con 42 artículos publicados.
-- La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `assets/images/games/<slug>/`.
+- La imagen del proyecto de la portada se sirve desde `assets/images/project-nextjs.jpg` (autohospedada). Las portadas de los juegos viven en `juegos/<slug>/cover.jpg`.
 - Los iconos se sirven desde `assets/`; los que se inyectan desde JavaScript usan `utils/assets.js` para funcionar en la raíz y en subcarpetas. El icono `gamepad.svg` identifica el enlace "Juegos" del menú lateral.
 - Los iconos del menú lateral llevan el color fijado en el SVG (`fill="#FFFFFF"` / `stroke="#FFFFFF"`): al cargar un SVG con `<img>` se renderiza como documento independiente y `currentColor` resuelve a negro, sin heredar el `color` de `.sidebar-item` (evidencia: `assets/icons/build.svg:1`, frente a `assets/icons/gamepad.svg:1`). No usar `currentColor` en iconos inyectados como `<img>`.
 - **Juegos**: los juegos son estáticos y autocontenidos en `juegos/<slug>/index.html` dentro de este repositorio; no hay directorio externo de desarrollo. La guía, el canon visual y el manifiesto están en `juegos/README.md` y `juegos/data/juegos.json`.

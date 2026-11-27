@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0221" />
+  <link rel="icon" href="data:,">
+  <meta name="description" content="Snake Retro: el clásico arcade de la serpiente con estética neón; come, crece y esquiva muros y tu propia cola.">
+  <title>Snake Retro</title>
+  <style>
+    /* ================= Variables y base ================= */
+    :root {
+      --bg: #0d0221;
+      --panel: #1a1033;
+      --text: #eaeaea;
+      --muted: #9b8fb8;
+      --neon-green: #39ff14;
+      --neon-pink: #ff2a6d;
+      --neon-cyan: #05d9e8;
+      --neon-yellow: #ffd60a;
+      --neon-purple: #b967ff;
+
+      /* Relación de aspecto del lienzo (el JS la recalcula con exactitud) */
+      --ratio: 0.9023;
+      --game-max: 900px;
+
+      /* Medidas de los controles táctiles y del botón Opciones */
+      --btn-h: 52px;
+      --pad-w: 204px;
+      --pad-h: 180px;
+
+      /* Áreas seguras (notch / barras del sistema) */
+      --si-t: env(safe-area-inset-top, 0px);
+      --si-b: env(safe-area-inset-bottom, 0px);
+      --si-l: env(safe-area-inset-left, 0px);
+      --si-r: env(safe-area-inset-right, 0px);
+
+      /* Espacio que NO puede ocupar el lienzo (por defecto: portrait) */
+      --reserve-h: calc(16px + var(--si-l) + var(--si-r));
+      --reserve-v: calc(var(--btn-h) + 8px + var(--si-t) + var(--si-b));
+    }
+
+    /* Landscape: el botón flota en la esquina, no se reserva franja superior */
+    @media (orientation: landscape) {
+      :root { --reserve-v: calc(16px + var(--si-t) + var(--si-b)); }
+    }
+    /* Portrait táctil: el D-pad va debajo del lienzo */
+    @media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+      :root { --reserve-v: calc(var(--btn-h) + 8px + var(--pad-h) + 12px + var(--si-t) + var(--si-b)); }
+    }
+    /* Landscape táctil: el D-pad va al costado derecho del lienzo */
+    @media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+      :root { --reserve-h: calc(16px + var(--pad-w) + 12px + var(--si-l) + var(--si-r)); }
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", ui-monospace, Menlo, monospace;
+      overscroll-behavior: none;
+      overflow: hidden;
+      -webkit-user-select: none; user-select: none;
+    }
+
+    /* ================= Contenedor (portrait: columna / landscape: fila) ================= */
+    .app {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding:
+        calc(var(--btn-h) + var(--si-t))
+        calc(8px + var(--si-r))
+        calc(8px + var(--si-b))
+        calc(8px + var(--si-l));
+    }
+    @media (orientation: landscape) {
+      .app {
+        flex-direction: row;
+        padding:
+          calc(8px + var(--si-t))
+          calc(8px + var(--si-r))
+          calc(8px + var(--si-b))
+          calc(8px + var(--si-l));
+      }
+    }
+
+    /* ================= Botón Opciones (único elemento de UI fuera del lienzo) ================= */
+    .btn {
+      position: fixed;
+      top: calc(8px + var(--si-t));
+      right: calc(8px + var(--si-r));
+      z-index: 10;
+      font: inherit; font-size: 0.9rem; cursor: pointer;
+      background: rgba(13, 2, 33, 0.75); color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan); border-radius: 6px;
+      padding: 7px 14px; transition: box-shadow 0.15s, background 0.15s;
+    }
+    .btn:hover, .btn:active { background: rgba(5, 217, 232, 0.15); box-shadow: 0 0 10px rgba(5, 217, 232, 0.5); }
+
+    /* ================= Canvas (HUD + tablero dentro del mismo display) ================= */
+    canvas {
+      display: block;
+      flex: none;
+      width: min(
+        calc(100vw - var(--reserve-h)),
+        var(--game-max),
+        calc(max(0px, 100dvh - var(--reserve-v)) * var(--ratio))
+      );
+      aspect-ratio: var(--ratio);
+      border-radius: 8px;
+      box-shadow: 0 0 0 2px var(--neon-purple), 0 0 18px rgba(185, 103, 255, 0.45);
+      touch-action: none;
+      background: var(--bg);
+    }
+
+    /* ================= D-pad táctil ================= */
+    .dpad {
+      display: none;
+      flex: none;
+      grid-template-areas: ". up ." "left . right" ". down .";
+      grid-template-columns: repeat(3, 64px);
+      grid-template-rows: repeat(3, 56px);
+      gap: 6px;
+    }
+    .dpad button {
+      font: inherit; font-size: 1.4rem; cursor: pointer;
+      color: var(--neon-cyan);
+      background: rgba(5, 217, 232, 0.08);
+      border: 1px solid rgba(5, 217, 232, 0.6);
+      border-radius: 10px;
+      user-select: none; -webkit-user-select: none;
+      touch-action: none;
+    }
+    .dpad button:active { background: rgba(5, 217, 232, 0.3); }
+    .dpad .up    { grid-area: up; }
+    .dpad .down  { grid-area: down; }
+    .dpad .left  { grid-area: left; }
+    .dpad .right { grid-area: right; }
+    @media (hover: none) and (pointer: coarse) {
+      .dpad { display: grid; }
+    }
+
+    /* ================= Scanlines CRT ================= */
+    .scanlines {
+      position: fixed; inset: 0; pointer-events: none; z-index: 5;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0 1px, transparent 1px 4px);
+    }
+
+    /* ================= Modal de opciones ================= */
+    dialog {
+      width: min(92vw, 420px);
+      max-height: 92dvh;
+      overflow-y: auto;
+      padding: 0 0 18px;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--neon-purple);
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(185, 103, 255, 0.4);
+    }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.72); }
+    dialog > header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(185, 103, 255, 0.3);
+    }
+    dialog h2 {
+      margin: 0; font-size: 1.05rem; letter-spacing: 2px;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px rgba(5, 217, 232, 0.7);
+    }
+    #btnCloseModal { background: none; border: none; color: var(--text); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+    .options-list { list-style: none; margin: 0; padding: 8px 16px; }
+    .options-list li {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+      font-size: 0.95rem;
+    }
+    .options-list label { cursor: pointer; flex: 1; }
+    .soon { color: var(--muted); font-style: italic; font-size: 0.82rem; }
+    .controls-info { padding: 6px 16px 0; font-size: 0.85rem; line-height: 1.5; }
+    .controls-info h3 { margin: 10px 0 4px; font-size: 0.88rem; letter-spacing: 1px; color: var(--neon-yellow); }
+    .controls-info p { margin: 4px 0; }
+
+    /* ================= Switch booleano ================= */
+    .switch { position: relative; width: 46px; height: 26px; flex: none; }
+    .switch input {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      margin: 0; opacity: 0; cursor: pointer; z-index: 1;
+    }
+    .switch .slider {
+      position: absolute; inset: 0; border-radius: 26px;
+      background: #2a1d4d;
+      border: 1px solid rgba(185, 103, 255, 0.5);
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .switch .slider::before {
+      content: ""; position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--muted);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .switch input:checked + .slider {
+      background: rgba(57, 255, 20, 0.18);
+      border-color: var(--neon-green);
+      box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+    }
+    .switch input:checked + .slider::before { transform: translateX(20px); background: var(--neon-green); }
+    .switch input:focus-visible + .slider { outline: 2px solid var(--neon-cyan); outline-offset: 2px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  </style>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('../../service-worker.js').catch(function () {});
+    });
+  }
+  </script>
+</head>
+<body>
+  <div class="app">
+    <h1 class="sr-only">Snake Retro</h1>
+    <button class="btn" id="btnOptions" aria-haspopup="dialog">Opciones</button>
+
+    <!-- Lienzo principal: HUD (puntuación, récord, velocidad) + tablero -->
+    <canvas id="game" aria-label="Juego Snake"></canvas>
+
+    <!-- Anuncios discretos de hitos (fin de partida, victoria) para lectores de pantalla -->
+    <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+
+    <!-- D-pad táctil (solo dispositivos táctiles) -->
+    <div class="dpad" id="dpad" aria-label="Controles táctiles">
+      <button class="up" data-dir="up" aria-label="Arriba">▲</button>
+      <button class="left" data-dir="left" aria-label="Izquierda">◀</button>
+      <button class="right" data-dir="right" aria-label="Derecha">▶</button>
+      <button class="down" data-dir="down" aria-label="Abajo">▼</button>
+    </div>
+
+    <!-- Modal de opciones -->
+    <dialog id="options" aria-labelledby="options-title">
+      <header>
+        <h2 id="options-title">Opciones</h2>
+        <button id="btnCloseModal" aria-label="Cerrar">✕</button>
+      </header>
+      <ul class="options-list">
+        <li>
+          <label for="optIncremental">Velocidad incremental</label>
+          <span class="switch"><input type="checkbox" id="optIncremental" role="switch" /><span class="slider"></span></span>
+        </li>
+        <li>
+          <label for="optMusic">Música</label>
+          <span class="switch"><input type="checkbox" id="optMusic" role="switch" /><span class="slider"></span></span>
+        </li>
+        <li>
+          <label for="optSfx">Efectos de sonido</label>
+          <span class="switch"><input type="checkbox" id="optSfx" role="switch" /><span class="slider"></span></span>
+        </li>
+        <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+        <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
+      </ul>
+      <section class="controls-info">
+        <h3>Controles</h3>
+        <p><strong>Escritorio:</strong> Flechas o WASD para moverte · Espacio o P: pausa · Enter: jugar / reiniciar</p>
+        <p><strong>Móvil:</strong> Desliza sobre el juego o usa el D-pad · Toca la pantalla para jugar y pausar</p>
+      </section>
+    </dialog>
+  </div>
+
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      /* ================= Configuración ================= */
+      const COLS = 20, ROWS = 20, CELL = 24;
+      const HUD_H = 52;                    // alto de la franja de información dentro del lienzo
+      const BW = COLS * CELL, BH = ROWS * CELL;   // tamaño del tablero
+      const W = BW, H = BH + HUD_H;               // tamaño lógico total del lienzo
+      const BASE_INTERVAL = 150; // ms entre pasos al inicio
+      const MIN_INTERVAL  = 65;  // límite de velocidad
+      const SPEEDUP       = 3;   // ms menos de intervalo por comida
+      const SCORE_PER_FOOD = 10;
+      const SWIPE_MIN = 24;      // px mínimos para detectar un deslizamiento
+      const BEST_KEY = 'neon-snake_best_v1';
+      const SETTINGS_KEY = 'neon-snake_settings_v1';
+      const LEGACY_BEST_KEY = 'snake_best_v1';
+      const LEGACY_SETTINGS_KEY = 'snake_settings_v1';
+      try {
+        if (localStorage.getItem(BEST_KEY) == null && localStorage.getItem(LEGACY_BEST_KEY) != null) {
+          localStorage.setItem(BEST_KEY, localStorage.getItem(LEGACY_BEST_KEY));
+        }
+        if (localStorage.getItem(SETTINGS_KEY) == null && localStorage.getItem(LEGACY_SETTINGS_KEY) != null) {
+          localStorage.setItem(SETTINGS_KEY, localStorage.getItem(LEGACY_SETTINGS_KEY));
+        }
+        localStorage.removeItem(LEGACY_BEST_KEY);
+        localStorage.removeItem(LEGACY_SETTINGS_KEY);
+      } catch (_) {}
+      const GAME_NAME = 'SNAKE';
+
+      const State = { START: 'start', PLAYING: 'playing', PAUSED: 'paused', OVER: 'over' };
+
+      /* ================= Referencias DOM ================= */
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const btnOptions = document.getElementById('btnOptions');
+      const optionsDialog = document.getElementById('options');
+      const btnCloseModal = document.getElementById('btnCloseModal');
+      const dpad = document.getElementById('dpad');
+      const srStatus = document.getElementById('sr-status');
+      const optIncremental = document.getElementById('optIncremental');
+      const optMusic = document.getElementById('optMusic');
+      const optSfx = document.getElementById('optSfx');
+
+      /* ================= Ajustes persistentes ================= */
+      function loadSettings() {
+        try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; }
+        catch (err) { return {}; }
+      }
+      function saveSettings() {
+        try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (err) { /* sin almacenamiento */ }
+      }
+      const settings = Object.assign({ incremental: true, music: true, sfx: true }, loadSettings());
+
+      /* ================= Lienzo nítido y adaptable (portrait / landscape) ================= */
+      let renderScale = 1;
+      document.documentElement.style.setProperty('--ratio', (W / H).toFixed(4));
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const cssWidth = rect.width || W;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        renderScale = Math.max(1, cssWidth / W) * dpr;
+        canvas.width = Math.round(W * renderScale);
+        canvas.height = Math.round(H * renderScale);
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 150));
+      if ('ResizeObserver' in window) new ResizeObserver(resizeCanvas).observe(canvas);
+
+      /* ================= Estado del juego ================= */
+      const game = {
+        state: State.START,
+        snake: [],
+        dir: { x: 1, y: 0 },
+        dirQueue: [],
+        food: null,
+        score: 0,
+        best: loadBest(),
+        foodsEaten: 0,
+        interval: BASE_INTERVAL,
+        accumulator: 0,
+        lastTime: 0,
+        won: false,
+        newRecord: false,
+      };
+
+      /* ================= Persistencia del récord ================= */
+      function loadBest() {
+        try { return Number(localStorage.getItem(BEST_KEY)) || 0; }
+        catch (err) { return 0; }
+      }
+      function saveBest(value) {
+        try { localStorage.setItem(BEST_KEY, String(value)); } catch (err) { /* almacenamiento no disponible */ }
+      }
+
+      /* ================= Audio (Web Audio API, sin archivos externos) ================= */
+      const Sound = (() => {
+        let ac = null, musicBus = null, sfxBus = null;
+        let timer = null, step = 0, nextTime = 0;
+        const STEP = 60 / 138 / 2; // corchea a 138 BPM
+        const mtof = (n) => 440 * Math.pow(2, (n - 69) / 12);
+
+        // Melodía original en La menor (Am – G – F – E), 4 compases de 8 corcheas
+        const LEAD = [
+          69, 0, 72, 76,  74, 72, 69, 0,
+          67, 0, 71, 74,  72, 71, 67, 0,
+          65, 0, 69, 72,  71, 69, 65, 0,
+          64, 68, 71, 76, 74, 71, 68, 0,
+        ];
+        const BASS = [
+          45, 0, 45, 0, 52, 0, 45, 0,
+          43, 0, 43, 0, 50, 0, 43, 0,
+          41, 0, 41, 0, 48, 0, 41, 0,
+          40, 0, 40, 0, 47, 0, 40, 0,
+        ];
+
+        function ensure() {
+          if (!ac) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return null;
+            ac = new AC();
+            const master = ac.createGain(); master.gain.value = 0.5;
+            musicBus = ac.createGain(); musicBus.gain.value = 0.35;
+            sfxBus = ac.createGain(); sfxBus.gain.value = 0.7;
+            musicBus.connect(master); sfxBus.connect(master); master.connect(ac.destination);
+          }
+          if (ac.state === 'suspended') ac.resume();
+          return ac;
+        }
+
+        function tone(bus, freq, t, dur, type, vol, slideTo) {
+          const o = ac.createOscillator();
+          const g = ac.createGain();
+          o.type = type;
+          o.frequency.setValueAtTime(freq, t);
+          if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          o.connect(g); g.connect(bus);
+          o.start(t); o.stop(t + dur + 0.05);
+        }
+
+        function playStep(i, t) {
+          if (LEAD[i]) tone(musicBus, mtof(LEAD[i]), t, STEP * 0.9, 'square', 0.16);
+          if (BASS[i]) tone(musicBus, mtof(BASS[i]), t, STEP * 1.8, 'triangle', 0.35);
+        }
+
+        function schedule() {
+          while (nextTime < ac.currentTime + 0.2) {
+            playStep(step, nextTime);
+            nextTime += STEP;
+            step = (step + 1) % LEAD.length;
+          }
+        }
+
+        function startMusic() {
+          if (timer || !ensure()) return;
+          nextTime = ac.currentTime + 0.05;
+          timer = setInterval(schedule, 60);
+        }
+        function stopMusic() {
+          if (timer) { clearInterval(timer); timer = null; }
+        }
+
+        function sfx(name) {
+          if (!ensure()) return;
+          const t = ac.currentTime + 0.01;
+          switch (name) {
+            case 'eat':
+              tone(sfxBus, 660, t, 0.08, 'square', 0.5);
+              tone(sfxBus, 990, t + 0.07, 0.12, 'square', 0.5);
+              break;
+            case 'die':
+              tone(sfxBus, 400, t, 0.6, 'sawtooth', 0.5, 60);
+              break;
+            case 'start':
+              [523, 659, 784].forEach((f, i) => tone(sfxBus, f, t + i * 0.07, 0.1, 'square', 0.4));
+              break;
+            case 'win':
+              [523, 659, 784, 1047].forEach((f, i) => tone(sfxBus, f, t + i * 0.12, 0.18, 'square', 0.45));
+              break;
+            case 'pause':
+              tone(sfxBus, 440, t, 0.07, 'square', 0.35);
+              tone(sfxBus, 330, t + 0.07, 0.09, 'square', 0.35);
+              break;
+          }
+        }
+
+        return { unlock: ensure, startMusic, stopMusic, sfx };
+      })();
+
+      function playSfx(name) { if (settings.sfx) Sound.sfx(name); }
+      function syncMusic() {
+        if (settings.music && game.state === State.PLAYING) Sound.startMusic();
+        else Sound.stopMusic();
+      }
+
+      /* ================= Lógica del juego ================= */
+      function setState(next) {
+        game.state = next;
+        syncMusic();
+      }
+
+      function computeInterval() {
+        return settings.incremental
+          ? Math.max(MIN_INTERVAL, BASE_INTERVAL - game.foodsEaten * SPEEDUP)
+          : BASE_INTERVAL;
+      }
+
+      function resetGame() {
+        const cx = Math.floor(COLS / 2), cy = Math.floor(ROWS / 2);
+        game.snake = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }];
+        game.dir = { x: 1, y: 0 };
+        game.dirQueue = [];
+        game.score = 0;
+        game.foodsEaten = 0;
+        game.interval = computeInterval();
+        game.accumulator = 0;
+        game.won = false;
+        game.newRecord = false;
+        spawnFood();
+      }
+
+      function startGame() {
+        resetGame();
+        closeModal();
+        setState(State.PLAYING);
+        playSfx('start');
+      }
+
+      function togglePause() {
+        if (game.state === State.PLAYING) {
+          setState(State.PAUSED);
+          playSfx('pause');
+        } else if (game.state === State.PAUSED) {
+          game.accumulator = 0;
+          setState(State.PLAYING);
+          playSfx('pause');
+        }
+      }
+
+      function endGame(win) {
+        game.won = !!win;
+        if (game.score > game.best) {
+          game.best = game.score;
+          game.newRecord = game.score > 0;
+          saveBest(game.best);
+        }
+        setState(State.OVER);
+        srStatus.textContent = win
+          ? '¡Victoria! Has llenado el tablero con ' + game.score + ' puntos.'
+          : 'Game over. Puntuación: ' + game.score + ' (récord ' + game.best + ').';
+        playSfx(win ? 'win' : 'die');
+      }
+
+      function spawnFood() {
+        const free = [];
+        for (let x = 0; x < COLS; x++) {
+          for (let y = 0; y < ROWS; y++) {
+            if (!game.snake.some((s) => s.x === x && s.y === y)) free.push({ x, y });
+          }
+        }
+        game.food = free.length ? free[(Math.random() * free.length) | 0] : null;
+      }
+
+      function queueDir(x, y) {
+        const last = game.dirQueue.length ? game.dirQueue[game.dirQueue.length - 1] : game.dir;
+        if ((x === last.x && y === last.y) || (x === -last.x && y === -last.y)) return;
+        if (game.dirQueue.length < 2) game.dirQueue.push({ x, y });
+      }
+
+      function step() {
+        // Aplica la siguiente dirección en cola (sin giros de 180°)
+        if (game.dirQueue.length) {
+          const next = game.dirQueue.shift();
+          if (next.x !== -game.dir.x || next.y !== -game.dir.y) game.dir = next;
+        }
+
+        const head = game.snake[0];
+        const nx = head.x + game.dir.x;
+        const ny = head.y + game.dir.y;
+
+        // Colisión con pared
+        if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) return endGame(false);
+
+        const eating = !!game.food && nx === game.food.x && ny === game.food.y;
+
+        // Avanza: nueva cabeza y cola según corresponda
+        game.snake.unshift({ x: nx, y: ny });
+        if (!eating) game.snake.pop();
+
+        // Colisión con el propio cuerpo
+        for (let i = 1; i < game.snake.length; i++) {
+          if (game.snake[i].x === nx && game.snake[i].y === ny) return endGame(false);
+        }
+
+        if (eating) {
+          game.score += SCORE_PER_FOOD;
+          game.foodsEaten++;
+          game.interval = computeInterval();
+          spawnFood();
+          if (!game.food) return endGame(true); // tablero completo: victoria
+          playSfx('eat');
+        }
+      }
+
+      /* ================= Bucle principal ================= */
+      function loop(t) {
+        const dt = Math.max(0, Math.min(t - game.lastTime, 100));
+        game.lastTime = t;
+
+        if (game.state === State.PLAYING) {
+          game.accumulator += dt;
+          while (game.accumulator >= game.interval && game.state === State.PLAYING) {
+            game.accumulator -= game.interval;
+            step();
+          }
+        }
+        draw(t);
+        requestAnimationFrame(loop);
+      }
+
+      /* ================= Dibujo ================= */
+      function draw(t) {
+        ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+
+        drawHUD();
+
+        // El tablero se dibuja desplazado bajo el HUD y recortado a su área
+        ctx.save();
+        ctx.translate(0, HUD_H);
+        ctx.beginPath();
+        ctx.rect(0, 0, BW, BH);
+        ctx.clip();
+
+        drawGrid();
+        drawFood(t);
+        drawSnake();
+
+        if (game.state === State.START) drawStart(t);
+        else if (game.state === State.PAUSED) drawPause();
+        else if (game.state === State.OVER) drawOver(t);
+        ctx.restore();
+      }
+
+      function drawHUD() {
+        ctx.fillStyle = 'rgba(26, 16, 51, 0.96)';
+        ctx.fillRect(0, 0, W, HUD_H);
+        ctx.strokeStyle = 'rgba(185, 103, 255, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, HUD_H - 0.5);
+        ctx.lineTo(W, HUD_H - 0.5);
+        ctx.stroke();
+
+        const items = [
+          ['PUNTUACIÓN', String(game.score), '#05d9e8'],
+          ['RÉCORD', String(game.best), '#ffd60a'],
+          ['VELOCIDAD', (BASE_INTERVAL / game.interval).toFixed(1) + 'x', '#b967ff'],
+        ];
+
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        items.forEach(([label, value, color], i) => {
+          const cx = W * (2 * i + 1) / 6;
+          ctx.font = '12px "Courier New", monospace';
+          ctx.fillStyle = '#9b8fb8';
+          ctx.fillText(label, cx, 16);
+          ctx.font = 'bold 20px "Courier New", monospace';
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 8;
+          ctx.fillStyle = color;
+          ctx.fillText(value, cx, 36);
+          ctx.shadowBlur = 0;
+        });
+        ctx.restore();
+      }
+
+      function drawGrid() {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 1; i < COLS; i++) { ctx.moveTo(i * CELL + 0.5, 0); ctx.lineTo(i * CELL + 0.5, BH); }
+        for (let j = 1; j < ROWS; j++) { ctx.moveTo(0, j * CELL + 0.5); ctx.lineTo(BW, j * CELL + 0.5); }
+        ctx.stroke();
+      }
+
+      function drawFood(t) {
+        if (!game.food) return;
+        const px = game.food.x * CELL, py = game.food.y * CELL;
+        const pulse = 0.7 + 0.3 * Math.sin(t / 180);
+        ctx.save();
+        ctx.shadowColor = '#ff2a6d';
+        ctx.shadowBlur = 14 * pulse;
+        ctx.fillStyle = '#ff2a6d';
+        ctx.fillRect(px + 5, py + 5, CELL - 10, CELL - 10);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillRect(px + 8, py + 8, 4, 4);
+        ctx.restore();
+      }
+
+      function drawSnake() {
+        // Cuerpo con brillo neón
+        ctx.save();
+        ctx.shadowColor = '#39ff14';
+        ctx.shadowBlur = 10;
+        game.snake.forEach((seg, i) => {
+          ctx.fillStyle = i === 0 ? '#b6ff00' : (i % 2 ? '#2fbf0f' : '#39ff14');
+          ctx.fillRect(seg.x * CELL + 2, seg.y * CELL + 2, CELL - 4, CELL - 4);
+        });
+        ctx.restore();
+
+        // Ojos de la cabeza
+        const head = game.snake[0];
+        if (!head) return;
+        const hx = head.x * CELL, hy = head.y * CELL;
+        ctx.fillStyle = '#0d0221';
+        if (game.dir.x !== 0) {
+          const ox = game.dir.x > 0 ? CELL - 9 : 5;
+          ctx.fillRect(hx + ox, hy + 6, 4, 4);
+          ctx.fillRect(hx + ox, hy + CELL - 10, 4, 4);
+        } else {
+          const oy = game.dir.y > 0 ? CELL - 9 : 5;
+          ctx.fillRect(hx + 6, hy + oy, 4, 4);
+          ctx.fillRect(hx + CELL - 10, hy + oy, 4, 4);
+        }
+      }
+
+      function overlay(alpha) {
+        ctx.fillStyle = 'rgba(5, 2, 20, ' + alpha + ')';
+        ctx.fillRect(0, 0, BW, BH);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+      }
+
+      function neonText(text, x, y, size, color, glow) {
+        ctx.save();
+        ctx.font = 'bold ' + size + 'px "Courier New", monospace';
+        ctx.shadowColor = color;
+        ctx.shadowBlur = glow || 18;
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+        ctx.restore();
+      }
+
+      function whiteText(text, x, y, size, alpha) {
+        ctx.save();
+        ctx.font = size + 'px "Courier New", monospace';
+        ctx.fillStyle = 'rgba(234, 234, 234, ' + (alpha == null ? 1 : alpha) + ')';
+        ctx.fillText(text, x, y);
+        ctx.restore();
+      }
+
+      function drawStart(t) {
+        overlay(0.72);
+        neonText(GAME_NAME, BW / 2, BH / 2 - 70, 60, '#39ff14');
+        const blink = 0.45 + 0.55 * Math.abs(Math.sin(t / 350));
+        whiteText('[ JUGAR ]', BW / 2, BH / 2 + 4, 26, blink);
+        whiteText('Presiona Enter o toca la pantalla', BW / 2, BH / 2 + 46, 15);
+        whiteText('Flechas / WASD o desliza para moverte', BW / 2, BH / 2 + 72, 14, 0.7);
+      }
+
+      function drawPause() {
+        overlay(0.6);
+        neonText(GAME_NAME, BW / 2, BH / 2 - 72, 44, '#39ff14');
+        neonText('PAUSA', BW / 2, BH / 2 - 14, 34, '#ffd60a');
+        whiteText('Espacio o toca la pantalla para reanudar', BW / 2, BH / 2 + 34, 15);
+      }
+
+      function drawOver(t) {
+        overlay(0.75);
+        neonText(GAME_NAME, BW / 2, BH / 2 - 118, 34, '#39ff14');
+        if (game.won) {
+          neonText('¡VICTORIA!', BW / 2, BH / 2 - 72, 38, '#ffd60a');
+        } else {
+          neonText('GAME OVER', BW / 2, BH / 2 - 72, 38, '#ff2a6d');
+        }
+        whiteText('Puntuación: ' + game.score, BW / 2, BH / 2 - 22, 18);
+        whiteText('Récord: ' + game.best, BW / 2, BH / 2 + 8, 18);
+        if (game.newRecord) neonText('¡Nuevo récord!', BW / 2, BH / 2 + 38, 16, '#ffd60a', 10);
+        const blink = 0.45 + 0.55 * Math.abs(Math.sin(t / 350));
+        whiteText('[ Jugar nuevamente ]', BW / 2, BH / 2 + 80, 20, blink);
+        whiteText('Enter o toca la pantalla', BW / 2, BH / 2 + 110, 14, 0.7);
+      }
+
+      /* ================= Entradas: teclado ================= */
+      const KEY_DIRS = {
+        ArrowUp: [0, -1], KeyW: [0, -1],
+        ArrowDown: [0, 1], KeyS: [0, 1],
+        ArrowLeft: [-1, 0], KeyA: [-1, 0],
+        ArrowRight: [1, 0], KeyD: [1, 0],
+      };
+
+      document.addEventListener('keydown', (e) => {
+        // Con el modal abierto no hay controles de juego
+        if (optionsDialog.open) return;
+        if (e.code === 'Escape' || e.code === 'KeyP') { togglePause(); return; }
+        if (e.code === 'Space') {
+          e.preventDefault();
+          if (game.state === State.PLAYING || game.state === State.PAUSED) togglePause();
+          else startGame();
+          return;
+        }
+        if (e.code === 'Enter') {
+          e.preventDefault();
+          if (game.state === State.START || game.state === State.OVER) startGame();
+          return;
+        }
+        const dir = KEY_DIRS[e.code];
+        if (dir) {
+          e.preventDefault();
+          if (game.state === State.START) startGame();
+          if (game.state === State.PLAYING) queueDir(dir[0], dir[1]);
+        }
+      });
+
+      /* ================= Entradas: toque, deslizamiento y clic ================= */
+      let touch = null;
+
+      canvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignorar */ }
+        touch = { id: e.pointerId, x: e.clientX, y: e.clientY, swiped: false };
+      });
+
+      canvas.addEventListener('pointermove', (e) => {
+        if (!touch || e.pointerId !== touch.id) return;
+        const dx = e.clientX - touch.x;
+        const dy = e.clientY - touch.y;
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_MIN) return;
+        touch.swiped = true;
+        touch.x = e.clientX;
+        touch.y = e.clientY;
+        const d = Math.abs(dx) > Math.abs(dy) ? [Math.sign(dx), 0] : [0, Math.sign(dy)];
+        if (game.state === State.START || game.state === State.OVER) startGame();
+        if (game.state === State.PLAYING) queueDir(d[0], d[1]);
+      });
+
+      canvas.addEventListener('pointerup', (e) => {
+        if (!touch || e.pointerId !== touch.id) return;
+        const wasSwipe = touch.swiped;
+        touch = null;
+        if (wasSwipe) return;
+        if (game.state === State.START || game.state === State.OVER) startGame();
+        else togglePause();
+      });
+
+      canvas.addEventListener('pointercancel', () => { touch = null; });
+
+      /* ================= Entradas: D-pad ================= */
+      const DPAD_DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+      dpad.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        const btn = e.target.closest('button[data-dir]');
+        if (!btn) return;
+        if (game.state === State.START || game.state === State.OVER) startGame();
+        const d = DPAD_DIRS[btn.dataset.dir];
+        if (game.state === State.PLAYING) queueDir(d[0], d[1]);
+      });
+      dpad.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      /* ================= Pausa automática al ocultar la pestaña ================= */
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && game.state === State.PLAYING) togglePause();
+      });
+
+      /* ================= Modal de opciones ================= */
+      function openModal() {
+        if (game.state === State.PLAYING) togglePause(); // abrir opciones pausa la partida
+        optionsDialog.showModal();
+      }
+      function closeModal() { if (optionsDialog.open) optionsDialog.close(); }
+
+      btnOptions.addEventListener('click', openModal);
+      btnCloseModal.addEventListener('click', closeModal);
+      optionsDialog.addEventListener('click', (e) => {
+        if (e.target === optionsDialog) closeModal(); // clic en el backdrop
+      });
+      // Al cerrar, quita el foco del botón para que Espacio/Enter no lo reactiven
+      optionsDialog.addEventListener('close', () => btnOptions.blur());
+
+      // Evita que los botones retengan el foco y capturen Space/Enter
+      document.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => b.blur()));
+
+      /* ================= Switches de opciones ================= */
+      optIncremental.checked = settings.incremental;
+      optMusic.checked = settings.music;
+      optSfx.checked = settings.sfx;
+
+      optIncremental.addEventListener('change', () => {
+        settings.incremental = optIncremental.checked;
+        saveSettings();
+        game.interval = computeInterval(); // aplica de inmediato (activa o congela la velocidad)
+      });
+
+      optMusic.addEventListener('change', () => {
+        settings.music = optMusic.checked;
+        saveSettings();
+        if (settings.music) Sound.unlock(); // el audio se habilita con un gesto del usuario
+        syncMusic();
+      });
+
+      optSfx.addEventListener('change', () => {
+        settings.sfx = optSfx.checked;
+        saveSettings();
+        if (settings.sfx) Sound.sfx('eat'); // sonido de muestra
+      });
+
+      /* ================= Inicio ================= */
+      resetGame();
+      game.lastTime = performance.now();
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>

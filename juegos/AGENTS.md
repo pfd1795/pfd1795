@@ -24,7 +24,7 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
 2. **Canon visual retro-arcade**: todos los juegos comparten el mismo aspecto (paleta neón oscura
    `#0d0221`/`#1a1033` + neones verde/rosa/cian/amarillo/violeta, tipografía `"Courier New"`,
    modal de opciones nativo `<dialog id="options">`, overlay `.scanlines` CRT, botones cian
-   transparente). La referencia canónica es [`snake/index.html`](./snake/index.html) y la
+   transparente). La referencia canónica es [`neon-snake/index.html`](./neon-snake/index.html) y la
    plantilla [`_template/index.html`](./_template/index.html); la especificación completa está en
    [`README.md` (sección "Canon visual retro-arcade")](./README.md#canon-visual-retro-arcade).
    Un juego nuevo debe copiar ese chrome; no introducir paletas ni modales propios.
@@ -39,15 +39,15 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
 4. **Manifiesto** (`data/juegos.json`): un solo juego por entrada; textos `es`/`en`
    en el objeto; `status: "published"` solo si el juego está probado; `updatedAt` con fecha ISO
    `YYYY-MM-DD` del último cambio o `null` si no hay fecha registrada; `cover` con ruta relativa
-   a `juegos/index.html` (por ejemplo `../assets/images/games/<slug>/cover.jpg`). Si falta o está
+   a `juegos/index.html` (por ejemplo `./<slug>/cover.jpg`). Si falta o está
    vacía, la tarjeta usa placeholder. El filtro de la grilla solo publica entradas con
    `status: "published"` y slug válido.
 5. **Integración de un juego nuevo**: seguir el paso a paso y el checklist de calidad de
    [`README.md` (sección "Cómo agregar un juego")](./README.md#cómo-agregar-un-juego), incluyendo
    comprobar que el `index.html` del juego no carga recursos externos.
 6. **No introducir build, frameworks ni dependencias** en esta grilla ni en los juegos.
-7. **Portadas**: cada juego usa una sola portada en `cover`; la ruta apunta al asset del juego
-   dentro de `assets/images/games/<slug>/`.
+7. **Portadas**: cada juego usa una sola portada en `cover`; la ruta apunta al archivo
+   `juegos/<slug>/cover.jpg` dentro de la carpeta del juego.
 8. **Sin firmas de IA**: un juego no incluye marcas de agua, comentarios-firma, nombres de modelos
    de IA, código ni recursos propios de un agente. La única firma admitida está en el footer de la
    portada (`../index.html`), según la regla del [`AGENTS.md` raíz](../AGENTS.md#firma-de-agentes-ia-en-el-footer).

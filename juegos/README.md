@@ -26,7 +26,7 @@ juegos/
 Reglas de la carpeta de un juego:
 
 - El `slug` de la carpeta debe estar en **kebab-case** y solo usar minúsculas, números y guiones
-  (`space-invaders`, `neon-racer`). Es el identificador que se usa en el manifiesto.
+  (`neon-space-invaders`, `neon-racer`). Es el identificador que se usa en el manifiesto.
 - El juego debe ser un **único `index.html`** con su HTML, CSS y JavaScript embebidos, salvo que
   se acuerde lo contrario.
 - No debe cargar recursos externos, CDNs, fuentes remotas ni APIs.
@@ -86,7 +86,7 @@ Edita [`data/juegos.json`](./data/juegos.json) y agrega un objeto:
     "es": "Flechas / WASD · botones táctiles",
     "en": "Arrows / WASD · touch buttons"
   },
-  "cover": "../assets/images/games/mi-juego/cover.jpg",
+  "cover": "./mi-juego/cover.jpg",
   "status": "published",
   "updatedAt": null
 }
@@ -112,7 +112,7 @@ Abre `http://localhost:8000/juegos/` y comprueba:
 ### 5. Actualizar la documentación
 
 - Añade el juego a la tabla de catálogo de este README (sección siguiente).
-- Añade la portada del juego al manifiesto en el campo `cover` (ruta relativa a `juegos/index.html`, por ejemplo `../assets/images/games/<slug>/cover.jpg`).
+- Añade la portada del juego al manifiesto en el campo `cover` (ruta relativa a `juegos/index.html`, por ejemplo `./<slug>/cover.jpg`).
 - Mantén sincronizados `README.md`, `AGENTS.md` y `juegos/README.md` del portafolio.
 
 ---
@@ -130,7 +130,7 @@ Es la **única fuente de verdad** de la grilla. La página no contiene tarjetas 
 | `year` | number | No | Año de publicación; no se renderiza en la grilla. |
 | `technologies` | string[] | No | Tecnologías; no se muestran, se usan como metadato del buscador. |
 | `controls` | `{ es, en }` | No | Resumen de controles; no se renderiza en la grilla. |
-| `cover` | string | No | Ruta relativa a la portada (`../assets/images/games/<slug>/cover.jpg`). Si falta o está vacía, la tarjeta muestra un placeholder con degradado. |
+| `cover` | string | No | Ruta relativa a la portada (`./<slug>/cover.jpg`). Si falta o está vacía, la tarjeta muestra un placeholder con degradado. |
 | `status` | `"published"` \| `"wip"` | Sí | Solo `published` aparece en la grilla. |
 | `updatedAt` | `string` \| `null` | Sí | Fecha ISO `YYYY-MM-DD` del último cambio; `null` si no hay fecha registrada. |
 
@@ -148,26 +148,26 @@ Notas:
 
 | Juego | Carpeta | Género | Estado |
 | --- | --- | --- | --- |
-| Snake Retro | [`snake/`](./snake/) | Arcade · habilidad | Publicado |
-| Space Invaders Retro | [`space-invaders/`](./space-invaders/) | Shooter · arcade | Publicado |
-| Ajedrez Arcade | [`ajedrez/`](./ajedrez/) | Tablero · IA | Publicado |
-| Damas Arcade | [`damas/`](./damas/) | Tablero · IA | Publicado |
-| Neon Depths | [`dungeon-crawler/`](./dungeon-crawler/) | Acción · mazmorras | Publicado |
+| Snake Retro | [`neon-snake/`](./neon-snake/) | Arcade · habilidad | Publicado |
+| Space Invaders Retro | [`neon-space-invaders/`](./neon-space-invaders/) | Shooter · arcade | Publicado |
+| Ajedrez Arcade | [`neon-chess/`](./neon-chess/) | Tablero · IA | Publicado |
+| Damas Arcade | [`neon-checkers/`](./neon-checkers/) | Tablero · IA | Publicado |
+| Neon Depths | [`neon-dungeon-crawler/`](./neon-dungeon-crawler/) | Acción · mazmorras | Publicado |
 | Neon Racer | [`neon-racer/`](./neon-racer/) | Carreras · arcade | Publicado |
-| Neon Ninja | [`plataformas/`](./plataformas/) | Plataformas · acción | Publicado |
-| Neon Defense | [`tower-defense/`](./tower-defense/) | Estrategia · torres | Publicado |
-| Dulce Explosión | [`match-3/`](./match-3/) | Puzzle · match-3 | Publicado |
-| Rompebloques Neón | [`arkanoid/`](./arkanoid/) | Arcade · habilidad | Publicado |
-| Pixel Riff | [`ritmo/`](./ritmo/) | Ritmo · música | Publicado |
-| Pong Neón | [`pong/`](./pong/) | Arcade · deporte | Publicado |
-| Piedra, Papel o Tijeras | [`piedras-papel-tijeras/`](./piedras-papel-tijeras/) | Casual · arcade | Publicado |
-| Pixel Pool 8 | [`pool/`](./pool/) | Billar · física | Publicado |
-| Ta Te Ti | [`ta-te-ti/`](./ta-te-ti/) | Tablero · casual | Publicado |
-| Card Match | [`card-match/`](./card-match/) | Puzzle · memoria | Publicado |
-| Dodge Arena | [`dodge-arena/`](./dodge-arena/) | Acción · supervivencia | Publicado |
+| Neon Ninja | [`neon-platformer/`](./neon-platformer/) | Plataformas · acción | Publicado |
+| Neon Defense | [`neon-tower-defense/`](./neon-tower-defense/) | Estrategia · torres | Publicado |
+| Dulce Explosión | [`neon-match-3/`](./neon-match-3/) | Puzzle · match-3 | Publicado |
+| Rompebloques Neón | [`neon-arkanoid/`](./neon-arkanoid/) | Arcade · habilidad | Publicado |
+| Pixel Riff | [`neon-rhythm/`](./neon-rhythm/) | Ritmo · música | Publicado |
+| Pong Neón | [`neon-pong/`](./neon-pong/) | Arcade · deporte | Publicado |
+| Piedra, Papel o Tijeras | [`neon-rock-paper-scissors/`](./neon-rock-paper-scissors/) | Casual · arcade | Publicado |
+| Pixel Pool 8 | [`neon-pool/`](./neon-pool/) | Billar · física | Publicado |
+| Ta Te Ti | [`neon-tic-tac-toe/`](./neon-tic-tac-toe/) | Tablero · casual | Publicado |
+| Card Match | [`neon-card-match/`](./neon-card-match/) | Puzzle · memoria | Publicado |
+| Dodge Arena | [`neon-dodge-arena/`](./neon-dodge-arena/) | Acción · supervivencia | Publicado |
 | Neon Maze | [`neon-maze/`](./neon-maze/) | Aventura · laberinto | Publicado |
 | Neon Retro Rally | [`neon-rally/`](./neon-rally/) | Carreras · arcade | Publicado |
-| Tetris | [`tetris/`](./tetris/) | Puzzle · clásico | Publicado |
+| Tetris | [`neon-tetris/`](./neon-tetris/) | Puzzle · clásico | Publicado |
 
 ---
 
@@ -202,7 +202,7 @@ Notas:
 Todos los juegos comparten el mismo aspecto: pixel-art neón sobre fondo oscuro, tipografía
 `"Courier New", monospace` y el mismo "chrome" (barra superior, HUD, estados y modal). Un juego
 nuevo debe copiarlo de [`_template/index.html`](./_template/index.html) o de
-[`snake/index.html`](./snake/index.html) (referencia canónica).
+[`neon-snake/index.html`](./neon-snake/index.html) (referencia canónica).
 
 ### Paleta (familia A)
 
@@ -232,9 +232,9 @@ Definida como variables CSS en `:root` de cada juego:
 
 El escenario comparte un mismo criterio de tamaño: un **marco máximo de 900×900 px CSS**, que
 respeta la proporción lógica de cada juego y renderiza el buffer a la resolución visible. La
-referencia es [`_template/index.html`](./_template/index.html); lo siguen card-match,
-dodge-arena, dungeon-crawler, neon-maze, neon-racer, neon-rally, plataformas, snake,
-space-invaders, tetris y tower-defense.
+referencia es [`_template/index.html`](./_template/index.html); lo siguen neon-card-match,
+neon-dodge-arena, neon-dungeon-crawler, neon-maze, neon-racer, neon-rally, neon-platformer,
+neon-snake, neon-space-invaders, neon-tetris y neon-tower-defense.
 
 - Variables en `:root` de cada juego:
   - `--game-max: 900px` — tope de ancho **y** de alto del marco.
@@ -288,24 +288,29 @@ antigua la primera vez que se abre el juego), así que ningún jugador pierde su
 
 | Juego | Clave actual | Clave(s) antigua(s) migrada(s) |
 | --- | --- | --- |
-| snake | `snake_best_v1` | — |
-| space-invaders | `space-invaders_best_v1` | `invaders_best_v1` |
-| ajedrez | `ajedrez_best_v1` | `ajedrez-arcade-v1` |
-| damas | `damas_best_v1` | `damas-arcade-v1` |
-| dungeon-crawler | `dungeon-crawler_best_v1` | `dungeon_best_v1` |
+| neon-snake | `neon-snake_best_v1` | `snake_best_v1` |
+| neon-space-invaders | `neon-space-invaders_best_v1` | `invaders_best_v1`, `space-invaders_best_v1` |
+| neon-chess | `neon-chess_best_v1` | `ajedrez-arcade-v1`, `ajedrez_best_v1` |
+| neon-checkers | `neon-checkers_best_v1` | `damas-arcade-v1`, `damas_best_v1` |
+| neon-dungeon-crawler | `neon-dungeon-crawler_best_v1` | `dungeon_best_v1`, `dungeon-crawler_best_v1` |
 | neon-racer | `neon-racer_best_v1` | `racer_best_v1` |
-| plataformas | `plataformas_best_v1` | `ninja_best_v1` |
-| tower-defense | `tower-defense_best_v1` | `tower_best_v1` |
-| match-3 | `match-3_best_v1` | `de_record` + `de_bestlevel` (fusionados en un JSON) |
-| arkanoid | `arkanoid_best_v1` | `ark_record` + `ark_bestlevel` (fusionados en un JSON) |
-| ritmo | `ritmo_best_v1` | `pixelriff_records_v1` |
-| pong | `pong_best_v1` | `pong_neon_best` |
-| piedras-papel-tijeras | `piedras-papel-tijeras_best_v1` | `ppt_neon_record` |
-| pool | `pool_best_v1` | `pixelpool_records_v1` |
-| ta-te-ti | `ta-te-ti_best_v1` | `tateti_neon_record` |
+| neon-platformer | `neon-platformer_best_v1` | `ninja_best_v1`, `plataformas_best_v1` |
+| neon-tower-defense | `neon-tower-defense_best_v1` | `tower_best_v1`, `tower-defense_best_v1` |
+| neon-match-3 | `neon-match-3_best_v1` | `de_record` + `de_bestlevel` (fusionados en un JSON), `match-3_best_v1` |
+| neon-arkanoid | `neon-arkanoid_best_v1` | `ark_record` + `ark_bestlevel` (fusionados en un JSON), `arkanoid_best_v1` |
+| neon-rhythm | `neon-rhythm_best_v1` | `pixelriff_records_v1`, `ritmo_best_v1` |
+| neon-pong | `neon-pong_best_v1` | `pong_neon_best`, `pong_best_v1` |
+| neon-rock-paper-scissors | `neon-rock-paper-scissors_best_v1` | `ppt_neon_record`, `piedras-papel-tijeras_best_v1` |
+| neon-pool | `neon-pool_best_v1` | `pixelpool_records_v1`, `pool_best_v1` |
+| neon-tic-tac-toe | `neon-tic-tac-toe_best_v1` | `tateti_neon_record`, `ta-te-ti_best_v1` |
+| neon-card-match | `neon-card-match_best_v1` | `card-match_best_v1` |
+| neon-dodge-arena | `neon-dodge-arena_best_v1` | `dodge-arena_best_v1` |
+| neon-maze | `neon-maze_best_v1` | — |
+| neon-rally | `neon-rally_best_v1` | — |
+| neon-tetris | `neon-tetris_best_v1` | `tetris_best_v1` |
 
 Además del récord, un juego puede guardar preferencias propias con el patrón `<slug>_…_v1`
-(p. ej. `snake_settings_v1` o `neon-maze_sfx_v1`). Son claves privadas de cada juego, no
+(p. ej. `neon-snake_settings_v1` o `neon-maze_sfx_v1`). Son claves privadas de cada juego, no
 deben borrarse al limpiar el inventario de `localStorage` del sitio.
 
 ---
