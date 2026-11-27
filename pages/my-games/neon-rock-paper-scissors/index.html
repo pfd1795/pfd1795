@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d0221">
+<link rel="icon" href="data:,">
+<meta name="description" content="Piedra, Papel o Tijeras: juego casual arcade contra la CPU con marcador; gana quien llega primero a 5 puntos.">
+<title>Piedra, Papel o Tijeras — Arcade Neón</title>
+<style>
+  :root {
+    --bg:#0d0221; --panel:#1a1033; --line:rgba(185,103,255,0.4);
+    --text:#eaeaea; --muted:#9b8fb8;
+    --neon-green:#39ff14; --neon-pink:#ff2a6d; --neon-cyan:#05d9e8; --neon-yellow:#ffd60a; --neon-purple:#b967ff;
+    --cyan:var(--neon-cyan); --pink:var(--neon-pink); --yellow:var(--neon-yellow); --green:var(--neon-green);
+  }
+  * { box-sizing:border-box; }
+  html,body { width:100%; height:100%; margin:0; overflow:hidden; }
+  body {
+    display:flex; flex-direction:column; align-items:center;
+    background:var(--bg);
+    color:var(--text); font-family:"Courier New",monospace;
+    user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  header {
+    width:min(96vw,720px); display:flex; justify-content:space-between; align-items:center;
+    padding:10px 4px 6px;
+  }
+  h1 {
+    margin:0; color:var(--neon-green); font-size:clamp(15px,4vw,21px);
+    letter-spacing:2px; text-shadow:0 0 8px rgba(57,255,20,0.8);
+  }
+  button {
+    color:var(--neon-cyan); font-family:inherit; font-weight:bold; letter-spacing:1px;
+    background:transparent; border:1px solid var(--neon-cyan); border-radius:9px;
+    padding:8px 12px; cursor:pointer; transition:box-shadow 0.15s, background 0.15s;
+  }
+  button:hover { background:rgba(5,217,232,0.12); box-shadow:0 0 10px rgba(5,217,232,0.5); }
+  button:focus-visible { outline:3px solid var(--neon-yellow); outline-offset:2px; }
+  button:active { transform:translateY(1px); }
+  #hud {
+    width:min(96vw,720px); display:flex; justify-content:center; gap:clamp(12px,5vw,40px);
+    padding:3px 4px 8px; color:var(--muted); font-size:11px; letter-spacing:1px;
+  }
+  #hud b { color:var(--text); font-size:15px; margin-left:5px; }
+  main { flex:1; min-height:0; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:4px 8px 12px; }
+  canvas { display:block; border-radius:14px; touch-action:none; }
+  #choices {
+    display:flex; justify-content:center; gap:clamp(8px,3vw,18px);
+    width:min(96vw,550px);
+  }
+  .choice {
+    flex:1; min-width:0; max-width:155px; min-height:76px;
+    border:1px solid var(--neon-purple); background:rgba(185,103,255,0.08); border-radius:12px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    font-size:13px;
+  }
+  .choice .icon { font-size:30px; line-height:1; }
+  .choice:hover { border-color:var(--neon-cyan); box-shadow:0 0 14px rgba(5,217,232,0.3); }
+  .choice:disabled { opacity:.45; cursor:not-allowed; }
+  #message { min-height:20px; text-align:center; color:var(--muted); font-size:12px; letter-spacing:1px; }
+
+  /* ================= Scanlines CRT (sutil, canon compartido) ================= */
+  .scanlines {
+    position:fixed; inset:0; pointer-events:none; z-index:5;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0 1px, transparent 1px 4px);
+  }
+
+  /* ================= Modal de opciones ================= */
+  dialog {
+    width:min(92vw,410px); padding:16px;
+    color:var(--text); background:var(--panel);
+    border:1px solid var(--neon-purple); border-radius:14px;
+    box-shadow:0 0 30px rgba(185,103,255,0.4);
+  }
+  dialog::backdrop { background:rgba(0,0,0,0.72); }
+  .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:13px; }
+  .modal-head h2 { margin:0; font-size:16px; color:var(--neon-cyan); letter-spacing:2px; text-shadow:0 0 8px rgba(5,217,232,0.7); }
+  dialog ul { list-style:none; padding:0; margin:0 0 14px; display:grid; gap:8px; }
+  dialog li {
+    display:flex; justify-content:space-between; gap:10px; padding:9px 11px;
+    border:1px solid var(--line); border-radius:8px; background:#12052e; font-size:13px;
+  }
+  .soon { color:var(--muted); font-style:italic; }
+  .instructions { border-top:1px dashed var(--line); padding-top:10px; color:var(--muted); font-size:12px; line-height:1.55; }
+  .instructions h3 { margin:0 0 5px; color:var(--neon-green); font-size:13px; letter-spacing:2px; }
+  .instructions p { margin:5px 0; }
+  .instructions strong { color:var(--text); }
+</style>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('../../../service-worker.js').catch(function () {});
+    });
+  }
+  </script>
+</head>
+<body>
+<header>
+  <h1>PIEDRA · PAPEL · TIJERAS</h1>
+  <button id="options-button" type="button">Opciones</button>
+</header>
+
+<div id="hud">
+  <span>JUGADOR<b id="player-score">0</b></span>
+  <span>RÉCORD<b id="record">0</b></span>
+  <span>CPU<b id="cpu-score">0</b></span>
+</div>
+
+<main id="stage">
+  <canvas id="game" aria-label="Marcador de Piedra, Papel o Tijeras"></canvas>
+  <div id="message" aria-live="polite">Elige piedra, papel o tijeras.</div>
+  <div id="choices">
+    <button class="choice" data-choice="piedra" type="button" aria-label="Elegir piedra">
+      <span class="icon">✊</span><span>PIEDRA</span>
+    </button>
+    <button class="choice" data-choice="papel" type="button" aria-label="Elegir papel">
+      <span class="icon">✋</span><span>PAPEL</span>
+    </button>
+    <button class="choice" data-choice="tijeras" type="button" aria-label="Elegir tijeras">
+      <span class="icon">✌️</span><span>TIJERAS</span>
+    </button>
+  </div>
+</main>
+
+<dialog id="options" aria-labelledby="options-title">
+    <div class="modal-head">
+      <h2 id="options-title">OPCIONES</h2>
+      <button id="close-options" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <ul>
+      <li><span>Música</span><span class="soon">Próximamente</span></li>
+      <li><span>Efectos de sonido</span><span class="soon">Próximamente</span></li>
+      <li><span>Dificultad</span><span class="soon">Próximamente</span></li>
+      <li><span>Temas visuales</span><span class="soon">Próximamente</span></li>
+    </ul>
+    <div class="instructions">
+      <h3>REGLAS Y CONTROLES</h3>
+      <p>Gana quien llegue primero a <strong>5 puntos</strong>. Piedra vence a tijeras, tijeras a papel y papel a piedra. Si ambos eligen lo mismo, es empate.</p>
+      <p><strong>Teclado:</strong> 1 = piedra, 2 = papel, 3 = tijeras. P o ESC = pausa.</p>
+      <p><strong>Móvil:</strong> toca una de las tres opciones.</p>
+    </div>
+</dialog>
+
+<div class="scanlines" aria-hidden="true"></div>
+
+<script>
+'use strict';
+
+const W = 560;
+const H = 310;
+const TARGET_SCORE = 5;
+const choices = ['piedra', 'papel', 'tijeras'];
+const icons = { piedra:'✊', papel:'✋', tijeras:'✌️' };
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const stage = document.getElementById('stage');
+const messageEl = document.getElementById('message');
+const choiceButtons = [...document.querySelectorAll('.choice')];
+const optionsDialog = document.getElementById('options');
+
+let state = 'start'; // start, playing, paused, victory, gameover
+let playerScore = 0;
+let cpuScore = 0;
+let record = 0;
+let roundPlayer = null;
+let roundCpu = null;
+let roundResult = '';
+let buttons = [];
+let modalPausedGame = false;
+
+const stars = Array.from({length:42}, () => ({
+  x:Math.random()*W, y:Math.random()*H,
+  size:0.7+Math.random()*1.4, alpha:0.12+Math.random()*0.35
+}));
+
+const RECORD_KEY = 'neon-rock-paper-scissors_best_v1';
+const LEGACY_RECORD_KEYS = ['ppt_neon_record', 'piedras-papel-tijeras_best_v1'];
+
+function migrateRecordKey() {
+  try {
+    if (localStorage.getItem(RECORD_KEY) == null) {
+      for (const oldKey of LEGACY_RECORD_KEYS) {
+        const legacy = localStorage.getItem(oldKey);
+        if (legacy != null) { localStorage.setItem(RECORD_KEY, legacy); localStorage.removeItem(oldKey); break; }
+      }
+    } else {
+      for (const oldKey of LEGACY_RECORD_KEYS) { if (localStorage.getItem(oldKey) != null) localStorage.removeItem(oldKey); }
+    }
+  } catch (_) { /* localStorage puede estar deshabilitado */ }
+}
+migrateRecordKey(); // conserva el récord con la clave nueva
+
+function loadRecord() {
+  try { record = Number(localStorage.getItem(RECORD_KEY)) || 0; }
+  catch (_) { record = 0; }
+}
+function saveRecord() {
+  try { localStorage.setItem(RECORD_KEY, String(record)); }
+  catch (_) { /* localStorage puede estar deshabilitado */ }
+}
+function updateHud() {
+  document.getElementById('player-score').textContent = playerScore;
+  document.getElementById('cpu-score').textContent = cpuScore;
+  document.getElementById('record').textContent = record;
+}
+function resizeCanvas() {
+  const rect = stage.getBoundingClientRect();
+  const scale = Math.max(0.35, Math.min(1.25, (rect.width-16)/W, (rect.height-180)/H));
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const renderScale = scale * dpr;
+  canvas.width = Math.round(W*renderScale);
+  canvas.height = Math.round(H*renderScale);
+  canvas.style.width = Math.round(W*scale)+'px';
+  canvas.style.height = Math.round(H*scale)+'px';
+  ctx.setTransform(renderScale,0,0,renderScale,0,0);
+}
+
+function startGame() {
+  playerScore = 0;
+  cpuScore = 0;
+  roundPlayer = null;
+  roundCpu = null;
+  roundResult = '';
+  state = 'playing';
+  messageEl.textContent = 'Elige piedra, papel o tijeras.';
+  setChoicesEnabled(true);
+  updateHud();
+}
+function setChoicesEnabled(enabled) {
+  choiceButtons.forEach(button => button.disabled = !enabled);
+}
+function winnerOf(player, cpu) {
+  if (player === cpu) return 'empate';
+  const wins = {
+    piedra:'tijeras',
+    papel:'piedra',
+    tijeras:'papel'
+  };
+  return wins[player] === cpu ? 'jugador' : 'cpu';
+}
+function playRound(playerChoice) {
+  if (state !== 'playing') return;
+  const cpuChoice = choices[Math.floor(Math.random()*choices.length)];
+  const result = winnerOf(playerChoice,cpuChoice);
+
+  roundPlayer = playerChoice;
+  roundCpu = cpuChoice;
+  roundResult = result;
+
+  if (result === 'jugador') {
+    playerScore++;
+    messageEl.textContent = '¡Punto para ti!';
+  } else if (result === 'cpu') {
+    cpuScore++;
+    messageEl.textContent = 'Punto para la CPU.';
+  } else {
+    messageEl.textContent = 'Empate. ¡Otra ronda!';
+  }
+
+  if (playerScore > record) {
+    record = playerScore;
+    saveRecord();
+  }
+  updateHud();
+
+  if (playerScore >= TARGET_SCORE) {
+    state = 'victory';
+    messageEl.textContent = '¡Ganaste la partida!';
+    setChoicesEnabled(false);
+  } else if (cpuScore >= TARGET_SCORE) {
+    state = 'gameover';
+    messageEl.textContent = 'La CPU ganó la partida.';
+    setChoicesEnabled(false);
+  }
+}
+function togglePause() {
+  if (state === 'playing') {
+    state = 'paused';
+    setChoicesEnabled(false);
+  } else if (state === 'paused') {
+    state = 'playing';
+    setChoicesEnabled(true);
+  }
+}
+
+function drawText(text,x,y,size,color,weight='bold') {
+  ctx.font = `${weight} ${size}px "Courier New",monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = color;
+  ctx.fillText(text,x,y);
+}
+function roundedRect(x,y,w,h,r) {
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,r);
+}
+function drawButton(id,cx,cy,w,h,label,primary=false) {
+  const x=cx-w/2, y=cy-h/2;
+  roundedRect(x,y,w,h,10);
+  ctx.fillStyle=primary?'#3d0f24':'#1a1033';
+  ctx.fill();
+  ctx.lineWidth=2;
+  ctx.strokeStyle=primary?'#ff2a6d':'#05d9e8';
+  ctx.shadowColor=ctx.strokeStyle;
+  ctx.shadowBlur=9;
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  drawText(label,cx,cy,16,'#eaeaea');
+  buttons.push({id,x,y,w,h});
+}
+function drawBackground() {
+  ctx.fillStyle='#0a0328';
+  ctx.fillRect(0,0,W,H);
+  for (const star of stars) {
+    ctx.globalAlpha=star.alpha;
+    ctx.fillStyle='#eaeaea';
+    ctx.fillRect(star.x,star.y,star.size,star.size);
+  }
+  ctx.globalAlpha=1;
+  ctx.strokeStyle='rgba(5,217,232,.25)';
+  ctx.lineWidth=1;
+  ctx.strokeRect(8,8,W-16,H-16);
+
+  ctx.setLineDash([7,9]);
+  ctx.strokeStyle='#3b2a5e';
+  ctx.beginPath();
+  ctx.moveTo(W/2,24);
+  ctx.lineTo(W/2,H-24);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+function drawArena() {
+  drawBackground();
+  drawText('JUGADOR',W*0.25,42,15,'#05d9e8');
+  drawText('CPU',W*0.75,42,15,'#ff2a6d');
+  drawText(String(playerScore),W*0.25,90,42,'#eaeaea');
+  drawText(String(cpuScore),W*0.75,90,42,'#eaeaea');
+
+  if (roundPlayer && roundCpu) {
+    drawText(icons[roundPlayer],W*0.25,H*0.58,72,'#eaeaea');
+    drawText('VS',W/2,H*0.58,18,'#9b8fb8');
+    drawText(icons[roundCpu],W*0.75,H*0.58,72,'#eaeaea');
+    drawText(roundPlayer.toUpperCase(),W*0.25,H*0.82,12,'#05d9e8');
+    drawText(roundCpu.toUpperCase(),W*0.75,H*0.82,12,'#ff2a6d');
+
+    const color = roundResult==='jugador' ? '#39ff14' : roundResult==='cpu' ? '#ff2a6d' : '#ffd60a';
+    const label = roundResult==='jugador' ? 'GANAS LA RONDA' : roundResult==='cpu' ? 'GANA LA CPU' : 'EMPATE';
+    drawText(label,W/2,H-26,13,color);
+  } else {
+    drawText('✊',W*0.25,H*0.58,62,'#05d9e8');
+    drawText('?',W/2,H*0.58,30,'#9b8fb8');
+    drawText('✊',W*0.75,H*0.58,62,'#ff2a6d');
+    drawText('ELIGE TU JUGADA',W/2,H-27,13,'#9b8fb8');
+  }
+}
+function drawOverlay(title,color,subtitle,primaryLabel) {
+  ctx.fillStyle='rgba(5,2,20,.86)';
+  ctx.fillRect(0,0,W,H);
+  ctx.shadowColor=color;
+  ctx.shadowBlur=18;
+  drawText(title,W/2,H*0.31,36,color);
+  ctx.shadowBlur=0;
+  drawText(subtitle,W/2,H*0.44,14,'#cfc7e2','normal');
+  drawButton('start',W/2,H*0.61,220,44,primaryLabel,true);
+  if (state !== 'start') drawButton('menu',W/2,H*0.80,180,40,'MENÚ');
+}
+function render() {
+  buttons=[];
+  ctx.clearRect(0,0,W,H);
+  drawArena();
+
+  if (state==='start') {
+    drawOverlay('PIEDRA, PAPEL, TIJERAS','#ffd60a',`Primero en llegar a ${TARGET_SCORE} puntos gana`,'JUGAR');
+    drawText('PRESIONA ENTER O TOCA JUGAR',W/2,H*0.94,11,'#9b8fb8','normal');
+  } else if (state==='paused') {
+    drawOverlay('PAUSA','#05d9e8','La partida está en pausa.','REANUDAR');
+    buttons[0].id='resume';
+  } else if (state==='victory') {
+    drawOverlay('¡VICTORIA!','#39ff14',`Marcador final: ${playerScore} — ${cpuScore}`,'JUGAR DE NUEVO');
+    buttons[0].id='restart';
+  } else if (state==='gameover') {
+    drawOverlay('GAME OVER','#ff2a6d',`Marcador final: ${playerScore} — ${cpuScore}`,'INTENTAR DE NUEVO');
+    buttons[0].id='restart';
+  }
+}
+function handleCanvasClick(x,y) {
+  for (const button of buttons) {
+    if (x>=button.x && x<=button.x+button.w && y>=button.y && y<=button.y+button.h) {
+      if (button.id==='start' || button.id==='restart') startGame();
+      else if (button.id==='resume') togglePause();
+      else if (button.id==='menu') {
+        state='start';
+        setChoicesEnabled(false);
+        messageEl.textContent='Elige piedra, papel o tijeras.';
+      }
+      return;
+    }
+  }
+}
+
+canvas.addEventListener('pointerdown',event => {
+  event.preventDefault();
+  const rect=canvas.getBoundingClientRect();
+  const x=(event.clientX-rect.left)*W/rect.width;
+  const y=(event.clientY-rect.top)*H/rect.height;
+  if (state==='start' || state==='paused' || state==='victory' || state==='gameover') {
+    handleCanvasClick(x,y);
+  }
+});
+
+choiceButtons.forEach(button => {
+  button.addEventListener('click',() => playRound(button.dataset.choice));
+});
+
+window.addEventListener('keydown',event => {
+  const key=event.key.toLowerCase();
+  if (optionsDialog.open) return;
+  if (key==='1') playRound('piedra');
+  if (key==='2') playRound('papel');
+  if (key==='3') playRound('tijeras');
+
+  if (key==='p' || key==='escape') {
+    if (state==='playing' || state==='paused') togglePause();
+  }
+  if ((key==='enter' || key===' ') && (state==='start' || state==='victory' || state==='gameover')) {
+    startGame();
+  }
+});
+
+/* Opciones */
+optionsDialog.addEventListener('close', () => {
+  if (modalPausedGame && state==='paused') togglePause();
+  modalPausedGame=false;
+});
+document.getElementById('options-button').addEventListener('click',() => {
+  modalPausedGame=state==='playing';
+  if (modalPausedGame) togglePause();
+  optionsDialog.showModal();
+});
+document.getElementById('close-options').addEventListener('click',() => optionsDialog.close());
+optionsDialog.addEventListener('click',event => {
+  if (event.target===optionsDialog) optionsDialog.close(); // clic en el backdrop
+});
+
+document.addEventListener('visibilitychange',() => {
+  if (document.hidden && state==='playing') togglePause();
+});
+window.addEventListener('resize',resizeCanvas);
+
+function frame(now) {
+  render();
+  requestAnimationFrame(frame);
+}
+
+loadRecord();
+updateHud();
+resizeCanvas();
+setChoicesEnabled(false);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

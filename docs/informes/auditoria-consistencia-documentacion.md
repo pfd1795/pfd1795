@@ -1,6 +1,6 @@
 # Auditoría de documentación (consistencia interna)
 
-Alcance: `AGENTS.md` (raíz y locales de `juegos/`, `mis-estudios/` y `programas/`), `README.md`,
+Alcance: `AGENTS.md` (raíz y locales de `pages/my-games/`, `pages/my-studies/` y `pages/my-programs/`), `README.md`,
 `docs/README.md`, `docs/INVARIANTES.md`, `docs/LIMITACIONES.md` y `docs/prompts/*`. Método:
 lectura directa de los archivos, verificación de enlaces y anclas con script y recuento desde
 los manifiestos. No se comparan firmas, APIs ni citas contra el código: eso corresponde a la
@@ -12,7 +12,7 @@ verificación de veracidad.
   del alcance. La URL absoluta de producción responde correctamente.
 - Conteos publicados verificados por lectura directa: 36 artículos publicados, 20 juegos y
   11 herramientas publicadas + 5 `wip`. Coinciden con `README.md:14-16`,
-  `docs/LIMITACIONES.md:37,47-48`, `mis-estudios/AGENTS.md:97` y `programas/AGENTS.md:91`.
+  `docs/LIMITACIONES.md:37,47-48`, `pages/my-studies/AGENTS.md:97` y `pages/my-programs/AGENTS.md:91`.
 - Existen 29 archivos `<slug>.en.html` y solo 1 figura en `PRECACHE_URLS`; las otras 28 páginas
   quedan fuera, cifra coherente con `README.md:20`, `docs/LIMITACIONES.md:48` y el tracker.
 - Unicidad: `docs/` es documentación para agentes en español salvo `docs/HUMANOS.md`; los
@@ -41,14 +41,14 @@ verificación de veracidad.
 ### El esqueleto de artículos omite el enlace «Programas» del sidebar
 
 - **Ubicación:** `docs/prompts/crear-estudios.md:558-567`, frente a `AGENTS.md:476` y
-  `programas/AGENTS.md:100`; `docs/prompts/crear-programas-web.md:455-468` sí lo incluye.
+  `pages/my-programs/AGENTS.md:100`; `docs/prompts/crear-programas-web.md:455-468` sí lo incluye.
 - **Evidencia:** el esqueleto del prompt de artículos solo contiene los enlaces «Mis estudios»
   (activo) y «Juegos». `AGENTS.md:476` describe tres enlaces de sección en el sidebar, y
-  `programas/AGENTS.md:100` exige comprobar el enlace «Programas» también desde artículos. Seguir
+  `pages/my-programs/AGENTS.md:100` exige comprobar el enlace «Programas» también desde artículos. Seguir
   el esqueleto produce una página sin ese enlace y deja las dos herramientas de desarrollo
   desalineadas entre sí.
 - **Corrección propuesta:** añadir al esqueleto de `crear-estudios.md` el enlace
-  `<a class="sidebar-item" href="../../programas/index.html">` con `build.svg` y
+  `<a class="sidebar-item" href="../../pages/my-programs/index.html">` con `build.svg` y
   `data-lang="programs"`, en la posición que ocupa en `crear-programas-web.md:465-468`.
 - **Registro:** añadido al tracker único.
 
@@ -75,7 +75,7 @@ Estos hallazgos ya tenían ítem abierto y no se han duplicado:
 
 - El roster de `docs/prompts/crear-estudios.md:173-209` lista 31 de 36 artículos publicados.
 - `docs/prompts/crear-estudios.md:150` contradice la convención de versiones en inglés de la
-  regla 8 de `mis-estudios/AGENTS.md`.
+  regla 8 de `pages/my-studies/AGENTS.md`.
 - `docs/prompts/fichas-estudios.md:18` fija ocho temas pendientes cuando el tracker lista siete.
 - `docs/prompts/crear-estudios.md:629` y `docs/prompts/fichas-estudios.md:330-331` remiten la
   actualización de la documentación al `AGENTS.md` raíz, que no publica esas cifras.
@@ -87,11 +87,11 @@ Estos hallazgos ya tenían ítem abierto y no se han duplicado:
 
 - Estructura de documentación: `docs/informes/` es el único lugar de informes y del tracker; no
   hay planes, fases ni auditorías activas fuera de esa carpeta.
-- Numeración correlativa de las reglas locales en `juegos/AGENTS.md`, `mis-estudios/AGENTS.md` y
-  `programas/AGENTS.md`.
+- Numeración correlativa de las reglas locales en `pages/my-games/AGENTS.md`, `pages/my-studies/AGENTS.md` y
+  `pages/my-programs/AGENTS.md`.
 - `docs/INVARIANTES.md:30,48` citan el rango 374-396 del inventario de claves.
 - `docs/LIMITACIONES.md:29` describe las versiones en inglés como opcionales y artículo por
-  artículo, en línea con `README.md:84` y `mis-estudios/AGENTS.md:71-80`.
+  artículo, en línea con `README.md:84` y `pages/my-studies/AGENTS.md:71-80`.
 - `docs/prompts/crear-programas-web.md:200` remite al contrato del punto 7.
 - `README.md:87` separa las limitaciones verificadas de las tareas abiertas.
 - Las anclas usadas por las guías locales y los prompts (`#firma-de-agentes-ia-en-el-footer`,

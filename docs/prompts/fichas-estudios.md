@@ -319,13 +319,13 @@ VER TAMBIÉN: JavaScript, Terminal y línea de comandos
 
 Cuando hayas publicado los artículos, el proyecto necesita estos tres ajustes:
 
-1. **Manifiesto** (`mis-estudios/data/articulos.json`): añadir la entrada de cada artículo al
+1. **Manifiesto** (`pages/my-studies/data/articulos.json`): añadir la entrada de cada artículo al
    array `items` (el bloque que entrega el agente: `slug`, `title {es}`, `description {es}`,
    `keywords`, `category`, `status: "published"`). La grilla del índice se genera sola desde el
-   manifiesto: no editar tarjetas estáticas en `mis-estudios/index.html`.
+   manifiesto: no editar tarjetas estáticas en `pages/my-studies/index.html`.
 2. **Service Worker** (`service-worker.js`): añadir cada artículo nuevo
-   (`./mis-estudios/articulos/<slug>.html`) a `PRECACHE_URLS` y subir `CACHE_NAME`
+   (`./my-studies<slug>/index.html`) a `PRECACHE_URLS` y subir `CACHE_NAME`
    un nivel respecto al valor actual de `service-worker.js` (`pwa-cache-vN`) para
    forzar el refresco del precache.
 3. **Documentación**: actualizar el número de artículos publicados en `README.md` y
-   `docs/LIMITACIONES.md`, y el listado de temas en `mis-estudios/AGENTS.md`.
+   `docs/LIMITACIONES.md`, y el listado de temas en `pages/my-studies/AGENTS.md`.

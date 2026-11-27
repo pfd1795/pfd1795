@@ -18,15 +18,15 @@ mantenerlos sincronizados con el código es parte del mantenimiento (ver `AGENTS
 - [`INVARIANTES.md`](./INVARIANTES.md) — decisiones técnicas no deducibles del código.
 - [`LIMITACIONES.md`](./LIMITACIONES.md) — limitaciones y deuda técnica verificadas.
 - `AGENTS.md` locales por carpeta (la raíz es la referencia; los locales solo añaden reglas propias):
-  - [`juegos/AGENTS.md`](../juegos/AGENTS.md) — reglas de la grilla y de los juegos integrados.
-  - [`mis-estudios/AGENTS.md`](../mis-estudios/AGENTS.md) — reglas de la enciclopedia.
-  - [`programas/AGENTS.md`](../programas/AGENTS.md) — reglas de la sección Programas.
+  - [`pages/my-games/AGENTS.md`](../pages/my-games/AGENTS.md) — reglas de la grilla y de los juegos integrados.
+  - [`pages/my-studies/AGENTS.md`](../pages/my-studies/AGENTS.md) — reglas de la enciclopedia.
+  - [`pages/my-programs/AGENTS.md`](../pages/my-programs/AGENTS.md) — reglas de la sección Programas.
 
 ## Juegos
 
-- [`juegos/README.md`](../juegos/README.md) — guía para agregar y documentar juegos, manifiesto,
+- [`pages/my-games/README.md`](../pages/my-games/README.md) — guía para agregar y documentar juegos, manifiesto,
   checklist de calidad y solución de problemas.
-- Documentación por juego: `../juegos/<slug>/README-juego.md`.
+- Documentación por juego: `../pages/my-games/<slug>/README-juego.md`.
 
 ## Herramientas de desarrollo
 

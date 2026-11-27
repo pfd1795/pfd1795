@@ -1,0 +1,104 @@
+# AGENTS.md — `pages/my-studies/`
+
+Reglas locales para agentes que trabajan en la enciclopedia de informática. Complementa el
+[`AGENTS.md`](../../AGENTS.md) raíz (arquitectura general, estilo de código y convenciones).
+
+## Qué es esta carpeta
+
+- `index.html`: índice de la enciclopedia con buscador; la grilla de artículos se renderiza
+  desde [`data/articulos.json`](./data/articulos.json) con `scripts/controllers/mis-estudios/`
+  (se monta en `main.js` solo si existe `.estudios-grid`).
+- `mis-estudios.css`: estilos específicos de la sección (acento adaptativo `--enc-accent`).
+- `<slug>/`: una carpeta por artículo con `index.html` (y, opcionalmente, `index.en.html` para la versión en inglés, según la regla 8), igual que `pages/my-games/<slug>/`
+  (HTML, Git, Terminal, JavaScript, Redes, CSS, HTTP y navegador, Cliente-servidor y APIs,
+  SQL, Seguridad web, Criptografía, TLS, Sistemas operativos, Modelado de datos y
+  normalización, Paradigmas de programación, Sistemas numéricos y representación de datos,
+  Python, Patrones de diseño, Inteligencia artificial, Aprendizaje automático, Redes
+  neuronales, Lógica digital y álgebra de Boole, C y gestión de memoria, Frameworks de
+  front-end, Frameworks de back-end, Principios de diseño y SOLID, Editores, IDEs y
+  depuración, Empaquetado y despliegue, TypeScript, Accesibilidad web, Bases de datos NoSQL, Testing automatizado, GitHub Actions y CI/CD, Docker y contenedores, Linux y servidores, Expresiones regulares, Fundamentos de ciberseguridad, Phishing e ingeniería social, Malware y ransomware, Identidad, contraseñas y MFA, De antivirus a EDR/XDR, Respuesta a incidentes y forense básico).
+  Las entradas `wip` del manifiesto se muestran con la etiqueta de UI `comingSoon` de
+  `translations.page[lang]` («Próximamente» / «Coming soon»).
+- `data/articulos.json`: manifiesto de la grilla (mismo esquema que `juegos.json`:
+  `version` + `categories` + `items`).
+- `js/copiar.js`: botón «Copiar» sobre los bloques de código de los artículos (script
+  clásico con `defer`, solo en las páginas de artículo). Copia con `navigator.clipboard` y
+  respaldo con `execCommand`, dedentando la sangría del código antes de copiar.
+
+El pre-pintado del tema y el buscador son **compartidos**: `scripts/theme-init.js` y
+`scripts/buscador.js` (configurado por `data-attributes` del input `#buscador`); esta carpeta
+no tiene copias propias. Los estilos de `.buscador__*` viven en `stylesheets/base.css`
+y aquí solo se conserva el override de acento `--enc-accent`.
+
+## Reglas para agentes
+
+1. **Contenido en español por defecto**: los artículos no usan el sistema de traducciones
+   (`translations.json`); la interfaz compartida (barra, sidebar, modal) sí cambia ES/EN,
+   incluido el buscador (`aria-label`, placeholder y `#sin-resultados`). La versión opcional
+   en inglés (`index.en.html`) se rige por la regla 8.
+   La única etiqueta de UI generada en la grilla, `comingSoon` (entradas `wip`), se toma de
+   `translations.page[lang]`; los títulos, descripciones, categorías y palabras clave siguen
+   siendo solo español.
+2. **Pre-pintado obligatorio**: toda página nueva debe cargar `scripts/theme-init.js` en el
+   `<head>` antes de pintar (`../../scripts/` desde esta carpeta, `../../../scripts/` desde `<slug>/`).
+   Es el único script de pre-pintado del sitio: si se añade o cambia una clave de tema,
+   actualizar `theme-init.js` y `scripts/utils/storage.js` a la vez (inventario en el
+   [`AGENTS.md` raíz](../../AGENTS.md#inventario-de-claves-de-localstorage)).
+3. **Chrome compartido, no copiado**: las páginas cargan `../../stylesheets/base.css` +
+   `mis-estudios.css` (`../../../…` y `../../mis-estudios.css` desde `<slug>/`), el sidebar
+   con rutas ajustadas (`../../index.html#seccion` desde esta carpeta, `../../../index.html#seccion`
+   desde `<slug>/`) y `../../scripts/main.js` como módulo, para reutilizar el modal de
+   Configuración del portafolio.
+4. **Nombres heredados en español**: las clases de esta carpeta (`buscador__campo`,
+   `estudio-card`, `categoria`, `tl-dr`) conservan español y BEM-like; no renombrar por
+   consistencia con `controllers/` (que usa inglés) ni sin motivo real. Los estilos locales
+   se rigen por `mis-estudios.css` y el acento adaptativo `--enc-accent`.
+5. **Rutas relativas**: despliegue en subruta de GitHub Pages; ninguna ruta absoluta
+   (`/images/…`, `/stylesheets/…`).
+6. **Buscador**: el `scripts/buscador.js` compartido opera solo si existe `#buscador`; esta
+   página lo configura con `data-buscador-tarjetas=".estudio-card"` y su texto de
+   placeholder. Filtra por término, oculta categorías vacías y usa `#sin-resultados`.
+   Los textos viven en `translations.page[lang]` (claves
+   `searchStudies*`) y se actualizan con el evento `site:languagechange`. No acoplarlo a
+   módulos ES.
+7. **Contenido educativo**: agregar un artículo es crear `<slug>/index.html`
+   (kebab-case, sin prefijos redundantes), siguiendo la estructura de los existentes, y
+   añadir su entrada a `data/articulos.json` (`status: "published"` solo si está probado).
+   Los artículos cargan `../../scripts/copiar.js`; la caja «En 5 puntos» (`.tl-dr`) es recomendable, no obligatoria
+   (los artículos ya publicados sin ella se respetan), y —si
+   ayudan— diagramas SVG inline con las clases de `mis-estudios.css` (`.diagrama`); nada de
+   imágenes remotas ni librerías externas.
+8. **Traducción al inglés (convención)**: un artículo puede tener una versión en inglés en
+   `<slug>/index.en.html`, paralela al `index.html` en español. La versión en inglés
+   comparte el mismo chrome (base.css, mis-estudios.css, sidebar, main.js, copiar.js,
+   theme-init.js, PWA) y traduce solo el contenido del artículo; los enlaces internos
+   («Ver también») apuntan a la versión en inglés cuando exista (`index.en.html`) y, si no, a
+   la versión en español. Ambas versiones enlazan entre sí mediante un enlace de cambio
+   de idioma en el bloque `.volver` («English version» / «Versión en español»). El
+   manifiesto (`data/articulos.json`) sigue un solo slug por artículo: no se duplican
+   entradas por idioma. El contenido de la enciclopedia sigue siendo solo español por
+   defecto; la versión en inglés es opcional y se añade artículo por artículo.
+9. **Sin firmas de IA**: un artículo no incluye marcas de agua, comentarios-firma, nombres
+   de modelos de IA, código ni recursos propios de un agente. La única firma admitida está
+   en el footer de la portada (`../../index.html`), según la regla del
+   [`AGENTS.md` raíz](../../AGENTS.md#firma-de-agentes-ia-en-el-footer).
+
+10. **Interacción con el usuario**: sigue la regla del [`AGENTS.md` raíz](../../AGENTS.md#interacción-con-el-usuario-mediante-menús): usar `question` con opciones sugeridas en cada decisión y cierre.
+
+## Verificación local
+
+Ver el procedimiento general en el [`AGENTS.md` raíz](../../AGENTS.md#verificación-manual-para-agentes).
+Específico de esta carpeta, tras cualquier cambio:
+
+1. `python -m http.server 8000` desde la raíz del repositorio y abrir
+   `http://localhost:8000/pages/my-studies/`.
+2. El tema (modo, acento, fondo, escala) se pinta sin parpadeo y coincide con el del portafolio.
+3. El modal de Configuración funciona desde el footer del sidebar y persiste los cambios.
+4. La grilla renderiza desde `data/articulos.json`: 42 artículos publicados, agrupados en las categorías del manifiesto.
+5. El buscador filtra por término y muestra/oculta `#sin-resultados`.
+6. En `<slug>/index.html` (e `index.en.html`): enlaces de vuelta correctos (`../../index.html`, `../../../index.html`),
+   el submenú del sidebar apunta a las secciones de la portada con la profundidad de rutas
+   correcta y los enlaces entre artículos (`../<slug>/index.html` relativos entre ellos)
+   funcionan.
+7. El botón «Copiar» aparece sobre los bloques de código de cada artículo, copia el código
+   sin la sangría del HTML y confirma con «Copiado» (o aviso si falla).

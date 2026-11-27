@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bases de datos NoSQL — Estudios de informática</title>
+  <meta name="description" content="Bases de datos NoSQL: clave-valor, documentos, columnas y grafos, consistencia y CAP, modelado, índices y cuándo elegirlas frente a SQL.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Bases de datos</p>
+          <h1>Bases de datos NoSQL</h1>
+          <p class="entrada">
+            Una base de datos NoSQL no organiza los datos en tablas, filas y columnas: los guarda
+            como pares clave-valor, documentos, familias de columnas o grafos. Cada modelo elige un
+            compromiso distinto entre flexibilidad, escalado y consistencia. No es un sustituto
+            universal de SQL, sino otra herramienta con ventajas y costes propios.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>NoSQL agrupa modelos muy distintos: clave-valor, documentos, columnas anchas y grafos, cada uno con su forma de consultar.</li>
+            <li>El modelo documental guarda estructuras anidadas y permite leer un objeto completo con una sola consulta, sin unir tablas.</li>
+            <li>CAP obliga a decidir qué ocurre cuando la red se parte: consistencia o disponibilidad, no las dos a la vez en ese instante.</li>
+            <li>En bases documentales se modela según las consultas: algo de duplicación controlada suele ser preferible a muchas uniones.</li>
+            <li>Los índices y la forma de las consultas importan más que la etiqueta «SQL» o «NoSQL» del motor elegido.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es NoSQL?</a></li>
+            <li><a href="#origen">Por qué aparecieron</a></li>
+            <li><a href="#clave-valor">Clave-valor</a></li>
+            <li><a href="#documentos">Documentos</a></li>
+            <li><a href="#columnas">Columnas anchas</a></li>
+            <li><a href="#grafos">Grafos</a></li>
+            <li><a href="#consistencia">Consistencia y CAP</a></li>
+            <li><a href="#modelado">Modelado y desnormalización</a></li>
+            <li><a href="#consultas">Consultas e índices</a></li>
+            <li><a href="#sql-vs-nosql">Cuándo usar NoSQL y cuándo SQL</a></li>
+            <li><a href="#migraciones">Migraciones y evolución del esquema</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es NoSQL?</h2>
+          <p>
+            NoSQL significa <em>not only SQL</em> («no solo SQL»). No describe un producto ni un
+            lenguaje de consulta único, sino una familia de bases de datos que no exige el modelo
+            relacional de tablas con esquema fijo. Algunas usan un lenguaje parecido a SQL y otras
+            consultan mediante APIs o recorridos del grafo.
+          </p>
+          <p>
+            Lo que tienen en común es que la estructura la decide quien escribe el dato y que
+            muchas están pensadas para repartirse entre varios servidores. Las cuatro familias
+            principales resuelven problemas distintos:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Modelo</th>
+                <th scope="col">Unidad de datos</th>
+                <th scope="col">Consulta típica</th>
+                <th scope="col">Caso de uso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Clave-valor</td><td>Par clave y valor opaco.</td><td>Leer por clave.</td><td>Cachés, sesiones, contadores.</td></tr>
+              <tr><td>Documentos</td><td>Documento con campos anidados.</td><td>Filtrar por campos y agregar.</td><td>Catálogos, perfiles, contenido.</td></tr>
+              <tr><td>Columnas anchas</td><td>Familias de columnas por fila.</td><td>Leer por clave de partición.</td><td>Series temporales, grandes volúmenes de escritura.</td></tr>
+              <tr><td>Grafos</td><td>Nodos, aristas y propiedades.</td><td>Recorrer relaciones.</td><td>Recomendaciones, redes, fraude.</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            «NoSQL» no implica «sin esquema». El esquema sigue existiendo, pero suele estar en el
+            código de la aplicación o en validaciones del motor, no impuesto por un
+            <code>CREATE TABLE</code> previo.
+          </p>
+        </section>
+
+        <section id="origen" aria-labelledby="origen-titulo">
+          <h2 id="origen-titulo">Por qué aparecieron</h2>
+          <p>
+            Los motores relacionales destacan por las uniones, las transacciones ACID y un
+            lenguaje de consulta potente. Durante años fueron la opción por defecto. Con el
+            crecimiento de los servicios web aparecieron cargas que encajaban peor: millones de
+            escrituras repartidas, datos que cambiaban de forma cada semana y objetos en memoria
+            que había que convertir en filas antes de guardarlos.
+          </p>
+          <p>
+            Muchas bases NoSQL respondieron escalando horizontalmente: añadir servidores
+            baratos en lugar de comprar uno más grande. Otras simplificaron la escritura o
+            permitieron guardar un agregado entero —por ejemplo, un pedido con sus líneas— como
+            una sola unidad. El precio fue renunciar a algunas garantías o a la flexibilidad de
+            consultas arbitrarias.
+          </p>
+          <p>
+            Hoy la frontera es menos rígida. Los motores relacionales soportan JSON y se escalan
+            mejor, y los motores documentales ofrecen transacciones y uniones limitadas. Elegir
+            bien empieza por las necesidades reales, no por la moda.
+          </p>
+        </section>
+
+        <section id="clave-valor" aria-labelledby="clave-valor-titulo">
+          <h2 id="clave-valor-titulo">Clave-valor</h2>
+          <p>
+            Es el modelo más simple: una clave identifica un valor y el motor solo sabe leer,
+            escribir y borrar por esa clave. El valor puede ser texto, un número o un objeto
+            opaco para la base de datos. Redis es el ejemplo más conocido y suele trabajar en
+            memoria, con opciones de persistencia.
+          </p>
+          <pre><code>SET sesion:abc123 '{"usuario": 42, "inicio": 1763970000}' EX 3600
+GET sesion:abc123
+
+HSET usuario:42 nombre Ana ciudad Sevilla
+HGETALL usuario:42
+
+INCR contador:visitas
+EXPIRE contador:visitas 86400</code></pre>
+          <p>
+            Cada operación es muy rápida y tiene un coste predecible. Por eso este modelo brilla
+            en cachés, sesiones, colas sencillas y contadores. La limitación es evidente: no se
+            puede preguntar «dame todas las sesiones de Sevilla» sin mantener un índice propio,
+            porque el motor no interpreta el contenido del valor.
+          </p>
+          <p class="aviso">
+            Trabajar en memoria implica perder datos si no se configura persistencia. Un caché
+            puede reconstruirse, pero una sesión o un contador de negocio no deberían depender de
+            una réplica que nadie ha configurado.
+          </p>
+        </section>
+
+        <section id="documentos" aria-labelledby="documentos-titulo">
+          <h2 id="documentos-titulo">Documentos</h2>
+          <p>
+            Una base documental guarda registros parecidos a JSON —BSON en MongoDB— dentro de
+            colecciones. Cada documento puede tener campos distintos y anidar objetos y listas,
+            así que un agregado completo cabe en una sola unidad de almacenamiento.
+          </p>
+          <pre><code>db.usuarios.insertOne({
+  nombre: 'Ana',
+  correo: 'ana@example.com',
+  direccion: { ciudad: 'Sevilla', pais: 'ES' },
+  etiquetas: ['cliente', 'premium']
+});
+
+db.usuarios.find({ 'direccion.ciudad': 'Sevilla' });</code></pre>
+          <p>
+            La notación con punto permite filtrar por un campo anidado sin declarar columnas.
+            Para resumir datos se usa un pipeline de agregación: cada etapa transforma el flujo
+            de documentos y pasa el resultado a la siguiente.
+          </p>
+          <pre><code>db.pedidos.aggregate([
+  { $match: { estado: 'pagado' } },
+  { $group: { _id: '$clienteId', total: { $sum: '$importe' } } },
+  { $sort: { total: -1 } },
+  { $limit: 10 }
+]);</code></pre>
+          <p>
+            El inconveniente aparece cuando los mismos datos se necesitan con formas muy
+            distintas. Si el documento guarda los productos de cada pedido, responder «¿cuántas
+            veces se vendió este teclado?» exige recorrer todos los pedidos o mantener otra
+            colección calculada.
+          </p>
+        </section>
+
+        <section id="columnas" aria-labelledby="columnas-titulo">
+          <h2 id="columnas-titulo">Columnas anchas</h2>
+          <p>
+            Los almacenes de columnas anchas —Cassandra o HBase— agrupan las columnas en
+            familias y organizan las filas alrededor de una <strong>clave de partición</strong>.
+            El diseño se hace pensando en las consultas: la clave determina dónde vive el dato y,
+            por tanto, qué preguntas se pueden responder rápido.
+          </p>
+          <pre><code>CREATE TABLE lecturas (
+  sensor_id uuid,
+  fecha date,
+  hora time,
+  valor double,
+  PRIMARY KEY ((sensor_id, fecha), hora)
+) WITH CLUSTERING ORDER BY (hora DESC);
+
+SELECT hora, valor FROM lecturas
+WHERE sensor_id = 11111111-1111-1111-1111-111111111111
+  AND fecha = '2026-11-24';</code></pre>
+          <p>
+            Esta tabla responde muy bien a «dame las lecturas de un sensor en un día», porque esa
+            consulta toca una sola partición. Cambiar la pregunta a «dame todas las lecturas de un
+            día» obligaría a recorrer todos los sensores: en este modelo ese coste se paga en el
+            diseño, no en el momento de consultar.
+          </p>
+          <p>
+            Son motores adecuados para escrituras masivas, series temporales e historiales que
+            crecen sin parar. A cambio, las uniones entre tablas no existen y la coherencia se
+            ajusta por operación.
+          </p>
+        </section>
+
+        <section id="grafos" aria-labelledby="grafos-titulo">
+          <h2 id="grafos-titulo">Grafos</h2>
+          <p>
+            Una base de grafos guarda <strong>nodos</strong> (entidades), <strong>aristas</strong>
+            (relaciones) y propiedades en ambos. Las relaciones son datos de primera clase: se
+            recorren sin calcular uniones entre tablas, aunque el camino tenga varios saltos.
+          </p>
+          <pre><code>CREATE (ana:Persona {nombre: 'Ana'})-[:AMIGA_DE]-&gt;(luis:Persona {nombre: 'Luis'});
+
+MATCH (ana:Persona {nombre: 'Ana'})-[:AMIGA_DE*1..2]-(otra:Persona)
+RETURN DISTINCT otra.nombre;</code></pre>
+          <p>
+            La consulta encuentra a los amigos y a los amigos de amigos de Ana. En SQL esa
+            operación requeriría unir la tabla de personas consigo misma tantas veces como saltos,
+            y cada salto encarecería la consulta. Aquí el coste crece sobre todo con el número de
+            nodos que se visitan.
+          </p>
+          <p>
+            Encajan bien en recomendaciones, redes sociales, jerarquías organizativas, rutas y
+            detección de fraude. Si las relaciones son escasas y sencillas, un modelo relacional
+            suele ser más fácil de mantener.
+          </p>
+        </section>
+
+        <section id="consistencia" aria-labelledby="consistencia-titulo">
+          <h2 id="consistencia-titulo">Consistencia y CAP</h2>
+          <p>
+            En un sistema distribuido, cada escritura se replica en varios nodos. El teorema CAP
+            describe el compromiso cuando la red se parte y los nodos no pueden comunicarse: en
+            ese momento hay que elegir entre devolver una respuesta <strong>consistente</strong>
+            —todos ven el mismo valor— o estar <strong>disponible</strong> —responder aunque sea
+            con datos desactualizados—.
+          </p>
+          <p>
+            La partición de red no se elige: es una circunstancia que puede ocurrir. Por eso se
+            habla de sistemas CP, que rechazan escrituras antes que devolver datos divergentes, y
+            de sistemas AP, que aceptan escrituras y convergen después. Muchos motores permiten
+            además ajustar la coherencia por consulta: leer de un solo nodo es rápido, leer de una
+            mayoría es más lento pero más fiable.
+          </p>
+          <p>
+            La <strong>coherencia eventual</strong> significa que, si deja de llegar escrituras,
+            todas las réplicas acabarán convergiendo. No significa «los datos están mal», sino que
+            durante un tiempo puede leerse un valor antiguo. En una interfaz hay que decidir cómo
+            se muestra ese estado: confirmación pendiente, reintento o lectura desde la réplica
+            principal.
+          </p>
+          <p class="aviso">
+            CAP no dice que un sistema deba renunciar para siempre a dos de tres propiedades. Solo
+            describe qué prioriza cuando la red falla; fuera de ese escenario, un motor puede ser
+            consistente y disponible a la vez.
+          </p>
+          <p>
+            Las transacciones tampoco son exclusivas de SQL. Varias bases documentales ofrecen
+            transacciones ACID sobre varios documentos; el coste es mayor que una escritura
+            aislada. Como siempre, conviene usarlas donde el negocio lo exige —por ejemplo, mover
+            saldo entre cuentas— y no por costumbre.
+          </p>
+        </section>
+
+        <section id="modelado" aria-labelledby="modelado-titulo">
+          <h2 id="modelado-titulo">Modelado y desnormalización</h2>
+          <p>
+            En un modelo relacional se normaliza para evitar duplicados: el nombre del cliente se
+            guarda una sola vez y se referencia por su identificador. En un modelo documental se
+            decide para cada relación si conviene <strong>incrustar</strong> el dato dentro del
+            documento o guardar una <strong>referencia</strong> a otro documento.
+          </p>
+          <p>
+            Como regla inicial, se incrustan las relaciones «uno a pocos» que casi siempre se leen
+            juntas; se referencian las relaciones «uno a muchos» que crecen sin límite y los
+            datos compartidos por muchas entidades. Un pedido lleva incrustadas sus líneas; un
+            cliente referencia sus pedidos.
+          </p>
+          <figure class="diagrama" aria-labelledby="nosql-figura-titulo">
+            <figcaption id="nosql-figura-titulo">El mismo dato anidado en un documento y repartido en dos tablas relacionadas.</figcaption>
+            <svg viewBox="0 0 680 170" role="img" aria-labelledby="nosql-svg-titulo nosql-svg-desc">
+              <title id="nosql-svg-titulo">Documento anidado frente a modelo relacional</title>
+              <desc id="nosql-svg-desc">A la izquierda, un documento con nombre y dirección anidada. A la derecha, una tabla de usuarios y otra de direcciones unidas por usuario_id.</desc>
+              <rect class="caja-destacada" x="10" y="20" width="300" height="130" rx="8" />
+              <text class="texto-acentuado" x="160" y="44" text-anchor="middle">Documento</text>
+              <text class="texto" x="30" y="70">nombre: 'Ana'</text>
+              <text class="texto" x="30" y="94">direccion: {</text>
+              <text class="texto" x="46" y="116">ciudad: 'Sevilla'</text>
+              <text class="texto" x="30" y="138">}</text>
+              <line class="flecha-acentuada" x1="316" y1="85" x2="360" y2="85" />
+              <polygon class="flecha-acentuada" points="360,80 370,85 360,90" />
+              <rect class="caja" x="374" y="20" width="296" height="130" rx="8" />
+              <text class="texto-acentuado" x="522" y="44" text-anchor="middle">Tablas relacionadas</text>
+              <text class="texto" x="394" y="72">usuarios(id, nombre)</text>
+              <text class="texto" x="394" y="98">direcciones(usuario_id,</text>
+              <text class="texto" x="410" y="118">ciudad)</text>
+              <text class="texto-secundario" x="394" y="140">usuario_id referencia id</text>
+            </svg>
+          </figure>
+          <pre><code>db.pedidos.insertOne({
+  cliente: { id: 42, nombre: 'Ana' },
+  lineas: [
+    { productoId: 7, nombre: 'Teclado', cantidad: 2 }
+  ],
+  total: 58.00
+});</code></pre>
+          <p>
+            Aquí el nombre del cliente y de los productos se copia a propósito: es el estado en
+            el momento de la compra. Si el cliente cambia de nombre mañana, el pedido antiguo debe
+            seguir mostrando el nombre que tenía entonces. Esa copia no es un error de
+            normalización, sino una decisión de negocio.
+          </p>
+          <p class="nota">
+            Desnormalizar no significa duplicar sin control. Cada copia necesita una respuesta
+            clara a la pregunta «¿qué pasa si esto cambia?»: se actualiza, se ignora porque es una
+            instantánea, o se recalcula desde una fuente única.
+          </p>
+        </section>
+
+        <section id="consultas" aria-labelledby="consultas-titulo">
+          <h2 id="consultas-titulo">Consultas e índices</h2>
+          <p>
+            Un índice es una estructura auxiliar que evita recorrer toda la colección. Sin él, una
+            búsqueda por campo lee cada documento; con él, el motor salta directamente a las
+            entradas candidatas. El orden de los campos de un índice compuesto importa: primero
+            los campos de igualdad, después los de ordenación y por último los de rango.
+          </p>
+          <pre><code>db.usuarios.createIndex({ 'direccion.ciudad': 1, edad: -1 });
+
+db.usuarios.find(
+  { 'direccion.ciudad': 'Sevilla', edad: { $gte: 18 } },
+  { nombre: 1, correo: 1, _id: 0 }
+).sort({ edad: -1 }).limit(20);</code></pre>
+          <p>
+            La proyección del ejemplo devuelve solo dos campos, así que el índice puede cubrir
+            parte de la respuesta. Para confirmar que se estáUsing el índice previsto, los motores
+            ofrecen una orden de explicación del plan —<code>explain()</code> en MongoDB— que
+            muestra si se está usando un índice o hubo un escaneo completo de la colección.
+          </p>
+          <p>
+            La paginación con <code>skip</code> grande es otra trampa habitual: el motor debe
+            descartar uno a uno los documentos anteriores. Para listas largas se pagina por clave,
+            guardando el último valor visto y buscando a continuación de él.
+          </p>
+          <pre><code>db.usuarios.find({ _id: { $gt: ultimoIdVisto } })
+  .sort({ _id: 1 })
+  .limit(20);</code></pre>
+          <p class="aviso">
+            Cada índice acelera consultas pero encarece las escrituras y ocupa memoria. Crear
+            índices «por si acaso» sin medir las consultas reales suele empeorar el conjunto.
+          </p>
+        </section>
+
+        <section id="sql-vs-nosql" aria-labelledby="sql-vs-nosql-titulo">
+          <h2 id="sql-vs-nosql-titulo">Cuándo usar NoSQL y cuándo SQL</h2>
+          <p>
+            La decisión depende de la forma de los datos y, sobre todo, de las preguntas que se
+            les van a hacer. Unos criterios prácticos:
+          </p>
+          <ul>
+            <li><strong>Datos con relaciones de muchos a muchos y consultas variadas:</strong> un modelo relacional con SQL y uniones suele ser más claro y flexible.</li>
+            <li><strong>Transacciones que abarcan varias entidades:</strong> prioriza un motor con garantías ACID sólidas, sea relacional o documental.</li>
+            <li><strong>Agregados que se leen y escriben juntos, con campos que cambian:</strong> un modelo documental reduce uniones y migraciones.</li>
+            <li><strong>Escrituras masivas y consultas conocidas de antemano:</strong> una base de columnas anchas escala bien si el diseño respeta sus claves de partición.</li>
+            <li><strong>Recorridos profundos de relaciones:</strong> un grafo evita repetir uniones.</li>
+            <li><strong>Acceso por clave con latencia mínima:</strong> una base clave-valor, frecuentemente delante de otra base como caché.</li>
+          </ul>
+          <p>
+            En aplicaciones reales es normal combinarlas: PostgreSQL para los datos de negocio,
+            Redis para la caché y un motor de búsqueda para las consultas de texto. Cada motor
+            resuelve una parte y el código decide dónde vive cada responsabilidad.
+          </p>
+          <p class="nota">
+            La pregunta nunca es «¿SQL o NoSQL?», sino «¿qué garantías necesito y qué consultas
+            voy a repetir?». Cambiar de modelo después suele costar más que elegir con calma.
+          </p>
+        </section>
+
+        <section id="migraciones" aria-labelledby="migraciones-titulo">
+          <h2 id="migraciones-titulo">Migraciones y evolución del esquema</h2>
+          <p>
+            Sin esquema fijo no hay <code>ALTER TABLE</code>, pero los datos siguen cambiando de
+            forma. Una práctica segura es tratar cada cambio como aditivo: añadir un campo nuevo,
+            dejar que el código antiguo lo ignore y rellenarlo con una tarea de fondo. Solo
+            después se empieza a exigir y, mucho más tarde, se retira el campo anterior.
+          </p>
+          <pre><code>db.usuarios.updateMany(
+  { version: { $exists: false } },
+  { $set: { version: 1 } }
+);
+
+db.usuarios.updateMany(
+  { nombreCompleto: { $exists: false }, nombre: { $exists: true } },
+  [
+    { $set: { nombreCompleto: '$nombre' } }
+  ]
+);</code></pre>
+          <p>
+            Un campo <code>version</code> permite que dos versiones del servicio convivan durante
+            un despliegue gradual: la nueva lee ambos formatos y la antigua sigue funcionando.
+            Cuando todas las instancias están actualizadas, se limpian los campos temporales.
+          </p>
+          <p>
+            En motores con validación de documentos conviene definir las reglas en el propio
+            motor para detectar escrituras mal formadas. Y antes de borrar cualquier campo, hay
+            que comprobar con consultas de conteo que ya ningún documento lo usa.
+          </p>
+          <p class="aviso">
+            Migrar «en caliente» una colección grande puede bloquear escrituras o saturar el
+            motor. Se suele hacer por lotes, con pausas y monitorizando la latencia, no con una
+            sola orden masiva.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué está mal</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Elegir NoSQL «porque escala» sin mirar las consultas.</td>
+                <td>Cada modelo escala bien solo para ciertos patrones de acceso.</td>
+                <td>Listar las consultas críticas y comprobar qué claves e índices las sirven.</td>
+              </tr>
+              <tr>
+                <td>Duplicar datos sin decidir cómo se actualizan.</td>
+                <td>Las copias se desincronizan y aparecen respuestas contradictorias.</td>
+                <td>Documentar cada copia como instantánea o incluirla en la misma transacción.</td>
+              </tr>
+              <tr>
+                <td>Consultar por un campo sin índice.</td>
+                <td>El motor recorre toda la colección y la latencia crece con los datos.</td>
+                <td>Crear índices según consultas reales y revisar el plan con <code>explain()</code>.</td>
+              </tr>
+              <tr>
+                <td>Confiar en la coherencia eventual sin mostrarlo.</td>
+                <td>El usuario ve datos antiguos o confirmaciones dudosas.</td>
+                <td>Diseñar estados pendientes, reintentos o lecturas desde la réplica principal.</td>
+              </tr>
+              <tr>
+                <td>Paginar con <code>skip</code> muy grande.</td>
+                <td>Hay que descartar todos los documentos anteriores en cada página.</td>
+                <td>Paginar por clave usando el último valor visto.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concepto</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Clave-valor</td><td>Leer y escribir por identificador con latencia mínima.</td></tr>
+              <tr><td>Documento</td><td>Guardar un agregado completo con campos anidados.</td></tr>
+              <tr><td>Clave de partición</td><td>Decidir dónde se guarda una fila en una base de columnas anchas.</td></tr>
+              <tr><td>Arista</td><td>Relación entre nodos en una base de grafos.</td></tr>
+              <tr><td>CAP</td><td>Compromiso entre consistencia y disponibilidad cuando la red se parte.</td></tr>
+              <tr><td>Coherencia eventual</td><td>Las réplicas convergen si no llegan escrituras nuevas.</td></tr>
+              <tr><td>Incrustar</td><td>Meter un dato relacionado dentro del mismo documento.</td></tr>
+              <tr><td>Índice compuesto</td><td>Acelerar filtros y ordenaciones sobre varios campos.</td></tr>
+              <tr><td><code>explain()</code></td><td>Mostrar el plan de una consulta para detectar escaneos completos.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="../sql/index.html">SQL y bases de datos relacionales</a>: tablas, uniones y transacciones ACID como punto de comparación.</li>
+            <li><a href="../modelado-datos/index.html">Modelado de datos y normalización</a>: cómo decidir qué datos se guardan una sola vez y cuáles se repiten.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

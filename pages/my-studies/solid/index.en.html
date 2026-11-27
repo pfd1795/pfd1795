@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design principles and SOLID — Computer science studies</title>
+  <meta name="description" content="The SOLID principles and how to apply them to design software that is more understandable, extensible and easier to maintain.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json">
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Software architecture and design</p>
+          <h1>Design principles and SOLID</h1>
+          <p class="entrada">
+            Designing software means deciding how to distribute responsibilities and how to make its parts change without breaking others. SOLID brings together five object-oriented design principles that help reason about those decisions: single responsibility, open/closed, Liskov substitution, interface segregation and dependency inversion. They are not mechanical rules nor do they guarantee good design on their own; they serve to identify couplings and improve code when there is a concrete need.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>SOLID is a set of five principles for thinking about object-oriented software design.</li>
+            <li>Single responsibility seeks that a module has a main reason to change.</li>
+            <li>Open/closed and Liskov substitution promote safe extensions and compatible behaviors.</li>
+            <li>Interface segregation and dependency inversion reduce unnecessary dependencies between components.</li>
+            <li>Applying SOLID does not mean creating more classes: the design should respond to real needs and stay understandable.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es-solid">What is SOLID?</a></li>
+            <li><a href="#responsabilidad-unica">S: single responsibility</a></li>
+            <li><a href="#abierto-cerrado">O: open/closed</a></li>
+            <li><a href="#sustitucion">L: Liskov substitution</a></li>
+            <li><a href="#segregacion">I: interface segregation</a></li>
+            <li><a href="#inversion">D: dependency inversion</a></li>
+            <li><a href="#relacion">How the principles relate</a></li>
+            <li><a href="#cuando-aplicar">When to apply SOLID</a></li>
+            <li><a href="#errores">Common mistakes</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es-solid" aria-labelledby="que-es-solid-titulo">
+          <h2 id="que-es-solid-titulo">What is SOLID?</h2>
+          <p>
+            <strong>SOLID</strong> is an acronym that groups five design principles associated with object-oriented programming. Its purpose is to help build components with clear responsibilities and dependencies that can be managed when the system evolves.
+          </p>
+          <p>
+            The principles do not describe a single architecture or a list of mandatory steps. They are criteria for evaluating decisions: which parts change together?, which dependencies make a piece hard to test?, can an implementation replace another without altering expectations?
+          </p>
+          <p>
+            Although they are explained with classes and interfaces, many of their ideas also apply to modules, functions and services. The chosen abstraction should fit the language and the size of the problem.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Letter</th>
+                <th scope="col">Principle</th>
+                <th scope="col">Guiding question</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>S</td>
+                <td>Single responsibility</td>
+                <td>Does this module have a main reason to change?</td>
+              </tr>
+              <tr>
+                <td>O</td>
+                <td>Open/closed</td>
+                <td>Can I add behavior without repeatedly modifying stable code?</td>
+              </tr>
+              <tr>
+                <td>L</td>
+                <td>Liskov substitution</td>
+                <td>Does an alternative implementation meet the expectations of the type it replaces?</td>
+              </tr>
+              <tr>
+                <td>I</td>
+                <td>Interface segregation</td>
+                <td>Do consumers depend only on the operations they need?</td>
+              </tr>
+              <tr>
+                <td>D</td>
+                <td>Dependency inversion</td>
+                <td>Does important logic depend on contracts instead of concrete details?</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="responsabilidad-unica" aria-labelledby="responsabilidad-unica-titulo">
+          <h2 id="responsabilidad-unica-titulo">S: single responsibility</h2>
+          <p>
+            The <strong>single responsibility principle</strong> (SRP) proposes that a module have a main responsibility and a coherent reason to change. It does not require a class to do a single operation: it seeks to avoid the same unit mixing concerns that change for different reasons.
+          </p>
+          <p>
+            For example, a class that computes a purchase total, generates a report and sends it by email brings together calculation rules, presentation and communication. If tax rules, report format or email service change, the same class may need modifications for different reasons.
+          </p>
+          <p>
+            An alternative is to separate those concerns into components with defined functions: a service to calculate, a formatter to present and an adapter to send. Separation should follow the real organization of the domain; creating a class per line of code is not the goal.
+          </p>
+          <p class="nota">
+            «A reason to change» is interpreted in relation to the actors or areas that request changes, not as a literal rule about the number of methods.
+          </p>
+        </section>
+
+        <section id="abierto-cerrado" aria-labelledby="abierto-cerrado-titulo">
+          <h2 id="abierto-cerrado-titulo">O: open/closed</h2>
+          <p>
+            The <strong>open/closed principle</strong> (OCP) states that a software unit should allow its behavior to be extended without requiring repeated modifications of its stable code. It does not mean code can never change: it means it is worth designing extension points when foreseeable changes justify it.
+          </p>
+          <p>
+            If a function selects an operation through a chain of conditionals, each new type may require editing that function. When behaviors vary, an interface or interchangeable strategy can let you add an implementation without rewriting the logic that uses it.
+          </p>
+          <pre><code>class DiscountCalculator {
+  calculate(purchase, customerType) {
+    if (customerType === 'regular') {
+      return purchase * 0.05;
+    }
+
+    if (customerType === 'preferred') {
+      return purchase * 0.10;
+    }
+
+    return 0;
+  }
+}</code></pre>
+          <p>
+            In this example, adding another category forces modifying the same function. An option for a system where those rules change frequently is to represent each policy as an object with a common method:
+          </p>
+          <pre><code>class RegularDiscount {
+  calculate(purchase) {
+    return purchase * 0.05;
+  }
+}
+
+class PreferredDiscount {
+  calculate(purchase) {
+    return purchase * 0.10;
+  }
+}
+
+function calculateDiscount(purchase, policy) {
+  return policy.calculate(purchase);
+}
+
+const discount = calculateDiscount(
+  200,
+  new PreferredDiscount()
+);</code></pre>
+          <p>
+            The second form introduces additional abstractions. If only two stable rules exist and the system is small, a simple condition may be clearer. Extension should solve a real cost, not anticipate imaginary possibilities.
+          </p>
+        </section>
+
+        <section id="sustitucion" aria-labelledby="sustitucion-titulo">
+          <h2 id="sustitucion-titulo">L: Liskov substitution</h2>
+          <p>
+            The <strong>Liskov substitution principle</strong> (LSP) indicates that an implementation of a type should be usable where that type is expected without breaking the properties the program assumes. In practical terms, a derived class or an implementation should not surprise whoever uses it by failing to meet the established contract.
+          </p>
+          <p>
+            A design problem signal appears when a subclass needs to reject operations the base type promises, changes the meaning of a method or demands more restrictive conditions than the original contract.
+          </p>
+          <p>
+            For example, if a <code>Storage</code> type promises to store and retrieve values, every implementation presented under that contract should offer both operations with the agreed behavior. A read-only implementation should not pretend to meet that contract if it cannot store.
+          </p>
+          <p>
+            The principle does not forbid inheritance. It invites defining clear contracts and checking that variants respect the expectations of client code. In some cases, composition or smaller interfaces better represent real capabilities.
+          </p>
+        </section>
+
+        <section id="segregacion" aria-labelledby="segregacion-titulo">
+          <h2 id="segregacion-titulo">I: interface segregation</h2>
+          <p>
+            The <strong>interface segregation principle</strong> (ISP) recommends that consumers not depend on operations they do not use. Instead of a large interface forcing implementation of irrelevant methods, smaller contracts can be defined according to the needed capabilities.
+          </p>
+          <p>
+            Imagine a device interface with operations for printing, scanning and sending a fax. A device that only prints would have to include methods it cannot offer, possibly with errors or empty implementations. Separating capabilities lets each consumer depend on what it really needs.
+          </p>
+          <pre><code>class Printer {
+  print(document) {
+    console.log(`Printing: ${document}`);
+  }
+}
+
+class Scanner {
+  scan(document) {
+    return `Copy of: ${document}`;
+  }
+}
+
+function sendToPrinter(printer, document) {
+  printer.print(document);
+}</code></pre>
+          <p>
+            JavaScript does not natively require declaring interfaces like some typed languages, but separation of capabilities can also be reflected in functions, modules and documented contracts.
+          </p>
+        </section>
+
+        <section id="inversion" aria-labelledby="inversion-titulo">
+          <h2 id="inversion-titulo">D: dependency inversion</h2>
+          <p>
+            The <strong>dependency inversion principle</strong> (DIP) proposes that high-level modules, where the important rules live, should not depend directly on low-level details. Both should depend on abstractions. In turn, concrete details implement those abstractions.
+          </p>
+          <p>
+            A notification service that directly creates an SMTP client is coupled to a concrete technology. If it receives a dependency that meets a common contract, it can use different sending methods without changing the central logic.
+          </p>
+          <pre><code>class NotificationService {
+  constructor(channel) {
+    this.channel = channel;
+  }
+
+  send(recipient, message) {
+    return this.channel.send(recipient, message);
+  }
+}
+
+class ConsoleChannel {
+  send(recipient, message) {
+    console.log(`To ${recipient}: ${message}`);
+  }
+}
+
+const service = new NotificationService(new ConsoleChannel());
+service.send('team@example.test', 'The task finished');</code></pre>
+          <p>
+            The abstraction does not have to be a formal interface. It can be a contract, a function or an object with the operations the module needs. <strong>Dependency injection</strong> is a common technique for providing those dependencies from outside; it is a way of implementing the idea, not an exact synonym of the principle.
+          </p>
+        </section>
+
+        <section id="relacion" aria-labelledby="relacion-titulo">
+          <h2 id="relacion-titulo">How the principles relate</h2>
+          <p>
+            The principles support each other. A clear responsibility makes it easier to locate changes; small contracts avoid unnecessary dependencies; abstractions allow substituting implementations and extending behaviors. The diagram summarizes a possible relationship, not a mandatory application sequence.
+          </p>
+          <figure class="diagrama" aria-labelledby="fig-solid-titulo">
+            <figcaption id="fig-solid-titulo">The five SOLID principles and the idea each one summarizes.</figcaption>
+            <svg viewBox="0 0 760 270" role="img" aria-labelledby="solid-diagrama-titulo solid-diagrama-descripcion">
+              <title id="solid-diagrama-titulo">Relationship between the SOLID principles</title>
+              <desc id="solid-diagrama-descripcion">Single responsibility delimits responsibilities; open/closed guides extension; Liskov substitution protects contracts; interface segregation reduces unnecessary dependencies; dependency inversion connects logic with abstractions.</desc>
+
+              <rect class="caja-destacada" x="275" y="15" width="210" height="58" rx="8"></rect>
+              <text class="texto-acentuado" x="380" y="41" text-anchor="middle">S · Single responsibility</text>
+              <text class="texto-secundario" x="380" y="60" text-anchor="middle">delimit reasons to change</text>
+
+              <rect class="caja" x="35" y="105" width="210" height="58" rx="8"></rect>
+              <text class="texto" x="140" y="131" text-anchor="middle">O · Open/closed</text>
+              <text class="texto-secundario" x="140" y="150" text-anchor="middle">extend with bounded changes</text>
+
+              <rect class="caja" x="275" y="105" width="210" height="58" rx="8"></rect>
+              <text class="texto" x="380" y="131" text-anchor="middle">L · Liskov substitution</text>
+              <text class="texto-secundario" x="380" y="150" text-anchor="middle">respect contracts</text>
+
+              <rect class="caja" x="515" y="105" width="210" height="58" rx="8"></rect>
+              <text class="texto" x="620" y="131" text-anchor="middle">I · Interface segregation</text>
+              <text class="texto-secundario" x="620" y="150" text-anchor="middle">depend on what is needed</text>
+
+              <rect class="caja-destacada" x="275" y="195" width="210" height="58" rx="8"></rect>
+              <text class="texto-acentuado" x="380" y="221" text-anchor="middle">D · Dependency inversion</text>
+              <text class="texto-secundario" x="380" y="240" text-anchor="middle">depend on abstractions</text>
+
+              <path class="flecha" d="M330 73 L190 105"></path>
+              <path class="flecha-acentuada" d="M380 73 V105"></path>
+              <path class="flecha" d="M430 73 L570 105"></path>
+              <path class="flecha" d="M245 134 H275"></path>
+              <path class="flecha" d="M485 134 H515"></path>
+              <path class="flecha-acentuada" d="M380 163 V195"></path>
+            </svg>
+          </figure>
+          <p>
+            Together, these criteria help components have understandable boundaries and collaborate through contracts. Even so, a system can be maintainable without applying every principle explicitly, and a rigid application of SOLID can produce unnecessary abstractions.
+          </p>
+        </section>
+
+        <section id="cuando-aplicar" aria-labelledby="cuando-aplicar-titulo">
+          <h2 id="cuando-aplicar-titulo">When to apply SOLID</h2>
+          <p>
+            SOLID is especially useful when reviewing code that changes frequently, is hard to test or forces modifying many parts to add a capability. It also offers a common vocabulary to discuss why a dependency or a responsibility hinders maintenance.
+          </p>
+          <ul>
+            <li>Start from an observable problem: repeated changes, difficult tests or dependencies that prevent replacing a piece.</li>
+            <li>Identify which responsibility or contract is involved before adding a new abstraction.</li>
+            <li>Make a bounded change and check that existing behavior still works.</li>
+            <li>Use tests to document important contracts and detect regressions.</li>
+            <li>Re-evaluate the design when new requirements appear; there is no need to anticipate them all.</li>
+          </ul>
+          <p class="nota">
+            Simplicity is also a design property. If an abstraction does not reduce present complexity or ease a likely change, it may be better to keep the direct solution.
+          </p>
+        </section>
+
+        <section id="errores" aria-labelledby="errores-titulo">
+          <h2 id="errores-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it harms</th>
+                <th scope="col">Better approach</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Interpreting single responsibility as «one class, one method».</td>
+                <td>Produces artificial divisions without clarifying the real reasons for change.</td>
+                <td>Look for coherent responsibilities and related reasons for change.</td>
+              </tr>
+              <tr>
+                <td>Designing extensions for any imaginable future.</td>
+                <td>Adds complexity before a need exists.</td>
+                <td>Introduce extension points when a change pattern justifies them.</td>
+              </tr>
+              <tr>
+                <td>Using inheritance only to reuse code.</td>
+                <td>The subclass may not meet the base class contract.</td>
+                <td>Check substitutability and consider composition when it fits better.</td>
+              </tr>
+              <tr>
+                <td>Creating huge interfaces with optional or empty methods.</td>
+                <td>Consumers depend on operations they do not need and contracts lose clarity.</td>
+                <td>Split capabilities according to the needs of their consumers.</td>
+              </tr>
+              <tr>
+                <td>Confusing dependency inversion with using an injection container.</td>
+                <td>An injection tool does not guarantee dependencies are well designed.</td>
+                <td>First define the needed contract, then the mechanism to provide the implementation.</td>
+              </tr>
+              <tr>
+                <td>Applying the five principles as a rigid checklist.</td>
+                <td>Can lead to layers and abstractions that add no value.</td>
+                <td>Use them as design questions against concrete problems.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../patrones/index.en.html">Design patterns</a>: recurring solutions to software design problems.</li>
+            <li><a href="../paradigmas/index.en.html">Programming paradigms</a>: different models for organizing and expressing programs.</li>
+            <li><a href="../apis/index.en.html">Client-server and APIs</a>: contracts and communication between software components.</li>
+            <li><a href="../frameworks-frontend/index.en.html">Front-end frameworks</a>: practical application of the principles in building interfaces.</li>
+            <li><a href="../frameworks-backend/index.en.html">Back-end frameworks</a>: practical application of the principles in organizing a server.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

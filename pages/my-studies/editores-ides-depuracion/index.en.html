@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editors, IDEs and debugging — Computer science studies</title>
+  <meta name="description"
+    content="What a text editor and an IDE are, popular editors, integrated environments and how to debug with breakpoints, step, watch and call stack.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Development tools</p>
+          <h1>Editors, IDEs and debugging</h1>
+          <p class="entrada">
+            The editor is where you write code; the debugger is where you understand why it does not do
+            what you expected. Mastering both tools speeds you up more than any language trick.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>A <strong>text editor</strong> edits files and relies on extensions; an
+              <strong>IDE</strong> integrates editor, compiler, debugger and project manager into one.</li>
+            <li>Most developers today use an extensible editor (VS Code) that behaves almost like an IDE
+              thanks to extensions.</li>
+            <li>Debugging is not "reading the code until you spot the error": it is <strong>observing the
+              real state</strong> of the program while it runs.</li>
+            <li>The basic debugger tools are <strong>breakpoints, step over/into/out,
+              watch</strong> and the <strong>call stack</strong>.</li>
+            <li><code>console.log</code> (or <code>print</code>) is useful, but it does not replace the
+              debugger when the flow is complex.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is an editor and what is an IDE?</a></li>
+            <li><a href="#editores">Text editors</a></li>
+            <li><a href="#ides">Integrated development environments (IDE)</a></li>
+            <li><a href="#depuracion">Debugging: observing the real state</a></li>
+            <li><a href="#breakpoints">Breakpoints, step and flow control</a></li>
+            <li><a href="#watch-stack">Watch, call stack and variables</a></li>
+            <li><a href="#logging">Logging: the practical complement</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is an editor and what is an IDE?</h2>
+          <p>
+            A <strong>text editor</strong> is a program that edits plain text files. Its job is to help
+            you write: syntax highlighting, autocompletion, search and replace, and extensions that add
+            capabilities. It knows nothing about your project or how it runs.
+          </p>
+          <p>
+            An <strong>IDE</strong> (integrated development environment) is an editor to which the rest of
+            the workflow has been attached: compiler or interpreter, debugger, project manager, version
+            control and, often, interface or database designers. Everything coexists in a single window
+            and shares the project context.
+          </p>
+          <p class="nota">
+            The line has blurred: a modern editor with extensions (VS Code, Neovim) can behave almost
+            like an IDE. The real difference is not the number of features, but whether the environment
+            <em>understands your project as a whole</em> or only edits files.
+          </p>
+        </section>
+
+        <section id="editores" aria-labelledby="editores-titulo">
+          <h2 id="editores-titulo">Text editors</h2>
+          <ul>
+            <li><strong>VS Code</strong>: the most widespread. Free, cross-platform and with a huge
+              ecosystem of extensions (languages, themes, linters, debuggers). Its core is light; the
+              power comes from extensions.</li>
+            <li><strong>Vim / Neovim</strong>: modal editors driven from the keyboard. They start empty
+              and become whatever you configure; steep learning curve, very high productivity for those
+              who master them.</li>
+            <li><strong>Sublime Text, Notepad++, Kate</strong>: light and fast editors, ideal for opening
+              loose files or editing on machines with few resources.</li>
+            <li><strong>System editors</strong> (<code>nano</code>, <code>vi</code>): shipped with almost
+              any Linux server; knowing the minimum is a survival skill.</li>
+          </ul>
+          <p>
+            What a good editor provides out of the box: syntax highlighting, autocompletion
+            (<em>IntelliSense</em>), go to definition, rename symbol, formatting and integrated Git.
+          </p>
+        </section>
+
+        <section id="ides" aria-labelledby="ides-titulo">
+          <h2 id="ides-titulo">Integrated development environments (IDE)</h2>
+          <ul>
+            <li><strong>Visual Studio</strong>: the classic IDE for .NET and C++. Heavy but very complete:
+              visual debugger, form designer, profiler.</li>
+            <li><strong>JetBrains (IntelliJ, PyCharm, WebStorm, Rider)</strong>: per-language IDEs with
+              advanced refactorings and deep static analysis. Paid, with limited free versions.</li>
+            <li><strong>Eclipse / NetBeans</strong>: historical in the Java world; less common today
+              except in legacy corporate environments.</li>
+            <li><strong>Xcode</strong>: Apple's IDE for Swift/Objective-C and app development for its
+              platforms.</li>
+            <li><strong>Android Studio</strong>: based on IntelliJ, the official IDE for Android.</li>
+          </ul>
+          <p class="nota">
+            An IDE shines when the project is large and the language is static (Java, C#, C++): the
+            compiler and the IDE share a model of the code that enables safe refactorings. In dynamic
+            languages (JavaScript, Python) an extensible editor is usually enough.
+          </p>
+        </section>
+
+        <section id="depuracion" aria-labelledby="depuracion-titulo">
+          <h2 id="depuracion-titulo">Debugging: observing the real state</h2>
+          <p>
+            Debugging means running the program <strong>step by step</strong> and watching how variables
+            change, instead of guessing by reading the code. The typical flow:
+          </p>
+          <ol>
+            <li>Reproduce the bug reliably (if you cannot reproduce it, you cannot fix it).</li>
+            <li>Place a <strong>breakpoint</strong> near where you suspect it fails.</li>
+            <li>Run the program; it will pause at the breakpoint.</li>
+            <li>Inspect variables, call stack and flow.</li>
+            <li>Step forward until you find where the state stops matching what you expected.</li>
+            <li>Fix it and run again to confirm.</li>
+          </ol>
+          <p>
+            The debugger fixes nothing by itself: it gives you <em>information</em>. The error usually
+            lies between the last correct state and the first incorrect one.
+          </p>
+        </section>
+
+        <section id="breakpoints" aria-labelledby="breakpoints-titulo">
+          <h2 id="breakpoints-titulo">Breakpoints, step and flow control</h2>
+          <pre><code>// Example to debug in the browser (DevTools) or in VS Code.
+function calculateTotal(items) {
+  let total = 0;
+  for (const item of items) {
+    total += item.price * item.quantity;  // ← put a breakpoint here
+  }
+  return total;
+}</code></pre>
+          <ul>
+            <li><strong>Breakpoint</strong>: pauses execution on that line before running it.</li>
+            <li><strong>Conditional breakpoint</strong>: only pauses if a condition holds (e.g.
+              <code>item.price &lt; 0</code>), useful in long loops.</li>
+            <li><strong>Step over (F10)</strong>: runs the current line and moves to the next without
+              entering the functions it calls.</li>
+            <li><strong>Step into (F11)</strong>: steps into the function called on that line.</li>
+            <li><strong>Step out (Shift+F11)</strong>: leaves the current function and returns to the
+              caller.</li>
+            <li><strong>Continue (F5)</strong>: resumes until the next breakpoint.</li>
+            <li><strong>Logpoint</strong>: prints a message to the console without modifying the code or
+              pausing.</li>
+          </ul>
+        </section>
+
+        <section id="watch-stack" aria-labelledby="watch-stack-titulo">
+          <h2 id="watch-stack-titulo">Watch, call stack and variables</h2>
+          <ul>
+            <li><strong>Local variables</strong>: panel showing the current value of each variable in the
+              current scope.</li>
+            <li><strong>Watch</strong>: expressions you define and that are re-evaluated on every step
+              (e.g. <code>items.length</code> or <code>total &gt; 100</code>).</li>
+            <li><strong>Call stack</strong>: the chain of functions that led here. Clicking a frame takes
+              you to that function's code with its context.</li>
+            <li><strong>Scope chain</strong>: variables accessible from the current block, including
+              outer scopes.</li>
+          </ul>
+          <p class="nota">
+            The call stack is the most underrated tool: when an error says "line 42", the real frame
+            where it fails is usually two or three levels higher in the stack.
+          </p>
+        </section>
+
+        <section id="logging" aria-labelledby="logging-titulo">
+          <h2 id="logging-titulo">Logging: the practical complement</h2>
+          <p>
+            Printing messages is still useful, especially in asynchronous code, servers or when no
+            debugger is available (production, CI).
+          </p>
+          <pre><code>// JavaScript
+console.log('value:', value);        // general message
+console.warn('something odd');       // warning (yellow)
+console.error('serious failure');    // error (red)
+console.table(arrayOfObjects);       // readable table
+console.time('load'); /* ... */ console.timeEnd('load'); // measure time
+
+// Python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logging.debug('value: %s', value)
+logging.exception('failure')  // includes the traceback</code></pre>
+          <ul>
+            <li>Use it to trace the flow, not to inspect detailed state (for that, the debugger).</li>
+            <li>Avoid leaving <code>console.log</code> in the final code; use a logger with levels and
+              disable it in production.</li>
+            <li>In the browser, <code>console.log</code> accepts <em>formatters</em>:
+              <code>console.log('%c text', 'color: red')</code>.</li>
+          </ul>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Learn the debugger's keyboard shortcuts: they save more time than any extension.</li>
+            <li>Keep code formatted with clear names; debugging obfuscated code wastes time.</li>
+            <li>Reproduce the bug with a minimal case before debugging: less noise, more visible cause.</li>
+            <li>Do not debug with <code>print</code> when you have a debugger at hand; but do not
+              dismiss logging in environments without a debugger.</li>
+            <li>Configure <em>source maps</em> if your code is transpiled or minified, to debug the
+              original code.</li>
+            <li>Use linters and formatters (ESLint, Prettier, Black, rustfmt) to catch errors before
+              running.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <ul>
+            <li>Debugging without first reproducing the bug: you get lost in the program's normal flow.</li>
+            <li>Placing breakpoints in the wrong spot and concluding "nothing happens".</li>
+            <li>Confusing <em>step over</em> with <em>step into</em> and skipping the failing function.</li>
+            <li>Inspecting variables in the wrong scope of the call stack.</li>
+            <li>Leaving <code>console.log</code> with sensitive data in production.</li>
+            <li>Changing code while debugging and losing track of what worked.</li>
+          </ul>
+          <p class="aviso">
+            If the program "behaves differently" while debugging, it may be a <em>heisenbug</em>:
+            race conditions or time-dependent code. In those cases, logging and controlled
+            reproducibility help more than the interactive debugger.
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Tool</th>
+                <th scope="col">What it is for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Breakpoint</td>
+                <td>Pause execution on a line.</td>
+              </tr>
+              <tr>
+                <td>Step over / into / out</td>
+                <td>Advance without entering, enter, or leave functions.</td>
+              </tr>
+              <tr>
+                <td>Watch</td>
+                <td>Observe expressions while stepping.</td>
+              </tr>
+              <tr>
+                <td>Call stack</td>
+                <td>See the chain of calls that led to the current point.</td>
+              </tr>
+              <tr>
+                <td>Logpoint</td>
+                <td>Print without modifying code or pausing.</td>
+              </tr>
+              <tr>
+                <td>Source map</td>
+                <td>Map transpiled/minified code back to the original.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../javascript/index.en.html">JavaScript</a>: the DOM and how to change styles and
+              classes dynamically.</li>
+            <li><a href="../git/index.en.html">Git</a>: version control integrated into the editor.</li>
+            <li><a href="../http/index.en.html">HTTP and the web browser</a>: how resources are downloaded and
+              the network is debugged.</li>
+            <li><a href="../paradigmas/index.en.html">Programming paradigms</a>: how the paradigm influences
+              the way you debug.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

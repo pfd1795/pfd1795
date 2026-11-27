@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Digital logic and Boolean algebra — Computer science studies</title>
+  <meta name="description" content="Introduction to Boolean logic, truth tables and the logic gates that make up digital circuits.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json">
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Fundamentals of computing</p>
+          <h1>Digital logic and Boolean algebra</h1>
+          <p class="entrada">
+            Digital logic represents conditions and decisions using binary values, usually 0 and 1.
+            Boolean algebra lets us describe and simplify those relationships, while logic gates
+            implement them physically in circuits. Understanding the connection between expressions,
+            truth tables and hardware helps reason about how a computer processes information.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>A Boolean variable can only take two values: true or false, which in digital circuits are usually represented as 1 and 0.</li>
+            <li>AND is true only if all its inputs are true; OR is true if at least one input is true; NOT inverts its input.</li>
+            <li>A truth table lists all possible input combinations and shows the result of an expression for each combination.</li>
+            <li>The laws of Boolean algebra, including De Morgan's laws, let us transform expressions without changing their logical result.</li>
+            <li>Logic gates are circuits that perform Boolean operations; combining them lets us build more complex digital circuits.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is it?</a></li>
+            <li><a href="#proposiciones">Propositions and connectors</a></li>
+            <li><a href="#tablas-verdad">Truth tables</a></li>
+            <li><a href="#simplificacion">Simplification and De Morgan's laws</a></li>
+            <li><a href="#puertas-logicas">Logic gates</a></li>
+            <li><a href="#ejemplos">Examples in pseudocode and JavaScript</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is it?</h2>
+          <p>
+            <strong>Digital logic</strong> studies how to represent and process information using
+            signals that are interpreted as two states. In a binary system, those states are written
+            as <code>0</code> and <code>1</code>; in logic they are usually expressed as <em>false</em>
+            and <em>true</em>. The correspondence is useful, but it does not mean every circuit has
+            an identical voltage to represent each value: the concrete electrical levels depend on
+            the technology and its tolerance margins.
+          </p>
+          <p>
+            <strong>Boolean algebra</strong> is a mathematical system for operating on logical
+            values. Its main operators let us combine conditions. For example, an alarm could
+            activate if smoke is detected <em>and</em> the system is armed, or if an emergency
+            button is pressed. The Boolean expression describes that rule regardless of how the
+            circuit is built.
+          </p>
+          <p>
+            In hardware, electronic components organized as <strong>logic gates</strong> execute
+            those operations. The gates receive one or more signals and produce an output.
+            Combining many of them lets us build circuits that compare numbers, add, store data or
+            control the flow of operations in a processor.
+          </p>
+          <p class="nota">
+            In a real digital circuit, 0 and 1 represent signal ranges recognized by the
+            component, not necessarily ideal and exact electrical values. To reason about its
+            logical function, it is usually enough to use binary values.
+          </p>
+        </section>
+
+        <section id="proposiciones" aria-labelledby="proposiciones-titulo">
+          <h2 id="proposiciones-titulo">Propositions and connectors</h2>
+          <p>
+            A <strong>proposition</strong> is a statement that can be assigned a truth value: true or
+            false. In an expression, propositions can be represented with letters such as
+            <code>A</code>, <code>B</code> and <code>C</code>. For example, <code>A</code> could mean
+            "there is smoke" and <code>B</code>, "the alarm is armed".
+          </p>
+          <p>
+            <strong>Logical connectors</strong> combine or modify those propositions. The AND
+            operation reads "and"; OR, "or"; NOT, "not". In circuits and technical texts their
+            English names, mathematical symbols and programming-language operators also appear. The
+            meaning is preserved, although the notation changes.
+          </p>
+          <ul>
+            <li><strong>AND</strong> — conjunction: <code>A AND B</code> is true when both propositions are true.</li>
+            <li><strong>OR</strong> — inclusive disjunction: <code>A OR B</code> is true when at least one proposition is true, even if both are.</li>
+            <li><strong>NOT</strong> — negation: <code>NOT A</code> inverts the value of <code>A</code>.</li>
+            <li><strong>XOR</strong> — exclusive disjunction: <code>A XOR B</code> is true when the inputs are different.</li>
+          </ul>
+          <p>
+            The word "or" in everyday language can mean an exclusive choice: "tea or coffee" may
+            suggest that only one is chosen. In logic, <code>OR</code> is usually inclusive. When we
+            want to express that exactly one input must be true, we use <code>XOR</code> or state
+            the condition explicitly.
+          </p>
+          <p>
+            Parentheses help indicate which part of an expression is evaluated first. If there are no
+            parentheses, languages and mathematical conventions apply precedence rules. Since those
+            rules may differ by context, adding parentheses when they improve readability is a safe
+            practice.
+          </p>
+        </section>
+
+        <section id="tablas-verdad" aria-labelledby="tablas-verdad-titulo">
+          <h2 id="tablas-verdad-titulo">Truth tables</h2>
+          <p>
+            A <strong>truth table</strong> lists the input combinations of an expression and computes
+            its output. It is a simple tool to check a rule, compare two expressions or detect a
+            combination that produces an unexpected result.
+          </p>
+          <p>
+            With one input there are two possible combinations. With two inputs there are four: both
+            false, only the first true, only the second true, and both true. In general, with
+            <code>n</code> binary variables, the complete table contains <code>2<sup>n</sup></code> rows.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">A</th>
+                <th scope="col">B</th>
+                <th scope="col">A AND B</th>
+                <th scope="col">A OR B</th>
+                <th scope="col">A XOR B</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+            </tbody>
+          </table>
+          <p>
+            NOT only needs one input:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">A</th>
+                <th scope="col">NOT A</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>0</td><td>1</td></tr>
+              <tr><td>1</td><td>0</td></tr>
+            </tbody>
+          </table>
+          <p>
+            A methodical way to build a table is to write all input combinations first, then
+            evaluate the sub-expressions, and finally compute the final output. For an expression
+            with parentheses, it helps to add a column for each intermediate operation.
+          </p>
+          <pre><code>variables = [A, B]
+for each combination of values of A and B:
+    output_and = A AND B
+    output_or = A OR B
+    show A, B, output_and, output_or</code></pre>
+          <p>
+            The pseudocode describes the procedure, not a program tied to a particular language.
+            For three variables there are eight rows; if the table grows, organizing intermediate
+            columns helps review each step without skipping combinations.
+          </p>
+        </section>
+
+        <section id="simplificacion" aria-labelledby="simplificacion-titulo">
+          <h2 id="simplificacion-titulo">Simplification and De Morgan's laws</h2>
+          <p>
+            Two expressions are <strong>logically equivalent</strong> if they produce the same output
+            for all combinations of their inputs. They can be checked by comparing their columns in a
+            truth table. Boolean laws let us prove equivalences and simplify expressions without
+            enumerating all rows.
+          </p>
+          <p>
+            Some basic laws are:
+          </p>
+          <ul>
+            <li><strong>Identity:</strong> <code>A AND 1 = A</code> and <code>A OR 0 = A</code>.</li>
+            <li><strong>Domination:</strong> <code>A AND 0 = 0</code> and <code>A OR 1 = 1</code>.</li>
+            <li><strong>Idempotence:</strong> <code>A AND A = A</code> and <code>A OR A = A</code>.</li>
+            <li><strong>Complement:</strong> <code>A AND NOT A = 0</code> and <code>A OR NOT A = 1</code>.</li>
+            <li><strong>Double negation:</strong> <code>NOT (NOT A) = A</code>.</li>
+            <li><strong>Commutativity:</strong> <code>A AND B = B AND A</code> and <code>A OR B = B OR A</code>.</li>
+            <li><strong>Associativity:</strong> operations of the same type can be regrouped without changing the result.</li>
+          </ul>
+          <p>
+            <strong>De Morgan's laws</strong> describe how a negation distributes over an operation:
+          </p>
+          <ul>
+            <li><code>NOT (A AND B) = (NOT A) OR (NOT B)</code>.</li>
+            <li><code>NOT (A OR B) = (NOT A) AND (NOT B)</code>.</li>
+          </ul>
+          <p>
+            The idea can be understood with an everyday condition. "It is not true that the door is
+            closed and the light is off" is equivalent to "the door is not closed or the light is not
+            off". When negating a conjunction, AND becomes OR and each term is negated. When negating
+            a disjunction, OR becomes AND and each term is also negated.
+          </p>
+          <p>
+            Simplifying can reduce the number of operations needed to represent a logical function.
+            In circuits, that can affect the number of components, consumption or propagation
+            delay. However, the physical result depends on the technology, design constraints and
+            synthesis tools: an algebraically shorter expression does not by itself guarantee a
+            better circuit in every sense.
+          </p>
+          <p class="nota">
+            To verify a transformation, compare the truth tables of the original and proposed
+            expressions. If the outputs match in all rows, they are equivalent.
+          </p>
+        </section>
+
+        <section id="puertas-logicas" aria-labelledby="puertas-logicas-titulo">
+          <h2 id="puertas-logicas-titulo">Logic gates</h2>
+          <p>
+            A <strong>logic gate</strong> is a circuit that performs a Boolean operation. The inputs
+            represent binary signals and the output depends on the gate's function. The basic gates
+            AND, OR and NOT have direct equivalents in algebra; others, such as NAND, NOR and XOR,
+            are also common in digital circuits.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Gate</th>
+                <th scope="col">Boolean operation</th>
+                <th scope="col">When the output is 1</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>AND</td><td><code>A AND B</code></td><td>When A and B are 1.</td></tr>
+              <tr><td>OR</td><td><code>A OR B</code></td><td>When at least one input is 1.</td></tr>
+              <tr><td>NOT</td><td><code>NOT A</code></td><td>When A is 0.</td></tr>
+              <tr><td>NAND</td><td><code>NOT (A AND B)</code></td><td>Except when A and B are 1.</td></tr>
+              <tr><td>NOR</td><td><code>NOT (A OR B)</code></td><td>Only when A and B are 0.</td></tr>
+              <tr><td>XOR</td><td><code>A XOR B</code></td><td>When the inputs are different.</td></tr>
+              <tr><td>XNOR</td><td><code>NOT (A XOR B)</code></td><td>When the inputs are equal.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            NAND and NOR are called <strong>universal gates</strong> because, by combining gates of
+            either of those two types, any Boolean function can be implemented. This is a logical
+            property; the concrete choice of components also depends on electrical characteristics
+            and design.
+          </p>
+          <p>
+            The following circuit combines three operations. First, an AND gate computes whether two
+            conditions, <code>A</code> and <code>B</code>, hold at the same time. Then a NOT gate
+            inverts that result. Finally, an OR gate activates the output if the previous negation
+            is true or if input <code>C</code> is. The expression is
+            <code>Y = NOT (A AND B) OR C</code>.
+          </p>
+          <figure class="diagrama" aria-labelledby="fig-circuito-titulo">
+            <figcaption id="fig-circuito-titulo">Circuit with an AND, a NOT and an OR gate chained together.</figcaption>
+            <svg viewBox="0 0 720 190" role="img" aria-labelledby="circuito-titulo circuito-descripcion">
+              <title id="circuito-titulo">Boolean circuit with three gates</title>
+              <desc id="circuito-descripcion">Signals A and B enter an AND gate; its output passes through a NOT gate. The result and signal C enter an OR gate that produces Y.</desc>
+              <text class="texto" x="20" y="48">A</text>
+              <text class="texto" x="20" y="108">B</text>
+              <path class="flecha" d="M45 42 H120"></path>
+              <path class="flecha" d="M45 102 H120"></path>
+              <rect class="caja" x="120" y="25" width="120" height="95" rx="8"></rect>
+              <text class="texto" x="180" y="78" text-anchor="middle">AND</text>
+              <path class="flecha" d="M240 72 H310"></path>
+              <rect class="caja" x="310" y="45" width="90" height="55" rx="8"></rect>
+              <text class="texto" x="355" y="78" text-anchor="middle">NOT</text>
+              <path class="flecha" d="M400 72 H475"></path>
+              <text class="texto" x="430" y="155">C</text>
+              <path class="flecha" d="M450 149 H490 V112"></path>
+              <rect class="caja-destacada" x="475" y="35" width="120" height="85" rx="8"></rect>
+              <text class="texto-acentuado" x="535" y="83" text-anchor="middle">OR</text>
+              <path class="flecha-acentuada" d="M595 77 H670"></path>
+              <text class="texto-acentuado" x="680" y="83">Y</text>
+              <text class="texto-secundario" x="180" y="145" text-anchor="middle">A AND B</text>
+              <text class="texto-secundario" x="355" y="125" text-anchor="middle">NOT (A AND B)</text>
+              <text class="texto-secundario" x="535" y="155" text-anchor="middle">Y = NOT (A AND B) OR C</text>
+            </svg>
+          </figure>
+          <p>
+            The figure shows the order of the operations, not an electrical schematic. In a real
+            circuit, each gate has connections, power supply and physical properties that are not
+            represented here.
+          </p>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">Examples in pseudocode and JavaScript</h2>
+          <p>
+            Suppose a system opens a door if the card is valid and the user is not blocked. The rule
+            can be expressed as <code>cardValid AND NOT userBlocked</code>. It is important to
+            write the condition with the same clarity in the pseudocode and in the language used.
+          </p>
+          <pre><code>if cardValid AND NOT userBlocked:
+    openDoor()
+else:
+    keepClosed()</code></pre>
+          <p>
+            In JavaScript, the usual logical operators are <code>&amp;&amp;</code> for AND, <code>||</code>
+            for OR and <code>!</code> for NOT. If the variables hold Booleans, the result also
+            expresses a Boolean condition:
+          </p>
+          <pre><code>const cardValid = true;
+const userBlocked = false;
+
+const canEnter = cardValid &amp;&amp; !userBlocked;
+
+if (canEnter) {
+  console.log('Access allowed');
+}</code></pre>
+          <p>
+            JavaScript allows using non-Boolean values in conditions. Its operators may apply
+            conversion rules and, in the case of <code>&amp;&amp;</code> and <code>||</code>, return one of
+            the operands instead of a strict Boolean. If we want to reason as in a truth table, it is
+            better to work with explicit Boolean variables or convert the result carefully.
+          </p>
+          <p>
+            To check a priority condition, for example, an alarm that activates when there is smoke
+            and the system is armed, or when emergency is pressed, parentheses make the rule visible:
+          </p>
+          <pre><code>const hasSmoke = false;
+const systemArmed = true;
+const emergency = true;
+
+const activateAlarm =
+  (hasSmoke &amp;&amp; systemArmed) || emergency;</code></pre>
+          <p>
+            In this case, the alarm activates if the left-hand group holds or if emergency is true.
+            Although the precedence of <code>&amp;&amp;</code> over <code>||</code> in JavaScript already
+            produces that grouping, the parentheses document the intent and reduce errors when
+            modifying the expression.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li><strong>Name conditions by their meaning.</strong> A name like <code>userBlocked</code> is easier to review than a generic variable like <code>x</code>.</li>
+            <li><strong>Use parentheses to express intent.</strong> Even when precedence is known, explicit groups make combined conditions readable.</li>
+            <li><strong>Build the table before simplifying.</strong> List the inputs and expected outputs to detect which cases the expression must cover.</li>
+            <li><strong>Check equivalences.</strong> When replacing an expression with another, compare their tables or evaluate each relevant combination.</li>
+            <li><strong>Distinguish inclusive OR from XOR.</strong> Confirm whether the requirement allows both conditions to be true at the same time.</li>
+            <li><strong>Separate logic from physical representation.</strong> The expression describes logical behavior; the concrete circuit also has electrical and timing constraints.</li>
+            <li><strong>Evaluate edge cases.</strong> Test all-false inputs, all-true inputs and mixed combinations, plus those that matter for the system.</li>
+          </ul>
+          <p class="aviso">
+            A correct Boolean condition does not by itself guarantee that a system is safe or
+            reliable. In real applications, inputs must also be validated, states controlled,
+            hardware failures considered and the system's behavior under unexpected signals reviewed.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it is wrong</th>
+                <th scope="col">What to do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Interpreting OR as "exactly one".</td>
+                <td>Inclusive OR is also true when both inputs are true.</td>
+                <td>Use XOR or state the exclusivity explicitly.</td>
+              </tr>
+              <tr>
+                <td>Negating only part of an expression.</td>
+                <td>It can change the result for several input combinations.</td>
+                <td>Apply De Morgan's laws and check with a table.</td>
+              </tr>
+              <tr>
+                <td>Omitting parentheses in long conditions.</td>
+                <td>Precedence may not be obvious to whoever reads or maintains the code.</td>
+                <td>Group the parts according to the rule they represent.</td>
+              </tr>
+              <tr>
+                <td>Assuming a JavaScript value is always a Boolean.</td>
+                <td>Logical operators also work with other values and may return operands.</td>
+                <td>Use explicit Booleans when seeking a direct equivalence with binary logic.</td>
+              </tr>
+              <tr>
+                <td>Checking only one input combination.</td>
+                <td>An expression may work for the tested case and fail in another.</td>
+                <td>Review all rows of the table or design tests covering the relevant combinations.</td>
+              </tr>
+              <tr>
+                <td>Assuming a shorter expression is always better in hardware.</td>
+                <td>Performance and cost also depend on the technology and circuit constraints.</td>
+                <td>Treat simplification as a logical transformation and measure the physical design separately.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Operation</th>
+                <th scope="col">Reading</th>
+                <th scope="col">Common notation</th>
+                <th scope="col">True when</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>AND</td><td>AND</td><td><code>A AND B</code>, <code>A &amp;&amp; B</code></td><td>Both inputs are true.</td></tr>
+              <tr><td>OR</td><td>Inclusive OR</td><td><code>A OR B</code>, <code>A || B</code></td><td>At least one input is true.</td></tr>
+              <tr><td>NOT</td><td>NOT</td><td><code>NOT A</code>, <code>!A</code></td><td>The input is false.</td></tr>
+              <tr><td>XOR</td><td>Exclusive OR</td><td><code>A XOR B</code></td><td>The inputs are different.</td></tr>
+              <tr><td>NAND</td><td>NOT AND</td><td><code>NOT (A AND B)</code></td><td>At least one input is false.</td></tr>
+              <tr><td>NOR</td><td>NOT OR</td><td><code>NOT (A OR B)</code></td><td>Both inputs are false.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Symbols and operators may vary between books, diagrams and languages. Before reading an
+            expression, identify the convention used and check how its operations are grouped.
+          </p>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../sistemas-numericos/index.en.html">Number systems and data representation</a>: relationship between binary representation and the data processed by a digital system.</li>
+            <li><a href="../sistemas-operativos/index.en.html">Operating systems</a>: context on the software that manages hardware resources.</li>
+            <li><a href="../criptografia/index.en.html">Basic cryptography</a>: Boolean operators and XOR in symmetric encryption and hash functions.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

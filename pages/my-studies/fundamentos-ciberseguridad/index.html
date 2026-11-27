@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fundamentos de ciberseguridad — Estudios de informática</title>
+  <meta name="description" content="Fundamentos de ciberseguridad: confidencialidad, integridad y disponibilidad, amenaza, vulnerabilidad, riesgo, superficie de ataque, defensa en profundidad y marcos de referencia.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Seguridad y ciberseguridad</p>
+          <h1>Fundamentos de ciberseguridad</h1>
+          <p class="entrada">
+            Ciberseguridad no es instalar un antivirus y esperar lo mejor. Es un conjunto de
+            decisiones sobre qué proteger, de qué y con qué coste. Este artículo fija el
+            vocabulario —confidencialidad, integridad, disponibilidad, amenaza, vulnerabilidad y
+            riesgo— y presenta los mapas que usan los equipos de seguridad para no trabajar a
+            ciegas.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>Los objetivos son <strong>confidencialidad, integridad y disponibilidad</strong>; una medida puede proteger uno y perjudicar otro.</li>
+            <li>Amenaza es quién o qué puede hacer daño; vulnerabilidad es el punto débil; riesgo es la combinación con el impacto.</li>
+            <li>La <strong>superficie de ataque</strong> es todo lo que un atacante puede tocar: puertos, formularios, cuentas, dependencias y personas.</li>
+            <li><strong>Defensa en profundidad</strong>: varias capas débiles suman más que una capa perfecta que alguien puede saltarse.</li>
+            <li>Los marcos (MITRE ATT&amp;CK, CIS Controls, NIST CSF y OWASP) organizan el trabajo; no son productos ni sustituyen al criterio.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#cia">La triada CIA</a></li>
+            <li><a href="#amenaza-vulnerabilidad-riesgo">Amenaza, vulnerabilidad y riesgo</a></li>
+            <li><a href="#superficie">Superficie de ataque</a></li>
+            <li><a href="#defensa">Defensa en profundidad</a></li>
+            <li><a href="#marcos">Marcos de referencia</a></li>
+            <li><a href="#modelo-amenazas">Modelar amenazas</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas para desarrollo</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="cia" aria-labelledby="cia-titulo">
+          <h2 id="cia-titulo">La triada CIA</h2>
+          <p>
+            Casi cualquier decisión de seguridad se puede clasificar en uno de tres objetivos.
+            Escribirlos ayuda a detectar contradicciones: cifrar todo puede reforzar la
+            confidencialidad pero complicar la recuperación, y un sistema disponible al 100 % con
+            contraseñas compartidas es un sistema confiable pero indefendible.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Objetivo</th>
+                <th scope="col">Pregunta que responde</th>
+                <th scope="col">Se rompe cuando…</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Confidencialidad</strong></td><td>¿Quién puede ver el dato?</td><td>Un tercero lee correos, tokens o una base de datos.</td></tr>
+              <tr><td><strong>Integridad</strong></td><td>¿Puedo confiar en que no cambió?</td><td>Alguien modifica una transferencia, un paquete o un registro.</td></tr>
+              <tr><td><strong>Disponibilidad</strong></td><td>¿Está cuando se necesita?</td><td>Un servicio cae por saturación, borrado o ransomware.</td></tr>
+            </tbody>
+          </table>
+
+          <figure class="diagrama" aria-labelledby="diagrama-cia-titulo">
+            <figcaption id="diagrama-cia-titulo">Los tres objetivos de la seguridad de la información.</figcaption>
+            <svg viewBox="0 0 640 140" role="img" aria-labelledby="diagrama-cia-titulo">
+              <rect class="caja-destacada" x="20" y="46" width="180" height="58" rx="8"></rect>
+              <text class="texto" x="110" y="72" text-anchor="middle">Confidencialidad</text>
+              <text class="texto-secundario" x="110" y="90" text-anchor="middle">solo quien debe</text>
+              <rect class="caja-destacada" x="230" y="46" width="180" height="58" rx="8"></rect>
+              <text class="texto" x="320" y="72" text-anchor="middle">Integridad</text>
+              <text class="texto-secundario" x="320" y="90" text-anchor="middle">sin cambios ocultos</text>
+              <rect class="caja-destacada" x="440" y="46" width="180" height="58" rx="8"></rect>
+              <text class="texto" x="530" y="72" text-anchor="middle">Disponibilidad</text>
+              <text class="texto-secundario" x="530" y="90" text-anchor="middle">cuando se pide</text>
+            </svg>
+          </figure>
+          <p class="nota">
+            Añadir autenticación de dos factores protege la confidencialidad y la integridad de una
+            cuenta, pero si se pierde el segundo factor la disponibilidad puede verse afectada. Por
+            eso se registran códigos de recuperación.
+          </p>
+        </section>
+
+        <section id="amenaza-vulnerabilidad-riesgo" aria-labelledby="amenaza-vulnerabilidad-riesgo-titulo">
+          <h2 id="amenaza-vulnerabilidad-riesgo-titulo">Amenaza, vulnerabilidad y riesgo</h2>
+          <p>
+            Estas tres palabras se usan como sinónimos y no lo son. Separarlas permite priorizar:
+            no todo defecto es explotable y no toda amenaza nos afecta.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concepto</th>
+                <th scope="col">Definición</th>
+                <th scope="col">Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Activo</td><td>Lo que tiene valor para el negocio.</td><td>Una base de datos de clientes, un certificado de firma.</td></tr>
+              <tr><td>Amenaza</td><td>Agente o evento que puede causar daño.</td><td>Un atacante, un fallo humano, una inundación.</td></tr>
+              <tr><td>Vulnerabilidad</td><td>Débilidad que la amenaza puede aprovechar.</td><td>Un dependency sin parchear, una cookie sin <code>HttpOnly</code>.</td></tr>
+              <tr><td>Riesgo</td><td>Probabilidad de que la amenaza explote la debilidad y su impacto.</td><td>Filtración de correos por una dependencia sin actualizar.</td></tr>
+              <tr><td>Control</td><td>Medida que reduce probabilidad o impacto.</td><td>Actualización automática, MFA, copias de seguridad.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            No hace falta una fórmula exacta, pero sirve como regla mental: <strong>riesgo alto</strong>
+            cuando hay una amenaza creíble, una vulnerabilidad accesible y un impacto grave. Un
+            defecto en un servicio interno sin exposición y sin datos sensibles puede esperar; una
+            vulnerabilidad en un endpoint público con credenciales no.
+          </p>
+        </section>
+
+        <section id="superficie" aria-labelledby="superficie-titulo">
+          <h2 id="superficie-titulo">Superficie de ataque</h2>
+          <p>
+            Es el conjunto de puntos por los que alguien puede interactuar con el sistema. Reducirla
+            no significa esconderlo todo: significa quitar lo que no se usa y controlar lo que queda.
+          </p>
+          <ul>
+            <li><strong>Red</strong>: puertos abiertos, servicios expuestos, DNS, VPN, routers.</li>
+            <li><strong>Aplicación</strong>: formularios, parámetros, cabeceras, subidas de archivos, APIs.</li>
+            <li><strong>Identidad</strong>: cuentas, contraseñas, tokens, sesiones y permisos.</li>
+            <li><strong>Código y dependencias</strong>: bibliotecas, pipelines, imágenes de contenedor.</li>
+            <li><strong>Personas y procesos</strong>: correo, teléfono, soporte, contratistas.</li>
+            <li><strong>Dispositivos</strong>: portátiles, móviles, USB y equipos de IoT.</li>
+          </ul>
+          <pre><code>ss -tuln
+sudo ss -tulnp
+sudo ufw status verbose</code></pre>
+          <p>
+            Esos comandos muestran qué escucha y qué permite el cortafuegos local en tu propia
+            máquina. Cerrar un puerto que nadie usa reduce superficie sin romper nada; liberar un
+            servicio en <code>0.0.0.0</code> «para probar» la aumenta. Más contexto en
+            <a href="../linux-servidores/index.html">Linux y servidores</a> y
+            <a href="../redes/index.html">Redes: fundamentos</a>.
+          </p>
+        </section>
+
+        <section id="defensa" aria-labelledby="defensa-titulo">
+          <h2 id="defensa-titulo">Defensa en profundidad</h2>
+          <p>
+            La idea es simple: ninguna capa es suficiente, pero varias capas independientes
+            obligan a un atacante a sortear más obstáculos y dan tiempo a detectarlo.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Capa</th>
+                <th scope="col">Medidas típicas</th>
+                <th scope="col">Qué evita</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Perímetro</td><td>Cortafuegos, segmentación, filtrado DNS</td><td>Conexiones y servicios innecesarios.</td></tr>
+              <tr><td>Identidad</td><td>MFA, contraseñas únicas, privilegio mínimo</td><td>Uso de credenciales robadas.</td></tr>
+              <tr><td>Aplicación</td><td>Validación, saneamiento, cabeceras, revisiones</td><td>Inyección, XSS, CSRF.</td></tr>
+              <tr><td>Datos</td><td>Cifrado, copias, control de acceso</td><td>Lectura o pérdida definitiva.</td></tr>
+              <tr><td>Endpoint</td><td>Actualizaciones, EDR, control de dispositivos</td><td>Ejecución de malware y movimiento lateral.</td></tr>
+              <tr><td>Detección y respuesta</td><td>Logs centralizados, alertas, playbooks</td><td>Que el incidente pase desapercibido.</td></tr>
+            </tbody>
+          </table>
+          <p class="aviso">
+            «Seguridad por oscuridad» —ocultar la ruta, ofuscar el código, cambiar el puerto
+            del SSH— no es una capa fiable. Puede reducir ruido, pero no sustituye a la
+            autenticación, los parches ni el control de acceso.
+          </p>
+        </section>
+
+        <section id="marcos" aria-labelledby="marcos-titulo">
+          <h2 id="marcos-titulo">Marcos de referencia</h2>
+          <p>
+            Los fabricantes de seguridad —ESET, AVG, Avast, Cisco y otros— publican informes de
+            amenazas y sus propios modelos de madurez. Para estudiar conviene partir de referencias
+            públicas y neutras, que permiten comparar sin depender de un producto:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Marco</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>OWASP Top 10</strong></td><td>Clasificar riesgos de aplicaciones web: inyección, control de acceso roto, etc.</td></tr>
+              <tr><td><strong>MITRE ATT&amp;CK</strong></td><td>Describir tácticas y técnicas observadas en campañas reales.</td></tr>
+              <tr><td><strong>CIS Controls</strong></td><td>Lista priorizada de acciones defensivas para una organización.</td></tr>
+              <tr><td><strong>NIST CSF</strong></td><td>Ordenar el trabajo en gobernar, identificar, proteger, detectar, responder y recuperar.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Un marco es un índice, no una receta: ayuda a preguntar «¿tenemos esto cubierto?».
+            En este portafolio, <a href="../seguridad-web/index.html">Seguridad en aplicaciones web</a>
+            cubre la capa OWASP y <a href="../respuesta-incidentes/index.html">Respuesta a incidentes</a>
+            desarrolla la parte de detección y recuperación.
+          </p>
+        </section>
+
+        <section id="modelo-amenazas" aria-labelledby="modelo-amenazas-titulo">
+          <h2 id="modelo-amenazas-titulo">Modelar amenazas</h2>
+          <p>
+            Hacer un modelo de amenazas es dedicar un rato a pensar como el adversario antes de
+            escribir código. Para una aplicación pequeña basta con cuatro preguntas:
+          </p>
+          <ol>
+            <li><strong>¿Qué quiero proteger?</strong> Datos de usuarios, secretos, disponibilidad del servicio.</li>
+            <li><strong>¿Quién podría querer romperlo y con qué acceso?</strong> Anónimo en internet, usuario registrado, administrador con errores.</li>
+            <li><strong>¿Qué puntos puede tocar?</strong> Formularios, cabeceras, archivos, tokens, red, equipo del usuario.</li>
+            <li><strong>¿Qué controles tengo y cuál es el peor resultado que queda?</strong> Si el peor resultado sigue siendo inaceptable, añade una capa.</li>
+          </ol>
+          <p>
+            STRIDE es una lista de ayuda clásica: Suplantación, Tampering (alteración),
+            Repudio, Information disclosure (fuga), Denegación de servicio y Elevación de
+            privilegios. No sustituye al análisis propio; recuerda qué tipos de fallo existen.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Buenas prácticas para desarrollo</h2>
+          <ul>
+            <li>Validar en el servidor y tratar toda entrada como no fiable, también la del navegador.</li>
+            <li>Usar MFA en cuentas con acceso a código, despliegues o datos.</li>
+            <li>No guardar secretos en el repositorio; rotar lo que se haya filtrado.</li>
+            <li>Actualizar dependencias con revisión, no a ciegas: consulta <a href="../ci-cd/index.html">CI/CD</a> y <a href="../docker/index.html">Docker</a>.</li>
+            <li>Diseñar copias de seguridad y probar la restauración, no solo el backup.</li>
+            <li>Registrar lo justo para investigar sin guardar contraseñas ni datos personales de más.</li>
+            <li>Probar las defensas en sistemas propios o con autorización explícita.</li>
+          </ul>
+          <p>
+            La ciberseguridad se construye con hábitos pequeños y repetibles. Los artículos
+            siguientes bajan al detalle: empieza por
+            <a href="../phishing-ingenieria-social/index.html">Phishing e ingeniería social</a> si te
+            interesa el factor humano, o por
+            <a href="../identidad-y-mfa/index.html">Identidad, contraseñas y MFA</a> si prefieres el acceso.
+          </p>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="../seguridad-web/index.html">Seguridad en aplicaciones web</a>: los riesgos concretos detrás de OWASP.</li>
+            <li><a href="../criptografia/index.html">Criptografía básica</a>: hash, cifrado y firma como herramientas de la triada CIA.</li>
+            <li><a href="../tls/index.html">Seguridad en redes y TLS</a>: confidencialidad e integridad en tránsito.</li>
+            <li><a href="../malware-ransomware/index.html">Malware y ransomware</a>: amenazas que afectan a la disponibilidad.</li>
+            <li><a href="../antivirus-edr/index.html">De antivirus a EDR/XDR</a>: una capa de detección en el endpoint.</li>
+            <li><a href="../respuesta-incidentes/index.html">Respuesta a incidentes y forense básico</a>: qué hacer cuando fallan las capas.</li>
+            <li><a href="../redes/index.html">Redes: fundamentos</a>: la base para entender la superficie de ataque.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+      </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expresiones regulares — Estudios de informática</title>
+  <meta name="description" content="Expresiones regulares: sintaxis, grupos, cuantificadores, validación, rendimiento y uso en terminal, JavaScript y Python.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Herramientas</p>
+          <h1>Expresiones regulares</h1>
+          <p class="entrada">
+            Una expresión regular es una forma compacta de describir un patrón de texto. Sirve para
+            buscar, validar, extraer y sustituir fragmentos, y aparece en casi cualquier herramienta:
+            desde la shell hasta el editor, pasando por JavaScript, Python y los registradores de un
+            servidor. Su potencia tiene un coste: un patrón poco claro es difícil de leer y, con
+            texto no fiable, puede llegar a ser lento.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>Una regex es un lenguaje pequeño interpretado por un motor; la sintaxis cambia algo entre grep, JavaScript y Python.</li>
+            <li>Ancla el patrón con <code>^</code> y <code>$</code> antes de complicarlo: muchos fallos son de alcance, no de sintaxis.</li>
+            <li><code>*</code> y <code>+</code> son codiciosos; añade <code>?</code> cuando necesites la coincidencia más corta.</li>
+            <li>Los grupos capturan texto, pero <code>(?:...)</code> agrupa sin capturar y las aserciones no consumen caracteres.</li>
+            <li>Con entrada no fiable evita cuantificadores anidados: pueden provocar un retroceso exponencial (ReDoS).</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">Qué es una expresión regular</a></li>
+            <li><a href="#sintaxis">Sintaxis básica</a></li>
+            <li><a href="#grupos">Grupos, alternación y capturas</a></li>
+            <li><a href="#modificadores">Modificadores</a></li>
+            <li><a href="#validacion">Validar con patrones</a></li>
+            <li><a href="#rendimiento">Rendimiento y ReDoS</a></li>
+            <li><a href="#herramientas">Regex en la práctica</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">Qué es una expresión regular</h2>
+          <p>
+            Una expresión regular, o <em>regex</em>, describe un conjunto de cadenas de texto con un
+            lenguaje propio: <code>\d{3}</code> significa «tres dígitos seguidos» y
+            <code>^hola$</code> describe una línea que contiene solo <code>hola</code>. Un
+            <strong>motor</strong> lee ese patrón y decide qué fragmentos del texto coinciden.
+          </p>
+          <p>
+            No es un lenguaje de programación: no tiene variables ni bucles, aunque sus
+            cuantificadores se parezcan a ellos. Tampoco es igual en todas partes. Las herramientas
+            POSIX (como <code>grep -E</code>), PCRE, JavaScript y Python comparten las ideas básicas
+            pero difieren en detalles: nombres de grupos, aserciones, modificadores o escapes. Antes
+            de copiar un patrón entre herramientas conviene comprobar esa variante.
+          </p>
+          <p>
+            Sus usos habituales son buscar texto, comprobar un formato, extraer un fragmento y
+            sustituirlo. Para buscar una cadena fija, una comparación directa o
+            <code>includes</code> es más clara y más rápida. Para analizar HTML o XML conviene un
+            analizador real: hay estructuras anidadas que un patrón no puede describir de forma
+            fiable (ver <a href="../html/index.html">HTML</a>).
+          </p>
+          <p class="nota">
+            En este artículo los patrones se muestran tal como se escriben en el código. Recuerda
+            que, al construir una regex desde una cadena de texto, la barra inversa puede necesitar
+            un escape adicional según el lenguaje.
+          </p>
+        </section>
+
+        <section id="sintaxis" aria-labelledby="sintaxis-titulo">
+          <h2 id="sintaxis-titulo">Sintaxis básica</h2>
+          <p>
+            La mayoría de los patrones se construyen con cuatro piezas: caracteres literales, clases
+            de caracteres, anclas y cuantificadores. Un literal coincide consigo mismo; las clases
+            permiten elegir entre varias opciones; las anclas fijan la posición; los cuantificadores
+            repiten el elemento anterior.
+          </p>
+          <pre><code>^hola$        solo la línea "hola"
+[abc]         una de a, b o c
+[^0-9]        cualquier carácter que no sea un dígito
+\d{3}         tres dígitos seguidos
+colou?r       color o colour
+a{2,4}        de dos a cuatro aes</code></pre>
+          <p>
+            El punto <code>.</code> coincide con cualquier carácter salvo el salto de línea, salvo
+            que se active el modo <em>dot all</em>. Para buscar un punto literal hay que escaparlo:
+            <code>\.</code> Dentro de una clase, en cambio, muchos caracteres pierden su significado
+            especial: <code>[.]</code> también es un punto literal.
+          </p>
+          <p>
+            Los cuantificadores <code>*</code> (cero o más), <code>+</code> (uno o más),
+            <code>?</code> (cero o uno) y <code>{m,n}</code> (entre m y n) son
+            <strong>codiciosos</strong>: toman todo lo que pueden y luego retroceden si hace falta
+            para que el resto del patrón encaje. Añadir <code>?</code> detrás los vuelve
+            <strong>perezosos</strong>, es decir, buscan la coincidencia más corta posible.
+          </p>
+          <pre><code>&lt;.*&gt;       desde el primer &lt; hasta el último &gt; de la línea
+&lt;.*?&gt;      cada etiqueta por separado
+\d+           todos los dígitos consecutivos
+\d+?          un dígito cada vez</code></pre>
+          <p>
+            El retroceso es el mecanismo que prueba alternativas cuando una coincidencia no llega a
+            buen puerto. Es útil y necesario, pero también explica por qué algunos patrones se
+            vuelven lentos, como se verá en <a href="#rendimiento">Rendimiento y ReDoS</a>.
+          </p>
+        </section>
+
+        <section id="grupos" aria-labelledby="grupos-titulo">
+          <h2 id="grupos-titulo">Grupos, alternación y capturas</h2>
+          <p>
+            Los paréntesis sirven para agrupar y para capturar. Una captura guarda el fragmento
+            coincidente para reutilizarlo después, por ejemplo al construir una sustitución. Si solo
+            necesitas agrupar para aplicar un cuantificador, usa un grupo sin captura
+            <code>(?:...)</code> y evita guardar lo que no vas a usar.
+          </p>
+          <pre><code>(abc)               grupo capturador
+(?:abc)             agrupa sin capturar
+(?&lt;anio&gt;\d{4})     captura con nombre "anio"
+(?:rojo|verde|azul)  alternación agrupada
+\1                  referencia a la primera captura</code></pre>
+          <p>
+            La barra vertical <code>|</code> expresa alternación: <code>gato|perro</code> busca una
+            de las dos palabras. Tiene baja prioridad, así que para limitar su alcance hay que
+            agrupar: <code>^(?:gato|perro)$</code> exige que toda la cadena sea una de las dos
+            opciones, mientras que <code>^gato|perro$</code> no hace lo que parece a primera vista.
+          </p>
+          <p>
+            Las <strong>aserciones</strong> comprueban una condición sin consumir caracteres.
+            <code>(?=...)</code> mira hacia delante, <code>(?!...)</code> niega esa mirada y
+            <code>(?&lt;=...)</code> mira hacia atrás. Son útiles para exigir contexto sin incluirlo
+            en el resultado, por ejemplo «una cifra seguida de guion» sin capturar el guion. La
+            mirada atrás de longitud variable no está disponible en todos los motores.
+          </p>
+          <p class="aviso">
+            Capturar conviene cuando el fragmento se reutiliza; hacerlo por costumbre añade ruido y,
+            en algunos motores, coste. Empieza con <code>(?:...)</code> y captura solo lo que
+            necesitas.
+          </p>
+        </section>
+
+        <section id="modificadores" aria-labelledby="modificadores-titulo">
+          <h2 id="modificadores-titulo">Modificadores</h2>
+          <p>
+            Los modificadores, o <em>flags</em>, cambian el comportamiento del motor sin alterar el
+            patrón. Los más habituales son ignorar mayúsculas, buscar todas las coincidencias,
+            permitir que <code>^</code> y <code>$</code> funcionen por línea y hacer que
+            <code>.</code> incluya el salto de línea.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Modificador</th>
+                <th scope="col">Efecto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>i</code></td>
+                <td>No distingue mayúsculas de minúsculas.</td>
+              </tr>
+              <tr>
+                <td><code>g</code></td>
+                <td>Busca todas las coincidencias, no solo la primera (en JavaScript).</td>
+              </tr>
+              <tr>
+                <td><code>m</code></td>
+                <td><code>^</code> y <code>$</code> coinciden con el inicio y el final de cada línea.</td>
+              </tr>
+              <tr>
+                <td><code>s</code></td>
+                <td><code>.</code> también coincide con saltos de línea.</td>
+              </tr>
+              <tr>
+                <td><code>u</code></td>
+                <td>Trata el patrón como Unicode (en JavaScript).</td>
+              </tr>
+            </tbody>
+          </table>
+          <pre><code>const patron = /\berror\b/gi;
+
+import re
+patron = re.compile(r'\berror\b', re.IGNORECASE)</code></pre>
+          <p>
+            En Python también se pueden activar opciones dentro del propio patrón con
+            <code>(?i)</code>. Cuidado con <code>g</code> en JavaScript: los objetos
+            <code>RegExp</code> con este modificador recuerdan la posición de la última búsqueda en
+            <code>lastIndex</code>, así que reutilizar el mismo objeto con <code>test</code> puede
+            dar resultados distintos en llamadas consecutivas.
+          </p>
+        </section>
+
+        <section id="validacion" aria-labelledby="validacion-titulo">
+          <h2 id="validacion-titulo">Validar con patrones</h2>
+          <p>
+            Una regex responde a la pregunta «¿tiene este texto la forma esperada?». Es ideal para
+            formatos acotados: un slug, un código de producto, una versión. Ancla siempre el patrón
+            completo, porque sin <code>^</code> y <code>$</code> basta con que una parte del texto
+            coincida.
+          </p>
+          <pre><code>const slug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+slug.test('linux-servidores');
+slug.test('linux--servidores');</code></pre>
+          <p>
+            La primera llamada devuelve <code>true</code> y la segunda <code>false</code>: el patrón
+            permite guiones sueltos entre bloques, pero no dos seguidos ni uno al principio o al
+            final. El truco está en repetir el bloque <code>(?:-[a-z0-9]+)*</code> en lugar de
+            escribir <code>[a-z0-9-]+</code>, que sí aceptaría esos casos.
+          </p>
+          <p>
+            Un patrón comprueba la <strong>forma</strong>, no el significado.
+            <code>^\d{4}-\d{2}-\d{2}$</code> acepta una fecha como
+            <code>2026-02-31</code>: para validar fecha hay que convertirla y comprobar el resultado.
+            Lo mismo vale para los correos: una regex enorme no garantiza que la dirección exista y
+            suele rechazar formatos válidos. Normaliza antes (recortar espacios, pasar a minúsculas
+            si procede), valida en el servidor y deja las reglas complejas a una biblioteca.
+          </p>
+          <p class="nota">
+            En formularios, la regex es una primera capa de comodidad para quien escribe. La
+            validación de seguridad —longitudes, caracteres permitidos, saneamiento— no puede
+            limitarse a ella; consulta <a href="../seguridad-web/index.html">Seguridad en aplicaciones web</a>.
+          </p>
+        </section>
+
+        <section id="rendimiento" aria-labelledby="rendimiento-titulo">
+          <h2 id="rendimiento-titulo">Rendimiento y ReDoS</h2>
+          <p>
+            Cuando una coincidencia falla, el motor prueba alternativas hacia atrás. Con
+            cuantificadores anidados, el número de intentos puede crecer de forma exponencial con la
+            longitud de la entrada. A ese problema se le llama <em>expresión regular denegación de
+            servicio</em>, o <strong>ReDoS</strong>: un atacante envía un texto especialmente elegido
+            y la búsqueda se queda consumiendo CPU mucho tiempo.
+          </p>
+          <pre><code>const patron = /^(a+)+$/;
+patron.test('a'.repeat(30) + 'b');</code></pre>
+          <p>
+            Ese patrón es un ejemplo de lo que <strong>no</strong> conviene usar con texto externo:
+            la <code>b</code> final obliga a probar casi todas las particiones de la cadena de
+            <code>a</code>s. En patrones propios, prefiere clases concretas antes que
+            <code>.*</code>, evita cuantificadores anidados y ancla la búsqueda para que el motor
+            sepa dónde empezar.
+          </p>
+          <ul>
+            <li>Limita la longitud del texto antes de aplicar un patrón complejo.</li>
+            <li>Usa motores sin retroceso, como RE2, cuando la entrada sea no fiable.</li>
+            <li>Si el motor lo permite, aplica un tiempo de espera a la búsqueda.</li>
+            <li>Mide con datos realistas: un patrón rápido con diez caracteres puede ser letal con diez mil.</li>
+          </ul>
+          <p>
+            El riesgo aparece sobre todo en validaciones expuestas a internet. El resto del tiempo,
+            la mejor optimización suele ser hacer el patrón más sencillo y legible.
+          </p>
+        </section>
+
+        <section id="herramientas" aria-labelledby="herramientas-titulo">
+          <h2 id="herramientas-titulo">Regex en la práctica</h2>
+          <p>
+            La misma idea aparece con sintaxis propia en la terminal y en los lenguajes. En la shell
+            es habitual usar <code>grep -E</code> o <code>rg</code> para buscar y
+            <code>sed -E</code> para sustituir; en JavaScript, la clase <code>RegExp</code> y los
+            métodos de cadena; en Python, el módulo <code>re</code>.
+          </p>
+          <pre><code>grep -E '^(Error|Warn)' /var/log/app.log
+rg -n 'TODO|FIXME' src/
+sed -E 's/  +/ /g' archivo.txt</code></pre>
+          <p>
+            El primer comando filtra líneas de registro por nivel, el segundo busca marcadores en un
+            proyecto y el tercero comprime grupos de espacios. Son ejemplos de patrones simples:
+            cuando el texto es fijo, <code>grep -F</code> evita interpretar metacaracteres.
+            Consulta <a href="../terminal/index.html">Terminal</a> y
+            <a href="../linux-servidores/index.html">Linux y servidores</a> para ver estas herramientas en
+            contexto.
+          </p>
+          <pre><code>const telefono = /\b\d{3}-\d{4}\b/g;
+texto.match(telefono);
+texto.replace(telefono, 'XXX-XXXX');
+
+const desdeCadena = new RegExp('\\d{3}');</code></pre>
+          <p>
+            En JavaScript, la forma literal <code>/\d{3}/</code> es la más legible. Al usar
+            <code>new RegExp</code> con una cadena, la barra inversa se duplica porque primero la
+            interpreta el lenguaje y después el motor. Los métodos <code>match</code>,
+            <code>search</code>, <code>replace</code> y <code>split</code> aceptan patrones;
+            <a href="../javascript/index.html">JavaScript</a> los usa también en validaciones de formulario.
+          </p>
+          <pre><code>import re
+
+patron = re.compile(r'\b\d{3}-\d{4}\b')
+patron.findall(texto)
+patron.sub('XXX-XXXX', texto)</code></pre>
+          <p>
+            En Python, las cadenas crudas <code>r'...'</code> evitan tener que duplicar barras.
+            <code>re.compile</code> crea el patrón una vez y permite reutilizarlo;
+            <code>findall</code> devuelve las coincidencias y <code>sub</code> las sustituye.
+            El módulo <code>re</code> se explica junto al resto del lenguaje en
+            <a href="../python/index.html">Python</a>.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <ul>
+            <li>Olvidar <code>^</code> y <code>$</code> y aceptar coincidencias parciales.</li>
+            <li>Escribir <code>.</code> cuando se quería «cualquier carácter salvo nueva línea» o al revés.</li>
+            <li>Usar <code>.*</code> donde bastaba <code>[^/]*</code>, cruzando separadores sin querer.</li>
+            <li>No escapar un punto, un guion o una barra que se quieren literales.</li>
+            <li>Duplicar la barra de escape de más al construir un patrón desde una cadena.</li>
+            <li>Confiar en una regex gigante para validar correos, fechas o números complejos.</li>
+            <li>Anidar cuantificadores con texto que no controlas y provocar ReDoS.</li>
+            <li>Suponer que un patrón de <code>grep</code> funciona igual en JavaScript o Python.</li>
+          </ul>
+          <p class="aviso">
+            Si un patrón necesita tres líneas de explicación, quizá convenga dividirlo en varios
+            patrones más simples o añadir unas comprobaciones previas con métodos de cadena. La
+            legibilidad también es corrección.
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Token</th>
+                <th scope="col">Significado</th>
+                <th scope="col">Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>.</code></td>
+                <td>Cualquier carácter salvo salto de línea.</td>
+                <td><code>a.c</code></td>
+              </tr>
+              <tr>
+                <td><code>[...]</code></td>
+                <td>Uno de los caracteres de la clase.</td>
+                <td><code>[A-Za-z]</code></td>
+              </tr>
+              <tr>
+                <td><code>[^...]</code></td>
+                <td>Un carácter fuera de la clase.</td>
+                <td><code>[^0-9]</code></td>
+              </tr>
+              <tr>
+                <td><code>\d \w \s</code></td>
+                <td>Dígito, carácter de palabra y espacio en blanco.</td>
+                <td><code>\d+</code></td>
+              </tr>
+              <tr>
+                <td><code>^ $</code></td>
+                <td>Inicio y final de cadena o línea.</td>
+                <td><code>^abc$</code></td>
+              </tr>
+              <tr>
+                <td><code>* + ?</code></td>
+                <td>Cero o más, uno o más, cero o uno.</td>
+                <td><code>colou?r</code></td>
+              </tr>
+              <tr>
+                <td><code>{m,n}</code></td>
+                <td>Entre m y n repeticiones.</td>
+                <td><code>\d{2,4}</code></td>
+              </tr>
+              <tr>
+                <td><code>(...) (?:...)</code></td>
+                <td>Grupo capturador y grupo sin captura.</td>
+                <td><code>(?:ab)+</code></td>
+              </tr>
+              <tr>
+                <td><code>|</code></td>
+                <td>Alternación.</td>
+                <td><code>gato|perro</code></td>
+              </tr>
+              <tr>
+                <td><code>\b</code></td>
+                <td>Límite de palabra.</td>
+                <td><code>\berror\b</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="../terminal/index.html">Terminal y línea de comandos</a>: <code>grep -E</code>, <code>sed -E</code> y otras herramientas de texto.</li>
+            <li><a href="../javascript/index.html">JavaScript</a>: <code>RegExp</code> y los métodos de cadena que la usan.</li>
+            <li><a href="../python/index.html">Python</a>: el módulo <code>re</code> y las cadenas crudas.</li>
+            <li><a href="../seguridad-web/index.html">Seguridad en aplicaciones web</a>: validación de entrada y ReDoS.</li>
+            <li><a href="../linux-servidores/index.html">Linux y servidores</a>: filtrar registros con <code>journalctl</code> y <code>grep</code>.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neural networks — Computer science studies</title>
+  <meta name="description" content="Introduction to neural networks: what they are, how a neuron works, layers, forward pass, backpropagation, architectures and best practices.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Artificial intelligence</p>
+          <h1>Neural networks</h1>
+          <p class="entrada">
+            A neural network is a machine learning model made of connected units that combine inputs with weights and apply activation functions. In this article you will see how a neuron works, how they are organized into layers, how the network learns through backpropagation, and what to keep in mind to train it well.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>A neural network is a model made of units (artificial neurons) organized into layers that transform data.</li>
+            <li>Each neuron computes a weighted sum of its inputs, adds a bias and applies an activation function.</li>
+            <li>Information flows from the input layer to the output layer in the forward pass.</li>
+            <li>Training adjusts weights and biases with backpropagation and gradient descent, measuring error with a loss function.</li>
+            <li>Deep learning uses networks with many layers; more layers do not guarantee better results.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is a neural network?</a></li>
+            <li><a href="#conceptos">Key concepts</a></li>
+            <li><a href="#como-funciona">How a network works</a></li>
+            <li><a href="#entrenamiento">How it learns: loss and backpropagation</a></li>
+            <li><a href="#arquitecturas">Common architectures</a></li>
+            <li><a href="#ejemplos">Illustrative examples</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is a neural network?</h2>
+          <p>
+            A <strong>neural network</strong> is a mathematical model made of computing units called <strong>artificial neurons</strong>, connected to each other and organized into layers. Each connection has an adjustable <strong>weight</strong>, and training consists of modifying those weights so that the network produces useful outputs from inputs.
+          </p>
+          <p>
+            Neural networks are a family of models within <a href="../aprendizaje-automatico/index.en.html">machine learning</a>. When a network has many hidden layers, it is called <strong>deep learning</strong>, which is the basis of many current applications in image recognition, speech and text generation.
+          </p>
+          <p>
+            The name and the usual drawing —connected units— recall biological neurons, but the analogy is very limited: an artificial neuron is simply a function that sums, scales and transforms numbers.
+          </p>
+          <p class="nota">
+            <strong>Key idea:</strong> a neural network does not «think» and does not work like a brain. It is a mathematical model with parameters adjusted from data.
+          </p>
+        </section>
+
+        <section id="conceptos" aria-labelledby="conceptos-titulo">
+          <h2 id="conceptos-titulo">Key concepts</h2>
+          <ul>
+            <li>
+              <strong>Artificial neuron:</strong> unit that computes a weighted sum of its inputs, adds a bias and applies an activation function.
+            </li>
+            <li>
+              <strong>Weight:</strong> parameter that multiplies an input; it indicates how much influence that input has on the neuron.
+            </li>
+            <li>
+              <strong>Bias:</strong> constant value added to the weighted combination that shifts the neuron's output.
+            </li>
+            <li>
+              <strong>Activation function:</strong> non-linear function applied to the neuron's output, such as <code>sigmoid</code>, <code>tanh</code> or <code>ReLU</code>.
+            </li>
+            <li>
+              <strong>Layer:</strong> set of neurons that receive the same inputs. The input layer, hidden layers and output layer are distinguished.
+            </li>
+            <li>
+              <strong>Deep network:</strong> network with several hidden layers between input and output.
+            </li>
+            <li>
+              <strong>Forward pass:</strong> flow of computation from input to output, layer by layer.
+            </li>
+            <li>
+              <strong>Loss function:</strong> measure of the error between the network's output and the expected value; training seeks to reduce it.
+            </li>
+            <li>
+              <strong>Backpropagation:</strong> algorithm that computes how much each weight contributes to the error, applying the chain rule from back to front.
+            </li>
+            <li>
+              <strong>Gradient descent:</strong> optimization method that updates parameters in the direction that reduces the loss.
+            </li>
+            <li>
+              <strong>Learning rate:</strong> size of the step with which parameters are updated in each iteration.
+            </li>
+            <li>
+              <strong>Epoch and batch:</strong> an epoch is a full pass through the training data; a batch is the subset of examples used in each update.
+            </li>
+          </ul>
+        </section>
+
+        <section id="como-funciona" aria-labelledby="como-funciona-titulo">
+          <h2 id="como-funciona-titulo">How a network works</h2>
+
+          <h3>The neuron: weighted sum and activation</h3>
+          <p>
+            Each neuron receives input values <code>x1, x2, …, xn</code>, multiplies them by its weights and adds a bias: <code>z = w1·x1 + w2·x2 + … + wn·xn + b</code>. It then applies an <strong>activation function</strong> <code>f(z)</code>, whose non-linearity lets the network represent relationships that are neither proportional nor additive. Without non-linear activation, stacking layers would be equivalent to a single linear transformation.
+          </p>
+          <p>
+            Two common activations to start with are the <strong>sigmoid</strong>, which compresses any value into the interval (0, 1) and is used in binary outputs, and <strong>ReLU</strong> (<em>rectified linear unit</em>), which returns zero for negative values and the value itself for positive ones, and is the most common choice in hidden layers.
+          </p>
+
+          <h3>From input layer to output layer</h3>
+          <p>
+            Neurons are grouped into layers: the <strong>input</strong> layer receives the example's features, one or several <strong>hidden</strong> layers transform that information and the <strong>output</strong> layer produces the prediction. Each layer connects to the next through weights, and each connection represents an adjustable parameter during training.
+          </p>
+
+          <figure class="diagrama">
+            <svg role="img" aria-label="Diagram of a neural network with an input layer of three neurons, a hidden layer of four neurons and an output layer of two neurons, with lines representing the connections between layers." viewBox="0 0 640 300" style="width:100%;height:auto;max-width:640px;">
+              <g stroke="currentColor" stroke-opacity="0.35" stroke-width="1">
+                <line x1="90" y1="60" x2="320" y2="40"/><line x1="90" y1="60" x2="320" y2="113"/><line x1="90" y1="60" x2="320" y2="187"/><line x1="90" y1="60" x2="320" y2="260"/>
+                <line x1="90" y1="150" x2="320" y2="40"/><line x1="90" y1="150" x2="320" y2="113"/><line x1="90" y1="150" x2="320" y2="187"/><line x1="90" y1="150" x2="320" y2="260"/>
+                <line x1="90" y1="240" x2="320" y2="40"/><line x1="90" y1="240" x2="320" y2="113"/><line x1="90" y1="240" x2="320" y2="187"/><line x1="90" y1="240" x2="320" y2="260"/>
+                <line x1="320" y1="40" x2="550" y2="100"/><line x1="320" y1="40" x2="550" y2="200"/>
+                <line x1="320" y1="113" x2="550" y2="100"/><line x1="320" y1="113" x2="550" y2="200"/>
+                <line x1="320" y1="187" x2="550" y2="100"/><line x1="320" y1="187" x2="550" y2="200"/>
+                <line x1="320" y1="260" x2="550" y2="100"/><line x1="320" y1="260" x2="550" y2="200"/>
+              </g>
+              <g fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="90" cy="60" r="18"/><circle cx="90" cy="150" r="18"/><circle cx="90" cy="240" r="18"/>
+                <circle cx="320" cy="40" r="18"/><circle cx="320" cy="113" r="18"/><circle cx="320" cy="187" r="18"/><circle cx="320" cy="260" r="18"/>
+                <circle cx="550" cy="100" r="18"/><circle cx="550" cy="200" r="18"/>
+              </g>
+              <g fill="currentColor" font-size="14" text-anchor="middle">
+                <text x="90" y="292">Input</text>
+                <text x="320" y="292">Hidden layer</text>
+                <text x="550" y="292">Output</text>
+              </g>
+            </svg>
+            <figcaption>Network with one hidden layer. Each line represents an adjustable weight; each layer applies its own weighted sum and activation.</figcaption>
+          </figure>
+
+          <p>
+            In recognition tasks, the first layers tend to represent simple patterns and later layers combine those patterns into more abstract representations. What exactly each layer represents depends on the data and the task, and is not fixed in advance.
+          </p>
+          <p class="aviso">
+            Without non-linear activation functions between layers, the whole network reduces to a single linear transformation, no matter how many layers it has: depth would lose all its effect.
+          </p>
+        </section>
+
+        <section id="entrenamiento" aria-labelledby="entrenamiento-titulo">
+          <h2 id="entrenamiento-titulo">How it learns: loss and backpropagation</h2>
+          <p>
+            At the start of training, weights are initialized with small random values and the network produces barely useful outputs. Learning consists of repeating a correction cycle until the <strong>loss function</strong> is low enough on data the network did not see during adjustment.
+          </p>
+          <ol>
+            <li><strong>Initialize:</strong> assign initial values to weights and biases.</li>
+            <li><strong>Forward pass:</strong> compute the network's prediction for a batch of examples.</li>
+            <li><strong>Measure the loss:</strong> compare the prediction with the expected values.</li>
+            <li><strong>Backpropagate:</strong> compute the gradient of the loss with respect to each weight, propagating the error from back to front.</li>
+            <li><strong>Update:</strong> move each parameter against its gradient, scaled by the learning rate.</li>
+            <li><strong>Repeat:</strong> go through the data in batches over several epochs, watching behavior on evaluation data.</li>
+          </ol>
+          <p>
+            <strong>Backpropagation</strong> is not a separate learning method, but the efficient way of applying the chain rule to obtain the gradient of each parameter in networks with many layers. With those gradients, <strong>gradient descent</strong> updates parameters just like in any <a href="../aprendizaje-automatico/index.en.html">machine learning</a> model.
+          </p>
+          <p class="aviso">
+            The learning rate is delicate: a value too large makes the loss oscillate or grow, and one too small makes training extremely slow. It is worth trying values in powers of ten and observing the loss curve.
+          </p>
+        </section>
+
+        <section id="arquitecturas" aria-labelledby="arquitecturas-titulo">
+          <h2 id="arquitecturas-titulo">Common architectures</h2>
+          <p>
+            The way layers are connected defines the network's <strong>architecture</strong>. The choice depends on the type of data and the task: the same structure should not be used for a table, an image or a text sequence.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Architecture</th>
+                <th scope="col">Core idea</th>
+                <th scope="col">Typical uses</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Multilayer perceptron (<code>MLP</code>)</td>
+                <td>Dense layers: each neuron connects to all of those in the previous layer.</td>
+                <td>Tabular data, basic classification and regression.</td>
+              </tr>
+              <tr>
+                <td>Convolutional networks (<code>CNN</code>)</td>
+                <td>Filters that slide over the data sharing weights and detect local patterns.</td>
+                <td>Images and signals with spatial structure.</td>
+              </tr>
+              <tr>
+                <td>Recurrent networks (<code>RNN</code>, <code>LSTM</code>)</td>
+                <td>They keep a state that updates step by step along the sequence.</td>
+                <td>Time series, text, audio.</td>
+              </tr>
+              <tr>
+                <td>Transformers</td>
+                <td>Attention mechanism that relates all positions of the input to each other.</td>
+                <td>Language models, translation, content generation.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            Architectures do not replace the training process: all of them are adjusted with forward passes, loss, backpropagation and gradient descent. What changes is how connections are organized and which assumptions are built in about the data.
+          </p>
+        </section>
+
+        <section id="ejemplos" aria-labelledby="ejemplos-titulo">
+          <h2 id="ejemplos-titulo">Illustrative examples</h2>
+          <p>
+            These examples use basic Python, without machine learning libraries, to show the underlying computation. In real projects, libraries such as <code>PyTorch</code> or <code>TensorFlow</code> are used, which compute gradients automatically.
+          </p>
+
+          <h3>A neuron: weighted sum, bias and activation</h3>
+          <p>
+            A neuron's computation reduces to three operations: multiplying inputs by weights, adding the bias and applying the activation.
+          </p>
+          <pre><code>import math
+
+# A neuron: weighted sum + bias + activation.
+inputs = [0.5, 1.0, 2.0]
+weights = [0.4, -0.2, 0.1]
+bias = 0.05
+
+z = sum(x * w for x, w in zip(inputs, weights)) + bias
+# z = 0.2 - 0.2 + 0.2 + 0.05 = 0.25
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+def relu(z):
+    return max(0.0, z)
+
+print(z)             # 0.25
+print(sigmoid(z))   # ≈ 0.562
+print(relu(z))       # 0.25</code></pre>
+
+          <h3>Forward pass in a small network</h3>
+          <p>
+            A complete network chains that computation by layers: the output of each layer becomes the input of the next.
+          </p>
+          <pre><code># Minimal network: 2 inputs → hidden layer (2 neurons with ReLU) → output with sigmoid.
+import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+def relu(z):
+    return max(0.0, z)
+
+inputs = [1.0, 2.0]
+
+# Each hidden neuron is described by its weights and bias: [w1, w2, b].
+hidden_layer = [
+    [0.5, -0.1, 0.2],   # neuron 1
+    [0.2, 0.4, -0.1],   # neuron 2
+]
+
+hidden = []
+for w1, w2, b in hidden_layer:
+    z = inputs[0] * w1 + inputs[1] * w2 + b
+    hidden.append(relu(z))
+
+# The output neuron combines the hidden activations.
+output_weights = [0.7, 0.6]
+output_bias = -0.2
+z_output = sum(h * w for h, w in zip(hidden, output_weights)) + output_bias
+output = sigmoid(z_output)
+
+print(hidden)   # [0.5, 0.9]
+print(output)    # ≈ 0.666</code></pre>
+
+          <h3>The idea of training: lowering the loss by adjusting weights</h3>
+          <p>
+            Backpropagation computes gradients in large networks; in a single-weight model it can be done by hand. The example shows how gradient descent brings the weight closer to the ideal value step by step.
+          </p>
+          <pre><code># Minimal model: y = w * x. If the input is x=2, the desired output is 10.
+# The ideal weight value is 5.0. We start from an arbitrary value.
+x, y = 2.0, 10.0
+w = 0.0        # initial weight value
+rate = 0.1     # learning rate
+
+for step in range(3):
+    prediction = w * x
+    error = prediction - y
+    loss = error ** 2
+    gradient = 2 * error * x        # derivative of the loss with respect to w
+    w = w - rate * gradient         # move against the gradient
+    print(f"step {step}: loss {loss:.2f}, w {w:.2f}")
+
+# With more steps, w approaches the ideal value 5.0.</code></pre>
+          <p class="nota">
+            In a real network there are thousands or millions of weights, and backpropagation obtains all gradients in one backward pass reusing intermediate computations from the forward pass. The idea, however, is exactly that of this example.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Start with small networks and a simple baseline before increasing layers or neurons.</li>
+            <li>Scale the inputs so they have comparable ranges or distributions.</li>
+            <li>Use a non-linear activation in hidden layers; <code>ReLU</code> is a common starting point.</li>
+            <li>Set aside evaluation data that does not take part in training and do not tune with it.</li>
+            <li>Watch the training and evaluation loss curves to detect overfitting in time.</li>
+            <li>Try the learning rate in powers of ten instead of tuning it blindly.</li>
+            <li>Fix random seeds and record the configuration to reproduce results.</li>
+            <li>In real projects, use maintained libraries instead of implementing backpropagation by hand.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it is a problem</th>
+                <th scope="col">What to do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Taking the brain analogy literally</td>
+                <td>Leads to unrealistic expectations about how the network works and what it understands.</td>
+                <td>Understand it as a mathematical model with adjustable parameters.</td>
+              </tr>
+              <tr>
+                <td>Omitting non-linear activation</td>
+                <td>The whole network reduces to a linear transformation, even with many layers.</td>
+                <td>Apply a non-linear activation in hidden layers.</td>
+              </tr>
+              <tr>
+                <td>Not scaling the inputs</td>
+                <td>Very different magnitudes slow down or destabilize gradient descent.</td>
+                <td>Normalize or standardize features before training.</td>
+              </tr>
+              <tr>
+                <td>Using an inadequate learning rate</td>
+                <td>Too large: the loss does not converge. Too small: training takes far too long.</td>
+                <td>Try powers of ten and observe the loss curve.</td>
+              </tr>
+              <tr>
+                <td>Using a huge network with little data</td>
+                <td>The network memorizes the examples and generalizes poorly.</td>
+                <td>Start small, regularize and get more data if possible.</td>
+              </tr>
+              <tr>
+                <td>Judging only by training loss</td>
+                <td>May hide that the network does not generalize to new examples.</td>
+                <td>Measure on held-out data and analyze concrete errors.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Term</th>
+                <th scope="col">Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>neuron</code></td>
+                <td>Unit that computes a weighted sum of its inputs, adds a bias and applies an activation.</td>
+              </tr>
+              <tr>
+                <td><code>weight</code></td>
+                <td>Parameter that multiplies an input and is adjusted during training.</td>
+              </tr>
+              <tr>
+                <td><code>bias</code></td>
+                <td>Constant added to the weighted combination that shifts the output.</td>
+              </tr>
+              <tr>
+                <td><code>activation function</code></td>
+                <td>Non-linearity applied to a neuron's output, such as <code>ReLU</code> or <code>sigmoid</code>.</td>
+              </tr>
+              <tr>
+                <td><code>hidden layer</code></td>
+                <td>Intermediate layer between input and output that transforms representations.</td>
+              </tr>
+              <tr>
+                <td><code>forward pass</code></td>
+                <td>Computation of the network's output from an input, layer by layer.</td>
+              </tr>
+              <tr>
+                <td><code>backpropagation</code></td>
+                <td>Algorithm that computes the gradient of the loss with respect to each parameter.</td>
+              </tr>
+              <tr>
+                <td><code>gradient descent</code></td>
+                <td>Update of parameters against their gradient to reduce the loss.</td>
+              </tr>
+              <tr>
+                <td><code>learning rate</code></td>
+                <td>Size of the step of each parameter update.</td>
+              </tr>
+              <tr>
+                <td><code>epoch</code></td>
+                <td>One full pass through the training data.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../aprendizaje-automatico/index.en.html">Machine learning</a>: where this model fits and how it is trained and evaluated.</li>
+            <li><a href="../inteligencia-artificial/index.en.html">Artificial intelligence</a>: general overview of the field and its limits.</li>
+            <li><a href="../python/index.html">Python</a>: language used in the examples.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+</html>

@@ -1,0 +1,3215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escáner de dispositivos — Programas pfd1795</title>
+  <meta name="description" content="Diagnóstico local del navegador y del dispositivo: comprueba cámara, micrófono, sensores, pantalla, red, WebGL, PWA y más, calcula una puntuación de salud y exporta el informe.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../programas.css">
+  <style>
+    /* Estilos propios del escáner. Usa los tokens de base.css y programas.css. */
+    .escaner__intro {
+      max-width: var(--content-list);
+    }
+
+    .escaner__aviso {
+      max-width: var(--content-list);
+      padding: var(--space-3) var(--space-4);
+      margin-block: var(--space-4);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      background-color: var(--color-surface);
+      border-left: var(--border-thick) solid var(--prog-accent);
+      border-radius: var(--radius-md);
+    }
+
+    .escaner__panel {
+      padding: var(--space-5);
+      margin-block: var(--space-6);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .escaner__panel > h2 {
+      margin-top: 0;
+    }
+
+    .escaner__acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    /* El reset global de base.css impone `width: 100%` a los botones. Aquí
+       las filas de acción usan el ancho del contenido para que varias
+       acciones convivan en una línea (el diseño de chips y botones del
+       proyecto se mantiene: mismos tokens, radios y colores). */
+    .escaner__acciones .btn,
+    .escaner__acciones .escaner__boton {
+      width: auto;
+    }
+
+    .escaner__boton {
+      align-items: center;
+      background-color: transparent;
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      cursor: pointer;
+      display: inline-flex;
+      font: inherit;
+      font-weight: var(--font-medium);
+      gap: var(--space-2);
+      justify-content: center;
+      min-height: 2.75em;
+      padding: var(--space-2) var(--space-4);
+      transition: border-color var(--transition-fast) var(--ease-in-out),
+        color var(--transition-fast) var(--ease-in-out),
+        background-color var(--transition-fast) var(--ease-in-out);
+
+      &:hover:not(:disabled) {
+        color: var(--prog-accent);
+        border-color: var(--prog-accent);
+      }
+
+      &:focus-visible {
+        outline: var(--border-thick) solid var(--prog-accent);
+        outline-offset: var(--border-thick);
+      }
+
+      &:disabled {
+        color: var(--color-text-disabled);
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+
+    .escaner__boton--favorito {
+      color: var(--prog-accent);
+      border-color: var(--prog-accent);
+      background-color: color-mix(in srgb, var(--prog-accent) 10%, transparent);
+    }
+
+    .escaner__estado {
+      min-height: 1.5em;
+      margin: var(--space-3) 0 0;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .escaner__progreso {
+      height: 0.4rem;
+      margin-top: var(--space-3);
+      overflow: hidden;
+      background-color: var(--color-background);
+      border-radius: var(--radius-pill);
+
+      > span {
+        display: block;
+        width: 0;
+        height: 100%;
+        background-color: var(--prog-accent);
+        transition: width var(--transition-normal) var(--ease-in-out);
+      }
+    }
+
+    /* ===== Puntuación ===== */
+    .escaner__score {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .escaner__score-numero {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-1);
+
+      > b {
+        font-size: var(--text-4xl);
+        font-weight: var(--font-bold);
+        line-height: 1;
+        color: var(--prog-accent);
+      }
+
+      > span {
+        font-size: var(--text-sm);
+        color: var(--color-text-disabled);
+      }
+    }
+
+    .escaner__score-cuerpo {
+      flex: 1 1 14rem;
+      min-width: 0;
+    }
+
+    .escaner__score-barra {
+      height: 0.75rem;
+      overflow: hidden;
+      background-color: var(--color-background);
+      border-radius: var(--radius-pill);
+
+      > i {
+        display: block;
+        width: 0;
+        height: 100%;
+        background-color: var(--prog-accent);
+        transition: width var(--transition-normal) var(--ease-in-out);
+      }
+    }
+
+    .escaner__score-nivel {
+      margin: var(--space-2) 0 0;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .escaner__chips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+      gap: var(--space-3);
+      padding: 0;
+      margin: var(--space-5) 0 0;
+      list-style: none;
+    }
+
+    .escaner__chip {
+      padding: var(--space-3);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+
+      > b {
+        display: block;
+        font-size: var(--text-xl);
+        font-weight: var(--font-bold);
+        color: var(--color-text);
+      }
+
+      > span {
+        display: block;
+        font-size: var(--text-xs);
+        color: var(--color-text-secondary);
+      }
+
+      > i {
+        display: block;
+        height: 0.35rem;
+        margin-top: var(--space-2);
+        overflow: hidden;
+        background-color: var(--color-border);
+        border-radius: var(--radius-pill);
+
+        > em {
+          display: block;
+          width: 0;
+          height: 100%;
+          background-color: var(--prog-accent);
+          transition: width var(--transition-normal) var(--ease-in-out);
+        }
+      }
+    }
+
+    /* ===== Módulos ===== */
+    .escaner__grilla {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+      align-items: start;
+      gap: var(--space-4);
+    }
+
+    .escaner__modulo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      padding: var(--space-5);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: border-color var(--transition-normal) var(--ease-in-out);
+    }
+
+    .escaner__modulo[data-estado="ok"] {
+      border-color: color-mix(in srgb, var(--green-normal) 45%, var(--color-border));
+    }
+
+    .escaner__modulo[data-estado="limitado"] {
+      border-color: color-mix(in srgb, var(--amber-normal) 45%, var(--color-border));
+    }
+
+    .escaner__modulo[data-estado="error"] {
+      border-color: color-mix(in srgb, var(--red-normal) 45%, var(--color-border));
+    }
+
+    .escaner__modulo-cabecera {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-2);
+    }
+
+    .escaner__modulo-titulo {
+      margin: 0;
+      font-size: var(--text-h4);
+      font-weight: var(--font-bold);
+      color: var(--color-text);
+    }
+
+    .escaner__badge {
+      flex-shrink: 0;
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      white-space: nowrap;
+      border: var(--border-thin) solid var(--color-border);
+      border-radius: var(--radius-pill);
+      color: var(--color-text-disabled);
+      background-color: var(--color-background);
+    }
+
+    .escaner__badge--ok {
+      color: var(--green-oscuro);
+      border-color: var(--green-normal);
+      background-color: color-mix(in srgb, var(--green-normal) 14%, var(--color-background));
+    }
+
+    .escaner__badge--lim {
+      color: var(--amber-oscuro);
+      border-color: var(--amber-normal);
+      background-color: color-mix(in srgb, var(--amber-normal) 14%, var(--color-background));
+    }
+
+    .escaner__badge--err {
+      color: var(--red-oscuro);
+      border-color: var(--red-normal);
+      background-color: color-mix(in srgb, var(--red-normal) 14%, var(--color-background));
+    }
+
+    html.dark .escaner__badge--ok {
+      color: var(--green-claro);
+    }
+
+    html.dark .escaner__badge--lim {
+      color: var(--amber-claro);
+    }
+
+    html.dark .escaner__badge--err {
+      color: var(--red-claro);
+    }
+
+    .escaner__msg {
+      margin: 0;
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--color-text-secondary);
+    }
+
+    .escaner__datos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+      gap: var(--space-2);
+    }
+
+    .escaner__dato {
+      padding: var(--space-2);
+      background-color: var(--color-background);
+      border-radius: var(--radius-md);
+
+      > b {
+        display: block;
+        font-size: var(--text-xs);
+        font-weight: var(--font-medium);
+        color: var(--color-text-secondary);
+      }
+
+      > span {
+        display: block;
+        font-size: var(--text-sm);
+        color: var(--color-text);
+        overflow-wrap: anywhere;
+      }
+    }
+
+    .escaner__tecnico {
+      font-size: var(--text-xs);
+
+      > summary {
+        color: var(--color-text-secondary);
+        cursor: pointer;
+      }
+
+      > summary:hover {
+        color: var(--prog-accent);
+      }
+    }
+
+    .escaner__tecnico-tabla {
+      width: 100%;
+      margin-top: var(--space-2);
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: var(--space-1) var(--space-2);
+        text-align: left;
+        vertical-align: top;
+        border-bottom: var(--border-thin) solid var(--color-border);
+        overflow-wrap: anywhere;
+      }
+
+      th {
+        width: 40%;
+        font-weight: var(--font-semibold);
+        color: var(--color-text-secondary);
+      }
+    }
+
+    /* ===== Zonas interactivas ===== */
+    .escaner__pad {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 7rem;
+      padding: var(--space-3);
+      font-size: var(--text-sm);
+      text-align: center;
+      color: var(--color-text-disabled);
+      background-color: var(--color-background);
+      border: var(--border-normal) dashed var(--color-border);
+      border-radius: var(--radius-md);
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .escaner__pad:focus-visible {
+      outline: var(--border-thick) solid var(--prog-accent);
+      outline-offset: var(--border-thick);
+    }
+
+    .escaner__pad-punto {
+      position: absolute;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: var(--radius-full);
+      background-color: var(--prog-accent);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .escaner__log {
+      max-height: 9rem;
+      margin: 0;
+      padding: var(--space-2);
+      overflow-y: auto;
+      list-style: none;
+      font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      font-size: var(--text-xs);
+      background-color: var(--color-background);
+      border-radius: var(--radius-md);
+
+      > li {
+        padding: 2px 0;
+        border-bottom: var(--border-thin) solid var(--color-border);
+      }
+    }
+
+    .escaner__video {
+      width: 100%;
+      max-height: 14rem;
+      background-color: #000;
+      border-radius: var(--radius-md);
+    }
+
+    .escaner__vu {
+      width: 100%;
+      height: 6rem;
+      background-color: var(--color-background);
+      border-radius: var(--radius-md);
+    }
+
+    .escaner__canvas-bench {
+      width: 100%;
+      height: 8rem;
+      background-color: var(--color-background);
+      border-radius: var(--radius-md);
+    }
+
+    .escaner__contador {
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== Informe ===== */
+    .escaner__informe {
+      margin-top: var(--space-5);
+      padding: var(--space-5);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .escaner__informe h3 {
+      margin-top: var(--space-5);
+    }
+
+    .escaner__informe-tabla {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-sm);
+
+      th,
+      td {
+        padding: var(--space-2);
+        text-align: left;
+        vertical-align: top;
+        border-bottom: var(--border-thin) solid var(--color-border);
+        overflow-wrap: anywhere;
+      }
+
+      th {
+        font-weight: var(--font-semibold);
+      }
+    }
+
+    .escaner__informe-lista {
+      margin: var(--space-2) 0;
+      padding-left: var(--space-5);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    @media (max-width: 767px) {
+      .escaner__grilla {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .escaner__progreso > span,
+      .escaner__score-barra > i,
+      .escaner__chip > i > em {
+        transition: none;
+      }
+    }
+
+    /* ===== Impresión: solo el informe =====
+       El informe se imprime sobre papel blanco, así que los colores del
+       tema (superficies y texto) se neutralizan y la cabecera decorativa
+       se oculta: en la hoja solo quedan el título, la puntuación y el
+       informe generado. */
+    @media print {
+      .navbar,
+      .sidebar,
+      .sidebar-overlay,
+      .modal-dialog,
+      .saltar,
+      .volver,
+      #panel-control,
+      #panel-modulos,
+      .escaner__no-imprimir,
+      .escaner__intro,
+      .escaner__aviso,
+      #estado-export {
+        display: none !important;
+      }
+
+      #panel-export > h2 {
+        display: none !important;
+      }
+
+      .escaner__chip {
+        background: #fff !important;
+        border: var(--border-normal) solid #ccc !important;
+      }
+
+      body,
+      .body-container,
+      .main-content,
+      .contenedor,
+      .escaner__panel,
+      .escaner__informe {
+        background: #fff !important;
+        background-color: #fff !important;
+        color: #000 !important;
+        box-shadow: none !important;
+      }
+
+      main h1,
+      main h2,
+      main h3,
+      main p,
+      .escaner__msg,
+      .escaner__estado,
+      .escaner__contador,
+      .escaner__score-nivel,
+      .escaner__score-numero > b,
+      .escaner__chip > b,
+      .escaner__chip > span,
+      .escaner__dato > b,
+      .escaner__dato > span,
+      .escaner__tecnico,
+      .escaner__informe-tabla th,
+      .escaner__informe-tabla td {
+        color: #000 !important;
+      }
+
+      .escaner__score-barra,
+      .escaner__chip > i {
+        background: #e0e0e0 !important;
+      }
+
+      .escaner__score-barra > i,
+      .escaner__chip > i > em {
+        background: #555 !important;
+      }
+
+      main {
+        padding: 0;
+      }
+
+      .escaner__panel {
+        padding: 0;
+        border: none;
+        box-shadow: none;
+        margin-block: var(--space-4);
+      }
+
+      .escaner__informe {
+        padding: 0;
+        border: none;
+      }
+
+      .escaner__informe-tabla th,
+      .escaner__informe-tabla td {
+        border-color: #999;
+      }
+
+      .escaner__informe-tabla {
+        page-break-inside: auto;
+      }
+
+      .escaner__informe-tabla tr {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <h1>Escáner de dispositivos</h1>
+      <p class="escaner__intro">
+        Comprueba qué puede hacer el navegador y el dispositivo que tienes delante: pantalla, entrada,
+        cámara, micrófono, sensores, red, batería, WebGL, WebGPU, PWA y un puñado de capacidades
+        experimentales. Cada prueba se puede lanzar por separado o en bloque, y al final se calcula una
+        <strong>puntuación de salud</strong> con un informe exportable.
+      </p>
+      <p class="escaner__aviso">
+        Todo se ejecuta en tu equipo: no se envía ningún dato a ningún servidor. Las pruebas que necesitan
+        permisos (cámara, micrófono, ubicación, sensores, Bluetooth, USB, NFC) solo se activan cuando pulsas
+        su botón, y las que requieren hardware compatible se marcan como limitadas cuando no pueden ejecutarse.
+      </p>
+
+      <section class="escaner__panel" id="panel-control" aria-labelledby="t-control">
+        <h2 id="t-control">Panel de control</h2>
+        <div class="escaner__acciones">
+          <button type="button" class="btn" id="btn-rapido">Diagnóstico rápido</button>
+          <button type="button" class="escaner__boton" id="btn-completo">Diagnóstico completo</button>
+          <button type="button" class="escaner__boton" id="btn-tecnico" aria-pressed="false">Ver detalles técnicos</button>
+          <button type="button" class="escaner__boton" id="btn-reiniciar">Reiniciar</button>
+        </div>
+        <p class="escaner__estado" id="estado-general" role="status">Sin análisis en curso. Pulsa «Diagnóstico rápido» para empezar.</p>
+        <div class="escaner__progreso" id="progreso" hidden><span></span></div>
+      </section>
+
+      <section class="escaner__panel" id="panel-score" aria-labelledby="t-score">
+        <h2 id="t-score">Puntuación de salud del dispositivo</h2>
+        <div class="escaner__score">
+          <p class="escaner__score-numero"><b id="score-numero">—</b><span>/ 100</span></p>
+          <div class="escaner__score-cuerpo">
+            <div class="escaner__score-barra"><i id="score-barra"></i></div>
+            <p class="escaner__score-nivel" id="score-nivel">Sin datos: ejecuta un diagnóstico para calcular la puntuación.</p>
+          </div>
+        </div>
+        <ul class="escaner__chips" id="score-chips"></ul>
+      </section>
+
+      <section id="panel-modulos" aria-labelledby="t-modulos">
+        <h2 id="t-modulos">Módulos de análisis</h2>
+        <p class="escaner__intro">
+          Cada tarjeta es una prueba independiente. Puedes lanzar todas las que quieras con sus botones;
+          la puntuación se recalcula sola con cada resultado.
+        </p>
+        <div class="escaner__grilla" id="grilla-modulos"></div>
+      </section>
+
+      <section class="escaner__panel" id="panel-export" aria-labelledby="t-export">
+        <h2 id="t-export">Informe y exportación</h2>
+        <p class="escaner__intro">
+          El informe recoge el estado de cada módulo, la puntuación, el desglose por categoría y los
+          datos técnicos detectados. Puedes verlo en pantalla, descargarlo o imprimirlo.
+        </p>
+        <div class="escaner__acciones escaner__no-imprimir">
+          <button type="button" class="btn" id="btn-certificado">Generar informe</button>
+          <button type="button" class="escaner__boton" id="btn-json">Exportar JSON</button>
+          <button type="button" class="escaner__boton" id="btn-html">Exportar HTML</button>
+          <button type="button" class="escaner__boton" id="btn-csv">Exportar CSV</button>
+          <button type="button" class="escaner__boton" id="btn-imprimir">Imprimir / PDF</button>
+        </div>
+        <p class="escaner__estado" id="estado-export" role="status"></p>
+        <div class="escaner__informe" id="informe" hidden></div>
+      </section>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../my-studies/index.html">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    /* ================================================================
+       Escáner de dispositivos — lógica de la herramienta.
+       Todo se ejecuta en local; ninguna dato sale del navegador.
+       ================================================================ */
+    (function () {
+      'use strict';
+
+      /* ---------- Utilidades ---------- */
+      var $ = function (id) { return document.getElementById(id); };
+
+      var esc = function (valor) {
+        return String(valor === undefined || valor === null ? '' : valor).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      };
+
+      var crear = function (etiqueta, clase, html) {
+        var nodo = document.createElement(etiqueta);
+        if (clase) nodo.className = clase;
+        if (html !== undefined && html !== null) nodo.innerHTML = html;
+        return nodo;
+      };
+
+      var sello = function () {
+        return new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+      };
+
+      var descargar = function (contenido, tipo, nombre) {
+        try {
+          var url = URL.createObjectURL(new Blob([contenido], { type: tipo }));
+          var enlace = document.createElement('a');
+          enlace.href = url;
+          enlace.download = nombre;
+          document.body.appendChild(enlace);
+          enlace.click();
+          enlace.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        } catch (error) {
+          /* El navegador ha bloqueado la descarga: no se molesta al usuario. */
+        }
+      };
+
+      /* Envuelve un manejador para que ningún error técnico llegue a la consola
+         ni al usuario: la herramienta nunca debe romperse por una API ausente. */
+      var seguro = function (fn) {
+        return function (evento) {
+          try {
+            fn(evento);
+          } catch (error) {
+            /* Silencio intencionado: las comprobaciones yaTtienen sus propios mensajes. */
+          }
+        };
+      };
+
+      var dormir = function (ms) {
+        return new Promise(function (resolver) { setTimeout(resolver, ms); });
+      };
+
+      /* ---------- Estados ---------- */
+      var ESTADOS = {
+        pendiente: { texto: 'Pendiente', clase: 'pend' },
+        analizando: { texto: 'Analizando…', clase: 'pend' },
+        ok: { texto: 'Correcto', clase: 'ok' },
+        limitado: { texto: 'Limitado', clase: 'lim' },
+        error: { texto: 'Error', clase: 'err' }
+      };
+
+      var ESTADO = {
+        resultados: new Map(),
+        benchmarks: null,
+        handles: { camara: null, micro: null, geo: null, linterna: null, sensores: [] }
+      };
+
+      /* ---------- Tabla de capacidades del navegador ----------
+         Alimenta los chips por categoría. Cada entrada declara en qué
+         categoría cuenta y cómo se comprueba. */
+      var CAPACIDADES = [
+        { nombre: 'Geolocalización', cat: 'api', prueba: function () { return 'geolocation' in navigator; } },
+        { nombre: 'Vibración', cat: 'api', prueba: function () { return 'vibrate' in navigator; } },
+        { nombre: 'Battery Status', cat: 'api', prueba: function () { return 'getBattery' in navigator; } },
+        { nombre: 'Network Information', cat: 'api', prueba: function () { return !!(navigator.connection || navigator.mozConnection || navigator.webkitConnection); } },
+        { nombre: 'WebGL', cat: 'api', prueba: function () { return contexto('webgl'); }, peso: 2 },
+        { nombre: 'WebGL 2', cat: 'api', prueba: function () { return contexto('webgl2'); } },
+        { nombre: 'WebGPU', cat: 'api', prueba: function () { return 'gpu' in navigator; } },
+        { nombre: 'WebAssembly', cat: 'api', prueba: function () { return 'WebAssembly' in window; }, peso: 2 },
+        { nombre: 'WebRTC', cat: 'api', prueba: function () { return typeof RTCPeerConnection !== 'undefined'; } },
+        { nombre: 'Fullscreen API', cat: 'api', prueba: function () { return 'fullscreenEnabled' in document; } },
+        { nombre: 'Pointer Events', cat: 'api', prueba: function () { return 'PointerEvent' in window; } },
+        { nombre: 'Permissions API', cat: 'api', prueba: function () { return !!(navigator.permissions && navigator.permissions.query); } },
+        { nombre: 'Service Workers', cat: 'api', prueba: function () { return 'serviceWorker' in navigator; } },
+        { nombre: 'Notificaciones', cat: 'api', prueba: function () { return 'Notification' in window; } },
+        { nombre: 'Storage (cuotas)', cat: 'api', prueba: function () { return !!(navigator.storage && navigator.storage.estimate); } },
+        { nombre: 'getUserMedia', cat: 'media', prueba: function () { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }, peso: 2 },
+        { nombre: 'Enumeración de dispositivos', cat: 'media', prueba: function () { return !!(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices); } },
+        { nombre: 'Web Audio', cat: 'media', prueba: function () { return !!(window.AudioContext || window.webkitAudioContext); } },
+        { nombre: 'Orientación (giroscopio)', cat: 'sensor', prueba: function () { return 'DeviceOrientationEvent' in window; } },
+        { nombre: 'Movimiento (acelerómetro)', cat: 'sensor', prueba: function () { return 'DeviceMotionEvent' in window; } },
+        { nombre: 'AmbientLightSensor', cat: 'sensor', prueba: function () { return 'AmbientLightSensor' in window; } },
+        { nombre: 'Accelerometer (Sensor API)', cat: 'sensor', prueba: function () { return 'Accelerometer' in window; } },
+        { nombre: 'Gyroscope (Sensor API)', cat: 'sensor', prueba: function () { return 'Gyroscope' in window; } },
+        { nombre: 'Magnetometer', cat: 'sensor', prueba: function () { return 'Magnetometer' in window; } },
+        { nombre: 'AbsoluteOrientationSensor', cat: 'sensor', prueba: function () { return 'AbsoluteOrientationSensor' in window; } },
+        { nombre: 'RelativeOrientationSensor', cat: 'sensor', prueba: function () { return 'RelativeOrientationSensor' in window; } },
+        { nombre: 'ProximitySensor', cat: 'sensor', prueba: function () { return 'ProximitySensor' in window; } },
+        { nombre: 'Entrada táctil', cat: 'compat', prueba: function () { return (navigator.maxTouchPoints || 0) > 0; } },
+        { nombre: 'Contexto seguro', cat: 'compat', prueba: function () { return !!window.isSecureContext; } },
+        { nombre: 'RAM ≥ 4 GB', cat: 'compat', prueba: function () { return (navigator.deviceMemory || 0) >= 4; } },
+        { nombre: 'CPU ≥ 4 hilos', cat: 'compat', prueba: function () { return (navigator.hardwareConcurrency || 0) >= 4; } },
+        { nombre: 'Pantalla HiDPI', cat: 'compat', prueba: function () { return (window.devicePixelRatio || 1) > 1; } }
+      ];
+
+      var contexto = function (tipo) {
+        try {
+          var lienzo = document.createElement('canvas');
+          return !!(lienzo.getContext && lienzo.getContext(tipo));
+        } catch (error) {
+          return false;
+        }
+      };
+
+      var capacidadActiva = function (capacidad) {
+        try {
+          return !!capacidad.prueba();
+        } catch (error) {
+          return false;
+        }
+      };
+
+      /* Porcentaje de capacidades disponibles de una categoría. */
+      var porcentajeCategoria = function (categoria) {
+        var total = 0;
+        var suma = 0;
+        CAPACIDADES.forEach(function (capacidad) {
+          if (capacidad.cat !== categoria) return;
+          total += capacidad.peso || 1;
+          if (capacidadActiva(capacidad)) suma += capacidad.peso || 1;
+        });
+        return total ? Math.round((suma / total) * 100) : null;
+      };
+
+      /* ---------- Módulos ----------
+         Cada módulo declara: id, título, peso, chip, si entra en el
+         diagnóstico rápido, una función de detección y, opcionalmente,
+         controles interactivos propios. */
+      var MODULOS = [];
+
+      var definir = function (id, titulo, peso, chip, rapido, detecta) {
+        MODULOS.push({
+          id: id,
+          titulo: titulo,
+          peso: peso,
+          chip: chip,
+          rapido: rapido,
+          detecta: detecta
+        });
+      };
+
+      /* === 01 · Información general === */
+      var detectarSO = function (ua) {
+        if (/Windows NT 10/.test(ua)) return 'Windows 10/11';
+        if (/Windows NT 6\.3/.test(ua)) return 'Windows 8.1';
+        if (/Windows NT 6\.1/.test(ua)) return 'Windows 7';
+        var android = ua.match(/Android ([0-9.]+)/);
+        if (android) return 'Android ' + android[1];
+        var ios = ua.match(/OS ([0-9_]+)/);
+        if (/iPhone|iPad|iPod/.test(ua)) return 'iOS' + (ios ? ' ' + ios[1].replace(/_/g, '.') : '');
+        var mac = ua.match(/Mac OS X ([0-9_.]+)/);
+        if (mac) return 'macOS ' + mac[1].replace(/_/g, '.');
+        if (/CrOS/.test(ua)) return 'ChromeOS';
+        if (/Linux/.test(ua)) return 'Linux';
+        return 'No identificado';
+      };
+
+      var detectarNavegador = function (ua) {
+        var buscar = function (re) {
+          var r = ua.match(re);
+          return r ? r[0] : null;
+        };
+        return buscar(/Edg\/[0-9.]+/) || buscar(/OPR\/[0-9.]+/) || buscar(/SamsungBrowser\/[0-9.]+/) ||
+          buscar(/Firefox\/[0-9.]+/) || buscar(/Chrome\/[0-9.]+/) || buscar(/Version\/[0-9.]+/) ||
+          buscar(/Safari\/[0-9.]+/) || 'No identificado';
+      };
+
+      var detectarMotor = function (ua) {
+        if (/Firefox|Gecko\//.test(ua)) return 'Gecko';
+        if (/Chrome|Edg|OPR|Chromium/.test(ua)) return 'Blink';
+        if (/Safari|AppleWebKit/.test(ua)) return 'WebKit';
+        return 'No determinable';
+      };
+
+      definir('info', 'Información general', 10, 'compatibilidad', true, function () {
+        var ua = navigator.userAgent;
+        var so = detectarSO(ua);
+        var navegador = detectarNavegador(ua);
+        var motor = detectarMotor(ua);
+        var dpr = Number(window.devicePixelRatio || 1);
+        var idiomas = (navigator.languages && navigator.languages.length)
+          ? navigator.languages.join(', ')
+          : (navigator.language || 'No determinable');
+        var zona = 'No determinable';
+        try {
+          zona = Intl.DateTimeFormat().resolvedOptions().timeZone || zona;
+        } catch (error) { /* Intl puede faltar en entornos antiguos. */ }
+        var nucleos = navigator.hardwareConcurrency != null ? navigator.hardwareConcurrency : 'No determinable';
+        var ram = navigator.deviceMemory != null ? navigator.deviceMemory + ' GB (aprox.)' : 'No determinable';
+
+        return {
+          estado: 'ok',
+          mensaje: 'Dispositivo identificado: ' + so + ' · ' + navegador + '.',
+          tecnico: [
+            ['User Agent', ua],
+            ['Sistema operativo', so],
+            ['Navegador', navegador],
+            ['Motor de renderizado', motor],
+            ['Plataforma', navigator.platform || 'No determinable'],
+            ['Idiomas', idiomas],
+            ['Zona horaria', zona],
+            ['Núcleos de CPU', nucleos],
+            ['RAM aproximada', ram],
+            ['Cookies', navigator.cookieEnabled ? 'Habilitadas' : 'Deshabilitadas'],
+            ['Conexión', navigator.onLine ? 'En línea' : 'Sin conexión'],
+            ['DPR', dpr],
+            ['Resolución', screen.width + '×' + screen.height]
+          ]
+        };
+      });
+
+      /* === 02 · Pantalla === */
+      definir('pantalla', 'Pantalla', 10, 'compatibilidad', true, function () {
+        var dpr = Number(window.devicePixelRatio || 1);
+        var orientacion = (screen.orientation && screen.orientation.type)
+          ? screen.orientation.type
+          : (window.innerWidth >= window.innerHeight ? 'horizontal' : 'vertical');
+
+        return {
+          estado: 'ok',
+          mensaje: 'Pantalla detectada: ' + screen.width + '×' + screen.height + ' px (DPR ' + dpr + ').',
+          tecnico: [
+            ['Resolución', screen.width + '×' + screen.height],
+            ['Área disponible', screen.availWidth + '×' + screen.availHeight],
+            ['Profundidad de color', (screen.colorDepth != null ? screen.colorDepth : '—') + ' bits'],
+            ['DPR', dpr],
+            ['Resolución física aprox.', Math.round(screen.width * dpr) + '×' + Math.round(screen.height * dpr)],
+            ['Orientación', orientacion],
+            ['Ventana', window.innerWidth + '×' + window.innerHeight],
+            ['Fullscreen API', document.documentElement.requestFullscreen ? 'Disponible' : 'No disponible']
+          ],
+          ui: function (cuerpo, api) {
+            /* Un único overlay para toda la página: si el módulo se vuelve a
+               ejecutar no se duplica la capa a pantalla completa. */
+            var overlay = document.querySelector('[data-escaner-overlay]');
+            if (!overlay) {
+              overlay = crear('div', 'escaner__pad');
+              overlay.setAttribute('data-escaner-overlay', '');
+              overlay.style.position = 'fixed';
+              overlay.style.inset = '0';
+              overlay.style.zIndex = '9999';
+              overlay.style.borderRadius = '0';
+              overlay.style.display = 'none';
+              overlay.setAttribute('role', 'button');
+              overlay.setAttribute('aria-label', 'Toca para salir de la prueba de color');
+
+              var cerrar = function () {
+                overlay.style.display = 'none';
+              };
+
+              overlay.addEventListener('click', cerrar);
+              document.addEventListener('keydown', function (evento) {
+                if (evento.key === 'Escape') cerrar();
+              });
+
+              document.body.appendChild(overlay);
+            }
+
+            var colores = [
+              ['Blanca', '#ffffff'],
+              ['Negra', '#000000'],
+              ['Roja', '#ff0000'],
+              ['Verde', '#00ff00'],
+              ['Azul', '#0000ff']
+            ];
+
+            var acciones = crear('div', 'escaner__acciones');
+            colores.forEach(function (par) {
+              var boton = crear('button', 'escaner__boton', esc(par[0]));
+              boton.type = 'button';
+              boton.addEventListener('click', seguro(function () {
+                overlay.style.backgroundColor = par[1];
+                overlay.style.display = 'flex';
+              }));
+              acciones.appendChild(boton);
+            });
+
+            var botonCompleto = crear('button', 'escaner__boton', 'Pantalla completa');
+            botonCompleto.type = 'button';
+            botonCompleto.addEventListener('click', seguro(function () {
+              try {
+                if (document.fullscreenElement) {
+                  document.exitFullscreen().catch(function () { });
+                } else if (document.documentElement.requestFullscreen) {
+                  document.documentElement.requestFullscreen().catch(function () { });
+                } else {
+                  api.estado('limitado', 'La API de pantalla completa no está disponible en este navegador.');
+                }
+              } catch (error) {
+                api.estado('limitado', 'No se pudo activar la pantalla completa.');
+              }
+            }));
+            acciones.appendChild(botonCompleto);
+
+            cuerpo.appendChild(acciones);
+            cuerpo.appendChild(crear('p', 'escaner__contador', 'Pulsa un color para comprobar tu panel. Toca la pantalla para salir.'));
+          }
+        };
+      });
+
+      /* === 03 · Red ===
+         Los datos se calculan siempre desde cero: leerlos del almacén de
+         resultados devolvería el propio estado "analizando" en curso. */
+      var datosRed = function () {
+        var conexion = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        var tipo = conexion ? (conexion.effectiveType || conexion.type || 'Desconocido') : 'No disponible';
+        var bajada = conexion && conexion.downlink != null ? conexion.downlink + ' Mb/s' : 'No disponible';
+        var latencia = conexion && conexion.rtt != null ? conexion.rtt + ' ms' : 'No disponible';
+
+        return {
+          estado: navigator.onLine ? 'ok' : 'limitado',
+          mensaje: navigator.onLine ? 'Conexión activa (' + tipo + ').' : 'Sin conexión: el dispositivo está en modo offline.',
+          tecnico: [
+            ['Estado', navigator.onLine ? 'En línea' : 'Sin conexión'],
+            ['Tipo de conexión', tipo],
+            ['Downlink', bajada],
+            ['Latencia (RTT)', latencia],
+            ['Effective Type', conexion && conexion.effectiveType ? conexion.effectiveType : 'No disponible'],
+            ['Save-Data', conexion && conexion.saveData ? 'Activado' : 'No disponible']
+          ]
+        };
+      };
+
+      var actualizarRed = function () {
+        var datos = datosRed();
+        fijarResultado('red', datos.estado, datos.mensaje, datos.tecnico);
+      };
+
+      definir('red', 'Red', 10, 'compatibilidad', true, function () {
+        return datosRed();
+      });
+
+      /* === 04 · Teclado y ratón === */
+      definir('entrada', 'Teclado y ratón', 8, 'compatibilidad', true, function () {
+        var puntero = 'PointerEvent' in window;
+        var rueda = 'onwheel' in document.createElement('div');
+
+        return {
+          estado: 'ok',
+          mensaje: 'Área de captura lista: pulsa, escribe y gira la rueda para ver los eventos en vivo.',
+          tecnico: [
+            ['Eventos de teclado', 'Nativos (siempre disponibles)'],
+            ['Eventos de ratón', 'Nativos (siempre disponibles)'],
+            ['Rueda (wheel)', rueda ? 'Disponible' : 'No disponible'],
+            ['Pointer Events', puntero ? 'Disponibles' : 'No disponibles'],
+            ['Nivel de Simultaneidad', navigator.maxTouchPoints || 0]
+          ],
+          ui: function (cuerpo) {
+            var area = crear('div', 'escaner__pad');
+            area.tabIndex = 0;
+            area.setAttribute('role', 'application');
+            area.setAttribute('aria-label', 'Área de captura de eventos de teclado y ratón');
+            area.textContent = 'Clic · tecla · rueda — captura en vivo';
+
+            var registro = crear('ul', 'escaner__log');
+            var contador = crear('p', 'escaner__contador', 'Teclas 0 · Pulsaciones 0 · Rueda 0');
+
+            var total = { teclas: 0, pulsaciones: 0, rueda: 0 };
+
+            var anotar = function (texto) {
+              var item = crear('li', null, texto);
+              registro.insertBefore(item, registro.firstChild);
+              while (registro.children.length > 8) registro.removeChild(registro.lastChild);
+            };
+
+            var refrescar = function () {
+              contador.textContent = 'Teclas ' + total.teclas + ' · Pulsaciones ' + total.pulsaciones + ' · Rueda ' + total.rueda;
+            };
+
+            area.addEventListener('keydown', function (evento) {
+              total.teclas++;
+              anotar('Tecla → <b>' + esc(evento.key) + '</b> (code ' + esc(evento.code || '—') + ')');
+              refrescar();
+            });
+
+            area.addEventListener('pointerdown', function (evento) {
+              total.pulsaciones++;
+              anotar('Puntero → x:' + Math.round(evento.offsetX) + ' y:' + Math.round(evento.offsetY) + ' · botón ' + evento.button);
+              refrescar();
+            });
+
+            area.addEventListener('dblclick', function () {
+              total.pulsaciones++;
+              anotar('Doble clic detectado');
+              refrescar();
+            });
+
+            area.addEventListener('wheel', function (evento) {
+              evento.preventDefault();
+              total.rueda++;
+              anotar('Rueda → deltaY: ' + Math.round(evento.deltaY));
+              refrescar();
+            }, { passive: false });
+
+            area.addEventListener('contextmenu', function (evento) {
+              evento.preventDefault();
+              anotar('Menú contextual (botón derecho) bloqueado');
+            });
+
+            cuerpo.appendChild(area);
+            cuerpo.appendChild(contador);
+            cuerpo.appendChild(registro);
+          }
+        };
+      });
+
+      /* === 05 · Entrada táctil === */
+      definir('touch', 'Entrada táctil', 6, 'compatibilidad', true, function () {
+        var puntos = navigator.maxTouchPoints || 0;
+        var grueso = window.matchMedia ? matchMedia('(pointer:coarse)').matches : false;
+        var fino = window.matchMedia ? matchMedia('(pointer:fine)').matches : false;
+
+        return {
+          estado: puntos > 0 ? 'ok' : 'limitado',
+          mensaje: puntos > 0
+            ? 'Entrada táctil disponible (hasta ' + puntos + ' puntos simultáneos). Toca el área para probar.'
+            : 'Sin digitalizador táctil en este dispositivo: el área responde al puntero del ratón.',
+          tecnico: [
+            ['maxTouchPoints', String(puntos)],
+            ['Pointer Events', 'PointerEvent' in window ? 'Disponibles' : 'No disponibles'],
+            ['ontouchstart', 'ontouchstart' in window ? 'Presente' : 'Ausente'],
+            ['Puntero grueso (dedo)', grueso ? 'Sí' : 'No'],
+            ['Puntero fino (ratón)', fino ? 'Sí' : 'No']
+          ],
+          ui: function (cuerpo, api) {
+            var area = crear('div', 'escaner__pad');
+            area.textContent = 'Toca o arrastra aquí';
+            var marcador = crear('p', 'escaner__contador', 'Activos 0 · Pico simultáneo 0');
+
+            var activos = new Map();
+            var pico = 0;
+
+            var refrescar = function () {
+              marcador.textContent = 'Activos ' + activos.size + ' · Pico simultáneo ' + pico;
+            };
+
+            var colocar = function (evento, nodo) {
+              var caja = area.getBoundingClientRect();
+              nodo.style.left = (evento.clientX - caja.left) + 'px';
+              nodo.style.top = (evento.clientY - caja.top) + 'px';
+            };
+
+            area.addEventListener('pointerdown', function (evento) {
+              evento.preventDefault();
+              try { area.setPointerCapture(evento.pointerId); } catch (error) { /* ignorado */ }
+              var punto = crear('span', 'escaner__pad-punto');
+              area.appendChild(punto);
+              colocar(evento, punto);
+              activos.set(evento.pointerId, punto);
+              if (activos.size > pico) pico = activos.size;
+              refrescar();
+              if (pico >= 2) api.estado('ok', 'Multitáctil verificado: pico de ' + pico + ' toques simultáneos.');
+            });
+
+            area.addEventListener('pointermove', function (evento) {
+              var punto = activos.get(evento.pointerId);
+              if (punto) colocar(evento, punto);
+            });
+
+            var soltar = function (evento) {
+              var punto = activos.get(evento.pointerId);
+              if (punto) {
+                punto.remove();
+                activos.delete(evento.pointerId);
+                refrescar();
+              }
+            };
+
+            area.addEventListener('pointerup', soltar);
+            area.addEventListener('pointercancel', soltar);
+
+            cuerpo.appendChild(area);
+            cuerpo.appendChild(marcador);
+          }
+        };
+      });
+
+      /* === 06 · Cámara === */
+      var detenerCamara = function () {
+        if (ESTADO.handles.camara) {
+          try {
+            ESTADO.handles.camara.getTracks().forEach(function (pista) { pista.stop(); });
+          } catch (error) { /* ignorado */ }
+          ESTADO.handles.camara = null;
+        }
+        var video = $('esc-video');
+        if (video) {
+          video.pause();
+          video.srcObject = null;
+        }
+      };
+
+      definir('camara', 'Cámara', 8, 'multimedia', false, async function () {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+          return { estado: 'limitado', mensaje: 'Enumeración de dispositivos no disponible en este navegador.', tecnico: [] };
+        }
+
+        var dispositivos = [];
+        try {
+          dispositivos = await navigator.mediaDevices.enumerateDevices();
+        } catch (error) { /* ignorado */ }
+
+        var camaras = dispositivos.filter(function (d) { return d.kind === 'videoinput'; });
+
+        return {
+          estado: camaras.length ? 'ok' : 'limitado',
+          mensaje: camaras.length
+            ? camaras.length + ' cámara(s) detectada(s). Pulsa «Activar cámara» para ver la imagen en vivo.'
+            : 'No se detectaron cámaras: el dispositivo puede no tenerla o el permiso está bloqueado.',
+          tecnico: [
+            ['Cámaras detectadas', String(camaras.length)],
+            ['getUserMedia', navigator.mediaDevices.getUserMedia ? 'Disponible' : 'No disponible'],
+            ['Contexto seguro', window.isSecureContext ? 'Sí' : 'No (los permisos exigen HTTPS)'],
+            ['Etiquetas', camaras.map(function (c) { return c.label || 'sin etiqueta'; }).join(' · ') || 'Ninguna']
+          ],
+          ui: function (cuerpo, api) {
+            var video = crear('video', 'escaner__video');
+            video.id = 'esc-video';
+            video.autoplay = true;
+            video.playsInline = true;
+            video.muted = true;
+
+            var acciones = crear('div', 'escaner__acciones');
+
+            var botonActivar = crear('button', 'escaner__boton', 'Activar cámara');
+            botonActivar.type = 'button';
+            botonActivar.addEventListener('click', seguro(async function () {
+              botonActivar.disabled = true;
+              try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                  api.estado('limitado', 'Este navegador no expone getUserMedia.');
+                  return;
+                }
+                if (!window.isSecureContext) {
+                  api.estado('limitado', 'La cámara exige un contexto seguro (HTTPS o localhost).');
+                  return;
+                }
+                var flujo = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                ESTADO.handles.camara = flujo;
+                video.srcObject = flujo;
+                await video.play().catch(function () { });
+                api.estado('ok', 'Cámara activada: la imagen se muestra en directo.');
+              } catch (error) {
+                api.estado('limitado', 'No se pudo abrir la cámara: permiso denegado o dispositivo en uso.');
+              } finally {
+                botonActivar.disabled = false;
+              }
+            }));
+
+            var botonCaptura = crear('button', 'escaner__boton', 'Capturar foto');
+            botonCaptura.type = 'button';
+            botonCaptura.addEventListener('click', seguro(function () {
+              if (!video.videoWidth) {
+                api.estado('limitado', 'Activa la cámara antes de capturar.');
+                return;
+              }
+              var lienzo = crear('canvas');
+              lienzo.width = video.videoWidth;
+              lienzo.height = video.videoHeight;
+              lienzo.getContext('2d').drawImage(video, 0, 0);
+              var datos;
+              try {
+                datos = lienzo.toDataURL('image/png');
+              } catch (error) {
+                api.estado('limitado', 'El navegador no ha permitido generar la captura.');
+                return;
+              }
+              var imagen = crear('img', 'escaner__video');
+              imagen.alt = 'Captura de la cámara';
+              imagen.src = datos;
+              var previa = cuerpo.querySelector('[data-captura]');
+              if (previa) previa.replaceWith(imagen);
+              else cuerpo.appendChild(imagen);
+              api.estado('ok', 'Foto capturada (' + lienzo.width + '×' + lienzo.height + ' px).');
+            }));
+
+            var botonDetener = crear('button', 'escaner__boton', 'Detener');
+            botonDetener.type = 'button';
+            botonDetener.addEventListener('click', seguro(function () {
+              detenerCamara();
+              api.estado('pendiente', 'Cámara detenida.');
+            }));
+
+            acciones.appendChild(botonActivar);
+            acciones.appendChild(botonCaptura);
+            acciones.appendChild(botonDetener);
+
+            var marca = crear('div');
+            marca.setAttribute('data-captura', '');
+
+            cuerpo.appendChild(video);
+            cuerpo.appendChild(acciones);
+            cuerpo.appendChild(marca);
+          }
+        };
+      });
+
+      /* === 07 · Micrófono === */
+      var detenerMicro = function () {
+        if (ESTADO.handles.micro) {
+          try {
+            ESTADO.handles.micro.getTracks().forEach(function (pista) { pista.stop(); });
+          } catch (error) { /* ignorado */ }
+          ESTADO.handles.micro = null;
+        }
+      };
+
+      definir('micro', 'Micrófono', 8, 'multimedia', false, async function () {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+          return { estado: 'limitado', mensaje: 'Enumeración de dispositivos no disponible en este navegador.', tecnico: [] };
+        }
+
+        var dispositivos = [];
+        try {
+          dispositivos = await navigator.mediaDevices.enumerateDevices();
+        } catch (error) { /* ignorado */ }
+
+        var entradas = dispositivos.filter(function (d) { return d.kind === 'audioinput'; });
+
+        return {
+          estado: entradas.length ? 'ok' : 'limitado',
+          mensaje: entradas.length
+            ? entradas.length + ' micrófono(s) detectado(s). Pulsa «Activar VU» para medir el nivel de entrada.'
+            : 'No se detectaron micrófonos en este dispositivo.',
+          tecnico: [
+            ['Micrófonos detectados', String(entradas.length)],
+            ['getUserMedia (audio)', navigator.mediaDevices.getUserMedia ? 'Disponible' : 'No disponible'],
+            ['Web Audio', (window.AudioContext || window.webkitAudioContext) ? 'Disponible' : 'No disponible'],
+            ['Etiquetas', entradas.map(function (d) { return d.label || 'sin etiqueta'; }).join(' · ') || 'Ninguna']
+          ],
+          ui: function (cuerpo, api) {
+            var lienzo = crear('canvas', 'escaner__vu');
+            var marcador = crear('p', 'escaner__contador', 'Nivel 0 % · Pico 0 %');
+            var acciones = crear('div', 'escaner__acciones');
+
+            var botonActivar = crear('button', 'escaner__boton', 'Activar VU');
+            botonActivar.type = 'button';
+
+            var botonDetener = crear('button', 'escaner__boton', 'Detener');
+            botonDetener.type = 'button';
+            botonDetener.addEventListener('click', seguro(function () {
+              detenerMicro();
+              if (ESTADO.handles.raf) {
+                cancelAnimationFrame(ESTADO.handles.raf);
+                ESTADO.handles.raf = null;
+              }
+              api.estado('pendiente', 'Micrófono detenido.');
+            }));
+
+            botonActivar.addEventListener('click', seguro(async function () {
+              botonActivar.disabled = true;
+              try {
+                var Contexto = window.AudioContext || window.webkitAudioContext;
+                if (!Contexto) {
+                  api.estado('limitado', 'Web Audio no está disponible en este navegador.');
+                  return;
+                }
+                var flujo = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                var contexto = new Contexto();
+                var analizador = contexto.createAnalyser();
+                analizador.fftSize = 256;
+                contexto.createMediaStreamSource(flujo).connect(analizador);
+                var datos = new Uint8Array(analizador.frequencyBinCount);
+
+                /* El handle se registra solo cuando el analizador ya funciona:
+                   así el bloque catch puede liberar el stream si algo falla. */
+                ESTADO.handles.micro = flujo;
+
+                var pico = 0;
+                var ultimoInforme = 0;
+
+                var pintar = function () {
+                  var escala = window.devicePixelRatio || 1;
+                  var ancho = lienzo.clientWidth * escala;
+                  var alto = lienzo.clientHeight * escala;
+                  if (lienzo.width !== ancho || lienzo.height !== alto) {
+                    lienzo.width = ancho;
+                    lienzo.height = alto;
+                  }
+                  var g = lienzo.getContext('2d');
+                  g.clearRect(0, 0, ancho, alto);
+                  analizador.getByteTimeDomainData(datos);
+
+                  var barras = 32;
+                  var paso = Math.floor(datos.length / barras);
+                  var anchoBarra = ancho / barras;
+                  var maximo = 0;
+
+                  for (var i = 0; i < barras; i++) {
+                    var valor = 0;
+                    for (var j = 0; j < paso; j++) {
+                      var muestra = Math.abs(datos[i * paso + j] - 128) / 128;
+                      if (muestra > valor) valor = muestra;
+                    }
+                    if (valor > maximo) maximo = valor;
+                    var altoBarra = Math.max(2, valor * (alto - 6));
+                    g.fillStyle = valor > 0.85 ? 'var(--red-normal)' : (valor > 0.5 ? 'var(--amber-normal)' : 'var(--prog-accent)');
+                    g.fillRect(i * anchoBarra + 1, alto - altoBarra - 2, anchoBarra - 2, altoBarra);
+                  }
+
+                  if (maximo > pico) pico = maximo;
+                  marcador.textContent = 'Nivel ' + Math.round(maximo * 100) + ' % · Pico ' + Math.round(pico * 100) + ' %';
+
+                  /* El resultado del módulo se actualiza cada 600 ms como máximo:
+                     repintarlo en cada fotograma recargaría la grilla entera. */
+                  var ahora = performance.now();
+                  if (ahora - ultimoInforme > 600) {
+                    ultimoInforme = ahora;
+                    api.estado('ok', 'Micrófono activo: nivel de entrada ' + Math.round(maximo * 100) + ' %.');
+                  }
+
+                  ESTADO.handles.raf = requestAnimationFrame(pintar);
+                };
+
+                pintar();
+              } catch (error) {
+                detenerMicro();
+                if (ESTADO.handles.raf) {
+                  cancelAnimationFrame(ESTADO.handles.raf);
+                  ESTADO.handles.raf = null;
+                }
+                api.estado('limitado', 'No se pudo abrir el micrófono: permiso denegado o dispositivo en uso.');
+              } finally {
+                botonActivar.disabled = false;
+              }
+            }));
+
+            acciones.appendChild(botonActivar);
+            acciones.appendChild(botonDetener);
+
+            cuerpo.appendChild(lienzo);
+            cuerpo.appendChild(marcador);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 08 · Altavoces === */
+      definir('altavoces', 'Altavoces', 8, 'multimedia', false, function () {
+        var Contexto = window.AudioContext || window.webkitAudioContext;
+
+        return {
+          estado: Contexto ? 'pendiente' : 'limitado',
+          mensaje: Contexto
+            ? 'Pulsa «Reproducir tono» y confirma si lo has oído.'
+            : 'Web Audio no está disponible en este navegador: no se puede probar el audio.',
+          tecnico: [
+            ['Web Audio', Contexto ? 'Disponible' : 'No disponible'],
+            ['Autoplay bloqueado', 'El tono se reproduce tras un clic, por eso hay que confirmarlo a mano']
+          ],
+          ui: function (cuerpo, api) {
+            var acciones = crear('div', 'escaner__acciones');
+
+            var botonTono = crear('button', 'escaner__boton', 'Reproducir tono');
+            botonTono.type = 'button';
+            botonTono.addEventListener('click', seguro(function () {
+              var Ctx = window.AudioContext || window.webkitAudioContext;
+              if (!Ctx) {
+                api.estado('limitado', 'Web Audio no está disponible en este navegador.');
+                return;
+              }
+              try {
+                var contexto = new Ctx();
+                var oscilador = contexto.createOscillator();
+                var ganancia = contexto.createGain();
+                oscilador.type = 'sine';
+                oscilador.frequency.setValueAtTime(440, contexto.currentTime);
+                oscilador.frequency.linearRampToValueAtTime(880, contexto.currentTime + 0.9);
+                ganancia.gain.setValueAtTime(0.0001, contexto.currentTime);
+                ganancia.gain.exponentialRampToValueAtTime(0.35, contexto.currentTime + 0.08);
+                ganancia.gain.exponentialRampToValueAtTime(0.0001, contexto.currentTime + 1.1);
+                oscilador.connect(ganancia);
+                ganancia.connect(contexto.destination);
+                oscilador.start();
+                oscilador.stop(contexto.currentTime + 1.15);
+                oscilador.onended = function () {
+                  try { contexto.close().catch(function () { }); } catch (error) { /* ignorado */ }
+                };
+                api.estado('analizando', 'Tono enviado: confirma si lo has oído.');
+                pregunta.style.display = 'flex';
+              } catch (error) {
+                api.estado('limitado', 'No se pudo reproducir el tono de prueba.');
+              }
+            }));
+
+            var pregunta = crear('div', 'escaner__acciones');
+            pregunta.style.display = 'none';
+
+            var botonSi = crear('button', 'escaner__boton escaner__boton--favorito', 'Sí, lo he oído');
+            botonSi.type = 'button';
+            botonSi.addEventListener('click', seguro(function () {
+              pregunta.style.display = 'none';
+              api.estado('ok', 'Altavoces confirmados por el usuario: la salida de audio funciona.');
+            }));
+
+            var botonNo = crear('button', 'escaner__boton', 'No, hay silencio');
+            botonNo.type = 'button';
+            botonNo.addEventListener('click', seguro(function () {
+              pregunta.style.display = 'none';
+              api.estado('limitado', 'Sin audio audible: revisa el volumen, la salida activa o el silenciador.');
+            }));
+
+            pregunta.appendChild(crear('span', 'escaner__contador', '¿Lo has oído?'));
+            pregunta.appendChild(botonSi);
+            pregunta.appendChild(botonNo);
+
+            acciones.appendChild(botonTono);
+            cuerpo.appendChild(acciones);
+            cuerpo.appendChild(pregunta);
+          }
+        };
+      });
+
+      /* === 09 · Geolocalización === */
+      var detenerGeo = function () {
+        if (ESTADO.handles.geo) {
+          try { navigator.geolocation.clearWatch(ESTADO.handles.geo); } catch (error) { /* ignorado */ }
+          ESTADO.handles.geo = null;
+        }
+      };
+
+      definir('geo', 'Geolocalización', 6, 'permisos', false, function () {
+        if (!('geolocation' in navigator)) {
+          return { estado: 'limitado', mensaje: 'La API de geolocalización no existe en este navegador.', tecnico: [] };
+        }
+
+        return {
+          estado: 'pendiente',
+          mensaje: 'Pulsa «Activar GPS» para solicitar el permiso y leer la posición.',
+          tecnico: [
+            ['navigator.geolocation', 'Disponible'],
+            ['Contexto seguro', window.isSecureContext ? 'Sí' : 'No (exige HTTPS)']
+          ],
+          ui: function (cuerpo, api) {
+            var datos = crear('div', 'escaner__datos');
+            var acciones = crear('div', 'escaner__acciones');
+
+            var campos = [
+              ['Latitud', 'lat'],
+              ['Longitud', 'lon'],
+              ['Precisión', 'acc'],
+              ['Altitud', 'alt'],
+              ['Velocidad', 'vel']
+            ];
+
+            campos.forEach(function (campo) {
+              var caja = crear('div', 'escaner__dato');
+              caja.innerHTML = '<b>' + esc(campo[0]) + '</b><span>—</span>';
+              caja.setAttribute('data-geo', campo[1]);
+              datos.appendChild(caja);
+            });
+
+            var escribir = function (posicion) {
+              var c = posicion.coords || {};
+              var valores = {
+                lat: c.latitude != null ? c.latitude.toFixed(6) : '—',
+                lon: c.longitude != null ? c.longitude.toFixed(6) : '—',
+                acc: c.accuracy != null ? '± ' + Math.round(c.accuracy) + ' m' : '—',
+                alt: c.altitude != null ? c.altitude.toFixed(1) + ' m' : 'no expuesta',
+                vel: c.speed != null ? (c.speed * 3.6).toFixed(1) + ' km/h' : 'no expuesta'
+              };
+              Object.keys(valores).forEach(function (clave) {
+                var nodo = datos.querySelector('[data-geo="' + clave + '"] span');
+                if (nodo) nodo.textContent = valores[clave];
+              });
+            };
+
+            var botonActivar = crear('button', 'escaner__boton', 'Activar GPS');
+            botonActivar.type = 'button';
+            botonActivar.addEventListener('click', seguro(function () {
+              try {
+                detenerGeo();
+                navigator.geolocation.getCurrentPosition(function (posicion) {
+                  escribir(posicion);
+                  api.estado('ok', 'Posición obtenida: ' + posicion.coords.latitude.toFixed(5) + ', ' + posicion.coords.longitude.toFixed(5) + '.');
+                  try {
+                    ESTADO.handles.geo = navigator.geolocation.watchPosition(escribir, function () { }, {
+                      enableHighAccuracy: true,
+                      maximumAge: 2000,
+                      timeout: 30000
+                    });
+                  } catch (error) { /* ignorado */ }
+                }, function (error) {
+                  api.estado('limitado', error && error.code === 1
+                    ? 'Permiso de ubicación denegado.'
+                    : 'No se pudo obtener la posición (señal no disponible o timeout).');
+                }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+              } catch (error) {
+                api.estado('limitado', 'La geolocalización no está disponible en este contexto.');
+              }
+            }));
+
+            var botonDetener = crear('button', 'escaner__boton', 'Detener');
+            botonDetener.type = 'button';
+            botonDetener.addEventListener('click', seguro(function () {
+              detenerGeo();
+              api.estado('pendiente', 'Seguimiento de posición detenido.');
+            }));
+
+            acciones.appendChild(botonActivar);
+            acciones.appendChild(botonDetener);
+
+            cuerpo.appendChild(datos);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 10 · Vibración === */
+      definir('vibracion', 'Vibración', 6, 'apis', false, function () {
+        if (!('vibrate' in navigator)) {
+          return {
+            estado: 'limitado',
+            mensaje: 'La Vibration API no existe en este dispositivo.',
+            tecnico: [['navigator.vibrate', 'inexistente']]
+          };
+        }
+
+        return {
+          estado: 'pendiente',
+          mensaje: 'Pulsa «Probar vibración» para enviar un patrón háptico.',
+          tecnico: [['navigator.vibrate', 'disponible']],
+          ui: function (cuerpo, api) {
+            var acciones = crear('div', 'escaner__acciones');
+            var boton = crear('button', 'escaner__boton', 'Probar vibración');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(function () {
+              var ok = false;
+              try { ok = navigator.vibrate([300, 100, 300]); } catch (error) { ok = false; }
+              api.estado(ok ? 'ok' : 'limitado', ok
+                ? 'Patrón enviado (300·100·300 ms): con el dispositivo en la mano deberías notarlo.'
+                : 'La llamada no produjo vibración: el hardware carece de motor háptico.');
+            }));
+            acciones.appendChild(boton);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 11 · Linterna === */
+      var detenerLinterna = function () {
+        var actual = ESTADO.handles.linterna;
+        ESTADO.handles.linterna = null;
+        if (!actual) return;
+
+        if (actual.imagen && actual.imagen.applyConstraints) {
+          try {
+            actual.imagen.applyConstraints({ advanced: [{ torch: false }] }).catch(function () {});
+          } catch (error) { /* ignorado */ }
+        }
+        if (actual.flujo) {
+          try {
+            actual.flujo.getTracks().forEach(function (pista) { pista.stop(); });
+          } catch (error) { /* ignorado */ }
+        }
+      };
+
+      definir('linterna', 'Linterna', 4, 'multimedia', false, async function () {
+        var soportada = ('ImageCapture' in window) && navigator.mediaDevices;
+
+        return {
+          estado: soportada ? 'pendiente' : 'limitado',
+          mensaje: soportada
+            ? 'Pulsa «Activar linterna» para encender el flash de la cámara trasera.'
+            : 'El control de linterna requiere la API ImageCapture y un dispositivo con flash.',
+          tecnico: [
+            ['ImageCapture', 'ImageCapture' in window ? 'Disponible' : 'No disponible'],
+            ['Secure Media Streams', window.isSecureContext ? 'Sí' : 'No']
+          ],
+          ui: function (cuerpo, api) {
+            var acciones = crear('div', 'escaner__acciones');
+            var boton = crear('button', 'escaner__boton', 'Activar linterna');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              if (ESTADO.handles.linterna) {
+                detenerLinterna();
+                boton.textContent = 'Activar linterna';
+                api.estado('pendiente', 'Linterna apagada.');
+                return;
+              }
+              var flujo = null;
+              try {
+                flujo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                var pista = flujo.getVideoTracks()[0];
+                var capacidad = pista.getCapabilities ? pista.getCapabilities() : {};
+                if (!capacidad.torch) {
+                  flujo.getTracks().forEach(function (t) { t.stop(); });
+                  api.estado('limitado', 'Este dispositivo no expone un flash controlable.');
+                  return;
+                }
+                var imagen = new ImageCapture(pista);
+                await imagen.applyConstraints({ advanced: [{ torch: true }] });
+                ESTADO.handles.linterna = { flujo: flujo, imagen: imagen };
+                boton.textContent = 'Apagar linterna';
+                api.estado('ok', 'Linterna encendida. Vuelve a pulsar el botón para apagarla.');
+              } catch (error) {
+                if (flujo) {
+                  try { flujo.getTracks().forEach(function (t) { t.stop(); }); } catch (ignore) { /* ignorado */ }
+                }
+                detenerLinterna();
+                boton.textContent = 'Activar linterna';
+                api.estado('limitado', 'No se pudo controlar la linterna: permiso denegado o sin flash.');
+              }
+            }));
+            acciones.appendChild(boton);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 12 · Giroscopio === */
+      var detenerGiro = function () {
+        if (ESTADO.handles.giro) {
+          window.removeEventListener('deviceorientation', ESTADO.handles.giro);
+          ESTADO.handles.giro = null;
+        }
+      };
+
+      definir('giro', 'Giroscopio', 6, 'sensores', false, function () {
+        if (!('DeviceOrientationEvent' in window)) {
+          return {
+            estado: 'limitado',
+            mensaje: 'DeviceOrientation no existe en este dispositivo.',
+            tecnico: [['DeviceOrientationEvent', 'inexistente']]
+          };
+        }
+
+        return {
+          estado: 'pendiente',
+          mensaje: 'Pulsa «Activar sensor» y mueve el dispositivo para leer α, β y γ.',
+          tecnico: [['Fuente', 'deviceorientation']],
+          ui: function (cuerpo, api) {
+            var datos = crear('div', 'escaner__datos');
+            var acciones = crear('div', 'escaner__acciones');
+
+            [['Alpha α', 'a'], ['Beta β', 'b'], ['Gamma γ', 'g']].forEach(function (campo) {
+              var caja = crear('div', 'escaner__dato');
+              caja.innerHTML = '<b>' + esc(campo[0]) + '</b><span>—</span>';
+              caja.setAttribute('data-giro', campo[1]);
+              datos.appendChild(caja);
+            });
+
+            var grados = function (v) { return v == null ? '—' : v.toFixed(1) + '°'; };
+
+            var boton = crear('button', 'escaner__boton', 'Activar sensor');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              try {
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                  var permiso = await DeviceOrientationEvent.requestPermission();
+                  if (permiso !== 'granted') {
+                    api.estado('limitado', 'Permiso denegado para el sensor de orientación.');
+                    return;
+                  }
+                }
+                detenerGiro();
+                var primero = true;
+                ESTADO.handles.giro = function (evento) {
+                  var mapa = { a: evento.alpha, b: evento.beta, g: evento.gamma };
+                  Object.keys(mapa).forEach(function (clave) {
+                    var nodo = datos.querySelector('[data-giro="' + clave + '"] span');
+                    if (nodo) nodo.textContent = grados(mapa[clave]);
+                  });
+                  if (primero) {
+                    primero = false;
+                    api.estado('ok', 'Giroscopio activo: valores en tiempo real.');
+                  }
+                };
+                window.addEventListener('deviceorientation', ESTADO.handles.giro);
+                api.estado('analizando', 'Esperando datos del sensor: mueve el dispositivo.');
+              } catch (error) {
+                api.estado('limitado', 'El sensor de orientación no está disponible en este contexto.');
+              }
+            }));
+
+            var botonDetener = crear('button', 'escaner__boton', 'Detener');
+            botonDetener.type = 'button';
+            botonDetener.addEventListener('click', seguro(function () {
+              detenerGiro();
+              api.estado('pendiente', 'Giroscopio detenido.');
+            }));
+
+            acciones.appendChild(boton);
+            acciones.appendChild(botonDetener);
+            cuerpo.appendChild(datos);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 13 · Acelerómetro === */
+      var detenerAcel = function () {
+        if (ESTADO.handles.acel) {
+          window.removeEventListener('devicemotion', ESTADO.handles.acel);
+          ESTADO.handles.acel = null;
+        }
+      };
+
+      definir('acel', 'Acelerómetro', 6, 'sensores', false, function () {
+        if (!('DeviceMotionEvent' in window)) {
+          return {
+            estado: 'limitado',
+            mensaje: 'DeviceMotion no existe en este dispositivo.',
+            tecnico: [['DeviceMotionEvent', 'inexistente']]
+          };
+        }
+
+        return {
+          estado: 'pendiente',
+          mensaje: 'Pulsa «Activar sensor» y mueve el dispositivo para leer x, y y z.',
+          tecnico: [['Fuente', 'devicemotion']],
+          ui: function (cuerpo, api) {
+            var datos = crear('div', 'escaner__datos');
+            var acciones = crear('div', 'escaner__acciones');
+
+            [['Eje X', 'x'], ['Eje Y', 'y'], ['Eje Z', 'z']].forEach(function (campo) {
+              var caja = crear('div', 'escaner__dato');
+              caja.innerHTML = '<b>' + esc(campo[0]) + '</b><span>—</span>';
+              caja.setAttribute('data-acel', campo[1]);
+              datos.appendChild(caja);
+            });
+
+            var boton = crear('button', 'escaner__boton', 'Activar sensor');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              try {
+                if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                  var permiso = await DeviceMotionEvent.requestPermission();
+                  if (permiso !== 'granted') {
+                    api.estado('limitado', 'Permiso denegado para el sensor de movimiento.');
+                    return;
+                  }
+                }
+                detenerAcel();
+                var primero = true;
+                ESTADO.handles.acel = function (evento) {
+                  var aceleracion = evento.accelerationIncludingGravity || evento.acceleration;
+                  if (!aceleracion) return;
+                  var mapa = { x: aceleracion.x, y: aceleracion.y, z: aceleracion.z };
+                  Object.keys(mapa).forEach(function (clave) {
+                    var nodo = datos.querySelector('[data-acel="' + clave + '"] span');
+                    if (nodo) nodo.textContent = mapa[clave] == null ? '—' : mapa[clave].toFixed(2);
+                  });
+                  if (primero) {
+                    primero = false;
+                    api.estado('ok', 'Acelerómetro activo: valores en tiempo real.');
+                  }
+                };
+                window.addEventListener('devicemotion', ESTADO.handles.acel);
+                api.estado('analizando', 'Esperando datos del sensor: mueve el.device.');
+              } catch (error) {
+                api.estado('limitado', 'El sensor de movimiento no está disponible en este contexto.');
+              }
+            }));
+
+            var botonDetener = crear('button', 'escaner__boton', 'Detener');
+            botonDetener.type = 'button';
+            botonDetener.addEventListener('click', seguro(function () {
+              detenerAcel();
+              api.estado('pendiente', 'Acelerómetro detenido.');
+            }));
+
+            acciones.appendChild(boton);
+            acciones.appendChild(botonDetener);
+            cuerpo.appendChild(datos);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 14 · Batería === */
+      definir('bateria', 'Batería', 6, 'apis', true, async function () {
+        if (!navigator.getBattery) {
+          return {
+            estado: 'limitado',
+            mensaje: 'La Battery Status API no está disponible en este navegador.',
+            tecnico: [['navigator.getBattery', 'inexistente']]
+          };
+        }
+
+        try {
+          var bateria = await navigator.getBattery();
+          var tecnico = [
+            ['Nivel', Math.round(bateria.level * 100) + ' %'],
+            ['Cargando', bateria.charging ? 'Sí' : 'No'],
+            ['Tiempo de carga', bateria.chargingTime && bateria.chargingTime !== Infinity ? Math.round(bateria.chargingTime / 60) + ' min' : 'No disponible'],
+            ['Tiempo restante', bateria.dischargingTime && bateria.dischargingTime !== Infinity ? Math.round(bateria.dischargingTime / 60) + ' min' : 'No disponible'],
+            ['Tipo de carga', bateria.charging ? (bateria.charging ? 'En carga' : 'En descarga') : 'En descarga']
+          ];
+
+          return {
+            estado: 'ok',
+            mensaje: 'Batería al ' + Math.round(bateria.level * 100) + ' %' + (bateria.charging ? ' (cargando).' : ' (en descarga).'),
+            tecnico: tecnico
+          };
+        } catch (error) {
+          return { estado: 'limitado', mensaje: 'No se pudo leer el estado de la batería.', tecnico: [] };
+        }
+      });
+
+      /* === 15 · Capacidades del navegador === */
+      definir('capacidades', 'Capacidades del navegador', 8, 'apis', true, function () {
+        var disponibles = 0;
+        var total = 0;
+
+        CAPACIDADES.forEach(function (capacidad) {
+          total += capacidad.peso || 1;
+          if (capacidadActiva(capacidad)) disponibles += capacidad.peso || 1;
+        });
+
+        var porcentaje = Math.round((disponibles / total) * 100);
+        var ausentes = CAPACIDADES.filter(function (capacidad) { return !capacidadActiva(capacidad); });
+
+        return {
+          estado: porcentaje >= 70 ? 'ok' : (porcentaje >= 40 ? 'limitado' : 'error'),
+          mensaje: disponibles + ' de ' + total + ' puntos de capacidad disponibles (' + porcentaje + ' %).',
+          tecnico: CAPACIDADES.map(function (capacidad) {
+            return [capacidad.nombre, capacidadActiva(capacidad) ? 'Disponible' : 'No disponible'];
+          }),
+          resumen: {
+            porcentaje: porcentaje,
+            ausentes: ausentes.map(function (c) { return c.nombre; })
+          }
+        };
+      });
+
+      /* === 16 · Permisos === */
+      var PERMISOS = ['geolocation', 'camera', 'microphone', 'notifications', 'midi', 'background-sync', 'clipboard-read'];
+
+      definir('permisos', 'Permisos del sistema', 6, 'permisos', true, async function () {
+        if (!navigator.permissions || !navigator.permissions.query) {
+          return {
+            estado: 'limitado',
+            mensaje: 'La Permissions API no está disponible en este navegador.',
+            tecnico: [['navigator.permissions.query', 'inexistente']]
+          };
+        }
+
+        var filas = [];
+        var concedidos = 0;
+        var consultables = 0;
+
+        for (var i = 0; i < PERMISOS.length; i++) {
+          var nombre = PERMISOS[i];
+          var estado = 'desconocido';
+          try {
+            var resultado = await navigator.permissions.query({ name: nombre });
+            estado = resultado.state;
+          } catch (error) {
+            estado = 'no consultable';
+          }
+          filas.push([nombre, estado]);
+          if (estado !== 'desconocido' && estado !== 'no consultable') {
+            consultables++;
+            if (estado === 'granted') concedidos++;
+          }
+        }
+
+        return {
+          estado: consultables ? (concedidos === consultables ? 'ok' : 'limitado') : 'limitado',
+          mensaje: consultables
+            ? concedidos + ' de ' + consultables + ' permisos consultables concedidos.'
+            : 'Este navegador no permite consultar el estado de los permisos.',
+          tecnico: filas
+        };
+      });
+
+      /* === 17 · WebGL === */
+      definir('webgl', 'WebGL', 4, 'apis', true, function () {
+        var lienzo = document.createElement('canvas');
+        var gl = null;
+        try {
+          gl = lienzo.getContext('webgl2') || lienzo.getContext('webgl');
+        } catch (error) {
+          gl = null;
+        }
+
+        if (!gl) {
+          return {
+            estado: 'limitado',
+            mensaje: 'WebGL no está disponible en este navegador o está bloqueado por la GPU.',
+            tecnico: []
+          };
+        }
+
+        var info = gl.getExtension('WEBGL_debug_renderer_info');
+        var renderer = info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+        var version = gl.getParameter(gl.VERSION);
+
+        var ok = false;
+        try {
+          gl.clearColor(0.2, 0.6, 0.9, 1);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+          ok = gl.getError() === gl.NO_ERROR;
+        } catch (error) {
+          ok = false;
+        }
+
+        return {
+          estado: ok ? 'ok' : 'limitado',
+          mensaje: 'WebGL operativo (' + version + ').',
+          tecnico: [
+            ['Versión', version],
+            ['GLSL', gl.getParameter(gl.SHADING_LANGUAGE_VERSION)],
+            ['Renderizador', renderer || 'No disponible'],
+            ['Proveedor', info ? gl.getParameter(info.UNMASKED_VENDOR_WEBGL) : 'No disponible'],
+            ['Profundidad de color', gl.getParameter(gl.COLOR_BITS) + ' bits'],
+            ['Contexto', gl instanceof WebGL2RenderingContext ? 'WebGL 2' : 'WebGL 1'],
+            ['Limpieza de búfer', ok ? 'Correcta' : 'Con errores']
+          ]
+        };
+      });
+
+      /* === 18 · WebGPU === */
+      definir('webgpu', 'WebGPU', 4, 'apis', true, async function () {
+        if (!navigator.gpu) {
+          return {
+            estado: 'limitado',
+            mensaje: 'WebGPU no está disponible en este navegador.',
+            tecnico: [['navigator.gpu', 'inexistente']]
+          };
+        }
+
+        try {
+          var adaptador = await navigator.gpu.requestAdapter();
+          if (!adaptador) {
+            return {
+              estado: 'limitado',
+              mensaje: 'WebGPU está presente, pero no hay adaptador disponible en este equipo.',
+              tecnico: [['Adaptador', 'No disponible']]
+            };
+          }
+
+          var info = adaptador.info || {};
+          var dispositivo = await adaptador.requestDevice();
+
+          return {
+            estado: 'ok',
+            mensaje: 'WebGPU operativo: adaptador y dispositivo creados correctamente.',
+            tecnico: [
+              ['Adaptador', info.vendor || 'No informado'],
+              ['Arquitectura', info.architecture || 'No informada'],
+              ['Descripción', info.description || 'No informada'],
+              ['Dispositivo', dispositivo ? 'Creado' : 'No creado'],
+              ['Límite de texturas', dispositivo && dispositivo.limits ? dispositivo.limits.maxTextureDimension2D : '—']
+            ]
+          };
+        } catch (error) {
+          return { estado: 'limitado', mensaje: 'WebGPU está presente, pero falló al inicializarse.', tecnico: [] };
+        }
+      });
+
+      /* === 19 · WebAssembly === */
+      definir('wasm', 'WebAssembly', 4, 'apis', true, function () {
+        if (!('WebAssembly' in window)) {
+          return {
+            estado: 'limitado',
+            mensaje: 'WebAssembly no está disponible en este navegador.',
+            tecnico: []
+          };
+        }
+
+        /* Módulo WebAssembly mínimo: exporta "val" y devuelve 42. */
+        var binario = new Uint8Array([
+          0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
+          0x01, 0x05, 0x01, 0x60, 0x00, 0x01, 0x7f,
+          0x03, 0x02, 0x01, 0x00,
+          0x07, 0x07, 0x01, 0x03, 0x76, 0x61, 0x6c, 0x00, 0x00,
+          0x0a, 0x06, 0x01, 0x04, 0x00, 0x41, 0x2a, 0x0b
+        ]);
+        var valido = false;
+        try {
+          valido = WebAssembly.validate(binario);
+        } catch (error) {
+          valido = false;
+        }
+
+        var suma = null;
+        try {
+          suma = WebAssembly.instantiate(binario).then(function (resultado) {
+            return resultado.instance.exports.val ? resultado.instance.exports.val() : null;
+          });
+        } catch (error) {
+          suma = null;
+        }
+
+        return {
+          estado: valido ? 'ok' : 'limitado',
+          mensaje: valido ? 'WebAssembly operativo: el módulo de prueba es válido.' : 'WebAssembly presente, pero el módulo de prueba no valida.',
+          tecnico: [
+            ['validate()', valido ? 'true' : 'false'],
+            ['Motor', 'WASM con compilación JIT'],
+            ['Tamaño del módulo', binario.length + ' bytes']
+          ],
+          promesa: suma
+        };
+      });
+
+      /* === 20 · WebRTC === */
+      definir('webrtc', 'WebRTC', 4, 'apis', true, async function () {
+        if (typeof RTCPeerConnection === 'undefined') {
+          return {
+            estado: 'limitado',
+            mensaje: 'WebRTC no está disponible en este navegador.',
+            tecnico: []
+          };
+        }
+
+        var conexion = null;
+        try {
+          conexion = new RTCPeerConnection({ iceServers: [] });
+          conexion.createDataChannel('prueba');
+          var oferta = await conexion.createOffer();
+          await conexion.setLocalDescription(oferta);
+          var estado = conexion.iceGatheringState;
+
+          conexion.close();
+
+          return {
+            estado: 'ok',
+            mensaje: 'WebRTC operativo: se creó una conexión local y una oferta válida.',
+            tecnico: [
+              ['Conexión local', 'Creada'],
+              ['Estado de agregación ICE', estado],
+              ['Transmisor RTP', 'No configurado'],
+              ['Cifrado DTLS', 'Obligatorio en WebRTC']
+            ]
+          };
+        } catch (error) {
+          if (conexion) {
+            try { conexion.close(); } catch (error2) { /* ignorado */ }
+          }
+          return {
+            estado: 'limitado',
+            mensaje: 'WebRTC está presente, pero no se pudo crear una conexión local.',
+            tecnico: []
+          };
+        }
+      });
+
+      /* === 21 · PWA === */
+      var instalacionPendiente = null;
+
+      definir('pwa', 'PWA', 4, 'apis', true, async function () {
+        var manifest = null;
+        var errorManifest = 'No disponible';
+        try {
+          var respuesta = await fetch('../../../manifest.json', { cache: 'no-cache' });
+          if (respuesta.ok) {
+            manifest = await respuesta.json();
+            errorManifest = null;
+          }
+        } catch (error) {
+          errorManifest = 'No se pudo leer el manifiesto';
+        }
+
+        var control = 'no registrado';
+        if ('serviceWorker' in navigator) {
+          try {
+            var registros = await navigator.serviceWorker.getRegistrations();
+            control = registros.length ? registros.length + ' registro(s)' : 'sin registros';
+          } catch (error) {
+            control = 'no consultable';
+          }
+        }
+
+        return {
+          estado: manifest ? 'ok' : 'limitado',
+          mensaje: manifest
+            ? 'La aplicación es instalable: manifiesto y service worker están disponibles.'
+            : 'No se ha podido leer el manifiesto de la aplicación.',
+          tecnico: [
+            ['Manifiesto', manifest ? manifest.name : errorManifest],
+            ['Modo de visualización', manifest ? manifest.display : '—'],
+            ['Service worker', control],
+            ['Instalable', instalacionPendiente ? 'Sí (prompt disponible)' : 'Según el navegador'],
+            ['Conexión segura', window.isSecureContext ? 'Sí' : 'No']
+          ],
+          ui: function (cuerpo, api) {
+            var acciones = crear('div', 'escaner__acciones');
+            var boton = crear('button', 'escaner__boton', 'Instalar aplicación');
+            boton.type = 'button';
+            boton.disabled = !instalacionPendiente;
+            boton.addEventListener('click', seguro(async function () {
+              if (!instalacionPendiente) {
+                api.estado('limitado', 'El navegador no ha ofrecido la instalación de la aplicación.');
+                return;
+              }
+              instalacionPendiente.prompt();
+              try {
+                await instalacionPendiente.userChoice;
+              } catch (error) { /* ignorado */ }
+              instalacionPendiente = null;
+              boton.disabled = true;
+            }));
+            acciones.appendChild(boton);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 22 · Sensores experimentales === */
+      var SENSORES = [
+        { nombre: 'Accelerometer', clase: 'Accelerometer' },
+        { nombre: 'Gyroscope', clase: 'Gyroscope' },
+        { nombre: 'Magnetometer', clase: 'Magnetometer' },
+        { nombre: 'AmbientLight', clase: 'AmbientLightSensor' },
+        { nombre: 'AbsoluteOrientation', clase: 'AbsoluteOrientationSensor' },
+        { nombre: 'RelativeOrientation', clase: 'RelativeOrientationSensor' },
+        { nombre: 'Proximity', clase: 'ProximitySensor' }
+      ];
+
+      var pararSensores = function () {
+        ESTADO.handles.sensores.forEach(function (sensor) {
+          try { sensor.stop(); } catch (error) { /* ignorado */ }
+        });
+        ESTADO.handles.sensores = [];
+      };
+
+      definir('sensores', 'Sensores experimentales', 4, 'sensores', false, function () {
+        var disponibles = SENSORES.filter(function (s) { return s.clase in window; });
+
+        return {
+          estado: disponibles.length ? 'ok' : 'limitado',
+          mensaje: disponibles.length
+            ? disponibles.length + ' sensor(es) de la Generic Sensor API disponible(s).'
+            : 'La Generic Sensor API no está disponible en este navegador.',
+          tecnico: SENSORES.map(function (s) {
+            return [s.nombre, s.clase in window ? 'Disponible' : 'No disponible'];
+          }),
+          ui: function (cuerpo, api) {
+            var datos = crear('div', 'escaner__datos');
+            var acciones = crear('div', 'escaner__acciones');
+
+            SENSORES.forEach(function (definicion) {
+              var caja = crear('div', 'escaner__dato');
+              caja.innerHTML = '<b>' + esc(definicion.nombre) + '</b><span>' + (definicion.clase in window ? 'Disponible' : 'No disponible') + '</span>';
+              caja.setAttribute('data-sensor', definicion.nombre);
+              datos.appendChild(caja);
+            });
+
+            var boton = crear('button', 'escaner__boton', 'Activar sensores');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              pararSensores();
+              var activados = [];
+
+              for (var i = 0; i < SENSORES.length; i++) {
+                let definicion = SENSORES[i];
+                if (!(definicion.clase in window)) continue;
+
+                try {
+                  let Constructor = window[definicion.clase];
+                  if (Constructor && typeof Constructor.requestPermission === 'function') {
+                    var permiso = await Constructor.requestPermission();
+                    if (permiso !== 'granted') continue;
+                  }
+
+                  let sensor = new Constructor({ frequency: 10 });
+
+                  sensor.addEventListener('reading', function () {
+                    var nodo = datos.querySelector('[data-sensor="' + definicion.nombre + '"] span');
+                    if (!nodo) return;
+                    nodo.textContent = ['x', 'y', 'z'].map(function (eje) {
+                      var valor = sensor[eje];
+                      return eje + ': ' + (valor == null ? '—' : Number(valor).toFixed(2));
+                    }).join(' · ');
+                  });
+
+                  sensor.start();
+                  ESTADO.handles.sensores.push(sensor);
+                  activados.push(definicion.nombre);
+                } catch (error) {
+                  /* Sensor no disponible o sin permiso: se omite sin romper el resto. */
+                }
+              }
+
+              api.estado(activados.length ? 'ok' : 'limitado', activados.length
+                ? 'Sensores activos: ' + activados.join(', ') + '.'
+                : 'No se ha podido activar ningún sensor experimental.');
+            }));
+
+            var botonDetener = crear('button', 'escaner__boton', 'Detener');
+            botonDetener.type = 'button';
+            botonDetener.addEventListener('click', seguro(function () {
+              pararSensores();
+              api.estado('pendiente', 'Sensores experimentales detenidos.');
+            }));
+
+            acciones.appendChild(boton);
+            acciones.appendChild(botonDetener);
+            cuerpo.appendChild(datos);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 23 · Benchmarks === */
+      definir('benchmarks', 'Benchmarks', 4, 'pruebas', false, function () {
+        return {
+          estado: ESTADO.benchmarks ? 'ok' : 'pendiente',
+          mensaje: ESTADO.benchmarks
+            ? 'Benchmarks completados: media ' + ESTADO.benchmarks.media + '/100.'
+            : 'Pulsa «Ejecutar benchmarks» para medir CPU, renderizado, memoria y animación.',
+          tecnico: ESTADO.benchmarks
+            ? Object.keys(ESTADO.benchmarks.pruebas).map(function (clave) {
+              return [clave, ESTADO.benchmarks.pruebas[clave].detalle];
+            })
+            : [],
+          ui: function (cuerpo, api) {
+            var lienzo = crear('canvas', 'escaner__canvas-bench');
+            var salida = crear('p', 'escaner__contador', 'Sin ejecutar.');
+            var acciones = crear('div', 'escaner__acciones');
+
+            var boton = crear('button', 'escaner__boton', 'Ejecutar benchmarks');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              boton.disabled = true;
+              salida.textContent = 'Ejecutando…';
+              var pruebas = {};
+
+              try {
+                /* CPU */
+                var iteraciones = 1500000;
+                var acumulado = 0;
+                var inicio = performance.now();
+                for (var i = 0; i < iteraciones; i++) acumulado += Math.sqrt(i) * Math.sin(i % 100);
+                var ms = Math.max(1, performance.now() - inicio);
+                var cpu = Math.min(100, Math.round(iteraciones / ms / 20));
+                pruebas.CPU = { puntuacion: cpu, detalle: Math.round(iteraciones / ms) + ' kOps/ms (' + iteraciones + ' iteraciones en ' + ms.toFixed(0) + ' ms)' };
+
+                /* Renderizado */
+                var contexto = lienzo.getContext('2d');
+                if (contexto) {
+                  var escala = window.devicePixelRatio || 1;
+                  lienzo.width = lienzo.clientWidth * escala;
+                  lienzo.height = lienzo.clientHeight * escala;
+                  var duracion = 1500;
+                  var cuadros = 0;
+                  var rects = 0;
+                  var inicioRender = performance.now();
+                  await new Promise(function (resolver) {
+                    var paso = function () {
+                      if (performance.now() - inicioRender >= duracion) {
+                        resolver();
+                        return;
+                      }
+                      for (var k = 0; k < 250; k++) {
+                        contexto.fillStyle = 'hsl(' + (rects % 360) + ', 70%, 50%)';
+                        contexto.fillRect(Math.random() * lienzo.width, Math.random() * lienzo.height, 8, 8);
+                        rects++;
+                      }
+                      cuadros++;
+                      requestAnimationFrame(paso);
+                    };
+                    requestAnimationFrame(paso);
+                  });
+                  var fps = Math.round(cuadros / (duracion / 1000));
+                  pruebas.Renderizado = { puntuacion: Math.min(100, Math.round(fps / 6)), detalle: fps + ' FPS (' + Math.round(rects / (duracion / 1000)) + ' rectángulos/s)' };
+                }
+
+                /* Memoria */
+                var bloques = [];
+                var mb = 0;
+                var inicioMemoria = performance.now();
+                try {
+                  for (var b = 0; b < 48; b++) {
+                    bloques.push(new Float64Array(131072));
+                    mb++;
+                    if (b % 8 === 0) await dormir(0);
+                  }
+                } catch (error) {
+                  /* El navegador ha limitado la reserva de memoria. */
+                }
+                var msMemoria = Math.max(1, performance.now() - inicioMemoria);
+                bloques.length = 0;
+                var velocidad = Math.round(mb / (msMemoria / 1000));
+                pruebas.Memoria = { puntuacion: Math.min(100, Math.round(velocidad / 2)), detalle: velocidad + ' MB/s (' + mb + ' MB reservados)' };
+
+                /* Animación */
+                var total = 60;
+                var inicioAnim = performance.now();
+                await new Promise(function (resolver) {
+                  var f = 0;
+                  var paso = function () {
+                    f++;
+                    if (f >= total) {
+                      resolver();
+                      return;
+                    }
+                    requestAnimationFrame(paso);
+                  };
+                  requestAnimationFrame(paso);
+                });
+                var segundos = Math.max(0.001, (performance.now() - inicioAnim) / 1000);
+                var fpsAnim = Math.round(total / segundos);
+                pruebas.Animacion = { puntuacion: Math.min(100, Math.round(fpsAnim / 6)), detalle: fpsAnim + ' FPS sostenidos' };
+
+                var claves = Object.keys(pruebas);
+                var media = Math.round(claves.reduce(function (suma, clave) { return suma + pruebas[clave].puntuacion; }, 0) / claves.length);
+                ESTADO.benchmarks = { media: media, pruebas: pruebas };
+
+                salida.textContent = claves.map(function (clave) {
+                  return clave + ': ' + pruebas[clave].puntuacion + '/100 (' + pruebas[clave].detalle + ')';
+                }).join(' · ');
+
+                api.estado('ok', 'Benchmarks completados: media ' + media + '/100.');
+              } catch (error) {
+                api.estado('limitado', 'Los benchmarks se detuvieron antes de completarse.');
+              } finally {
+                boton.disabled = false;
+              }
+            }));
+
+            acciones.appendChild(boton);
+            cuerpo.appendChild(lienzo);
+            cuerpo.appendChild(salida);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 24 · Bluetooth === */
+      definir('bluetooth', 'Bluetooth', 2, 'apis', false, function () {
+        var soportado = 'bluetooth' in navigator;
+
+        return {
+          estado: soportado ? 'pendiente' : 'limitado',
+          mensaje: soportado
+            ? 'Pulsa «Buscar dispositivos» para abrir el selector de Bluetooth (requiere HTTPS y un dispositivo compatible).'
+            : 'Web Bluetooth no está disponible en este navegador.',
+          tecnico: [
+            ['navigator.bluetooth', soportado ? 'Disponible' : 'No disponible'],
+            ['Contexto seguro', window.isSecureContext ? 'Sí' : 'No (exige HTTPS)']
+          ],
+          ui: function (cuerpo, api) {
+            var acciones = crear('div', 'escaner__acciones');
+            var boton = crear('button', 'escaner__boton', 'Buscar dispositivos');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              try {
+                var dispositivo = await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
+                api.estado('ok', 'Dispositivo seleccionado: ' + (dispositivo.name || 'sin nombre') + '.');
+              } catch (error) {
+                api.estado('limitado', 'No se seleccionó ningún dispositivo Bluetooth (cancelado o no compatible).');
+              }
+            }));
+            acciones.appendChild(boton);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 25 · WebUSB === */
+      definir('usb', 'WebUSB', 2, 'apis', false, function () {
+        var soportado = 'usb' in navigator;
+
+        return {
+          estado: soportado ? 'pendiente' : 'limitado',
+          mensaje: soportado
+            ? 'Pulsa «Conectar dispositivo» para abrir el selector de WebUSB (requiere HTTPS).'
+            : 'WebUSB no está disponible en este navegador.',
+          tecnico: [
+            ['navigator.usb', soportado ? 'Disponible' : 'No disponible'],
+            ['Contexto seguro', window.isSecureContext ? 'Sí' : 'No (exige HTTPS)']
+          ],
+          ui: function (cuerpo, api) {
+            var acciones = crear('div', 'escaner__acciones');
+            var boton = crear('button', 'escaner__boton', 'Conectar dispositivo');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              try {
+                var dispositivo = await navigator.usb.requestDevice({ filters: [] });
+                api.estado('ok', 'Dispositivo USB conectado: ' + (dispositivo.productName || 'sin nombre') + '.');
+              } catch (error) {
+                api.estado('limitado', 'No se seleccionó ningún dispositivo USB (cancelado o no compatible).');
+              }
+            }));
+            acciones.appendChild(boton);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 26 · Web Serial === */
+      definir('serial', 'Web Serial', 2, 'apis', false, function () {
+        var soportado = 'serial' in navigator;
+
+        return {
+          estado: soportado ? 'pendiente' : 'limitado',
+          mensaje: soportado
+            ? 'Pulsa «Conectar puerto» para abrir el selector de puertos serie (requiere HTTPS).'
+            : 'Web Serial no está disponible en este navegador.',
+          tecnico: [
+            ['navigator.serial', soportado ? 'Disponible' : 'No disponible'],
+            ['Contexto seguro', window.isSecureContext ? 'Sí' : 'No (exige HTTPS)']
+          ],
+          ui: function (cuerpo, api) {
+            var acciones = crear('div', 'escaner__acciones');
+            var boton = crear('button', 'escaner__boton', 'Conectar puerto');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              try {
+                var puerto = await navigator.serial.requestPort();
+                api.estado('ok', 'Puerto serie seleccionado' + (puerto.getInfo ? ' (' + puerto.getInfo().baudRate + ' baudios)' : '') + '.');
+              } catch (error) {
+                api.estado('limitado', 'No se seleccionó ningún puerto serie (cancelado o no compatible).');
+              }
+            }));
+            acciones.appendChild(boton);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* === 27 · Web NFC === */
+      definir('nfc', 'Web NFC', 2, 'apis', false, function () {
+        var soportado = 'NDEFReader' in window;
+
+        return {
+          estado: soportado ? 'pendiente' : 'limitado',
+          mensaje: soportado
+            ? 'Pulsa «Escanear NFC» para leer una etiqueta (requiere HTTPS y un móvil con NFC).'
+            : 'Web NFC no está disponible en este navegador.',
+          tecnico: [
+            ['NDEFReader', soportado ? 'Disponible' : 'No disponible'],
+            ['Contexto seguro', window.isSecureContext ? 'Sí' : 'No (exige HTTPS)'],
+            ['Mobile', /Android|iPhone|iPad/i.test(navigator.userAgent) ? 'Sí' : 'No']
+          ],
+          ui: function (cuerpo, api) {
+            var acciones = crear('div', 'escaner__acciones');
+            var boton = crear('button', 'escaner__boton', 'Escanear NFC');
+            boton.type = 'button';
+            boton.addEventListener('click', seguro(async function () {
+              try {
+                var lector = new NDEFReader();
+                await lector.scan();
+                lector.onreading = function (evento) {
+                  var texto = 'Etiqueta leída: ' + evento.message.records.length + ' registro(s).';
+                  api.estado('ok', texto);
+                };
+                api.estado('analizando', 'Esperando una etiqueta NFC…');
+              } catch (error) {
+                api.estado('limitado', 'No se pudo iniciar el escáner NFC (sin permiso o sin hardware).');
+              }
+            }));
+            acciones.appendChild(boton);
+            cuerpo.appendChild(acciones);
+          }
+        };
+      });
+
+      /* ---------- Puntuación ---------- */
+      var FACTOR = { ok: 1, limitado: 0.5, error: 0 };
+
+      var calcularPuntuacion = function () {
+        var obtenido = 0;
+        var evaluado = 0;
+        var total = 0;
+        var pendientes = 0;
+
+        MODULOS.forEach(function (modulo) {
+          total += modulo.peso;
+          var resultado = ESTADO.resultados.get(modulo.id);
+          if (!resultado || !FACTOR.hasOwnProperty(resultado.estado)) {
+            pendientes++;
+            return;
+          }
+          evaluado += modulo.peso;
+          obtenido += modulo.peso * FACTOR[resultado.estado];
+        });
+
+        var puntuacion = evaluado ? Math.round((obtenido / evaluado) * 100) : null;
+        var cobertura = total ? Math.round((evaluado / total) * 100) : 0;
+
+        var numero = $('score-numero');
+        var barra = $('score-barra');
+        var nivel = $('score-nivel');
+
+        if (numero) numero.textContent = puntuacion === null ? '—' : String(puntuacion);
+        if (barra) barra.style.width = (puntuacion === null ? 0 : puntuacion) + '%';
+
+        if (nivel) {
+          if (puntuacion === null) {
+            nivel.textContent = 'Sin datos: ejecuta un diagnóstico para calcular la puntuación.';
+          } else {
+            nivel.textContent = nivelTexto(puntuacion) + ' · cobertura ' + cobertura + ' %' +
+              (pendientes ? ' (' + pendientes + ' prueba(s) sin evaluar)' : ' (todas las pruebas evaluadas)');
+          }
+        }
+
+        pintarChips();
+        return { puntuacion: puntuacion, cobertura: cobertura, pendientes: pendientes };
+      };
+
+      var nivelTexto = function (puntuacion) {
+        if (puntuacion >= 90) return 'Excelente';
+        if (puntuacion >= 75) return 'Muy bueno';
+        if (puntuacion >= 60) return 'Bueno';
+        if (puntuacion >= 45) return 'Regular';
+        return 'Limitado';
+      };
+
+      var CHIPS = [
+        { id: 'apis', titulo: 'APIs', categoria: 'api' },
+        { id: 'sensores', titulo: 'Sensores', categoria: 'sensor' },
+        { id: 'multimedia', titulo: 'Multimedia', categoria: 'media' },
+        { id: 'compatibilidad', titulo: 'Compatibilidad', categoria: 'compat' },
+        { id: 'permisos', titulo: 'Permisos', categoria: null },
+        { id: 'pruebas', titulo: 'Pruebas', categoria: null }
+      ];
+
+      /* Porcentaje de los módulos de una categoría que ya se han evaluado. */
+      var porcentajeModulos = function (categoria) {
+        var suma = 0;
+        var cuenta = 0;
+        MODULOS.forEach(function (modulo) {
+          if (modulo.chip !== categoria) return;
+          var resultado = ESTADO.resultados.get(modulo.id);
+          if (!resultado || !FACTOR.hasOwnProperty(resultado.estado)) return;
+          suma += FACTOR[resultado.estado];
+          cuenta++;
+        });
+        return cuenta ? Math.round((suma / cuenta) * 100) : null;
+      };
+
+      var porcentajePermisos = function () {
+        var resultado = ESTADO.resultados.get('permisos');
+        if (!resultado || resultado.estado === 'pendiente' || !resultado.tecnico) return null;
+        var concedidos = 0;
+        var total = 0;
+        resultado.tecnico.forEach(function (fila) {
+          if (fila[1] === 'granted' || fila[1] === 'denied' || fila[1] === 'prompt') total++;
+          if (fila[1] === 'granted') concedidos++;
+        });
+        return total ? Math.round((concedidos / total) * 100) : null;
+      };
+
+      var pintarChips = function () {
+        var lista = $('score-chips');
+        if (!lista) return;
+
+        if (!lista.children.length) {
+          CHIPS.forEach(function (chip) {
+            var item = crear('li', 'escaner__chip');
+            item.setAttribute('data-chip', chip.id);
+            item.innerHTML = '<b>—</b><span>' + esc(chip.titulo) + '</span><i><em></em></i>';
+            lista.appendChild(item);
+          });
+        }
+
+        CHIPS.forEach(function (chip) {
+          var item = lista.querySelector('[data-chip="' + chip.id + '"]');
+          if (!item) return;
+
+          var detalle = [];
+
+          /* Cada chip combina dos señales: la disponibilidad de las APIs de
+             la categoría y el resultado de las pruebas que la cubren. */
+          var capacidades = chip.categoria ? porcentajeCategoria(chip.categoria) : null;
+          var pruebas = chip.id === 'permisos' ? porcentajePermisos() : porcentajeModulos(chip.id);
+
+          if (capacidades !== null) {
+            detalle.push('capacidades ' + capacidades + ' %');
+          }
+          if (pruebas !== null) {
+            detalle.push('pruebas ' + pruebas + ' %');
+          }
+
+          var valor = null;
+          if (capacidades !== null && pruebas !== null) {
+            valor = Math.round((capacidades + pruebas) / 2);
+          } else if (capacidades !== null) {
+            valor = capacidades;
+          } else if (pruebas !== null) {
+            valor = pruebas;
+          }
+
+          if (chip.id === 'pruebas') {
+            /* La categoría "pruebas" resume todas las pruebas evaluadas. */
+            var suma = 0;
+            var cuenta = 0;
+            ESTADO.resultados.forEach(function (resultado) {
+              if (!FACTOR.hasOwnProperty(resultado.estado)) return;
+              suma += FACTOR[resultado.estado];
+              cuenta++;
+            });
+            valor = cuenta ? Math.round((suma / cuenta) * 100) : null;
+            detalle = valor === null ? [] : ['media de ' + cuenta + ' prueba(s) evaluada(s)'];
+          }
+
+          var numero = item.querySelector('b');
+          var barra = item.querySelector('em');
+          if (numero) numero.textContent = valor === null ? '—' : valor + ' %';
+          if (barra) barra.style.width = (valor === null ? 0 : valor) + '%';
+          item.setAttribute('title', detalle.length ? chip.titulo + ': ' + detalle.join(' · ') : chip.titulo + ': sin datos');
+        });
+      };
+
+      /* ---------- Render de los módulos ---------- */
+      var tarjetas = {};
+
+      var construirTarjeta = function (modulo, indice) {
+        var tarjeta = crear('article', 'escaner__modulo');
+        tarjeta.id = 'modulo-' + modulo.id;
+        tarjeta.setAttribute('data-estado', 'pendiente');
+        tarjeta.innerHTML =
+          '<header class="escaner__modulo-cabecera">' +
+            '<h3 class="escaner__modulo-titulo">' + String(indice + 1).padStart(2, '0') + '. ' + esc(modulo.titulo) + '</h3>' +
+            '<span class="escaner__badge escaner__badge--pend">Pendiente</span>' +
+          '</header>' +
+          '<p class="escaner__msg">Sin analizar.</p>' +
+          '<div class="escaner__acciones"></div>' +
+          '<div class="escaner__extra"></div>' +
+          '<details class="escaner__tecnico">' +
+            '<summary>Detalles técnicos</summary>' +
+            '<div class="escaner__tecnico-cuerpo"></div>' +
+          '</details>';
+
+        tarjetas[modulo.id] = tarjeta;
+        return tarjeta;
+      };
+
+      var pintarModulo = function (id) {
+        var tarjeta = tarjetas[id];
+        var resultado = ESTADO.resultados.get(id);
+        if (!tarjeta || !resultado) return;
+
+        var definicion = ESTADOS[resultado.estado] || ESTADOS.pendiente;
+        tarjeta.setAttribute('data-estado', resultado.estado);
+
+        var badge = tarjeta.querySelector('.escaner__badge');
+        if (badge) {
+          badge.className = 'escaner__badge escaner__badge--' + definicion.clase;
+          badge.textContent = definicion.texto;
+        }
+
+        var mensaje = tarjeta.querySelector('.escaner__msg');
+        if (mensaje) mensaje.textContent = resultado.mensaje || '';
+
+        var cuerpo = tarjeta.querySelector('.escaner__tecnico-cuerpo');
+        if (cuerpo) {
+          var filas = resultado.tecnico || [];
+          if (!filas.length) {
+            cuerpo.innerHTML = '<p class="escaner__contador">Sin datos técnicos registrados.</p>';
+          } else {
+            var tabla = '<table class="escaner__tecnico-tabla"><tbody>';
+            filas.forEach(function (fila) {
+              tabla += '<tr><th scope="row">' + esc(fila[0]) + '</th><td>' + esc(fila[1]) + '</td></tr>';
+            });
+            cuerpo.innerHTML = tabla + '</tbody></table>';
+          }
+        }
+      };
+
+      var apiModulo = function (id) {
+        return {
+          estado: function (estado, mensaje, tecnico) {
+            fijarResultado(id, estado, mensaje, tecnico);
+          }
+        };
+      };
+
+      var fijarResultado = function (id, estado, mensaje, tecnico) {
+        var previo = ESTADO.resultados.get(id) || { tecnico: [] };
+        var filas = tecnico !== undefined && tecnico !== null ? tecnico : previo.tecnico;
+        ESTADO.resultados.set(id, {
+          estado: estado,
+          mensaje: mensaje === undefined ? previo.mensaje : mensaje,
+          tecnico: filas || []
+        });
+        pintarModulo(id);
+        calcularPuntuacion();
+      };
+
+      /* ---------- Ejecución de los modos ---------- */
+      var ejecutarModulo = async function (modulo) {
+        fijarResultado(modulo.id, 'analizando', 'Analizando…', []);
+
+        try {
+          var salida = await modulo.detecta();
+          if (!salida || !salida.estado) {
+            fijarResultado(modulo.id, 'limitado', 'El módulo no ha devuelto un resultado utilizable.');
+            return;
+          }
+
+          /* Los controles interactivos del módulo se dibujan en su tarjeta.
+             Se vacía la zona antes para que una segunda ejecución no duplique
+             los controles (vídeo, canvas, área de captura…). */
+          var destino = document.querySelector('#modulo-' + modulo.id + ' .escaner__extra');
+          if (destino) {
+            destino.innerHTML = '';
+            if (typeof salida.ui === 'function') salida.ui(destino, apiModulo(modulo.id));
+          }
+
+          fijarResultado(modulo.id, salida.estado, salida.mensaje, salida.tecnico);
+
+          if (salida.promesa) {
+            salida.promesa.then(function (valor) {
+              if (valor === null || valor === undefined) return;
+              var resultado = ESTADO.resultados.get(modulo.id);
+              if (!resultado) return;
+              var filas = resultado.tecnico.concat([['Módulo de prueba', String(valor)]]);
+              ESTADO.resultados.set(modulo.id, {
+                estado: resultado.estado,
+                mensaje: resultado.mensaje,
+                tecnico: filas
+              });
+              pintarModulo(modulo.id);
+            }).catch(function () { /* la promesa es opcional */ });
+          }
+        } catch (error) {
+          fijarResultado(modulo.id, 'limitado', 'La prueba no ha podido completarse en este dispositivo.');
+        }
+      };
+
+      var ejecutarSerie = async function (modulos, etiqueta) {
+        var progreso = $('progreso');
+        var barra = progreso ? progreso.querySelector('span') : null;
+        var estado = $('estado-general');
+
+        if (progreso) progreso.hidden = false;
+        if (barra) barra.style.width = '0%';
+
+        for (var i = 0; i < modulos.length; i++) {
+          if (estado) {
+            estado.textContent = etiqueta + ' · ' + (i + 1) + ' de ' + modulos.length + ': ' + modulos[i].titulo + '…';
+          }
+          await ejecutarModulo(modulos[i]);
+          if (barra) barra.style.width = Math.round(((i + 1) / modulos.length) * 100) + '%';
+          await dormir(30);
+        }
+
+        var resumen = calcularPuntuacion();
+        if (estado) {
+          estado.textContent = resumen.puntuacion === null
+            ? etiqueta + ' terminado: no hay resultados que puntuar.'
+            : etiqueta + ' terminado: ' + resumen.puntuacion + '/100 (' + nivelTexto(resumen.puntuacion) + ') · cobertura ' + resumen.cobertura + ' %.';
+        }
+        if (progreso) {
+          setTimeout(function () {
+            if (progreso) progreso.hidden = true;
+          }, 1200);
+        }
+      };
+
+      var reiniciar = function () {
+        detenerCamara();
+        detenerMicro();
+        detenerGeo();
+        detenerGiro();
+        detenerAcel();
+        detenerLinterna();
+        pararSensores();
+
+        ESTADO.resultados = new Map();
+        ESTADO.benchmarks = null;
+
+        var grilla = $('grilla-modulos');
+        if (grilla) grilla.innerHTML = '';
+        tarjetas = {};
+
+        if (grilla) {
+          MODULOS.forEach(function (modulo, indice) {
+            grilla.appendChild(construirTarjeta(modulo, indice));
+          });
+        }
+
+        var informe = $('informe');
+        if (informe) {
+          informe.hidden = true;
+          informe.innerHTML = '';
+        }
+
+        var estado = $('estado-general');
+        if (estado) estado.textContent = 'Diagnóstico reiniciado. Pulsa «Diagnóstico rápido» para empezar.';
+
+        calcularPuntuacion();
+      };
+
+      /* ---------- Informe y exportaciones ---------- */
+      var construirInforme = function () {
+        var resumen = calcularPuntuacion();
+        var fecha = new Date();
+        var modulos = MODULOS.map(function (modulo) {
+          var resultado = ESTADO.resultados.get(modulo.id);
+          return {
+            id: modulo.id,
+            nombre: modulo.titulo,
+            peso: modulo.peso,
+            estado: resultado ? resultado.estado : 'pendiente',
+            estado_texto: resultado ? (ESTADOS[resultado.estado] || ESTADOS.pendiente).texto : 'Pendiente',
+            resumen: resultado ? resultado.mensaje : 'Sin analizar.',
+            tecnico: resultado ? resultado.tecnico : []
+          };
+        });
+
+        var resultadoPermisos = ESTADO.resultados.get('permisos');
+        var permisos = resultadoPermisos ? resultadoPermisos.tecnico : [];
+
+        return {
+          herramienta: 'Escáner de dispositivos',
+          version: 1,
+          fecha: fecha.toLocaleDateString('es'),
+          hora: fecha.toLocaleTimeString('es'),
+          iso: fecha.toISOString(),
+          dispositivo: {
+            agente: navigator.userAgent,
+            sistema: detectarSO(navigator.userAgent),
+            navegador: detectarNavegador(navigator.userAgent),
+            motor: detectarMotor(navigator.userAgent),
+            resolucion: screen.width + '×' + screen.height,
+            dpr: Number(window.devicePixelRatio || 1),
+            nucleos: navigator.hardwareConcurrency || null,
+            ram: navigator.deviceMemory || null
+          },
+          puntuacion: resumen.puntuacion,
+          nivel: resumen.puntuacion === null ? 'Sin datos' : nivelTexto(resumen.puntuacion),
+          cobertura: resumen.cobertura,
+          pruebas_pendientes: resumen.pendientes,
+          categorias: {
+            apis: porcentajeCategoria('api'),
+            sensores: porcentajeCategoria('sensor'),
+            multimedia: porcentajeCategoria('media'),
+            compatibilidad: porcentajeCategoria('compat'),
+            permisos: permisos.length ? permisos.filter(function (f) { return f[1] === 'granted'; }).length : 0,
+            pruebas: null
+          },
+          permisos: permisos,
+          benchmarks: ESTADO.benchmarks,
+          modulos: modulos
+        };
+      };
+
+      var informeHTML = function (informe) {
+        var filas = informe.modulos.map(function (modulo) {
+          return '<tr><td>' + esc(modulo.nombre) + '</td><td>' + esc(modulo.estado_texto) + '</td><td>' + esc(modulo.resumen) + '</td></tr>';
+        }).join('');
+
+        var capacidades = informe.categorias;
+        var listaCategorias = [
+          'APIs: ' + (capacidades.apis === null ? '—' : capacidades.apis + ' %'),
+          'Sensores: ' + (capacidades.sensores === null ? '—' : capacidades.sensores + ' %'),
+          'Multimedia: ' + (capacidades.multimedia === null ? '—' : capacidades.multimedia + ' %'),
+          'Compatibilidad: ' + (capacidades.compatibilidad === null ? '—' : capacidades.compatibilidad + ' %')
+        ];
+
+        var bloqueBenchmarks = '';
+        if (informe.benchmarks) {
+          bloqueBenchmarks = '<h3>Benchmarks</h3><p>Media: ' + esc(informe.benchmarks.media) + '/100</p><ul>' +
+            Object.keys(informe.benchmarks.pruebas).map(function (clave) {
+              return '<li>' + esc(clave) + ': ' + esc(informe.benchmarks.pruebas[clave].detalle) + '</li>';
+            }).join('') + '</ul>';
+        }
+
+        return '<h2>Informe del escáner de dispositivos</h2>' +
+          '<p><b>Fecha:</b> ' + esc(informe.fecha) + ' &nbsp; <b>Hora:</b> ' + esc(informe.hora) + '</p>' +
+          '<p><b>Dispositivo:</b> ' + esc(informe.dispositivo.sistema) + ' · ' + esc(informe.dispositivo.navegador) + '</p>' +
+          '<p><b>Puntuación de salud:</b> ' + (informe.puntuacion === null ? '—' : informe.puntuacion + '/100') +
+          ' (' + esc(informe.nivel) + ') · cobertura ' + esc(informe.cobertura) + ' %</p>' +
+          '<h3>Desglose por categoría</h3><ul>' + listaCategorias.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
+          '<h3>Resultados por módulo</h3>' +
+          '<table><thead><tr><th scope="col">Módulo</th><th scope="col">Estado</th><th scope="col">Resumen</th></tr></thead><tbody>' +
+          filas + '</tbody></table>' +
+          bloqueBenchmarks;
+      };
+
+      var ESTILO_INFORME =
+        '.informe{font:14px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;color:#111;background:#fff;padding:1.25rem;max-width:900px;margin:0 auto}' +
+        '.informe h2{margin:0 0 .5rem;font-size:1.25rem;border-bottom:2px solid #333;padding-bottom:.3rem}' +
+        '.informe h3{margin:1.2rem 0 .3rem;font-size:1rem}' +
+        '.informe table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.4rem}' +
+        '.informe th,.informe td{border:1px solid #bbb;padding:.35rem .45rem;text-align:left;vertical-align:top;overflow-wrap:anywhere}' +
+        '.informe th{background:#f0f0f0}' +
+        '.informe ul{margin:.2rem 0;padding-left:1.2rem}';
+
+      var mostrarInforme = function () {
+        var informe = construirInforme();
+        var contenedor = $('informe');
+        if (!contenedor) return informe;
+
+        contenedor.innerHTML = informeHTML(informe);
+        contenedor.hidden = false;
+
+        var estado = $('estado-export');
+        if (estado) {
+          estado.textContent = informe.puntuacion === null
+            ? 'Informe generado, pero todavía no hay resultados que puntuar.'
+            : 'Informe generado: ' + informe.puntuacion + '/100 (' + informe.nivel + ') con ' + informe.cobertura + ' % de cobertura.';
+        }
+        return informe;
+      };
+
+      /* ---------- Arranque ---------- */
+      var inicializar = function () {
+        var grilla = $('grilla-modulos');
+        if (grilla) {
+          MODULOS.forEach(function (modulo, indice) {
+            grilla.appendChild(construirTarjeta(modulo, indice));
+          });
+        }
+
+        pintarChips();
+        calcularPuntuacion();
+
+        var btnRapido = $('btn-rapido');
+        if (btnRapido) {
+          btnRapido.addEventListener('click', function () {
+            ejecutarSerie(MODULOS.filter(function (m) { return m.rapido; }), 'Diagnóstico rápido');
+          });
+        }
+
+        var btnCompleto = $('btn-completo');
+        if (btnCompleto) {
+          btnCompleto.addEventListener('click', function () {
+            ejecutarSerie(MODULOS, 'Diagnóstico completo');
+          });
+        }
+
+        var btnTecnico = $('btn-tecnico');
+        if (btnTecnico) {
+          btnTecnico.addEventListener('click', function () {
+            var abierto = btnTecnico.getAttribute('aria-pressed') === 'true';
+            btnTecnico.setAttribute('aria-pressed', String(!abierto));
+            btnTecnico.textContent = abierto ? 'Ver detalles técnicos' : 'Ocultar detalles técnicos';
+            var detalles = document.querySelectorAll('.escaner__tecnico');
+            Array.prototype.forEach.call(detalles, function (detalle) {
+              detalle.open = !abierto;
+            });
+          });
+        }
+
+        var btnReiniciar = $('btn-reiniciar');
+        if (btnReiniciar) btnReiniciar.addEventListener('click', function () { reiniciar(); });
+
+        var btnCertificado = $('btn-certificado');
+        if (btnCertificado) btnCertificado.addEventListener('click', function () { mostrarInforme(); });
+
+        var btnJson = $('btn-json');
+        if (btnJson) {
+          btnJson.addEventListener('click', function () {
+            var informe = construirInforme();
+            descargar(JSON.stringify(informe, null, 2), 'application/json', 'escaner-dispositivos-' + sello() + '.json');
+            var estado = $('estado-export');
+            if (estado) estado.textContent = 'Informe JSON descargado.';
+          });
+        }
+
+        var btnHtml = $('btn-html');
+        if (btnHtml) {
+          btnHtml.addEventListener('click', function () {
+            var informe = construirInforme();
+            var documento = '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">' +
+              '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+              '<title>Informe del escáner de dispositivos</title><style>body{margin:0;background:#f4f4f4}' + ESTILO_INFORME + '</style>' +
+              '</head><body><div class="informe">' + informeHTML(informe) + '</div></body></html>';
+            descargar(documento, 'text/html', 'escaner-dispositivos-' + sello() + '.html');
+            var estado = $('estado-export');
+            if (estado) estado.textContent = 'Informe HTML descargado.';
+          });
+        }
+
+        var btnCsv = $('btn-csv');
+        if (btnCsv) {
+          btnCsv.addEventListener('click', function () {
+            var informe = construirInforme();
+            var escapar = function (valor) {
+              var texto = String(valor === undefined || valor === null ? '' : valor);
+              return '"' + texto.replace(/"/g, '""') + '"';
+            };
+            var lineas = [['Modulo', 'Peso', 'Estado', 'Resumen', 'Detalles tecnicos'].join(';')];
+            informe.modulos.forEach(function (modulo) {
+              lineas.push([
+                escapar(modulo.nombre),
+                escapar(modulo.peso),
+                escapar(modulo.estado_texto),
+                escapar(modulo.resumen),
+                escapar((modulo.tecnico || []).map(function (fila) { return fila[0] + ': ' + fila[1]; }).join(' | '))
+              ].join(';'));
+            });
+            descargar('\ufeff' + lineas.join('\r\n'), 'text/csv;charset=utf-8', 'escaner-dispositivos-' + sello() + '.csv');
+            var estado = $('estado-export');
+            if (estado) estado.textContent = 'Informe CSV descargado.';
+          });
+        }
+
+        var btnImprimir = $('btn-imprimir');
+        if (btnImprimir) {
+          btnImprimir.addEventListener('click', function () {
+            mostrarInforme();
+            setTimeout(function () { window.print(); }, 120);
+          });
+        }
+
+        /* Refleja los cambios de conexión en el módulo de red. */
+        window.addEventListener('online', function () {
+          if (ESTADO.resultados.has('red')) actualizarRed();
+        });
+        window.addEventListener('offline', function () {
+          if (ESTADO.resultados.has('red')) actualizarRed();
+        });
+
+        /* Ofrece la instalación de la PWA cuando el navegador la anuncia. */
+        window.addEventListener('beforeinstallprompt', function (evento) {
+          evento.preventDefault();
+          instalacionPendiente = evento;
+        });
+
+        /* Libera cámara, micrófono, linterna y sensores al salir de la página. */
+        window.addEventListener('pagehide', function () {
+          detenerCamara();
+          detenerMicro();
+          detenerLinterna();
+          detenerGeo();
+          detenerGiro();
+          detenerAcel();
+          pararSensores();
+        });
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inicializar);
+      } else {
+        inicializar();
+      }
+    })();
+  </script>
+</body>
+</html>

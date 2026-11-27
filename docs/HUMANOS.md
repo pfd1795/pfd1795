@@ -11,11 +11,11 @@ Portafolio web personal estático (HTML/CSS/JS vanilla) desplegado en GitHub Pag
 
 ## 2. Arquitectura
 
-- Módulos ES6 con `import`/`export` (`js/main.js` como punto de entrada).
-- Controladores por sección (`js/controllers/juegos/`, `mis-estudios/`, `programas/`).
-- Manifiestos JSON: `juegos/data/juegos.json`, `mis-estudios/data/articulos.json`, `programas/data/herramientas.json`.
-- Tema e idioma: `js/theme-init.js` (pre-pintado) + `js/lang/translations.json` (ES/EN).
-- Buscador compartido: `js/buscador.js` (script clásico).
+- Módulos ES6 con `import`/`export` (`scripts/main.js` como punto de entrada).
+- Controladores por sección (`scripts/controllers/juegos/`, `mis-estudios/`, `programas/`).
+- Manifiestos JSON: `pages/my-games/data/juegos.json`, `pages/my-studies/data/articulos.json`, `pages/my-programs/data/herramientas.json`.
+- Tema e idioma: `scripts/theme-init.js` (pre-pintado) + `scripts/lang/translations.json` (ES/EN).
+- Buscador compartido: `scripts/buscador.js` (script clásico).
 - Estilos: `stylesheets/base.css` (tokens + compartido) + hoja por sección.
 - Detalle: [`AGENTS.md`](../AGENTS.md) § Arquitectura.
 
@@ -29,9 +29,9 @@ Portafolio web personal estático (HTML/CSS/JS vanilla) desplegado en GitHub Pag
 
 ## 5. Secciones del portafolio
 
-- **Juegos:** [`juegos/README.md`](../juegos/README.md) — canon visual, integración, dimensionado, checklist de calidad.
-- **Enciclopedia:** [`mis-estudios/AGENTS.md`](../mis-estudios/AGENTS.md).
-- **Programas:** [`programas/AGENTS.md`](../programas/AGENTS.md).
+- **Juegos:** [`pages/my-games/README.md`](../pages/my-games/README.md) — canon visual, integración, dimensionado, checklist de calidad.
+- **Enciclopedia:** [`pages/my-studies/AGENTS.md`](../pages/my-studies/AGENTS.md).
+- **Programas:** [`pages/my-programs/AGENTS.md`](../pages/my-programs/AGENTS.md).
 
 ## 6. Cómo trabajan los agentes
 

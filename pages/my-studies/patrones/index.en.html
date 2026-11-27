@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design patterns — Computer science studies</title>
+  <meta name="description" content="Design patterns: reusable creational, structural and behavioural solutions.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Software architecture and design</p>
+          <h1>Design patterns</h1>
+          <p class="entrada">
+            A design pattern is a reusable solution to a problem that appears again and again when
+            designing software. It is not copyable code or a framework: it is a name and a structure
+            that developers recognise. Used well it improves communication and maintainability; used
+            for fashion, it worsens them.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>A pattern describes <strong>problem + solution + consequences</strong>, not implementation.</li>
+            <li>They are grouped into <strong>creational</strong> (how objects are created), <strong>structural</strong> (how they are composed) and <strong>behavioural</strong> (how they interact).</li>
+            <li>The most used: Factory, Adapter, Decorator, Observer, Strategy, Facade.</li>
+            <li>A pattern is good when it <strong>solves a real problem</strong>; applied without need it is over-engineering.</li>
+            <li>Patterns combine with the SOLID principles and with composition.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is a pattern?</a></li>
+            <li><a href="#creacionales">Creational patterns</a></li>
+            <li><a href="#estructurales">Structural patterns</a></li>
+            <li><a href="#comportamiento">Behavioural patterns</a></li>
+            <li><a href="#tabla">Table: problem → pattern</a></li>
+            <li><a href="#cuando-no">When NOT to use them</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is a pattern?</h2>
+          <p>
+            Popularised by the book «Design Patterns» (Gang of Four, 1994), patterns describe proven
+            solutions to recurring object-oriented design problems. Each pattern includes: name,
+            problem, solution, structure and consequences. They are not algorithms or libraries; they are
+            shared vocabulary («use an Observer here»).
+          </p>
+          <p class="nota">
+            Patterns are not exclusive to OOP; they also exist in functional programming (functors,
+            monads) and in architecture (MVC, CQRS). Here we focus on the classic OOP ones.
+          </p>
+        </section>
+
+        <section id="creacionales" aria-labelledby="creacionales-titulo">
+          <h2 id="creacionales-titulo">Creational patterns</h2>
+          <p>They control how objects are created, decoupling creation from use.</p>
+
+          <h3>Factory Method</h3>
+          <p>Delegates creation to subclasses or functions, so the client does not depend on the concrete class.</p>
+          <pre><code>function createLogger(type) {
+  if (type === 'file') return new FileLogger();
+  if (type === 'console') return new ConsoleLogger();
+  throw new Error('Unknown type');
+}
+const log = createLogger('console');
+log.info('hello');</code></pre>
+
+          <h3>Builder</h3>
+          <p>Builds complex objects step by step, useful when there are many optional parameters.</p>
+          <pre><code>class PizzaBuilder {
+  constructor() { this.ingredients = []; }
+  withCheese() { this.ingredients.push('cheese'); return this; }
+  withPepperoni() { this.ingredients.push('pepperoni'); return this; }
+  build() { return new Pizza(this.ingredients); }
+}
+const pizza = new PizzaBuilder().withCheese().withPepperoni().build();</code></pre>
+
+          <h3>Singleton (with reservations)</h3>
+          <p>Guarantees a single instance. Useful for configuration or pools, but it hinders tests and hides dependencies. Prefer dependency injection.</p>
+        </section>
+
+        <section id="estructurales" aria-labelledby="estructurales-titulo">
+          <h2 id="estructurales-titulo">Structural patterns</h2>
+          <p>They compose classes and objects to form larger structures.</p>
+
+          <h3>Adapter</h3>
+          <p>Converts the interface of a class into another the client expects. Useful for integrating external libraries.</p>
+          <pre><code>class OldApi { getUser(id) { /* ... */ } }
+class UserAdapter {
+  constructor(api) { this.api = api; }
+  get(id) { return this.api.getUser(id); } // new interface
+}</code></pre>
+
+          <h3>Decorator</h3>
+          <p>Adds responsibilities to an object dynamically, without subclasses. Example: adding logging to a function.</p>
+          <pre><code>function withLog(fn) {
+  return function (...args) {
+    console.log('calling with', args);
+    return fn(...args);
+  };
+}
+const sumWithLog = withLog((a, b) => a + b);</code></pre>
+
+          <h3>Facade</h3>
+          <p>Provides a simple interface to a complex subsystem (e.g. a module that hides several services).</p>
+        </section>
+
+        <section id="comportamiento" aria-labelledby="comportamiento-titulo">
+          <h2 id="comportamiento-titulo">Behavioural patterns</h2>
+          <p>They define how responsibilities are assigned and how objects communicate.</p>
+
+          <h3>Observer</h3>
+          <p>A subject notifies its observers when its state changes. Basis of events and reactivity.</p>
+          <pre><code>class EventEmitter {
+  constructor() { this.listeners = {}; }
+  on(event, cb) { (this.listeners[event] ||= []).push(cb); }
+  emit(event, data) { (this.listeners[event] || []).forEach(cb => cb(data)); }
+}
+const bus = new EventEmitter();
+bus.on('msg', (m) => console.log('received', m));
+bus.emit('msg', 'hello');</code></pre>
+
+          <h3>Strategy</h3>
+          <p>Defines a family of interchangeable algorithms. Avoids giant switches.</p>
+          <pre><code>const strategies = {
+  fast: (a, b) => a + b,
+  safe: (a, b) => a + b + validate(a, b),
+};
+function calculate(a, b, mode) {
+  return strategies[mode](a, b);
+}</code></pre>
+
+          <h3>Command</h3>
+          <p>Encapsulates a request as an object, allowing undo/redo and execution queues.</p>
+        </section>
+
+        <section id="tabla" aria-labelledby="tabla-titulo">
+          <h2 id="tabla-titulo">Table: problem → pattern</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Problem</th>
+                <th scope="col">Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Create objects without coupling to the concrete class</td><td>Factory Method</td></tr>
+              <tr><td>Build objects with many optional parameters</td><td>Builder</td></tr>
+              <tr><td>Adapt an incompatible interface</td><td>Adapter</td></tr>
+              <tr><td>Add behaviour dynamically</td><td>Decorator</td></tr>
+              <tr><td>Simplify a complex subsystem</td><td>Facade</td></tr>
+              <tr><td>Notify several interested parties of changes</td><td>Observer</td></tr>
+              <tr><td>Swap algorithms at runtime</td><td>Strategy</td></tr>
+              <tr><td>Undo/redo or queue actions</td><td>Command</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="cuando-no" aria-labelledby="cuando-no-titulo">
+          <h2 id="cuando-no-titulo">When NOT to use them</h2>
+          <ul>
+            <li>When the problem does not exist yet: do not anticipate abstractions.</li>
+            <li>When a simple function or composition solves the case.</li>
+            <li>When the team does not know the pattern: the code becomes opaque.</li>
+            <li>When the pattern adds more indirection than value.</li>
+          </ul>
+          <p class="nota">
+            «Design Patterns» warns: patterns describe how to solve, not when. The decision to apply
+            them is one of design, not of catalogue.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Start with the problem, not with the pattern.</li>
+            <li>Prefer composition over inheritance.</li>
+            <li>Use patterns as vocabulary in reviews and documentation.</li>
+            <li>Keep patterns small and testable.</li>
+            <li>Combine patterns with SOLID and dependency injection.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mistake</th>
+                <th scope="col">Why it is wrong</th>
+                <th scope="col">What to do</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Applying patterns «just because»</td>
+                <td>Over-engineering: more classes, more indirection, less clarity.</td>
+                <td>Justify each pattern with a real problem.</td>
+              </tr>
+              <tr>
+                <td>Singleton for everything</td>
+                <td>Hidden global state, hard to test.</td>
+                <td>Inject dependencies; reserve Singleton for unique resources.</td>
+              </tr>
+              <tr>
+                <td>Deep pattern inheritance</td>
+                <td>Fragile coupling.</td>
+                <td>Prefer composition and delegation.</td>
+              </tr>
+              <tr>
+                <td>Confusing pattern with framework</td>
+                <td>Infrastructure is expected that does not exist.</td>
+                <td>A pattern is an idea, not a library.</td>
+              </tr>
+              <tr>
+                <td>Not documenting the intent</td>
+                <td>The code looks arbitrary.</td>
+                <td>Name the pattern in comments/PRs when it adds value.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Pattern</th>
+                <th scope="col">Category</th>
+                <th scope="col">Key idea</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Factory Method</td><td>Creational</td><td>Delegate creation.</td></tr>
+              <tr><td>Builder</td><td>Creational</td><td>Step-by-step construction.</td></tr>
+              <tr><td>Singleton</td><td>Creational</td><td>A single instance.</td></tr>
+              <tr><td>Adapter</td><td>Structural</td><td>Convert interfaces.</td></tr>
+              <tr><td>Decorator</td><td>Structural</td><td>Add behaviour.</td></tr>
+              <tr><td>Facade</td><td>Structural</td><td>Simple interface to a subsystem.</td></tr>
+              <tr><td>Observer</td><td>Behavioural</td><td>Notify changes.</td></tr>
+              <tr><td>Strategy</td><td>Behavioural</td><td>Swap algorithms.</td></tr>
+              <tr><td>Command</td><td>Behavioural</td><td>Encapsulate actions.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../paradigmas/index.en.html">Programming paradigms</a>: patterns rely on OOP and composition.</li>
+            <li><a href="../apis/index.en.html">Client-server and APIs</a>: many patterns appear in service design.</li>
+            <li><a href="../javascript/index.en.html">JavaScript</a>: examples in the article are in JS.</li>
+            <li><a href="../solid/index.html">Design principles and SOLID</a>: criteria that guide when and how to apply a pattern.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

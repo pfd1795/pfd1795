@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Respuesta a incidentes y forense básico — Estudios de informática</title>
+  <meta name="description" content="Respuesta a incidentes: preparación, detección, contención, erradicación, recuperación y lecciones aprendidas, con registro de evidencia, logs y playbooks.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Seguridad y ciberseguridad</p>
+          <h1>Respuesta a incidentes y forense básico</h1>
+          <p class="entrada">
+            Un incidente no es el momento de diseñar el procedimiento. Saber quién decide, qué
+            se guarda y en qué orden se actúa marca la diferencia entre una molestia y una
+            crisis. Este artículo recorre el ciclo de respuesta con herramientas que ya tienes
+            en Linux y una metodología aplicable a un proyecto pequeño.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>El ciclo es <strong>preparar, detectar, contener, erradicar, recuperar y aprender</strong>.</li>
+            <li>En las primeras horas manda contener y conservar evidencia, no «limpiar rápido».</li>
+            <li>Apagar el equipo destruye indicios en memoria: desconectar la red suele ser mejor.</li>
+            <li>Un forense básico es una línea temporal con horas, fuentes y hashes de lo recogido.</li>
+            <li>El postmortem sin culpa convierte un incidente en controles nuevos, no en búsqueda de culpables.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#ciclo">El ciclo de respuesta</a></li>
+            <li><a href="#preparacion">Preparación: antes del incidente</a></li>
+            <li><a href="#deteccion">Detección y clasificación</a></li>
+            <li><a href="#primeras-horas">Las primeras horas</a></li>
+            <li><a href="#evidencia">Evidencia y línea temporal</a></li>
+            <li><a href="#contencion">Contención, erradicación y recuperación</a></li>
+            <li><a href="#postmortem">Postmortem y mejoras</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="ciclo" aria-labelledby="ciclo-titulo">
+          <h2 id="ciclo-titulo">El ciclo de respuesta</h2>
+          <p>
+            NIST lo organiza en gobernar, identificar, proteger, detectar, responder y
+            recuperar. Para un equipo pequeño basta con seis pasos operativos, repetibles y con
+            responsables claros.
+          </p>
+          <figure class="diagrama" aria-labelledby="diagrama-ciclo-ir-titulo">
+            <figcaption id="diagrama-ciclo-ir-titulo">Seis fases de la respuesta a incidentes.</figcaption>
+            <svg viewBox="0 0 640 130" role="img" aria-labelledby="diagrama-ciclo-ir-titulo">
+              <rect class="caja" x="10" y="42" width="94" height="44" rx="8"></rect>
+              <text class="texto-secundario" x="57" y="69" text-anchor="middle">1. Preparar</text>
+              <rect class="caja" x="112" y="42" width="94" height="44" rx="8"></rect>
+              <text class="texto-secundario" x="159" y="69" text-anchor="middle">2. Detectar</text>
+              <rect class="caja-destacada" x="214" y="42" width="94" height="44" rx="8"></rect>
+              <text class="texto" x="261" y="69" text-anchor="middle">3. Contener</text>
+              <rect class="caja" x="316" y="42" width="100" height="44" rx="8"></rect>
+              <text class="texto-secundario" x="366" y="69" text-anchor="middle">4. Erradicar</text>
+              <rect class="caja" x="424" y="42" width="100" height="44" rx="8"></rect>
+              <text class="texto-secundario" x="474" y="69" text-anchor="middle">5. Recuperar</text>
+              <rect class="caja" x="532" y="42" width="98" height="44" rx="8"></rect>
+              <text class="texto-secundario" x="581" y="69" text-anchor="middle">6. Aprender</text>
+              <path class="flecha" d="M104 64 L110 64"></path>
+              <polygon class="flecha" points="110,64 104,60 104,68"></polygon>
+              <path class="flecha" d="M206 64 L212 64"></path>
+              <polygon class="flecha" points="212,64 206,60 206,68"></polygon>
+              <path class="flecha" d="M308 64 L314 64"></path>
+              <polygon class="flecha" points="314,64 308,60 308,68"></polygon>
+              <path class="flecha" d="M416 64 L422 64"></path>
+              <polygon class="flecha" points="422,64 416,60 416,68"></polygon>
+              <path class="flecha" d="M524 64 L530 64"></path>
+              <polygon class="flecha" points="530,64 524,60 524,68"></polygon>
+              <path class="flecha-acentuada" d="M580 90 L58 90"></path>
+              <polygon class="flecha-acentuada" points="58,90 70,85 70,95"></polygon>
+              <text class="texto-secundario" x="320" y="108" text-anchor="middle">las lecciones realimentan la preparación</text>
+            </svg>
+          </figure>
+        </section>
+
+        <section id="preparacion" aria-labelledby="preparacion-titulo">
+          <h2 id="preparacion-titulo">Preparación: antes del incidente</h2>
+          <ul>
+            <li><strong>Contactos</strong>: quién decide, quién corta el acceso, quién comunica y quién documenta.</li>
+            <li><strong>Canal alternativo</strong>: si el correo está comprometido, hace falta otro sitio para coordinarse.</li>
+            <li><strong>Copias de seguridad</strong> con restauración probada y credenciales distintas.</li>
+            <li><strong>Registros</strong>: saber dónde están los logs y cuánto tiempo se conservan.</li>
+            <li><strong>Playbooks</strong>: guiones cortos para casos frecuentes (cuenta comprometida, ransomware, fuga).</li>
+            <li><strong>Accesos de emergencia</strong>: cuentas de recuperación protegidas y revisadas periódicamente.</li>
+          </ul>
+          <p>
+            Un playbook no es un documento legal: es una lista de pasos con decisiones claras.
+            Por ejemplo: «si una cuenta de despliegue hace commits raros → revocar token →
+            forzar rotación → revisar pipeline → abrir incidencia». En
+            <a href="../ci-cd/index.html">CI/CD</a> se explica cómo limitar esos tokens.
+          </p>
+        </section>
+
+        <section id="deteccion" aria-labelledby="deteccion-titulo">
+          <h2 id="deteccion-titulo">Detección y clasificación</h2>
+          <p>
+            La detección llega por muchos sitios: una alerta del EDR, un usuario que reporta,
+            un error extraño o un aviso de filtración. Lo importante es convertirla en una
+            incidencia con alcance y severidad, no dejarla como un correo sin dueño.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Severidad</th>
+                <th scope="col">Criterio orientativo</th>
+                <th scope="col">Respuesta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Baja</td><td>Ruido o señal aislada sin acceso confirmado.</td><td>Registrar y vigilar.</td></tr>
+              <tr><td>Media</td><td>Actividad sospechosa en un equipo o cuenta.</td><td>Investigar en horas y preparar contención.</td></tr>
+              <tr><td>Alta</td><td>Acceso no autorizado confirmado o datos afectados.</td><td>Contener de inmediato y avisar a los responsables.</td></tr>
+              <tr><td>Crítica</td><td>Ransomware, fuga masiva o servicio esencial caído.</td><td>Activar el plan completo y comunicación.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Anota siempre la hora del primer indicio, aunque no sepas aún qué pasó. Esa marca
+            permite después reconstruir el alcance. La detección en el endpoint se explica en
+            <a href="../antivirus-edr/index.html">De antivirus a EDR/XDR</a>.
+          </p>
+        </section>
+
+        <section id="primeras-horas" aria-labelledby="primeras-horas-titulo">
+          <h2 id="primeras-horas-titulo">Las primeras horas</h2>
+          <ol>
+            <li>Confirmar que hay incidente y asignar a alguien la responsabilidad de coordinar.</li>
+            <li>Aislar los sistemas implicados. Si es un equipo, desconectar red antes que apagar.</li>
+            <li>Revocar credenciales y sesiones afectadas desde un dispositivo limpio.</li>
+            <li>Conservar evidencia: capturas, logs, correos y hashes antes de borrar nada.</li>
+            <li>Delimitar alcance: cuándo empezó, qué cuentas y qué datos se tocaron.</li>
+            <li>Comunicar por el canal acordado, con hechos conocidos y próxima actualización.</li>
+          </ol>
+          <p class="aviso">
+            No borres el correo ni reinicies el equipo «para que vuelva a funcionar». Eso puede
+            destruir la prueba de cómo entró el atacante y alargar la recuperación.
+          </p>
+        </section>
+
+        <section id="evidencia" aria-labelledby="evidencia-titulo">
+          <h2 id="evidencia-titulo">Evidencia y línea temporal</h2>
+          <p>
+            La forense básica no requiere herramientas exóticas: consiste en recoger datos con
+            orden, conservar su integridad y escribir una cronología. Copia los archivos de
+            registro a un directorio de trabajo y calcula su hash para poder demostrar que no
+            cambiaron.
+          </p>
+          <pre><code>mkdir -p /tmp/incidente
+sudo cp /var/log/auth.log /tmp/incidente/auth.log
+sudo cp /var/log/syslog /tmp/incidente/syslog
+sha256sum /tmp/incidente/* &gt; /tmp/incidente/SHA256SUMS
+sha256sum -c /tmp/incidente/SHA256SUMS</code></pre>
+          <p>
+            Después, filtra con criterio y anota las horas en UTC. Los comandos más útiles son
+            <code>journalctl</code> para servicios de systemd y <code>grep</code> sobre los
+            registros clásicos. Más herramientas en
+            <a href="../terminal/index.html">Terminal</a> y
+            <a href="../linux-servidores/index.html">Linux y servidores</a>.
+          </p>
+          <pre><code>journalctl -u ssh --since '2026-01-20 00:00' --until '2026-01-21 00:00'
+grep -Ei 'accepted password|failed password|invalid user' /tmp/incidente/auth.log
+grep -Ei 'error|denied' /tmp/incidente/syslog | tail -n 40
+date -u +%FT%TZ</code></pre>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Hora (UTC)</th>
+                <th scope="col">Fuente</th>
+                <th scope="col">Hecho</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>09:12</td><td>auth.log</td><td>Inicio de sesión desde una IP nueva.</td></tr>
+              <tr><td>09:20</td><td>EDR</td><td>Proceso inesperado en el mismo equipo.</td></tr>
+              <tr><td>09:41</td><td>Correo</td><td>Usuario reporta mensaje sospechoso.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Esa tabla, con tres filas, suele ser más útil que un informe extenso escrito de
+            memoria días después. Incluye siempre la fuente de cada afirmación.
+          </p>
+        </section>
+
+        <section id="contencion" aria-labelledby="contencion-titulo">
+          <h2 id="contencion-titulo">Contención, erradicación y recuperación</h2>
+          <p>
+            <strong>Contener</strong> es detener el daño; <strong>erradicar</strong> es quitar la
+            causa; <strong>recuperar</strong> es volver a un estado fiable. Son tres pasos
+            distintos: reinstalar un equipo sin cambiar la contraseña robada solo reinicia el
+            problema.
+          </p>
+          <ul>
+            <li>Contención corta: aislar red, revocar sesiones, bloquear una cuenta.</li>
+            <li>Contención larga: segmentar, cerrar un puerto, desactivar una integración comprometida.</li>
+            <li>Erradicación: cambiar credenciales, retirar claves, eliminar tareas persistentes, parchear.</li>
+            <li>Recuperación: restaurar desde copia limpia, reconstruir servicios y verificar con monitorización.</li>
+            <li>Seguimiento: vigilar que el indicador no reaparece durante un periodo razonable.</li>
+          </ul>
+          <p>
+            La recovery depende de las copias descritas en
+            <a href="../malware-ransomware/index.html">Malware y ransomware</a> y del criterio para
+            decidir qué es fiable: una copia anterior al primer indicio y con hash verificado.
+          </p>
+        </section>
+
+        <section id="postmortem" aria-labelledby="postmortem-titulo">
+          <h2 id="postmortem-titulo">Postmortem y mejoras</h2>
+          <p>
+            El informe final responde cuatro preguntas: qué pasó, qué hicimos, qué funcionó y qué
+            cambiamos. Se escribe sin buscar culpables: el objetivo es que el mismo fallo no se
+            repita, no señalar a quien pulsó el enlace.
+          </p>
+          <ul>
+            <li>Línea temporal validada con fuentes y horas.</li>
+            <li>Impacto real: sistemas, datos, tiempo de indisponibilidad y coste.</li>
+            <li>Controles que fallaron y controles que evitaron un daño mayor.</li>
+            <li>Acciones concretas con responsable y forma de verificarlas.</li>
+            <li>Actualización del playbook con lo aprendido.</li>
+          </ul>
+          <p class="nota">
+            Una acción de mejora sin verificación es una intención. «Añadir MFA» se verifica
+            comprobando el registro de cuentas; «mejorar la formación» se verifica con un
+            ejercicio de reporte de phishing.
+          </p>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="../fundamentos-ciberseguridad/index.html">Fundamentos de ciberseguridad</a>: marcos NIST CSF y defensa en profundidad.</li>
+            <li><a href="../malware-ransomware/index.html">Malware y ransomware</a>: contención y copias 3-2-1.</li>
+            <li><a href="../antivirus-edr/index.html">De antivirus a EDR/XDR</a>: telemetría para investigar.</li>
+            <li><a href="../phishing-ingenieria-social/index.html">Phishing e ingeniería social</a>: primeros indicios y reporte.</li>
+            <li><a href="../linux-servidores/index.html">Linux y servidores</a>: <code>journalctl</code>, usuarios y SSH.</li>
+            <li><a href="../identidad-y-mfa/index.html">Identidad, contraseñas y MFA</a>: revocar sesiones y rotar credenciales.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+      </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

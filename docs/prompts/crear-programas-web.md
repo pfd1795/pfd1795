@@ -48,49 +48,49 @@ lateral y modal de configuración):
 ```text
 pfd1795/
 ├── index.html              # Portada
-├── js/                     # Módulos ES compartidos (main.js, theme-init.js, buscador.js…)
+├── scripts/                     # Módulos ES compartidos (main.js, theme-init.js, buscador.js…)
 ├── stylesheets/            # base.css (estilos compartidos del portafolio)
-├── mis-estudios/           # Enciclopedia de informática
-├── juegos/                 # Juegos arcade
-└── programas/              # Programas y herramientas  ← aquí trabajas
-    ├── index.html          # Grilla con buscador (renderizada desde el manifiesto)
-    ├── programas.css       # Estilos específicos de la sección
-    ├── herramientas/       # Un archivo <slug>.html por herramienta (tú creas uno)
-    └── data/herramientas.json # Manifiesto de la grilla de herramientas
+└── pages/                  # Secciones del sitio
+    ├── my-studies/         # Enciclopedia de informática
+    ├── my-games/           # Juegos arcade
+    └── my-programs/        # Programas y herramientas  ← aquí trabajas
+        ├── index.html      # Grilla con buscador (renderizada desde el manifiesto)
+        ├── programas.css   # Estilos específicos de la sección
+        ├── <slug>/         # Una carpeta por herramienta con index.html (tú creas una)
+        └── data/herramientas.json # Manifiesto de la grilla de herramientas
 ```
 
 ### Dónde va tu archivo
 
 ```text
-programas/herramientas/<slug>.html
+pages/my-programs/<slug>/index.html
 ```
 
 Reglas de nombre:
 
 - El `slug` en **kebab-case**, solo minúsculas, números y guiones (`generador-paletas`,
-  `formateador-json`). Es el identificador de la herramienta.
-- Una herramienta es **un único archivo `<slug>.html`** dentro de `herramientas/`: la carpeta
-  ya indica el contexto, así que el nombre es solo el slug.
-- El nombre del archivo **no cambia** después: es el que se enlaza desde la grilla y el que se
+  `formateador-json`). Es el identificador de la herramienta y el nombre de la carpeta.
+- Una herramienta es **una carpeta `<slug>/` con un único `index.html`**, igual que los juegos.
+- El nombre de la carpeta **no cambia** después: es el que se enlaza desde la grilla y el que se
   cachea en el Service Worker.
 
-Ejemplos correctos: `programas/herramientas/generador-paletas.html`,
-`programas/herramientas/formateador-json.html`.
-Ejemplos incorrectos: `programas/herramientas/GeneradorPaletas.html`,
-`programas/herramientas/generador_paletas.html`.
+Ejemplos correctos: `pages/my-programs/generador-paletas/index.html`,
+`pages/my-programs/formateador-json/index.html`.
+Ejemplos incorrectos: `pages/my-programs/GeneradorPaletas/index.html`,
+`pages/my-programs/generador_paletas/index.html`.
 
-**Tú creas un solo archivo: la herramienta.** No crees ni modifiques la grilla, el manifiesto,
+**Tú creas una carpeta con un solo archivo: la herramienta.** No crees ni modifiques la grilla, el manifiesto,
 el Service Worker, las hojas de estilo ni los scripts: eso lo hace el desarrollador al integrar
 (te lo indico en el punto 8).
 
-### Rutas relativas (desde `programas/herramientas/`)
+### Rutas relativas (desde `pages/my-programs/<slug>/`)
 
 | Recurso | Ruta |
 | --- | --- |
 | Estilos base | `../../stylesheets/base.css` |
 | Estilos de la sección Programas | `../programas.css` |
-| Pre-pintado del tema (síncrono, en `<head>`) | `../../js/theme-init.js` |
-| Chrome compartido (módulo ES, diferido) | `../../js/main.js` |
+| Pre-pintado del tema (síncrono, en `<head>`) | `../../scripts/theme-init.js` |
+| Chrome compartido (módulo ES, diferido) | `../../scripts/main.js` |
 | Favicon | `../../favicon.svg` |
 | Manifiesto PWA | `../../manifest.json` |
 | Iconos | `../../assets/icons/*.svg`, `../../assets/icons/icon-192.png` |
@@ -159,7 +159,7 @@ tendrá estilo. Exprésate con las clases del catálogo o con tu propio bloque `
 
 ### Iconos disponibles
 
-Los iconos se sirven desde `../../assets/icons/`. Los más útiles para herramientas:
+Los iconos se sirven desde `../../assets/icons`. Los más útiles para herramientas:
 
 `arrow_right.svg`, `build.svg`, `chevron_down.svg`, `close.svg`, `code.svg`, `copy` (no existe,
 usa `code.svg`), `dark_mode.svg`, `docs.svg`, `format_size.svg`, `home.svg`, `html.svg`,
@@ -295,7 +295,7 @@ Dentro de `<main id="contenido" class="contenedor">`:
 Responde siempre con estos bloques, en este orden:
 
 ```text
-ARCHIVO: programas/herramientas/<slug>.html
+ARCHIVO: pages/my-programs/<slug>/index.html
 ```
 
 **1. La herramienta completa**, en un único bloque de código con la etiqueta `html`:
@@ -319,11 +319,11 @@ contenido ya está en el HTML.
 ## 8. Nota sobre integración (la hace el desarrollador, no tú)
 
 El desarrollador integrará la herramienta añadiendo una entrada al manifiesto
-`programas/data/herramientas.json` (array `items`), con `slug`, `title {es}`,
+`pages/my-programs/data/herramientas.json` (array `items`), con `slug`, `title {es}`,
 `description {es}`, `keywords`, `category` (un id del array `categories`), `icon` y
 `technologies`, y `status: "published"` solo si está probada. Las
 tarjetas de la grilla se generan solas desde el manifiesto: la tarjeta `published` se convierte
-en enlace (botón `Abrir`, que abre `herramientas/<slug>.html` en pestaña nueva) y la `wip`
+en enlace (botón `Abrir`, que abre `<slug>/index.html` en la misma pestaña) y la `wip`
 muestra "Próximamente". El desarrollador también actualizará el Service Worker y la
 documentación. Tú no generas esa entrada ni modificas otros archivos.
 
@@ -360,8 +360,8 @@ documentación. Tú no generas esa entrada ni modificas otros archivos.
       border-radius: var(--radius-lg);
     }
   </style>
-  <script src="../../js/theme-init.js"></script>
-  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../../scripts/theme-init.js"></script>
+  <script src="../../scripts/main.js" defer type="module"></script>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -450,12 +450,12 @@ documentación. Tú no generas esa entrada ni modificas otros archivos.
         </a>
       </div>
 
-      <a class="sidebar-item" href="../../mis-estudios/index.html">
+      <a class="sidebar-item" href="../../pages/my-studies/index.html">
         <img src="../../assets/icons/menu_book.svg" alt="" />
         <span data-lang="my-studies">Mis estudios</span>
       </a>
 
-      <a class="sidebar-item" href="../../juegos/index.html">
+      <a class="sidebar-item" href="../../pages/my-games/index.html">
         <img src="../../assets/icons/gamepad.svg" alt="" />
         <span data-lang="games">Juegos</span>
       </a>
@@ -508,9 +508,9 @@ documentación. Tú no generas esa entrada ni modificas otros archivos.
 
 Antes de entregar, verifica y corrige:
 
-- [ ] El archivo se llama `<slug>.html` (kebab-case) y vive en `programas/herramientas/`.
+- [ ] La carpeta se llama `<slug>` (kebab-case), contiene `index.html` y vive en `pages/my-programs/`.
 - [ ] `<html lang="es">` y `<body id="HomePage" class="body-container">`.
-- [ ] `<head>` carga `base.css`, `../programas.css`, `../../js/theme-init.js` (síncrono),
+- [ ] `<head>` carga `base.css`, `../programas.css`, `../../scripts/theme-init.js` (síncrono),
       `main.js` (módulo diferido), más `manifest`, `apple-touch-icon` y las etiquetas
       `mobile-web-app-*`.
 - [ ] El chrome (navbar, `.saltar`, sidebar, overlay, modal) está completo e idéntico al esqueleto, con `Pablo Diaz` en el navbar y el enlace «Programas» marcado como activo.
@@ -532,10 +532,10 @@ Antes de entregar, verifica y corrige:
 
 Estos pasos no te corresponden a ti, pero condicionan la calidad de la herramienta:
 
-1. Guardar el archivo en `programas/herramientas/` y añadir su entrada al manifiesto
-   `programas/data/herramientas.json`.
+1. Guardar la carpeta en `pages/my-programs/` y añadir su entrada al manifiesto
+   `pages/my-programs/data/herramientas.json`.
 2. Servir por HTTP desde la raíz del repositorio (`python -m http.server 8000`) y abrir
-   `http://localhost:8000/programas/herramientas/<slug>.html`.
+   `http://localhost:8000/pages/my-programs/<slug>/index.html`.
    Con `file://` los módulos ES no cargan y la página se ve rota: es un error de prueba, no de la herramienta.
 3. Comprobar en la consola del navegador que no hay errores.
 4. Cambiar de modo claro a oscuro y de acento desde el modal de Configuración: la herramienta debe seguir funcionando.

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Git — Computer science studies</title>
+  <meta name="description" content="Version control with Git: repositories, commits, branches, remotes, undoing changes and best practices.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Version control</p>
+          <h1>Git</h1>
+          <p class="entrada">
+            Git is a distributed version control system: it records the project's history, allows
+            parallel work with branches and collaboration through remote repositories.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What it is and how it thinks</a></li>
+            <li><a href="#flujo-basico">Basic flow</a></li>
+            <li><a href="#ramas">Branches</a></li>
+            <li><a href="#remotos">Remote repositories</a></li>
+            <li><a href="#deshacer-cambios">Undoing changes</a></li>
+            <li><a href="#rebase-conflictos">Rebase and conflict resolution</a></li>
+            <li><a href="#stash">Stash and cherry-pick</a></li>
+            <li><a href="#etiquetas">Tags, bisect and Pull Requests</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What it is and how it thinks</h2>
+          <p>
+            Git stores <strong>snapshots</strong> of the project, not just differences. Each snapshot is a
+            <em>commit</em> identified by a hash and chained to the previous one, which forms the history.
+          </p>
+          <p>There are three zones worth distinguishing:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Zone</th>
+                <th scope="col">What it contains</th>
+                <th scope="col">How to move to the next</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Working directory</td><td>The files as you edit them</td><td><code>git add</code></td></tr>
+              <tr><td>Staging area</td><td>The changes ready to commit</td><td><code>git commit</code></td></tr>
+              <tr><td>Repository</td><td>The commit history</td><td><code>git push</code> to the remote</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            A commit is a meaningful save point. Staging changes in parts lets you create small, clear
+            commits instead of one giant, mixed one.
+          </p>
+        </section>
+
+        <section id="flujo-basico" aria-labelledby="flujo-basico-titulo">
+          <h2 id="flujo-basico-titulo">Basic flow</h2>
+          <pre><code># Initial configuration (once)
+  git config --global user.name "Your Name"
+  git config --global user.email "you@email.com"
+
+  # Start: create a repository or clone an existing one
+  git init my-project
+  git clone https://example.com/user/repo.git
+
+  # Daily work cycle
+  git status                     # what has changed?
+  git add index.html             # stage a specific file
+  git add .                      # stage all changes
+  git commit -m "Add the search box"   # save the snapshot
+  git log --oneline              # view the summary history</code></pre>
+        </section>
+
+        <section id="ramas" aria-labelledby="ramas-titulo">
+          <h2 id="ramas-titulo">Branches</h2>
+          <p>
+            A branch is an independent line of development. They are used to work on a feature without
+            touching the stable version, usually <code>main</code>.
+          </p>
+          <pre><code>git switch -c new-feature     # create a branch and switch to it
+  # ... work and commit ...
+
+  git switch main                 # go back to the main branch
+  git merge new-feature           # bring the branch's changes in
+
+  # Modern alternative: rebase rewrites history to leave it linear
+  git switch new-feature
+  git rebase main</code></pre>
+          <p class="aviso">
+            <strong>Never rewrite the history of a shared branch.</strong> A <code>rebase</code> or a
+            <code>push --force</code> on <code>main</code> breaks everyone else's work. Rewrite only your
+            local branches.
+          </p>
+          <p>
+            If two branches touch the same lines a <em>conflict</em> appears: Git marks the files, you
+            choose the final content, save and run <code>git add</code> and <code>git commit</code> to
+            complete the merge.
+          </p>
+        </section>
+
+        <section id="remotos" aria-labelledby="remotos-titulo">
+          <h2 id="remotos-titulo">Remote repositories</h2>
+          <pre><code>git remote -v                   # see the configured remotes
+  git remote add origin URL       # add a remote called "origin"
+  git push -u origin main         # push the branch and set it as default
+  git pull                        # fetch and merge the remote's changes
+  git fetch                       # fetch the changes WITHOUT merging yet</code></pre>
+          <p>
+            The key difference: <code>fetch</code> is safe because it only updates your copy of the
+            remote; <code>pull</code> is <code>fetch</code> plus <code>merge</code> and can cause
+            conflicts immediately.
+          </p>
+        </section>
+
+        <section id="deshacer-cambios" aria-labelledby="deshacer-cambios-titulo">
+          <h2 id="deshacer-cambios-titulo">Undoing changes</h2>
+          <pre><code># Discard changes to a file you have NOT staged
+  git restore file.txt
+
+  # Remove a file from the staging area (without losing changes)
+  git restore --staged file.txt
+
+  # Fix the last commit (message or forgotten files)
+  git commit --amend
+
+  # Revert a commit already published by creating a new one that undoes it
+  git revert a1b2c3d
+
+  # Go back in local history (only if it is not shared!)
+  git reset --hard a1b2c3d</code></pre>
+          <p class="nota">
+            For local work use <code>restore</code> and <code>reset</code>; for history already shared,
+            <code>revert</code>, which deletes nothing.
+          </p>
+        </section>
+
+        <section id="rebase-conflictos" aria-labelledby="rebase-conflictos-titulo">
+          <h2 id="rebase-conflictos-titulo">Rebase and conflict resolution</h2>
+          <p>
+            When two histories diverge there are two ways to join them. <strong>Merge</strong> creates a
+            merge commit and keeps both lines; <strong>rebase</strong> «replays» your branch's commits
+            onto the other, producing a linear history:
+          </p>
+          <pre><code>  # History with merge                    # History with rebase
+  A---B---C---M---D (main)                 A---B---C---X'---Y' (main)
+       \           /                                      /
+        X---Y-----(feature)                ...cleaner to read</code></pre>
+          <p>
+            Rebasing your local branch <em>before</em> a pull request is a common practice (clean
+            history); after publishing, only <code>merge</code> (or <code>rebase</code> carefully and
+            with a heads-up to the team, because the hashes change).
+          </p>
+          <p>A <strong>conflict</strong> is not an error: it is Git asking for a human decision:</p>
+          <ol>
+            <li><code>git status</code> lists the conflicting files (marked <code>both modified</code>).</li>
+            <li>Open them and decide the final content: the markers delimit the disputed zone:</li>
+          </ol>
+          <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+  version on your branch (the current one)
+  =======
+  version on the branch being merged
+  &gt;&gt;&gt;&gt;&gt;&gt;&gt; incoming-branch</code></pre>
+          <ol start="3">
+            <li>Edit the result (you can keep both sides: remove the markers) and save.</li>
+            <li><code>git add file</code> marks it resolved; <code>git commit</code> (on merge) or <code>git rebase --continue</code> closes the step.</li>
+            <li>If you get it wrong: <code>git merge --abort</code> or <code>git rebase --abort</code> returns everything to the previous point.</li>
+          </ol>
+          <p class="nota">The default editor matches what git detects (<code>git config --global</code>)
+          for the merge; there is also <code>git mergetool</code>, which opens a three-pane graphical
+          viewer to resolve conflicts more comfortably.</p>
+        </section>
+
+        <section id="stash" aria-labelledby="stash-titulo">
+          <h2 id="stash-titulo">Stash and cherry-pick</h2>
+          <p>
+            <code>stash</code> saves your unfinished work and leaves the directory clean, so you can
+            switch tasks and come back later:
+          </p>
+          <pre><code>git stash push -m "wip: search box"   # save and clean
+  git stash list                      # see your stashes
+  git stash pop                       # apply the most recent and drop it
+  git stash apply stash@{2}           # apply a specific one (without dropping)</code></pre>
+          <p>
+            <code>cherry-pick</code> copies <em>one specific commit</em> from another branch into yours,
+            without bringing the rest:
+          </p>
+          <pre><code>git cherry-pick a1b2c3d              # bring that specific fix
+  git cherry-pick -n a1b2c3d          # without committing (useful for regrouping)</code></pre>
+        </section>
+
+        <section id="etiquetas" aria-labelledby="etiquetas-titulo">
+          <h2 id="etiquetas-titulo">Tags, bisect and Pull Requests</h2>
+          <p>
+            <strong>Tags</strong> mark relevant points in history, typically versions
+            (<code>v1.0.0</code>); annotated ones carry a message, date and signature:
+          </p>
+          <pre><code>git tag -a v1.0.0 -m "First stable version"
+  git tag                              # list
+  git push origin v1.0.0               # tags are not pushed with a normal push</code></pre>
+          <p>
+            <code>git bisect</code> bisects to find the exact commit that introduced a bug: you mark one
+            «bad» and one «good», and Git serves the middle commit for you to say only whether it works or
+            not, halving the range each step:
+          </p>
+          <pre><code>git bisect start
+  git bisect bad            # today: fails
+  git bisect good v1.2.0    # that version worked
+  # ... test, mark bad/good, repeat ...
+  git bisect reset          # finish and return to your branch</code></pre>
+          <p>
+            The flow with a <strong>Pull Request</strong> (GitHub) / Merge Request (GitLab) is the
+            collaborative one: one branch per task, push, and a «merge request» with review by other
+            people, line-by-line comments, automatic CI and approval before merging:
+          </p>
+          <pre><code>git switch -c my-feature        # 1) branch per task
+  # ... commits ...
+  git push -u origin my-feature   # 2) publish the branch
+  # 3) from the web: Open Pull Request, it is reviewed and merged
+  # 4) after the merge, locally: git switch main &amp;&amp; git pull &amp;&amp; git branch -d my-feature</code></pre>
+          <p class="nota">
+            On the host, <code>main</code> is usually protected (nobody pushes directly) so every change
+            arrives reviewed by PR. Even in single-person projects it makes sense: each PR stays as a unit
+            of changes with date, description and documented discussion.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Make commits <strong>small and atomic</strong>: one logical change per commit.</li>
+            <li>Write messages in the imperative and descriptive: «Add email validation».</li>
+            <li>Ignore generated files and secrets with a <code>.gitignore</code>; never upload keys.</li>
+            <li>Create a branch per task and merge it through a <em>pull request</em> or <em>merge request</em>.</li>
+            <li>Before working, <code>git pull</code> to start from the most recent state.</li>
+            <li>Review <code>git status</code> and <code>git diff</code> before committing.</li>
+          </ul>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Command</th>
+                <th scope="col">What it does</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>git init</code></td><td>Create a repository in the current folder.</td></tr>
+              <tr><td><code>git clone URL</code></td><td>Copy a remote repository.</td></tr>
+              <tr><td><code>git status</code></td><td>Show the state of the files.</td></tr>
+              <tr><td><code>git add</code></td><td>Move changes to the staging area.</td></tr>
+              <tr><td><code>git commit -m "..."</code></td><td>Record a snapshot.</td></tr>
+              <tr><td><code>git log --oneline</code></td><td>Summarised commit history.</td></tr>
+              <tr><td><code>git diff</code></td><td>Differences between work zones.</td></tr>
+              <tr><td><code>git switch -c branch</code></td><td>Create and switch to a branch.</td></tr>
+              <tr><td><code>git merge branch</code></td><td>Merge a branch into the current one.</td></tr>
+              <tr><td><code>git pull</code> / <code>git push</code></td><td>Fetch / send changes from the remote.</td></tr>
+              <tr><td><code>git restore</code></td><td>Discard changes in files.</td></tr>
+              <tr><td><code>git rebase main</code></td><td>Replay your branch onto another (linear history).</td></tr>
+              <tr><td><code>git rebase --continue / --abort</code></td><td>Continue / abandon an ongoing rebase.</td></tr>
+              <tr><td><code>git stash push / pop</code></td><td>Save / recover unfinished work.</td></tr>
+              <tr><td><code>git cherry-pick hash</code></td><td>Copy a specific commit onto the current branch.</td></tr>
+              <tr><td><code>git tag -a v1.0 -m "..."</code></td><td>Create an annotated version tag.</td></tr>
+              <tr><td><code>git bisect start / good / bad</code></td><td>Bisect to find the commit where a bug was born.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../terminal/index.en.html#navegacion">Terminal · Navigation</a>: moving through the repository's folders.</li>
+            <li><a href="../terminal/index.en.html#referencia">Terminal · Quick reference</a>: file commands that accompany Git.</li>
+            <li><a href="../redes/index.en.html#http">Networks · HTTP</a>: Git remotes usually communicate over HTTPS or SSH.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

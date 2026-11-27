@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSS — Computer science studies</title>
+  <meta name="description"
+    content="What CSS is, selectors, specificity, box model, Flexbox, Grid and best practices.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Web (HTML, CSS and JavaScript)</p>
+          <h1>CSS</h1>
+          <p class="entrada">
+            CSS (Cascading Style Sheets) is the language that controls the presentation of HTML:
+            colours, typography, spacing and layout. It separates content from its visual appearance.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What it is and how it is applied</a></li>
+            <li><a href="#selectores">Selectors and specificity</a></li>
+            <li><a href="#modelo-de-caja">The box model</a></li>
+            <li><a href="#flexbox">Flexbox</a></li>
+            <li><a href="#grid">Grid</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What it is and how it is applied</h2>
+          <p>
+            A stylesheet is a list of <strong>rules</strong>. Each rule has a selector (which elements it
+            affects) and a declaration block (property: value).
+          </p>
+          <pre><code>/* Selector: p. Declarations: color and max-width */
+  p {
+    color: #333333;
+    max-width: 40rem;
+  }</code></pre>
+          <p>It can be applied in three ways, preferred in this order:</p>
+          <ol>
+            <li>External file: <code>&lt;link rel="stylesheet" href="css/tema.css"&gt;</code>.</li>
+            <li><code>&lt;style&gt;</code> block in the <code>&lt;head&gt;</code>, for page-specific styles.</li>
+            <li><code>style=""</code> attribute: avoid it except for tests.</li>
+          </ol>
+          <p class="nota">
+            The word «cascading» means that, when rules conflict, the one with higher specificity wins,
+            and if they tie, the one that appears lower down.
+          </p>
+        </section>
+
+        <section id="selectores" aria-labelledby="selectores-titulo">
+          <h2 id="selectores-titulo">Selectors and specificity</h2>
+          <pre><code>p            { } /* tag */
+  .tarjeta     { } /* class (the most used) */
+  #principal   { } /* id (not recommended for styling) */
+  nav a        { } /* descendant */
+  ul &gt; li      { } /* direct child */
+  input[type="email"] { } /* by attribute */
+  a:hover      { } /* pseudo-class: state */
+  p::first-line { } /* pseudo-element: part of the content */</code></pre>
+          <p>
+            Specificity is calculated by «weight»: inline styles weigh more than <code>id</code>s,
+            <code>id</code>s more than classes and attributes, and classes more than tags. When in doubt,
+            use classes and avoid <code>!important</code>.
+          </p>
+          <pre><code>/* Reusable variables and inheritance */
+  :root {
+    --color-texto: #1b1f24;
+  }
+
+  .aviso {
+    color: var(--color-texto);
+    border-left: 3px solid orange;
+  }</code></pre>
+        </section>
+
+        <section id="modelo-de-caja" aria-labelledby="modelo-de-caja-titulo">
+          <h2 id="modelo-de-caja-titulo">The box model</h2>
+          <p>
+            Every element is a box made up of the content, the <code>padding</code> (inner spacing),
+            the <code>border</code> and the <code>margin</code> (outer spacing).
+          </p>
+          <pre><code>/* Without this, padding and border ADD to the declared width. */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  .caja {
+    width: 300px;
+    padding: 1rem;   /* space inside */
+    border: 1px solid #ccc;
+    margin: 1rem;    /* space outside */
+  }</code></pre>
+          <ul>
+            <li>With <code>box-sizing: border-box</code>, <code>width</code> includes padding and border: much more predictable.</li>
+            <li>The vertical margins of adjacent elements can collapse (<em>margin collapsing</em>).</li>
+            <li>Relative units (<code>rem</code>, <code>%</code>, <code>em</code>) adapt better than fixed pixels.</li>
+          </ul>
+        </section>
+
+        <section id="flexbox" aria-labelledby="flexbox-titulo">
+          <h2 id="flexbox-titulo">Flexbox</h2>
+          <p>
+            Flexbox distributes elements in <strong>one dimension</strong> (row or column). It is activated
+            with <code>display: flex</code> on the container; the children become flex items.
+          </p>
+          <pre><code>.barra {
+    display: flex;
+    justify-content: space-between; /* main axis: horizontal by default */
+    align-items: center;            /* cross axis: vertical by default */
+    gap: 1rem;                      /* gap between children, no margins */
+    flex-wrap: wrap;                /* allow wrapping to the next line */
+  }
+
+  .barra__marca {
+    flex: 1 1 auto; /* grow shrink basis: can grow and shrink */
+  }</code></pre>
+          <ul>
+            <li><code>justify-content</code> distributes space along the main axis.</li>
+            <li><code>align-items</code> aligns along the cross axis.</li>
+            <li><code>flex-direction: column</code> makes the main axis vertical.</li>
+            <li>For grids of rows <em>and</em> columns at once, use Grid.</li>
+          </ul>
+        </section>
+
+        <section id="grid" aria-labelledby="grid-titulo">
+          <h2 id="grid-titulo">Grid</h2>
+          <p>
+            Grid organises children into <strong>rows and columns</strong> at the same time. It is ideal
+            for card grids and full-page layouts.
+          </p>
+          <pre><code>.rejilla {
+    display: grid;
+    /* Columns that adapt on their own to the available width */
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+  }
+
+  .destacado {
+    /* Occupies two columns of the grid */
+    grid-column: span 2;
+  }</code></pre>
+          <p class="nota">
+            <code>1fr</code> («one fraction») shares the free space among columns. It is the most direct
+            way to build fluid layouts without media queries.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Separate presentation into external files and link them from the <a href="../html/index.en.html#estructura">HTML</a>.</li>
+            <li>Centralise colours, fonts and spacing in variables (<em>custom properties</em>) to change them in one place.</li>
+            <li>Use class names that describe the <strong>meaning</strong> (<code>.nota</code>), not the appearance (<code>.caja-amarilla</code>).</li>
+            <li>Prefer Flexbox/Grid over <code>float</code> and absolute positioning for layout.</li>
+            <li>Design mobile-first and expand with <code>@media (min-width: …)</code>.</li>
+          </ul>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <ul>
+            <li>Forgetting <code>box-sizing: border-box</code> and being surprised by widths.</li>
+            <li>Overusing <code>!important</code> to «fix» conflicts: it signals poor selector structure.</li>
+            <li>Styling by <code>id</code>, which spikes specificity and hinders reuse.</li>
+            <li>Using <code>height: 100%</code> when the parent has no defined height: it does nothing.</li>
+            <li>Mixing units without criteria (<code>px</code>, <code>em</code>, <code>%</code>) and losing scalability.</li>
+          </ul>
+          <p class="aviso">
+            If a style «does not apply», check in the browser's dev tools whether another selector with
+            higher specificity is overriding it (it appears struck through).
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Property</th>
+                <th scope="col">What it does</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>display</code></td>
+                <td>Box type: <code>block</code>, <code>inline</code>, <code>flex</code>, <code>grid</code>,
+                  <code>none</code>.</td>
+              </tr>
+              <tr>
+                <td><code>color</code> / <code>background-color</code></td>
+                <td>Text and background colour.</td>
+              </tr>
+              <tr>
+                <td><code>font-family</code> / <code>font-size</code></td>
+                <td>Typography and text size.</td>
+              </tr>
+              <tr>
+                <td><code>margin</code> / <code>padding</code></td>
+                <td>Outer and inner spacing.</td>
+              </tr>
+              <tr>
+                <td><code>border</code> / <code>border-radius</code></td>
+                <td>Border and rounded corners.</td>
+              </tr>
+              <tr>
+                <td><code>width</code> / <code>max-width</code></td>
+                <td>Fixed width and maximum width (more flexible).</td>
+              </tr>
+              <tr>
+                <td><code>gap</code></td>
+                <td>Gap between flex or grid children.</td>
+              </tr>
+              <tr>
+                <td><code>position</code></td>
+                <td><code>static</code>, <code>relative</code>, <code>absolute</code>, <code>fixed</code>,
+                  <code>sticky</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../html/index.en.html">HTML</a>: the content that CSS shapes.</li>
+            <li><a href="../html/index.en.html#semantica">HTML · Tags and semantics</a>: why it pays to style by meaning.</li>
+            <li><a href="../javascript/index.en.html#dom">JavaScript · DOM</a>: how to change classes and styles dynamically.</li>
+            <li><a href="../redes/index.en.html#http">Networks · HTTP</a>: stylesheets are downloaded as independent resources.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TypeScript — Estudios de informática</title>
+  <meta name="description" content="TypeScript: tipos, inferencia, interfaces, genéricos, uniones y narrowing para detectar errores antes de ejecutar JavaScript.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Lenguajes de programación</p>
+          <h1>TypeScript</h1>
+          <p class="entrada">
+            TypeScript es JavaScript con un sistema de tipos estáticos: describe qué forma tienen
+            los valores antes de ejecutar el programa y el compilador avisa cuando el código no
+            respeta esa descripción. Se convierte a JavaScript estándar, así que funciona en
+            cualquier navegador y en cualquier entorno donde funcione JavaScript.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>TypeScript añade anotaciones de tipo a JavaScript y se compila a JavaScript: no necesita un motor nuevo ni cambia el navegador.</li>
+            <li>La inferencia deduce la mayoría de los tipos; conviene anotar los contratos públicos y los casos ambiguos, no cada variable.</li>
+            <li><code>interface</code> describe la forma de un objeto y <code>type</code> nombra también uniones e intersecciones de tipos.</li>
+            <li>Los genéricos permiten reutilizar funciones y estructuras conservando el tipo concreto de entrada y salida.</li>
+            <li>El compilador estrecha uniones según el control de flujo (<em>narrowing</em>) y detecta errores que en JavaScript solo aparecerían en producción.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#que-es">¿Qué es TypeScript?</a></li>
+            <li><a href="#tipos-e-inferencia">Tipos primitivos e inferencia</a></li>
+            <li><a href="#objetos-y-tipos">Interfaces, tipos, uniones e intersecciones</a></li>
+            <li><a href="#funciones-y-genericos">Funciones y genéricos</a></li>
+            <li><a href="#narrowing">Narrowing y control de flujo</a></li>
+            <li><a href="#configuracion-y-migracion">Configuración y migración desde JavaScript</a></li>
+            <li><a href="#errores-comunes">Errores comunes</a></li>
+            <li><a href="#referencia">Referencia rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">¿Qué es TypeScript?</h2>
+          <p>
+            TypeScript es un <strong>superset de JavaScript</strong>: todo código JavaScript válido
+            es código TypeScript válido, y además se pueden escribir anotaciones de tipo. Esas
+            anotaciones describen la intención del programa; el compilador las comprueba y luego
+            las elimina al generar el JavaScript final.
+          </p>
+          <p>
+            La diferencia se aprecia en una función sencilla. En JavaScript, llamar con un valor
+            inesperado no produce ningún aviso hasta que la función intenta usarlo:
+          </p>
+          <pre><code>function saludar(nombre) {
+  return nombre.toUpperCase();
+}
+
+saludar(42);</code></pre>
+          <p>
+            Con TypeScript, el contrato queda explícito y el error se detecta antes de ejecutar:
+          </p>
+          <pre><code>function saludar(nombre: string): string {
+  return nombre.toUpperCase();
+}
+
+saludar(42);</code></pre>
+          <p>
+            No hace falta instalar nada en el navegador: la comprobación ocurre en el entorno de
+            desarrollo. El compilador se suele ejecutar con <code>tsc --noEmit</code> cuando solo
+            interesa revisar tipos, o con <code>tsc</code> cuando además se quiere generar el
+            JavaScript de salida.
+          </p>
+          <p class="nota">
+            Los tipos viven en el código fuente, no en el JavaScript resultante. No validan por sí
+            solos los datos que llegan de una API, un formulario o <code>localStorage</code>: esos
+            datos hay que comprobarlos en tiempo de ejecución.
+          </p>
+          <p>
+            El objetivo no es «escribir más código», sino hacer explícitas las decisiones que ya se
+            estaban tomando: qué acepta una función, qué devuelve y qué forma tienen los objetos
+            que circulan entre módulos. En proyectos grandes, esa información evita tener que
+            reconstruir el contrato de cada función leyendo todas sus llamadas.
+          </p>
+        </section>
+
+        <section id="tipos-e-inferencia" aria-labelledby="tipos-e-inferencia-titulo">
+          <h2 id="tipos-e-inferencia-titulo">Tipos primitivos e inferencia</h2>
+          <p>
+            Los tipos básicos son <code>string</code>, <code>number</code>, <code>boolean</code>,
+            <code>bigint</code>, <code>symbol</code>, <code>null</code> y <code>undefined</code>.
+            A partir de ellos se construyen arrays (<code>number[]</code>), tuplas, objetos y
+            funciones. TypeScript también dispone de <code>unknown</code> (valor del que no se
+            sabe nada y que obliga a comprobarlo antes de usarlo) y de <code>never</code> (un tipo
+            que no puede tener valores, útil para ramas inalcanzables).
+          </p>
+          <p>
+            La <strong>inferencia</strong> es la parte que más trabajo ahorra: el compilador deduce
+            el tipo a partir del valor inicial o del uso, así que no hace falta anotar cada
+            declaración.
+          </p>
+          <pre><code>let mensaje = 'Hola';
+let contador = 0;
+let activo = true;
+
+const numeros = [1, 2, 3];
+const persona = { nombre: 'Ana', edad: 34 };
+
+mensaje = 42;</code></pre>
+          <p>
+            En el ejemplo, <code>mensaje</code> se infiere como <code>string</code> y la última
+            línea es un error. <code>numeros</code> se infiere como <code>number[]</code> y
+            <code>persona</code> como un objeto con las propiedades <code>nombre: string</code> y
+            <code>edad: number</code>. Las anotaciones aportan información nueva cuando el valor
+            inicial no la tiene, cuando se quiere una forma más general o cuando se define un
+            contrato:
+          </p>
+          <pre><code>let resultado: string | null = null;
+const etiquetas: string[] = [];
+
+function duplicar(valor: number): number {
+  return valor * 2;
+}</code></pre>
+          <p class="aviso">
+            <code>any</code> desactiva la comprobación y contagia a todo lo que toca. Si aún no se
+            conoce el tipo, <code>unknown</code> es la alternativa segura: obliga a estrechar el
+            valor antes de acceder a sus propiedades.
+          </p>
+          <p>
+            Con <code>strictNullChecks</code> activo, <code>null</code> y <code>undefined</code> no
+            se asignan automáticamente a cualquier tipo. Esa distinción obliga a declarar
+            explícitamente cuándo un valor puede faltar, y es una de las comprobaciones que más
+            errores reales evita.
+          </p>
+        </section>
+
+        <section id="objetos-y-tipos" aria-labelledby="objetos-y-tipos-titulo">
+          <h2 id="objetos-y-tipos-titulo">Interfaces, tipos, uniones e intersecciones</h2>
+          <p>
+            Una <strong>interface</strong> describe la forma de un objeto: qué propiedades tiene y
+            de qué tipo son. Se puede ampliar desde otra interfaz, por lo que encaja bien con
+            modelos de datos que crecen por capas.
+          </p>
+          <pre><code>interface Usuario {
+  readonly id: number;
+  nombre: string;
+  correo?: string;
+}
+
+function mostrar(usuario: Usuario): string {
+  return usuario.correo ?? usuario.nombre;
+}</code></pre>
+          <p>
+            El signo <code>?</code> marca una propiedad opcional y <code>readonly</code> impide
+            reasignarla después de crear el objeto. El operador <code>??</code> elige el valor de
+            la izquierda solo cuando no es <code>null</code> ni <code>undefined</code>.
+          </p>
+          <p>
+            Un <strong>alias de tipo</strong> (<code>type</code>) nombra cualquier tipo, no solo
+            objetos: puede representar una unión, una intersección, una tupla o una firma de
+            función. Una <strong>unión</strong> indica que el valor puede ser una de varias
+            alternativas; una <strong>intersección</strong> combina requisitos de varios tipos.
+          </p>
+          <pre><code>type Identificador = string | number;
+type Punto = { x: number; y: number };
+type Empleado = Usuario &amp; { departamento: string };
+
+function buscar(id: Identificador): Punto | null {
+  return null;
+}</code></pre>
+          <p>
+            Aquí <code>Identificador</code> admite texto o número, y <code>Empleado</code> debe
+            cumplir a la vez lo que exige <code>Usuario</code> y tener
+            <code>departamento</code>. Las uniones son la herramienta habitual para modelar
+            estados: un resultado puede ser correcto o fallido, pero no las dos cosas a la vez.
+          </p>
+          <p class="nota">
+            Como regla práctica, usa <code>interface</code> para objetos que puedan ampliarse y
+            <code>type</code> para uniones, intersecciones, tuplas o alias de funciones. Para
+            objetos concretos que no se van a ampliar, ambas opciones son válidas; conviene elegir
+            una y mantenerla en el proyecto.
+          </p>
+        </section>
+
+        <section id="funciones-y-genericos" aria-labelledby="funciones-y-genericos-titulo">
+          <h2 id="funciones-y-genericos-titulo">Funciones y genéricos</h2>
+          <p>
+            Las anotaciones de una función describen sus parámetros y su valor de retorno. Los
+            parámetros opcionales se marcan con <code>?</code> y deben ir detrás de los
+            obligatorios; los valores por defecto también hacen que un parámetro sea opcional.
+          </p>
+          <pre><code>interface Opciones {
+  idiom: string;
+  mayusculas?: boolean;
+}
+
+function saludar(nombre: string, opciones?: Opciones): string {
+  const texto = `Hola, ${nombre}`;
+  return opciones?.mayusculas ? texto.toUpperCase() : texto;
+}</code></pre>
+          <p>
+            Un <strong>genérico</strong> es un parámetro de tipo: permite escribir una función una
+            sola vez sin perder el tipo concreto con el que se llama. Sin genéricos, la función
+            <code>identidad</code> tendría que aceptar <code>any</code> y devolver <code>any</code>,
+            con la consiguiente pérdida de información.
+          </p>
+          <pre><code>function identidad&lt;T&gt;(valor: T): T {
+  return valor;
+}
+
+const numero = identidad(7);
+const texto = identidad('abc');
+
+interface Respuesta&lt;T&gt; {
+  datos: T;
+  total: number;
+}</code></pre>
+          <p>
+            <code>numero</code> se infiere como <code>number</code> y <code>texto</code> como
+            <code>string</code>. Las estructuras de la biblioteca estándar usan el mismo mecanismo:
+            <code>Array&lt;T&gt;</code>, <code>Promise&lt;T&gt;</code> o <code>Map&lt;K, V&gt;</code>.
+          </p>
+          <p>
+            Cuando la función necesita alguna capacidad del tipo, se puede restringir el genérico
+            con <code>extends</code>. Así se exige, por ejemplo, que el valor tenga propiedad
+            <code>length</code>:
+          </p>
+          <pre><code>function longitud&lt;T extends { length: number }&gt;(valor: T): number {
+  return valor.length;
+}
+
+longitud('hola');
+longitud([1, 2, 3]);</code></pre>
+        </section>
+
+        <section id="narrowing" aria-labelledby="narrowing-titulo">
+          <h2 id="narrowing-titulo">Narrowing y control de flujo</h2>
+          <p>
+            El <strong>narrowing</strong> (estrechamiento) es el proceso por el que TypeScript
+            reduce una unión a una de sus alternativas después de una comprobación. Es la razón
+            principal por la que el compilador detecta antes muchos fallos que en JavaScript solo
+            aparecerían al ejecutar una rama concreta.
+          </p>
+          <pre><code>function describir(valor: string | number): string {
+  if (typeof valor === 'string') {
+    return valor.toUpperCase();
+  }
+
+  return valor.toFixed(2);
+}</code></pre>
+          <p>
+            Dentro del <code>if</code>, <code>valor</code> es <code>string</code> y puede usar
+            <code>toUpperCase()</code>; después, es <code>number</code> y puede usar
+            <code>toFixed()</code>. No hace falta convertir ni afirmar el tipo a mano: la
+            comprobación ya ha aportado esa información.
+          </p>
+          <p>
+            El patrón más útil es la <strong>unión discriminada</strong>: cada variante comparte
+            una propiedad con un valor literal distinto. Al comprobar esa propiedad, el compilador
+            sabe qué campos existen en cada rama.
+          </p>
+          <pre><code>type Resultado =
+  | { estado: 'ok'; datos: string[] }
+  | { estado: 'error'; mensaje: string };
+
+function resumir(resultado: Resultado): string {
+  if (resultado.estado === 'ok') {
+    return `${resultado.datos.length} elementos`;
+  }
+
+  return resultado.mensaje;
+}</code></pre>
+          <p>
+            Otras comprobaciones que estrechan tipos son <code>Array.isArray()</code>, el operador
+            <code>in</code> para preguntar por una propiedad, las comparaciones con
+            <code>null</code> y las funciones de predicado de tipo. Conviene preferirlas antes que
+            las afirmaciones <code>as</code>: una afirmación le dice al compilador que confíe,
+            mientras que una comprobación realmente verifica el valor.
+          </p>
+          <p class="aviso">
+            Si después de cubrir todas las variantes todavía queda un valor posible, el compilador
+            puede avisar asignando la rama final a <code>never</code>. Ese aviso suele indicar que
+            se añadió una alternativa nueva a la unión y que alguna función todavía no la trata.
+          </p>
+        </section>
+
+        <section id="configuracion-y-migracion" aria-labelledby="configuracion-y-migracion-titulo">
+          <h2 id="configuracion-y-migracion-titulo">Configuración y migración desde JavaScript</h2>
+          <p>
+            Las decisiones del compilador se guardan en <code>tsconfig.json</code> en la raíz del
+            proyecto. Tres opciones marcan especialmente el resultado: <code>target</code> (versión
+            de JavaScript de salida), <code>module</code> (sistema de módulos) y
+            <code>strict</code> (conjunto de comprobaciones estrictas, que incluye
+            <code>strictNullChecks</code> y <code>noImplicitAny</code>).
+          </p>
+          <pre><code>{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["src"]
+}</code></pre>
+          <p>
+            Con <code>noEmit</code>, <code>tsc</code> actúa solo como revisor de tipos y el
+            empaquetador existente sigue generando los archivos. En proyectos sin empaquetador,
+            se puede quitar esa opción y dejar que el compilador produzca los archivos
+            JavaScript.
+          </p>
+          <p>
+            Migrar un proyecto grande no obliga a renombrar todos los archivos de una vez. Una
+            ruta gradual es:
+          </p>
+          <ul>
+            <li>Activar <code>allowJs</code> para que el compilador acepte archivos <code>.js</code> junto a los <code>.ts</code>.</li>
+            <li>Renombrar primero los módulos pequeños y bien delimitados; después los que más se usan.</li>
+            <li>Empezar con <code>strict</code> en <code>false</code> si hace falta y activar una opción cada vez, empezando por <code>strictNullChecks</code>.</li>
+            <li>Usar <code>unknown</code> en los límites del sistema (respuestas HTTP, almacenamiento local) y validar ahí los datos antes de confiar en ellos.</li>
+            <li>Añadir la comprobación de tipos a la integración continua para que un error de tipo no llegue a la rama principal.</li>
+          </ul>
+          <p>
+            Lo importante es que cada paso deje el código en un estado mejor: más contratos
+            explícitos y menos decisiones implícitas. Un proyecto parcialmente tipado se beneficia
+            de la comprobación en las zonas ya migradas.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Errores comunes</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Error</th>
+                <th scope="col">Por qué está mal</th>
+                <th scope="col">Qué hacer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Usar <code>any</code> para silenciar errores.</td>
+                <td>Desactiva la comprobación y se propaga por las llamadas.</td>
+                <td>Usar <code>unknown</code> y estrechar el valor, o escribir el tipo correcto.</td>
+              </tr>
+              <tr>
+                <td>Creer que los tipos validan datos externos.</td>
+                <td>Las anotaciones desaparecen al compilar.</td>
+                <td>Comprobar en tiempo de ejecución los datos de API, formularios y almacenamiento.</td>
+              </tr>
+              <tr>
+                <td>Anotar variables cuya ya tipo se infiere.</td>
+                <td>Añade ruido y puede quedar desactualizado al cambiar el valor.</td>
+                <td>Reservar las anotaciones para contratos y valores ambiguos.</td>
+              </tr>
+              <tr>
+                <td>Abusar de <code>as</code> para forzar un tipo.</td>
+                <td>La afirmación no comprueba nada: solo calla al compilador.</td>
+                <td>Preferir comprobaciones reales con <code>typeof</code>, <code>in</code> o uniones discriminadas.</td>
+              </tr>
+              <tr>
+                <td>Olvidar <code>null</code> en un tipo de retorno.</td>
+                <td>Una búsqueda puede no encontrar resultado y devolver <code>null</code>.</td>
+                <td>Declarar <code>T | null</code> y obligar a tratar ese caso.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Referencia rápida</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">JavaScript</th>
+                <th scope="col">TypeScript</th>
+                <th scope="col">Para qué sirve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>let x = 1</code></td><td><code>let x: number = 1</code></td><td>Declarar el tipo de una variable.</td></tr>
+              <tr><td><code>function f(a, b)</code></td><td><code>function f(a: number, b: number): number</code></td><td>Definir parámetros y retorno.</td></tr>
+              <tr><td><code>[1, 2, 3]</code></td><td><code>number[]</code> / <code>Array&lt;number&gt;</code></td><td>Especificar el tipo de los elementos.</td></tr>
+              <tr><td>Objeto literal</td><td><code>interface Usuario { ... }</code></td><td>Describir las propiedades esperadas.</td></tr>
+              <tr><td>Valor que puede faltar</td><td><code>string | null</code></td><td>Hacer explícita la ausencia de valor.</td></tr>
+              <tr><td><code>(x) =&gt; x</code></td><td><code>(x: number) =&gt; number</code></td><td>Tipar una función o un callback.</td></tr>
+              <tr><td><code>Promise</code></td><td><code>Promise&lt;Usuario&gt;</code></td><td>Indicar qué resuelve una promesa.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="../javascript/index.html">JavaScript</a>: el lenguaje al que se compila TypeScript y del que parte su sintaxis.</li>
+            <li><a href="../paradigmas/index.html">Paradigmas de programación</a>: cómo se reflejan los estilos imperativo, orientado a objetos y funcional en el sistema de tipos.</li>
+            <li><a href="../html/index.html">HTML</a>: el marcado que consumen las aplicaciones tipadas del navegador.</li>
+            <li><a href="../frameworks-frontend/index.html">Frameworks de front-end</a>: por qué los proyectos grandes suelen combinar framework y comprobación de tipos.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

@@ -48,29 +48,29 @@ lateral y modal de configuración):
 ```text
 pfd1795/
 ├── index.html              # Portada
-├── js/                     # Módulos ES compartidos (main.js, theme-init.js, buscador.js…)
+├── scripts/                     # Módulos ES compartidos (main.js, theme-init.js, buscador.js…)
 ├── stylesheets/            # base.css (estilos compartidos del portafolio)
-├── mis-estudios/           # Enciclopedia de informática  ← aquí trabajas
-│   ├── index.html          # Índice con buscador; grilla desde data/articulos.json
-│   ├── mis-estudios.css    # Estilos específicos de la enciclopedia
-│   ├── articulos/          # Un archivo HTML por artículo  ← aquí va tu archivo
-│   ├── data/articulos.json # Manifiesto de la grilla de artículos
-│   └── js/copiar.js        # Botón «Copiar» de los bloques de código
-└── juegos/                 # Juegos arcade
+└── pages/                  # Secciones del sitio
+    ├── my-studies/         # Enciclopedia de informática  ← aquí trabajas
+    │   ├── index.html      # Índice con buscador; grilla desde data/articulos.json
+    │   ├── mis-estudios.css # Estilos específicos de la enciclopedia
+    │   ├── <slug>/         # Una carpeta por artículo con index.html  ← aquí va tu carpeta
+    │   ├── data/articulos.json # Manifiesto de la grilla de artículos
+    │   └── js/copiar.js    # Botón «Copiar» de los bloques de código
+    └── my-games/           # Juegos arcade
 ```
 
 ### Dónde va tu archivo
 
 ```text
-mis-estudios/articulos/<slug>.html
+pages/my-studies/<slug>/index.html
 ```
 
 Reglas de nombre:
 
 - El slug en **kebab-case**: solo minúsculas, números y guiones (`logica-booleana.html`).
   Nunca uses guiones bajos ni mayúsculas.
-- Sin prefijos redundantes: la carpeta `articulos/` ya indica el contexto, así que el nombre
-  del archivo es solo el slug.
+- Sin prefijos redundantes: la carpeta lleva el slug y el archivo se llama siempre `index.html`.
 - El nombre describe el tema y **no cambia** después: es el que se enlaza desde la grilla y el
   que se cachea en el Service Worker.
 
@@ -82,21 +82,21 @@ Ejemplos incorrectos: `expresiones_regulares.html` (guiones bajos), `Regex.html`
 Service Worker, las hojas de estilo ni los scripts: eso lo hace el desarrollador al integrar
 (te lo indico en el punto 7).
 
-### Rutas relativas (desde `mis-estudios/articulos/`)
+### Rutas relativas (desde `pages/my-studies/<slug>/`)
 
 | Recurso | Ruta |
 | --- | --- |
 | Estilos base | `../../stylesheets/base.css` |
 | Estilos de la enciclopedia | `../mis-estudios.css` |
-| Pre-pintado del tema (síncrono, en `<head>`) | `../../js/theme-init.js` |
-| Chrome compartido (módulo ES, diferido) | `../../js/main.js` |
+| Pre-pintado del tema (síncrono, en `<head>`) | `../../scripts/theme-init.js` |
+| Chrome compartido (módulo ES, diferido) | `../../scripts/main.js` |
 | Botón «Copiar» sobre los bloques de código | `../js/copiar.js` |
 | Favicon | `../../favicon.svg` |
 | Manifiesto PWA | `../../manifest.json` |
 | Iconos | `../../assets/icons/*.svg`, `../../assets/icons/icon-192.png` |
 | Índice de la enciclopedia | `../index.html` |
 | Portada del portafolio | `../../index.html` |
-| Grid de juegos | `../../juegos/index.html` |
+| Grid de juegos | `../../pages/my-games/index.html` |
 
 Todas las rutas son **relativas**: el sitio se publica en una subruta y las rutas absolutas
 (`/stylesheets/…`) no funcionan. Nunca uses `file://` para probar nada: el sitio se sirve por
@@ -148,9 +148,9 @@ Si necesitas un matiz visual, exprésalo con `.nota` o `.aviso`.
   `data-i18n-title` y `data-i18n-aria-label`. **No inventes claves nuevas**: usa exactamente las
   del esqueleto.
 - El contenido del artículo va solo en español por defecto. La versión en inglés es opcional y se
-  añade solo si se pide: `articulos/<slug>.en.html`, paralela al `<slug>.html`, con el mismo chrome
+  añade solo si se pide: `<slug>/index.en.html`, paralela al `index.html`, con el mismo chrome
   y solo el contenido traducido, según la regla 8 de
-  [`mis-estudios/AGENTS.md`](../../mis-estudios/AGENTS.md). «Ver también» apunta a `.en.html`
+  [`pages/my-studies/AGENTS.md`](../../pages/my-studies/AGENTS.md). «Ver también» apunta a `index.en.html`
   cuando exista, ambas versiones enlazan entre sí desde `.volver` y el manifiesto mantiene una sola
   entrada por slug.
 
@@ -388,8 +388,8 @@ En este orden, dentro de `<article class="estudio">`:
   <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
   <link rel="stylesheet" href="../../stylesheets/base.css">
   <link rel="stylesheet" href="../mis-estudios.css">
-  <script src="../../js/theme-init.js"></script>
-  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../../scripts/theme-init.js"></script>
+  <script src="../../scripts/main.js" defer type="module"></script>
   <script src="../js/copiar.js" defer></script>
   <link rel="manifest" href="../../manifest.json" />
   <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
@@ -568,12 +568,12 @@ console.log(ejemplo);</code></pre>
         <span data-lang="my-studies">Mis estudios</span>
       </a>
 
-      <a class="sidebar-item" href="../../juegos/index.html">
+      <a class="sidebar-item" href="../../pages/my-games/index.html">
         <img src="../../assets/icons/gamepad.svg" alt="" />
         <span data-lang="games">Juegos</span>
       </a>
 
-      <a class="sidebar-item" href="../../programas/index.html">
+      <a class="sidebar-item" href="../../pages/my-programs/index.html">
         <img src="../../assets/icons/build.svg" alt="" />
         <span data-lang="programs">Programas</span>
       </a>
@@ -603,7 +603,7 @@ console.log(ejemplo);</code></pre>
 Responde siempre con estos cuatro bloques, en este orden:
 
 ```text
-ARCHIVO: mis-estudios/articulos/<slug>.html
+ARCHIVO: pages/my-studies/<slug>/index.html
 CATEGORÍA: <categoría utilizada>
 ```
 
@@ -620,7 +620,7 @@ CATEGORÍA: <categoría utilizada>
 los datos de tu artículo:
 
 ```text
-2.1) Entrada para mis-estudios/data/articulos.json (añádela al array items; el campo
+2.1) Entrada para pages/my-studies/data/articulos.json (añádela al array items; el campo
      category es el id del array categories del manifiesto):
 
       {
@@ -633,14 +633,14 @@ los datos de tu artículo:
       }
 
      La tarjeta de la grilla se genera sola desde el manifiesto: no editar
-     mis-estudios/index.html.
+     pages/my-studies/index.html.
 
-2.2) service-worker.js: añade "./mis-estudios/articulos/SLUG.html" a PRECACHE_URLS
+2.2) service-worker.js: añade "./my-studies/SLUG/index.html" a PRECACHE_URLS
      y sube CACHE_NAME un nivel respecto al valor actual de service-worker.js
      (`pwa-cache-vN`) para forzar el refresco del precache.
 
 2.3) Actualiza el número de artículos publicados en README.md y docs/LIMITACIONES.md; el listado
-     de temas está en mis-estudios/AGENTS.md (no en el AGENTS.md de la raíz).
+     de temas está en pages/my-studies/AGENTS.md (no en el AGENTS.md de la raíz).
 2.4) Añade el artículo nuevo al roster de «Artículos ya publicados» de este prompt
      con su título y su archivo `<slug>.html`.
 ```
@@ -658,9 +658,9 @@ contenido ya está en el HTML.
 
 Antes de entregar, verifica y corrige:
 
-- [ ] El archivo se llama `<slug>.html`, en kebab-case, y vive en `mis-estudios/articulos/`.
+- [ ] La carpeta se llama `<slug>` (kebab-case), contiene `index.html` y vive en `pages/my-studies/`.
 - [ ] `<html lang="es">` y `<body id="HomePage" class="body-container">`.
-- [ ] `<head>` carga `base.css`, `../mis-estudios.css`, `../../js/theme-init.js` (síncrono),
+- [ ] `<head>` carga `base.css`, `../mis-estudios.css`, `../../scripts/theme-init.js` (síncrono),
       `main.js` (módulo diferido) y `copiar.js` (diferido), más `manifest`, `apple-touch-icon`
       y las etiquetas `mobile-web-app-*`.
 - [ ] El chrome (navbar, `.saltar`, sidebar, overlay, modal) está completo e idéntico al
@@ -687,10 +687,10 @@ Antes de entregar, verifica y corrige:
 
 Estos pasos no te corresponden a ti, pero condicionan la calidad del artículo:
 
-1. Guardar el archivo en `mis-estudios/articulos/` y añadir su entrada al manifiesto
-   `mis-estudios/data/articulos.json` (la tarjeta aparece en la grilla del índice sola).
+1. Guardar la carpeta en `pages/my-studies/` y añadir su entrada al manifiesto
+   `pages/my-studies/data/articulos.json` (la tarjeta aparece en la grilla del índice sola).
 2. Servir por HTTP desde la raíz del repositorio
-   (`python -m http.server 8000`) y abrir `http://localhost:8000/mis-estudios/articulos/…`.
+   (`python -m http.server 8000`) y abrir `http://localhost:8000/pages/my-studies/<slug>/index.html`.
    Con `file://` los módulos ES no cargan y la página se ve rota: es un error de prueba, no del
    artículo.
 3. Comprobar en la consola del navegador que no hay errores.

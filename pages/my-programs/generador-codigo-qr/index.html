@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de código QR — Programas pfd1795</title>
+  <meta name="description" content="Genera códigos QR directamente en tu navegador con una implementación propia del algoritmo Reed-Solomon, sin librerías externas ni APIs.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../programas.css">
+  <style>
+    /* Estilos propios de la herramienta. Usa los tokens de base.css. */
+    .qrgen__fieldset {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin: 0 0 var(--space-4);
+      padding: var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      min-width: 0;
+    }
+
+    .qrgen__fieldset > legend {
+      padding: 0 var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .qrgen__campos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-3) var(--space-4);
+    }
+
+    .qrgen__campo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      min-width: 0;
+    }
+
+    .qrgen__campo--fila {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .qrgen__entrada-texto,
+    .qrgen__selector,
+    .qrgen__entrada-numero {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      font: inherit;
+      color: var(--color-text);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .qrgen__entrada-texto {
+      resize: vertical;
+      min-height: 5rem;
+    }
+
+    .qrgen__color {
+      width: 100%;
+      height: 2.6rem;
+      padding: var(--space-1);
+      cursor: pointer;
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .qrgen__rango,
+    .qrgen__casilla {
+      accent-color: var(--theme-color);
+    }
+
+    .qrgen__rango {
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .qrgen__boton {
+      margin-top: var(--space-2);
+    }
+
+    .qrgen__resultado {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-lg);
+    }
+
+    .qrgen__vacio {
+      margin: 0;
+      color: var(--color-text-secondary);
+    }
+
+    .qrgen__mensajes p {
+      margin: 0 0 var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-inline-start: 4px solid var(--theme-color);
+      border-radius: var(--radius-md);
+    }
+
+    .qrgen__panel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: var(--space-4);
+    }
+
+    .qrgen__marco-lienzo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: var(--space-2);
+      background-color: var(--color-background);
+      background-image: linear-gradient(45deg, var(--color-border) 25%, transparent 25%, transparent 75%, var(--color-border) 75%),
+        linear-gradient(45deg, var(--color-border) 25%, transparent 25%, transparent 75%, var(--color-border) 75%);
+      background-size: 10px 10px;
+      background-position: 0 0, 5px 5px;
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      max-width: 100%;
+      overflow: auto;
+    }
+
+    .qrgen__lienzo {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+    }
+
+    .qrgen__detalles {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      flex: 1 1 240px;
+      min-width: 0;
+    }
+
+    .qrgen__datos {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .qrgen__acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+
+    .qrgen__aviso {
+      min-height: 1.4em;
+      margin: var(--space-2) 0 0;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    @media (max-width: 480px) {
+      .qrgen__fieldset {
+        padding: var(--space-2);
+      }
+      .qrgen__panel {
+        flex-direction: column;
+      }
+    }
+  </style>
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <h1>Generador de código QR</h1>
+      <p>Introduce un enlace o cualquier texto para calcular y dibujar un código QR estándar directamente
+        en el navegador, utilizando una implementación propia de corrección de errores Reed-Solomon en campos
+        de Galois (GF 2<sup>8</sup>), selección óptima de máscara y descarga en formato PNG.</p>
+
+      <section aria-labelledby="entrada-titulo">
+        <h2 id="entrada-titulo">Entrada</h2>
+        <form id="form-qr" novalidate>
+          <fieldset class="qrgen__fieldset">
+            <legend>Contenido</legend>
+            <div class="qrgen__campo">
+              <label for="campo-texto">Texto o URL a codificar</label>
+              <textarea id="campo-texto" class="qrgen__entrada-texto" rows="3" placeholder="https://ejemplo.com o cualquier mensaje…" spellcheck="false">https://pfd1795.dev</textarea>
+            </div>
+          </fieldset>
+
+          <fieldset class="qrgen__fieldset">
+            <legend>Parámetros del código</legend>
+            <div class="qrgen__campos">
+              <div class="qrgen__campo">
+                <label for="nivel-ec">Nivel de corrección de errores</label>
+                <select id="nivel-ec" class="qrgen__selector">
+                  <option value="L">L — Bajo (~7 % recuperable)</option>
+                  <option value="M" selected>M — Medio (~15 % recuperable)</option>
+                  <option value="Q">Q — Cuartil (~25 % recuperable)</option>
+                  <option value="H">H — Alto (~30 % recuperable)</option>
+                </select>
+              </div>
+              <div class="qrgen__campo">
+                <label for="tamano-modulo">Tamaño por módulo (px): <output id="salida-modulo" for="tamano-modulo">8 px</output></label>
+                <input type="range" id="tamano-modulo" class="qrgen__rango" min="3" max="24" step="1" value="8">
+              </div>
+              <div class="qrgen__campo">
+                <label for="margen-modulos">Margen (módulos silenciosos): <output id="salida-margen" for="margen-modulos">4</output></label>
+                <input type="range" id="margen-modulos" class="qrgen__rango" min="1" max="8" step="1" value="4">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="qrgen__fieldset">
+            <legend>Colores y apariencia</legend>
+            <div class="qrgen__campos">
+              <div class="qrgen__campo">
+                <label for="color-oscuro">Color del código (módulos)</label>
+                <input type="color" id="color-oscuro" class="qrgen__color" value="#000000">
+              </div>
+              <div class="qrgen__campo">
+                <label for="color-claro">Color del fondo</label>
+                <input type="color" id="color-claro" class="qrgen__color" value="#ffffff">
+              </div>
+              <div class="qrgen__campo qrgen__campo--fila">
+                <input type="checkbox" id="fondo-transparente" class="qrgen__casilla">
+                <label for="fondo-transparente">Fondo transparente</label>
+              </div>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="btn qrgen__boton">Generar código QR</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="resultado-titulo" aria-live="polite">
+        <h2 id="resultado-titulo">Resultado</h2>
+        <div id="mensajes" class="qrgen__mensajes"></div>
+        <div id="resultado" class="qrgen__resultado" role="status">
+          <p class="qrgen__vacio">Ingresa un texto o URL y haz clic en «Generar código QR» para ver el resultado aquí.</p>
+        </div>
+      </section>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../my-studies/index.html">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    // Motor autónomo de generación de código QR (ISO/IEC 18004) con Reed-Solomon en GF(2^8).
+    (function () {
+      'use strict';
+
+      // --- 1. Aritmética de Campos de Galois GF(2^8) con polinomio irreducible 0x11D ---
+      const expTable = new Uint8Array(512);
+      const logTable = new Uint8Array(256);
+
+      (function inicializarGalois() {
+        let x = 1;
+        for (let i = 0; i < 255; i++) {
+          expTable[i] = x;
+          expTable[i + 255] = x;
+          logTable[x] = i;
+          x <<= 1;
+          if (x & 256) {
+            x ^= 0x11D;
+          }
+        }
+      })();
+
+      const gfMul = (a, b) => {
+        if (a === 0 || b === 0) return 0;
+        return expTable[logTable[a] + logTable[b]];
+      };
+
+      const rsGenerarPolinomio = (grado) => {
+        let poly = [1];
+        for (let i = 0; i < grado; i++) {
+          const factor = expTable[i];
+          const siguiente = new Array(poly.length + 1).fill(0);
+          for (let j = 0; j < poly.length; j++) {
+            siguiente[j] ^= poly[j];
+            siguiente[j + 1] ^= gfMul(poly[j], factor);
+          }
+          poly = siguiente;
+        }
+        return poly;
+      };
+
+      const rsCalcularResto = (datos, grado) => {
+        const gen = rsGenerarPolinomio(grado);
+        const resto = new Uint8Array(grado);
+        for (let i = 0; i < datos.length; i++) {
+          const factor = datos[i] ^ resto[0];
+          for (let j = 0; j < grado - 1; j++) {
+            resto[j] = resto[j + 1];
+          }
+          resto[grado - 1] = 0;
+          if (factor !== 0) {
+            for (let j = 0; j < grado; j++) {
+              resto[j] ^= gfMul(gen[j + 1], factor);
+            }
+          }
+        }
+        return resto;
+      };
+
+      // --- 2. Tablas del estándar QR (versiones 1 a 14) ---
+      // Estructura: [totalCodewords, [[ecPorBloque, numBloques], ... por L(0), M(1), Q(2), H(3)]]
+      const TABLA_VERSIONES = [
+        [26, [[7, 1], [10, 1], [13, 1], [17, 1]]],
+        [44, [[10, 1], [16, 1], [22, 1], [28, 1]]],
+        [70, [[15, 1], [26, 1], [18, 2], [22, 2]]],
+        [100, [[20, 1], [18, 2], [26, 2], [16, 4]]],
+        [134, [[26, 1], [24, 2], [18, 4], [22, 4]]],
+        [172, [[18, 2], [16, 4], [24, 4], [28, 4]]],
+        [196, [[20, 2], [18, 4], [18, 6], [26, 5]]],
+        [242, [[24, 2], [22, 4], [22, 6], [26, 6]]],
+        [292, [[30, 2], [22, 5], [20, 8], [24, 8]]],
+        [346, [[18, 4], [26, 5], [24, 8], [28, 8]]],
+        [404, [[20, 4], [30, 5], [28, 8], [24, 11]]],
+        [466, [[24, 4], [22, 8], [26, 10], [28, 11]]],
+        [532, [[26, 4], [22, 9], [24, 12], [22, 16]]],
+        [581, [[30, 4], [24, 9], [20, 16], [24, 16]]]
+      ];
+
+      const BITS_RESTANTES = [0, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 3];
+
+      const POSICIONES_ALINEACION = [
+        [],
+        [6, 18],
+        [6, 22],
+        [6, 26],
+        [6, 30],
+        [6, 34],
+        [6, 22, 38],
+        [6, 24, 42],
+        [6, 26, 46],
+        [6, 28, 50],
+        [6, 30, 54],
+        [6, 32, 58],
+        [6, 34, 62],
+        [6, 26, 46, 66]
+      ];
+
+      const MAPA_EC = {
+        L: { indice: 0, indicador: 1, nombre: 'Bajo (~7 %)' },
+        M: { indice: 1, indicador: 0, nombre: 'Medio (~15 %)' },
+        Q: { indice: 2, indicador: 3, nombre: 'Cuartil (~25 %)' },
+        H: { indice: 3, indicador: 2, nombre: 'Alto (~30 %)' }
+      };
+
+      // Cálculo BCH (15, 5) para la información de formato
+      const calcularBitsFormato = (indicadorEc, patronMascara) => {
+        const datos = (indicadorEc << 3) | patronMascara;
+        let resto = datos << 10;
+        for (let i = 4; i >= 0; i--) {
+          if ((resto >> (i + 10)) & 1) {
+            resto ^= (0x537 << i);
+          }
+        }
+        return ((datos << 10) | resto) ^ 0x5412;
+      };
+
+      // Cálculo BCH (18, 6) para la información de versión (versión >= 7)
+      const calcularBitsVersion = (version) => {
+        let resto = version << 12;
+        for (let i = 5; i >= 0; i--) {
+          if ((resto >> (i + 12)) & 1) {
+            resto ^= (0x1F25 << i);
+          }
+        }
+        return (version << 12) | resto;
+      };
+
+      // --- 3. Codificación de flujo de bits e intercalado de bloques ---
+      const construirFlujoDatos = (bytesUtf8, version, indiceEc) => {
+        const [totalCodewords, specsEc] = TABLA_VERSIONES[version - 1];
+        const [ecPorBloque, numBloques] = specsEc[indiceEc];
+        const totalDatosCodewords = totalCodewords - (ecPorBloque * numBloques);
+
+        const bits = [];
+        const agregarBits = (valor, cantidad) => {
+          for (let i = cantidad - 1; i >= 0; i--) {
+            bits.push((valor >> i) & 1);
+          }
+        };
+
+        // Modo de 8 bits (Byte mode)
+        agregarBits(0b0100, 4);
+
+        // Contador de caracteres (8 bits para V1-V9, 16 bits para V10-V14)
+        const bitsConteo = version <= 9 ? 8 : 16;
+        agregarBits(bytesUtf8.length, bitsConteo);
+
+        for (let i = 0; i < bytesUtf8.length; i++) {
+          agregarBits(bytesUtf8[i], 8);
+        }
+
+        // Terminador de hasta 4 ceros
+        const bitsMaximos = totalDatosCodewords * 8;
+        const cerosTerminador = Math.min(4, bitsMaximos - bits.length);
+        agregarBits(0, cerosTerminador);
+
+        // Relleno a múltiplo de 8 bits
+        while (bits.length % 8 !== 0) {
+          bits.push(0);
+        }
+
+        const palabrasDatos = [];
+        for (let i = 0; i < bits.length; i += 8) {
+          let byte = 0;
+          for (let j = 0; j < 8; j++) {
+            byte = (byte << 1) | bits[i + j];
+          }
+          palabrasDatos.push(byte);
+        }
+
+        // Bytes de relleno alternantes 0xEC y 0x11
+        const bytesRelleno = [0xEC, 0x11];
+        let indiceRelleno = 0;
+        while (palabrasDatos.length < totalDatosCodewords) {
+          palabrasDatos.push(bytesRelleno[indiceRelleno % 2]);
+          indiceRelleno++;
+        }
+
+        return palabrasDatos;
+      };
+
+      const intercalarBloques = (palabrasDatos, version, indiceEc) => {
+        const [totalCodewords, specsEc] = TABLA_VERSIONES[version - 1];
+        const [ecPorBloque, numBloques] = specsEc[indiceEc];
+        const totalDatosCodewords = totalCodewords - (ecPorBloque * numBloques);
+
+        const bloquesLargos = totalDatosCodewords % numBloques;
+        const bloquesCortos = numBloques - bloquesLargos;
+        const longitudCorta = Math.floor(totalDatosCodewords / numBloques);
+        const longitudLarga = longitudCorta + 1;
+
+        const bloquesDatos = [];
+        const bloquesEc = [];
+
+        let posicion = 0;
+        for (let i = 0; i < numBloques; i++) {
+          const longitud = i < bloquesCortos ? longitudCorta : longitudLarga;
+          const datosBloque = palabrasDatos.slice(posicion, posicion + longitud);
+          posicion += longitud;
+          bloquesDatos.push(datosBloque);
+          bloquesEc.push(rsCalcularResto(datosBloque, ecPorBloque));
+        }
+
+        const flujoFinal = [];
+        for (let i = 0; i < longitudLarga; i++) {
+          for (let b = 0; b < numBloques; b++) {
+            if (i < bloquesDatos[b].length) {
+              flujoFinal.push(bloquesDatos[b][i]);
+            }
+          }
+        }
+
+        for (let i = 0; i < ecPorBloque; i++) {
+          for (let b = 0; b < numBloques; b++) {
+            flujoFinal.push(bloquesEc[b][i]);
+          }
+        }
+
+        const bitsFinales = [];
+        for (let i = 0; i < flujoFinal.length; i++) {
+          for (let b = 7; b >= 0; b--) {
+            bitsFinales.push((flujoFinal[i] >> b) & 1);
+          }
+        }
+
+        const restantes = BITS_RESTANTES[version - 1] || 0;
+        for (let i = 0; i < restantes; i++) {
+          bitsFinales.push(0);
+        }
+
+        return bitsFinales;
+      };
+
+      // --- 4. Ensamblaje de la matriz de módulos QR ---
+      const crearMatrizBase = (version) => {
+        const tamano = 17 + 4 * version;
+        const matriz = Array.from({ length: tamano }, () => new Uint8Array(tamano));
+        const esFuncion = Array.from({ length: tamano }, () => new Uint8Array(tamano));
+
+        const fijarModulo = (fila, columna, valor, funcion = true) => {
+          matriz[fila][columna] = valor;
+          if (funcion) esFuncion[fila][columna] = 1;
+        };
+
+        // Patrones de búsqueda (finders de 7x7) con separador
+        const colocarFinder = (origenFila, origenColumna) => {
+          for (let r = -1; r <= 7; r++) {
+            for (let c = -1; c <= 7; c++) {
+              const fila = origenFila + r;
+              const columna = origenColumna + c;
+              if (fila >= 0 && fila < tamano && columna >= 0 && columna < tamano) {
+                let valor = 0;
+                if (r >= 0 && r <= 6 && c >= 0 && c <= 6) {
+                  if (r === 0 || r === 6 || c === 0 || c === 6 || (r >= 2 && r <= 4 && c >= 2 && c <= 4)) {
+                    valor = 1;
+                  }
+                }
+                fijarModulo(fila, columna, valor, true);
+              }
+            }
+          }
+        };
+
+        colocarFinder(0, 0);
+        colocarFinder(0, tamano - 7);
+        colocarFinder(tamano - 7, 0);
+
+        // Patrones de alineación
+        const alineaciones = POSICIONES_ALINEACION[version - 1] || [];
+        for (let i = 0; i < alineaciones.length; i++) {
+          for (let j = 0; j < alineaciones.length; j++) {
+            const r = alineaciones[i];
+            const c = alineaciones[j];
+            if (r <= 8 && c <= 8) continue;
+            if (r <= 8 && c >= tamano - 9) continue;
+            if (r >= tamano - 9 && c <= 8) continue;
+
+            for (let dr = -2; dr <= 2; dr++) {
+              for (let dc = -2; dc <= 2; dc++) {
+                const esBorde = Math.abs(dr) === 2 || Math.abs(dc) === 2;
+                const esCentro = dr === 0 && dc === 0;
+                fijarModulo(r + dr, c + dc, esBorde || esCentro ? 1 : 0, true);
+              }
+            }
+          }
+        }
+
+        // Patrones de sincronización (timing)
+        for (let i = 8; i < tamano - 8; i++) {
+          const valor = i % 2 === 0 ? 1 : 0;
+          if (!esFuncion[6][i]) fijarModulo(6, i, valor, true);
+          if (!esFuncion[i][6]) fijarModulo(i, 6, valor, true);
+        }
+
+        // Módulo oscuro reglamentario
+        fijarModulo(4 * version + 9, 8, 1, true);
+
+        // Reserva de área para información de formato
+        for (let i = 0; i <= 8; i++) {
+          if (i !== 6) {
+            esFuncion[8][i] = 1;
+            esFuncion[i][8] = 1;
+          }
+        }
+        for (let i = 0; i < 8; i++) {
+          esFuncion[8][tamano - 1 - i] = 1;
+          esFuncion[tamano - 1 - i][8] = 1;
+        }
+
+        // Reserva de información de versión (V >= 7)
+        if (version >= 7) {
+          for (let r = 0; r < 6; r++) {
+            for (let c = 0; c < 3; c++) {
+              esFuncion[r][tamano - 11 + c] = 1;
+              esFuncion[tamano - 11 + c][r] = 1;
+            }
+          }
+        }
+
+        return { matriz, esFuncion, tamano };
+      };
+
+      const ubicarBitsDatos = (matriz, esFuncion, tamano, bits) => {
+        let indiceBit = 0;
+        let haciaArriba = true;
+
+        for (let columnaDerecha = tamano - 1; columnaDerecha > 0; columnaDerecha -= 2) {
+          if (columnaDerecha === 6) columnaDerecha = 5;
+
+          const inicioFila = haciaArriba ? tamano - 1 : 0;
+          const finFila = haciaArriba ? -1 : tamano;
+          const paso = haciaArriba ? -1 : 1;
+
+          for (let fila = inicioFila; fila !== finFila; fila += paso) {
+            for (let c = 0; c < 2; c++) {
+              const columna = columnaDerecha - c;
+              if (!esFuncion[fila][columna]) {
+                matriz[fila][columna] = indiceBit < bits.length ? bits[indiceBit++] : 0;
+              }
+            }
+          }
+          haciaArriba = !haciaArriba;
+        }
+      };
+
+      // Máscaras estándar (0 a 7)
+      const evaluarMascara = (mascara, r, c) => {
+        switch (mascara) {
+          case 0: return (r + c) % 2 === 0;
+          case 1: return r % 2 === 0;
+          case 2: return c % 3 === 0;
+          case 3: return (r + c) % 3 === 0;
+          case 4: return (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0;
+          case 5: return ((r * c) % 2) + ((r * c) % 3) === 0;
+          case 6: return (((r * c) % 2) + ((r * c) % 3)) % 2 === 0;
+          case 7: return (((r + c) % 2) + ((r * c) % 3)) % 2 === 0;
+          default: return false;
+        }
+      };
+
+      const escribirFormatoYVersion = (matriz, tamano, version, bitsFormato) => {
+        // Primera copia, alrededor del finder superior izquierdo (ISO/IEC 18004):
+        // bits 0-5 en la columna 8, bits 9-14 en la fila 8, y las esquinas del
+        // bloque de timing en la diagonal (bits 6, 7 y 8)
+        for (let i = 0; i < 6; i++) {
+          matriz[i][8] = (bitsFormato >> i) & 1;
+        }
+        matriz[7][8] = (bitsFormato >> 6) & 1;
+        matriz[8][8] = (bitsFormato >> 7) & 1;
+        matriz[8][7] = (bitsFormato >> 8) & 1;
+        for (let i = 9; i < 15; i++) {
+          matriz[8][14 - i] = (bitsFormato >> i) & 1;
+        }
+
+        // Segunda copia: bits 0-7 en la fila 8 (a la derecha del finder
+        // superior izquierdo) y bits 8-14 en la columna 8 (tira vertical
+        // inferior, encima del módulo oscuro reglamentario)
+        for (let i = 0; i < 8; i++) {
+          matriz[8][tamano - 1 - i] = (bitsFormato >> i) & 1;
+        }
+        for (let i = 8; i < 15; i++) {
+          matriz[tamano - 15 + i][8] = (bitsFormato >> i) & 1;
+        }
+
+        if (version >= 7) {
+          const bitsVer = calcularBitsVersion(version);
+          let idx = 0;
+          for (let i = 0; i < 6; i++) {
+            for (let j = 0; j < 3; j++) {
+              const bit = (bitsVer >> idx) & 1;
+              matriz[tamano - 11 + j][i] = bit;
+              matriz[i][tamano - 11 + j] = bit;
+              idx++;
+            }
+          }
+        }
+      };
+
+      // Penalizaciones según estándar ISO/IEC 18004
+      const calcularPenalizacion = (matriz, tamano) => {
+        let penalizacion = 0;
+
+        // 1. Filas y columnas con 5 o más módulos iguales consecutivos
+        for (let r = 0; r < tamano; r++) {
+          let color = matriz[r][0];
+          let longitud = 1;
+          for (let c = 1; c < tamano; c++) {
+            if (matriz[r][c] === color) {
+              longitud++;
+            } else {
+              if (longitud >= 5) penalizacion += 3 + (longitud - 5);
+              color = matriz[r][c];
+              longitud = 1;
+            }
+          }
+          if (longitud >= 5) penalizacion += 3 + (longitud - 5);
+        }
+
+        for (let c = 0; c < tamano; c++) {
+          let color = matriz[0][c];
+          let longitud = 1;
+          for (let r = 1; r < tamano; r++) {
+            if (matriz[r][c] === color) {
+              longitud++;
+            } else {
+              if (longitud >= 5) penalizacion += 3 + (longitud - 5);
+              color = matriz[r][c];
+              longitud = 1;
+            }
+          }
+          if (longitud >= 5) penalizacion += 3 + (longitud - 5);
+        }
+
+        // 2. Bloques de 2x2 del mismo color
+        for (let r = 0; r < tamano - 1; r++) {
+          for (let c = 0; c < tamano - 1; c++) {
+            const valor = matriz[r][c];
+            if (valor === matriz[r][c + 1] && valor === matriz[r + 1][c] && valor === matriz[r + 1][c + 1]) {
+              penalizacion += 3;
+            }
+          }
+        }
+
+        // 3. Patrón tipo finder (1011101) con 4 módulos claros a los lados
+        for (let r = 0; r < tamano; r++) {
+          let ventana = 0;
+          for (let c = 0; c < tamano; c++) {
+            ventana = ((ventana << 1) & 0x7FF) | matriz[r][c];
+            if (c >= 10 && (ventana === 0x05D || ventana === 0x5D0)) {
+              penalizacion += 40;
+            }
+          }
+        }
+
+        for (let c = 0; c < tamano; c++) {
+          let ventana = 0;
+          for (let r = 0; r < tamano; r++) {
+            ventana = ((ventana << 1) & 0x7FF) | matriz[r][c];
+            if (r >= 10 && (ventana === 0x05D || ventana === 0x5D0)) {
+              penalizacion += 40;
+            }
+          }
+        }
+
+        // 4. Proporción de módulos oscuros frente a claros
+        let oscuros = 0;
+        for (let r = 0; r < tamano; r++) {
+          for (let c = 0; c < tamano; c++) {
+            if (matriz[r][c] === 1) oscuros++;
+          }
+        }
+        const porcentaje = (oscuros / (tamano * tamano)) * 100;
+        const previo = Math.floor(porcentaje / 5) * 5;
+        const siguiente = previo + 5;
+        const factor = Math.min(Math.abs(previo - 50) / 5, Math.abs(siguiente - 50) / 5);
+        penalizacion += factor * 10;
+
+        return penalizacion;
+      };
+
+      // Algoritmo principal de generación
+      const generarMatrizQr = (texto, claveEc) => {
+        const bytesUtf8 = new TextEncoder().encode(texto);
+        const configEc = MAPA_EC[claveEc] ?? MAPA_EC.M;
+        const indiceEc = configEc.indice;
+
+        let version = -1;
+        for (let v = 1; v <= TABLA_VERSIONES.length; v++) {
+          const [totalCodewords, specsEc] = TABLA_VERSIONES[v - 1];
+          const [ecPorBloque, numBloques] = specsEc[indiceEc];
+          const capacidadDatos = (totalCodewords - (ecPorBloque * numBloques)) * 8;
+          const bitsConteo = v <= 9 ? 8 : 16;
+          const bitsRequeridos = 4 + bitsConteo + (bytesUtf8.length * 8);
+          if (bitsRequeridos <= capacidadDatos) {
+            version = v;
+            break;
+          }
+        }
+
+        if (version === -1) {
+          throw new Error('El texto excede la capacidad máxima disponible (hasta 458 caracteres en nivel L). Reduce la longitud del texto.');
+        }
+
+        const datosCodewords = construirFlujoDatos(bytesUtf8, version, indiceEc);
+        const bitsIntercalados = intercalarBloques(datosCodewords, version, indiceEc);
+        const { matriz: matrizBase, esFuncion, tamano } = crearMatrizBase(version);
+
+        ubicarBitsDatos(matrizBase, esFuncion, tamano, bitsIntercalados);
+
+        let mejorMascara = 0;
+        let menorPenalizacion = Infinity;
+        let mejorMatriz = null;
+
+        for (let mascara = 0; mascara < 8; mascara++) {
+          const matrizPrueba = matrizBase.map((fila) => new Uint8Array(fila));
+          for (let r = 0; r < tamano; r++) {
+            for (let c = 0; c < tamano; c++) {
+              if (!esFuncion[r][c] && evaluarMascara(mascara, r, c)) {
+                matrizPrueba[r][c] ^= 1;
+              }
+            }
+          }
+
+          const bitsFormato = calcularBitsFormato(configEc.indicador, mascara);
+          escribirFormatoYVersion(matrizPrueba, tamano, version, bitsFormato);
+
+          const penalizacion = calcularPenalizacion(matrizPrueba, tamano);
+          if (penalizacion < menorPenalizacion) {
+            menorPenalizacion = penalizacion;
+            mejorMascara = mascara;
+            mejorMatriz = matrizPrueba;
+          }
+        }
+
+        return {
+          matriz: mejorMatriz,
+          tamano,
+          version,
+          mascara: mejorMascara,
+          nivelEc: claveEc,
+          bytes: bytesUtf8.length
+        };
+      };
+
+      // --- 5. Interfaz de usuario y Canvas ---
+      const form = document.getElementById('form-qr');
+      const campoTexto = document.getElementById('campo-texto');
+      const selectorEc = document.getElementById('nivel-ec');
+      const rangoModulo = document.getElementById('tamano-modulo');
+      const salidaModulo = document.getElementById('salida-modulo');
+      const rangoMargen = document.getElementById('margen-modulos');
+      const salidaMargen = document.getElementById('salida-margen');
+      const colorOscuro = document.getElementById('color-oscuro');
+      const colorClaro = document.getElementById('color-claro');
+      const fondoTransparente = document.getElementById('fondo-transparente');
+      const mensajes = document.getElementById('mensajes');
+      const resultado = document.getElementById('resultado');
+
+      let lienzoActual = null;
+      let datosQrActual = null;
+
+      const limpiarMensajes = () => {
+        mensajes.innerHTML = '';
+      };
+
+      const mostrarError = (texto) => {
+        const parrafo = document.createElement('p');
+        parrafo.setAttribute('role', 'alert');
+        parrafo.textContent = texto;
+        mensajes.appendChild(parrafo);
+      };
+
+      const dibujarEnCanvas = (datosQr) => {
+        const tamanoModulo = Number(rangoModulo?.value ?? '8');
+        const margen = Number(rangoMargen?.value ?? '4');
+        const oscuro = colorOscuro?.value ?? '#000000';
+        const claro = colorClaro?.value ?? '#ffffff';
+        const transparente = fondoTransparente?.checked ?? false;
+
+        const totalModulos = datosQr.tamano + margen * 2;
+        const pixeles = totalModulos * tamanoModulo;
+
+        const lienzo = document.createElement('canvas');
+        lienzo.className = 'qrgen__lienzo';
+        lienzo.width = pixeles;
+        lienzo.height = pixeles;
+        lienzo.setAttribute('role', 'img');
+        lienzo.setAttribute('aria-label', `Código QR generado, versión ${datosQr.version}`);
+
+        const ctx = lienzo.getContext('2d');
+        if (!ctx) return null;
+
+        ctx.clearRect(0, 0, pixeles, pixeles);
+
+        if (!transparente) {
+          ctx.fillStyle = claro;
+          ctx.fillRect(0, 0, pixeles, pixeles);
+        }
+
+        ctx.fillStyle = oscuro;
+        for (let r = 0; r < datosQr.tamano; r++) {
+          for (let c = 0; c < datosQr.tamano; c++) {
+            if (datosQr.matriz[r][c] === 1) {
+              const x = (c + margen) * tamanoModulo;
+              const y = (r + margen) * tamanoModulo;
+              ctx.fillRect(x, y, tamanoModulo, tamanoModulo);
+            }
+          }
+        }
+
+        return { lienzo, pixeles };
+      };
+
+      const descargarPng = () => {
+        if (!lienzoActual || !datosQrActual) return;
+        lienzoActual.toBlob((blob) => {
+          if (!blob) {
+            mostrarError('No se pudo generar la imagen PNG para descargar.');
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const enlace = document.createElement('a');
+          enlace.href = url;
+          enlace.download = `codigo-qr-v${datosQrActual.version}-${datosQrActual.nivelEc}.png`;
+          document.body.appendChild(enlace);
+          enlace.click();
+          enlace.remove();
+          window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }, 'image/png');
+      };
+
+      const copiarAlPortapapeles = async () => {
+        const aviso = document.getElementById('aviso-portapapeles');
+        if (!lienzoActual) return;
+        try {
+          if (!window.ClipboardItem || !navigator.clipboard?.write) {
+            if (aviso) aviso.textContent = 'Tu navegador no admite copiar imágenes directamente; usa el botón de descarga.';
+            return;
+          }
+          const blob = await new Promise((resolve, reject) => {
+            lienzoActual.toBlob((resultado) => {
+              if (resultado) resolve(resultado);
+              else reject(new Error('Blob no disponible'));
+            }, 'image/png');
+          });
+          await navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]);
+          if (aviso) aviso.textContent = 'Imagen copiada al portapapeles.';
+        } catch (error) {
+          if (aviso) aviso.textContent = 'No se pudo copiar al portapapeles. Puedes descargar la imagen con el botón correspondiente.';
+        }
+      };
+
+      const pintarResultado = (datosQr) => {
+        if (!resultado) return;
+        resultado.innerHTML = '';
+
+        const dibujo = dibujarEnCanvas(datosQr);
+        if (!dibujo) {
+          mostrarError('Error al crear el contexto de dibujo del lienzo.');
+          return;
+        }
+
+        lienzoActual = dibujo.lienzo;
+        datosQrActual = datosQr;
+
+        const panel = document.createElement('div');
+        panel.className = 'qrgen__panel';
+
+        const marcoLienzo = document.createElement('div');
+        marcoLienzo.className = 'qrgen__marco-lienzo';
+        marcoLienzo.appendChild(dibujo.lienzo);
+
+        const detalles = document.createElement('div');
+        detalles.className = 'qrgen__detalles';
+
+        const listaDatos = document.createElement('ul');
+        listaDatos.className = 'qrgen__datos';
+        const filas = [
+          `Versión: ${datosQr.version} (${datosQr.tamano} × ${datosQr.tamano} módulos)`,
+          `Resolución total: ${dibujo.pixeles} × ${dibujo.pixeles} px`,
+          `Corrección de errores: nivel ${datosQr.nivelEc} (${MAPA_EC[datosQr.nivelEc]?.nombre ?? ''})`,
+          `Máscara óptima: patrón #${datosQr.mascara}`,
+          `Longitud de datos: ${datosQr.bytes} byte(s) codificados`
+        ];
+        filas.forEach((texto) => {
+          const item = document.createElement('li');
+          item.textContent = texto;
+          listaDatos.appendChild(item);
+        });
+
+        const acciones = document.createElement('div');
+        acciones.className = 'qrgen__acciones';
+
+        const botonDescargar = document.createElement('button');
+        botonDescargar.type = 'button';
+        botonDescargar.className = 'btn';
+        botonDescargar.textContent = 'Descargar PNG';
+        botonDescargar.addEventListener('click', descargarPng);
+
+        const botonCopiar = document.createElement('button');
+        botonCopiar.type = 'button';
+        botonCopiar.className = 'btn';
+        botonCopiar.textContent = 'Copiar imagen';
+        botonCopiar.addEventListener('click', copiarAlPortapapeles);
+
+        acciones.append(botonDescargar, botonCopiar);
+
+        const aviso = document.createElement('p');
+        aviso.className = 'qrgen__aviso';
+        aviso.id = 'aviso-portapapeles';
+        aviso.setAttribute('aria-live', 'polite');
+
+        detalles.append(listaDatos, acciones, aviso);
+        panel.append(marcoLienzo, detalles);
+        resultado.appendChild(panel);
+      };
+
+      const ejecutarGeneracion = () => {
+        limpiarMensajes();
+        const texto = campoTexto?.value?.trim() ?? '';
+        if (!texto) {
+          mostrarError('Por favor ingresa un texto o enlace para generar el código QR.');
+          return;
+        }
+
+        const nivelEc = selectorEc?.value ?? 'M';
+
+        try {
+          const datosQr = generarMatrizQr(texto, nivelEc);
+          pintarResultado(datosQr);
+        } catch (error) {
+          mostrarError(error instanceof Error ? error.message : 'Ocurrió un error inesperado al generar el código QR.');
+        }
+      };
+
+      form?.addEventListener('submit', (evento) => {
+        evento.preventDefault();
+        ejecutarGeneracion();
+      });
+
+      rangoModulo?.addEventListener('input', () => {
+        if (salidaModulo) salidaModulo.textContent = `${rangoModulo.value} px`;
+        if (datosQrActual) pintarResultado(datosQrActual);
+      });
+
+      rangoMargen?.addEventListener('input', () => {
+        if (salidaMargen) salidaMargen.textContent = rangoMargen.value;
+        if (datosQrActual) pintarResultado(datosQrActual);
+      });
+
+      colorClaro?.addEventListener('input', () => {
+        if (datosQrActual) pintarResultado(datosQrActual);
+      });
+
+      colorOscuro?.addEventListener('input', () => {
+        if (datosQrActual) pintarResultado(datosQrActual);
+      });
+
+      fondoTransparente?.addEventListener('change', () => {
+        if (colorClaro) colorClaro.disabled = fondoTransparente.checked;
+        if (datosQrActual) pintarResultado(datosQrActual);
+      });
+    })();
+  </script>
+</body>
+</html>

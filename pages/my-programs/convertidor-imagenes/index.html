@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convertidor de imágenes — Programas pfd1795</title>
+  <meta name="description" content="Carga una imagen local, redimensiónala y conviértela entre PNG, JPEG y WebP sin subir nada a ningún servidor.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../programas.css">
+  <style>
+    /* Estilos propios de la herramienta. Usa los tokens de base.css. */
+    .imgconv__fieldset {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin: 0 0 var(--space-4);
+      padding: var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+      min-width: 0;
+    }
+
+    .imgconv__fieldset > legend {
+      padding: 0 var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .imgconv__campos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-3) var(--space-4);
+    }
+
+    .imgconv__campo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      min-width: 0;
+    }
+
+    .imgconv__campo--fila {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .imgconv__selector,
+    .imgconv__entrada {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      font: inherit;
+      color: var(--color-text);
+      background-color: var(--color-background);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .imgconv__rango {
+      width: 100%;
+      accent-color: var(--theme-color);
+      cursor: pointer;
+    }
+
+    .imgconv__casilla {
+      accent-color: var(--theme-color);
+    }
+
+    .imgconv__nota {
+      margin: 0;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .imgconv__boton {
+      margin-top: var(--space-2);
+    }
+
+    .imgconv__zona {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background-color: var(--color-background);
+      border: var(--border-normal) dashed var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: border-color var(--transition-fast) var(--ease-in-out);
+    }
+
+    .imgconv__zona--sobre {
+      border-color: var(--theme-color);
+    }
+
+    .imgconv__zona-texto {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .imgconv__archivo {
+      font: inherit;
+      color: var(--color-text);
+    }
+
+    .imgconv__panel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .imgconv__panel[hidden] {
+      display: none;
+    }
+
+    /* Tablero de ajedrez para ver la transparencia de la imagen. */
+    .imgconv__miniatura {
+      max-width: 10rem;
+      max-height: 10rem;
+      background-image: linear-gradient(45deg, var(--color-border) 25%, transparent 25%, transparent 75%, var(--color-border) 75%),
+        linear-gradient(45deg, var(--color-border) 25%, transparent 25%, transparent 75%, var(--color-border) 75%);
+      background-size: 8px 8px;
+      background-position: 0 0, 4px 4px;
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .imgconv__datos {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .imgconv__resultado {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-radius: var(--radius-lg);
+    }
+
+    .imgconv__vacio {
+      margin: 0;
+      color: var(--color-text-secondary);
+    }
+
+    .imgconv__mensajes p {
+      margin: 0 0 var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background-color: var(--color-surface);
+      border: var(--border-normal) solid var(--color-border);
+      border-inline-start: 4px solid var(--theme-color);
+      border-radius: var(--radius-md);
+    }
+
+    .imgconv__descarga {
+      margin: var(--space-3) 0 0;
+    }
+
+    @media (max-width: 480px) {
+      .imgconv__fieldset {
+        padding: var(--space-2);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .imgconv__zona {
+        transition: none;
+      }
+    }
+  </style>
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <h1>Convertidor de imágenes</h1>
+      <p>Carga una imagen desde tu dispositivo (nunca sale de tu navegador), ajústala al tamaño que
+        necesites y conviértela entre PNG, JPEG y WebP. El archivo resultante se genera en tu propio
+        equipo y lo descargas directamente.</p>
+
+      <section aria-labelledby="entrada-titulo">
+        <h2 id="entrada-titulo">Entrada</h2>
+        <form id="form-convertidor" novalidate>
+          <fieldset class="imgconv__fieldset">
+            <legend>Imagen</legend>
+            <label class="imgconv__zona" for="archivo" id="zona-archivo">
+              <input type="file" id="archivo" class="imgconv__archivo" accept="image/*">
+              <span class="imgconv__zona-texto">Arrastra una imagen aquí o elige un archivo (PNG, JPEG, WebP, GIF…).</span>
+            </label>
+
+            <div class="imgconv__panel" id="panel-imagen" hidden>
+              <img id="miniatura-original" class="imgconv__miniatura" src="" alt="">
+              <ul id="datos-archivo" class="imgconv__datos"></ul>
+              <button type="button" class="btn" id="quitar-imagen">Quitar imagen</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="imgconv__fieldset">
+            <legend>Formato de salida</legend>
+            <div class="imgconv__campos">
+              <div class="imgconv__campo">
+                <label for="formato">Formato</label>
+                <select id="formato" class="imgconv__selector">
+                  <option value="image/png" selected>PNG (sin pérdida, admite transparencia)</option>
+                  <option value="image/jpeg">JPEG (más ligero, sin transparencia)</option>
+                  <option value="image/webp">WebP (equilibrado)</option>
+                </select>
+              </div>
+              <div class="imgconv__campo">
+                <label for="calidad">Calidad: <output id="calidad-valor" for="calidad">90 %</output></label>
+                <input type="range" id="calidad" class="imgconv__rango" min="1" max="100" step="1" value="90">
+              </div>
+            </div>
+            <p class="imgconv__nota" id="nota-jpeg" hidden>El formato JPEG no admite transparencia: las zonas transparentes se rellenan de blanco.</p>
+            <p class="imgconv__nota">La calidad solo afecta a JPEG y WebP; PNG siempre se guarda sin pérdida.</p>
+          </fieldset>
+
+          <fieldset class="imgconv__fieldset">
+            <legend>Dimensiones</legend>
+            <div class="imgconv__campos">
+              <div class="imgconv__campo">
+                <label for="anchura">Ancho (px)</label>
+                <input type="number" id="anchura" class="imgconv__entrada" min="1" max="8192" step="1" value="512">
+              </div>
+              <div class="imgconv__campo">
+                <label for="altura">Alto (px)</label>
+                <input type="number" id="altura" class="imgconv__entrada" min="1" max="8192" step="1" value="512">
+              </div>
+              <div class="imgconv__campo imgconv__campo--fila">
+                <input type="checkbox" id="mantener-proporcion" class="imgconv__casilla" checked>
+                <label for="mantener-proporcion">Mantener proporción</label>
+              </div>
+              <div class="imgconv__campo imgconv__campo--fila">
+                <button type="button" class="btn" id="tamano-original">Usar tamaño original</button>
+              </div>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="btn imgconv__boton">Convertir imagen</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="resultado-titulo" aria-live="polite">
+        <h2 id="resultado-titulo">Resultado</h2>
+        <div id="mensajes" class="imgconv__mensajes"></div>
+        <div id="resultado" class="imgconv__resultado" role="status">
+          <p class="imgconv__vacio">Convierte una imagen para ver aquí el archivo resultante y descargarlo.</p>
+        </div>
+      </section>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item" href="../../my-studies/index.html">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+
+  <script>
+    // Lógica de la herramienta: FileReader + canvas + toBlob, todo local.
+    (function () {
+      'use strict';
+
+      const form = document.getElementById('form-convertidor');
+      const zona = document.getElementById('zona-archivo');
+      const campoArchivo = document.getElementById('archivo');
+      const panelImagen = document.getElementById('panel-imagen');
+      const miniaturaOriginal = document.getElementById('miniatura-original');
+      const datosArchivo = document.getElementById('datos-archivo');
+      const botonQuitar = document.getElementById('quitar-imagen');
+
+      const formato = document.getElementById('formato');
+      const calidad = document.getElementById('calidad');
+      const calidadValor = document.getElementById('calidad-valor');
+      const notaJpeg = document.getElementById('nota-jpeg');
+
+      const anchura = document.getElementById('anchura');
+      const altura = document.getElementById('altura');
+      const mantenerProporcion = document.getElementById('mantener-proporcion');
+      const botonTamanoOriginal = document.getElementById('tamano-original');
+
+      const mensajes = document.getElementById('mensajes');
+      const resultado = document.getElementById('resultado');
+
+      let imagenOriginal = null;
+      let archivoOriginal = null;
+      let datosImagen = null;
+      let urlDescarga = null;
+
+      const ETIQUETAS_FORMATO = { 'image/png': 'PNG', 'image/jpeg': 'JPEG', 'image/webp': 'WebP' };
+      const EXTENSIONES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
+
+      const limpiarMensajes = () => {
+        mensajes.innerHTML = '';
+      };
+
+      const mostrarError = (texto) => {
+        const parrafo = document.createElement('p');
+        parrafo.setAttribute('role', 'alert');
+        parrafo.textContent = texto;
+        mensajes.appendChild(parrafo);
+      };
+
+      const formatearBytes = (bytes) => {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+      };
+
+      const nombreResultado = () => {
+        const base = (archivoOriginal?.name ?? 'imagen').replace(/\.[^.]+$/, '');
+        return `${base}.${EXTENSIONES[formato?.value] ?? 'png'}`;
+      };
+
+      const pintarPanelImagen = () => {
+        if (!panelImagen) return;
+        panelImagen.hidden = !imagenOriginal;
+        if (!imagenOriginal || !archivoOriginal) return;
+        if (miniaturaOriginal) miniaturaOriginal.src = datosImagen ?? '';
+        if (datosArchivo) {
+          datosArchivo.innerHTML = '';
+          const filas = [
+            `Nombre: ${archivoOriginal.name}`,
+            `Tipo: ${archivoOriginal.type || 'desconocido'}`,
+            `Dimensiones: ${imagenOriginal.naturalWidth} × ${imagenOriginal.naturalHeight} px`,
+            `Tamaño: ${formatearBytes(archivoOriginal.size)}`
+          ];
+          filas.forEach((texto) => {
+            const elemento = document.createElement('li');
+            elemento.textContent = texto;
+            datosArchivo.appendChild(elemento);
+          });
+        }
+      };
+
+      const reiniciarResultado = () => {
+        if (urlDescarga) {
+          URL.revokeObjectURL(urlDescarga);
+          urlDescarga = null;
+        }
+        if (resultado) {
+          resultado.innerHTML = '';
+          const vacio = document.createElement('p');
+          vacio.className = 'imgconv__vacio';
+          vacio.textContent = 'Convierte una imagen para ver aquí el archivo resultante y descargarlo.';
+          resultado.appendChild(vacio);
+        }
+      };
+
+      const restablecerTamanoOriginal = () => {
+        if (!imagenOriginal) return;
+        if (anchura) anchura.value = String(imagenOriginal.naturalWidth);
+        if (altura) altura.value = String(imagenOriginal.naturalHeight);
+      };
+
+      const establecerImagen = (archivo) => {
+        limpiarMensajes();
+        if (!archivo) return;
+        if (!archivo.type.startsWith('image/')) {
+          mostrarError('El archivo seleccionado no es una imagen.');
+          return;
+        }
+
+        const lector = new FileReader();
+        lector.addEventListener('error', () => mostrarError('No se pudo leer el archivo seleccionado.'));
+        lector.addEventListener('load', () => {
+          const imagen = new Image();
+          imagen.addEventListener('error', () => mostrarError('El archivo no se pudo abrir como imagen: puede estar dañado o ser de un formato no compatible.'));
+          imagen.addEventListener('load', () => {
+            imagenOriginal = imagen;
+            archivoOriginal = archivo;
+            datosImagen = String(lector.result ?? '');
+            pintarPanelImagen();
+            restablecerTamanoOriginal();
+            reiniciarResultado();
+          });
+          imagen.src = String(lector.result ?? '');
+        });
+        lector.readAsDataURL(archivo);
+      };
+
+      const quitarImagen = () => {
+        imagenOriginal = null;
+        archivoOriginal = null;
+        datosImagen = null;
+        if (campoArchivo) campoArchivo.value = '';
+        pintarPanelImagen();
+        reiniciarResultado();
+        limpiarMensajes();
+      };
+
+      const proporcionOriginal = () => {
+        if (!imagenOriginal || !imagenOriginal.naturalHeight) return 1;
+        return imagenOriginal.naturalWidth / imagenOriginal.naturalHeight;
+      };
+
+      const ajustarProporcion = (campoModificado) => {
+        if (!mantenerProporcion?.checked || !imagenOriginal) return;
+        const ratio = proporcionOriginal();
+        if (campoModificado === 'anchura' && anchura && altura) {
+          const nuevoAncho = Number(anchura.value);
+          if (nuevoAncho > 0) altura.value = String(Math.max(1, Math.round(nuevoAncho / ratio)));
+        } else if (campoModificado === 'altura' && anchura && altura) {
+          const nuevaAltura = Number(altura.value);
+          if (nuevaAltura > 0) anchura.value = String(Math.max(1, Math.round(nuevaAltura * ratio)));
+        }
+      };
+
+      const actualizarFormato = () => {
+        const esPng = formato?.value === 'image/png';
+        if (calidad) calidad.disabled = esPng;
+        if (notaJpeg) notaJpeg.hidden = formato?.value !== 'image/jpeg';
+      };
+
+      const pintarResultado = (tipoSalida, ancho, alto, blob) => {
+        if (!resultado) return;
+        resultado.innerHTML = '';
+
+        const panel = document.createElement('div');
+        panel.className = 'imgconv__panel';
+
+        const miniatura = document.createElement('img');
+        miniatura.className = 'imgconv__miniatura';
+        miniatura.src = urlDescarga ?? '';
+        miniatura.alt = `Vista previa de la imagen convertida a ${ETIQUETAS_FORMATO[tipoSalida] ?? tipoSalida}`;
+
+        const datos = document.createElement('ul');
+        datos.className = 'imgconv__datos';
+        const filas = [
+          `Archivo: ${nombreResultado()}`,
+          `Formato: ${ETIQUETAS_FORMATO[tipoSalida] ?? tipoSalida}`,
+          `Dimensiones: ${ancho} × ${alto} px`,
+          `Tamaño nuevo: ${formatearBytes(blob.size)}`,
+          archivoOriginal ? `Tamaño original: ${formatearBytes(archivoOriginal.size)}` : ''
+        ];
+        filas.filter(Boolean).forEach((texto) => {
+          const elemento = document.createElement('li');
+          elemento.textContent = texto;
+          datos.appendChild(elemento);
+        });
+
+        panel.append(miniatura, datos);
+
+        const descarga = document.createElement('p');
+        descarga.className = 'imgconv__descarga';
+        const enlace = document.createElement('a');
+        enlace.className = 'btn';
+        enlace.href = urlDescarga ?? '#';
+        enlace.download = nombreResultado();
+        enlace.textContent = `Descargar ${ETIQUETAS_FORMATO[tipoSalida] ?? 'imagen'}`;
+        descarga.appendChild(enlace);
+
+        resultado.append(panel, descarga);
+      };
+
+      const convertir = () => {
+        limpiarMensajes();
+        if (!imagenOriginal) {
+          mostrarError('Carga primero una imagen para poder convertirla.');
+          return;
+        }
+
+        const ancho = Number(anchura?.value ?? '0');
+        const alto = Number(altura?.value ?? '0');
+        if (!Number.isFinite(ancho) || ancho < 1 || !Number.isFinite(alto) || alto < 1) {
+          mostrarError('Las dimensiones deben ser números mayores que cero.');
+          return;
+        }
+        if (ancho > 8192 || alto > 8192) {
+          mostrarError('El tamaño máximo permitido es de 8192 píxeles por lado.');
+          return;
+        }
+
+        const tipoSalida = formato?.value ?? 'image/png';
+        const lienzo = document.createElement('canvas');
+        lienzo.width = ancho;
+        lienzo.height = alto;
+        const contexto = lienzo.getContext('2d');
+        if (!contexto) {
+          mostrarError('Tu navegador no admite el dibujado en canvas necesario para convertir.');
+          return;
+        }
+
+        if (tipoSalida === 'image/jpeg') {
+          contexto.fillStyle = '#ffffff';
+          contexto.fillRect(0, 0, ancho, alto);
+        }
+        contexto.drawImage(imagenOriginal, 0, 0, ancho, alto);
+
+        const valorCalidad = tipoSalida === 'image/png' ? undefined : Number(calidad?.value ?? '90') / 100;
+        lienzo.toBlob((blob) => {
+          if (!blob) {
+            mostrarError('No se pudo generar el archivo convertido. Prueba con un tamaño menor.');
+            return;
+          }
+          if (urlDescarga) URL.revokeObjectURL(urlDescarga);
+          urlDescarga = URL.createObjectURL(blob);
+          pintarResultado(tipoSalida, ancho, alto, blob);
+        }, tipoSalida, valorCalidad);
+      };
+
+      form?.addEventListener('submit', (evento) => {
+        evento.preventDefault();
+        convertir();
+      });
+
+      campoArchivo?.addEventListener('change', () => {
+        establecerImagen(campoArchivo.files?.[0] ?? null);
+      });
+
+      zona?.addEventListener('dragover', (evento) => {
+        evento.preventDefault();
+        zona.classList.add('imgconv__zona--sobre');
+      });
+      zona?.addEventListener('dragleave', () => zona.classList.remove('imgconv__zona--sobre'));
+      zona?.addEventListener('drop', (evento) => {
+        evento.preventDefault();
+        zona.classList.remove('imgconv__zona--sobre');
+        if (campoArchivo) campoArchivo.value = '';
+        establecerImagen(evento.dataTransfer?.files?.[0] ?? null);
+      });
+
+      botonQuitar?.addEventListener('click', () => quitarImagen());
+
+      botonTamanoOriginal?.addEventListener('click', () => restablecerTamanoOriginal());
+
+      anchura?.addEventListener('input', () => ajustarProporcion('anchura'));
+      altura?.addEventListener('input', () => ajustarProporcion('altura'));
+
+      mantenerProporcion?.addEventListener('change', () => ajustarProporcion('anchura'));
+
+      formato?.addEventListener('change', () => actualizarFormato());
+
+      calidad?.addEventListener('input', () => {
+        if (calidadValor) calidadValor.textContent = `${calidad.value} %`;
+      });
+
+      actualizarFormato();
+      reiniciarResultado();
+    })();
+  </script>
+</body>
+</html>

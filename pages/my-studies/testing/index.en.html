@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Automated testing — Computer science studies</title>
+  <meta name="description" content="Automated tests: unit, integration and end-to-end, the testing pyramid, assertions, test doubles, coverage and running them in continuous integration.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Development tools</p>
+          <h1>Automated testing</h1>
+          <p class="entrada">
+            An automated test is a program that checks another program and decides whether the
+            result is correct without human intervention. Chosen well, tests turn the fear of
+            touching code into the confidence to change it: they fail quickly, point to the exact
+            spot and run the same on everyone's laptop and on the continuous integration server.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">In 5 points</h2>
+          <ul>
+            <li>A test is code that verifies code: it sets up a situation, performs an action and compares the result with what was expected.</li>
+            <li>Unit tests check isolated pieces, integration tests verify that several pieces cooperate, and end-to-end tests walk through a complete flow from the interface.</li>
+            <li>A healthy pyramid has many unit tests, fewer integration tests and a few end-to-end tests: the first are fast and precise, the last are slow and fragile.</li>
+            <li>A good test names the behaviour, has a single reason to fail and does not depend on execution order, the clock or external data.</li>
+            <li>Coverage looks at which code ran, not what was checked: it is useful for finding gaps, not as a goal in itself.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is an automated test?</a></li>
+            <li><a href="#por-que">Why automate?</a></li>
+            <li><a href="#piramide">The testing pyramid</a></li>
+            <li><a href="#unitarias">Unit tests</a></li>
+            <li><a href="#integracion">Integration tests</a></li>
+            <li><a href="#e2e">End-to-end tests</a></li>
+            <li><a href="#diseno">How to write a good test</a></li>
+            <li><a href="#dobles">Test doubles</a></li>
+            <li><a href="#cobertura">Coverage and quality</a></li>
+            <li><a href="#interfaz">Interface tests</a></li>
+            <li><a href="#ci">Tests in continuous integration</a></li>
+            <li><a href="#errores-comunes">Common mistakes</a></li>
+            <li><a href="#referencia">Quick reference</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is an automated test?</h2>
+          <p>
+            A <strong>test case</strong> describes a starting situation, an action and the expected
+            result. Automating it means writing that description as code so the machine can repeat
+            it. The piece being checked is usually called the <em>subject under test</em>, and the
+            final check is an <strong>assertion</strong>: a statement that must hold or the test
+            fails.
+          </p>
+          <pre><code>import test from 'node:test';
+import assert from 'node:assert/strict';
+import { cartTotal } from '../cart.js';
+
+test('adds the prices and applies the discount', () => {
+  const cart = [
+    { price: 10, quantity: 2 },
+    { price: 5, quantity: 1 }
+  ];
+
+  const total = cartTotal(cart, 0.1);
+
+  assert.equal(total, 22.5);
+});</code></pre>
+          <p>
+            Here the situation is the cart, the action is calling <code>cartTotal</code> and the
+            assertion compares the result with <code>22.5</code>. If someone changes the calculation
+            and the total is no longer that, the test fails at the exact point of the change.
+          </p>
+          <p class="nota">
+            A test does not prove that the code is correct: it shows that, for the cases it
+            describes, the behaviour still matches what was agreed. Its value lies in being cheap
+            and fast to repeat every time the code changes.
+          </p>
+        </section>
+
+        <section id="por-que" aria-labelledby="por-que-titulo">
+          <h2 id="por-que-titulo">Why automate?</h2>
+          <p>
+            Checking by hand that a page still works after every change is possible at first and
+            impossible after a few months. Automated tests provide three things manual review
+            cannot guarantee:
+          </p>
+          <ul>
+            <li><strong>Regression detection</strong>: an apparently harmless change that breaks an old feature is found before release.</li>
+            <li><strong>Confidence to refactor</strong>: you can restructure code knowing that observable behaviour is still being checked.</li>
+            <li><strong>Executable documentation</strong>: test names describe concrete use cases and stay in sync with the code.</li>
+          </ul>
+          <p>
+            Tests have a cost too: they must be written, read and maintained, and sometimes they
+            fail because of a legitimate change. That is why you start with the important
+            behaviours, not every line of the program.
+          </p>
+        </section>
+
+        <section id="piramide" aria-labelledby="piramide-titulo">
+          <h2 id="piramide-titulo">The testing pyramid</h2>
+          <p>
+            Not all tests cost the same. The usual way to picture it is a pyramid: a wide base of
+            fast tests and a narrow tip of slow ones.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Type</th>
+                <th scope="col">What it checks</th>
+                <th scope="col">Speed and stability</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Unit</td>
+                <td>An isolated function or class.</td>
+                <td>Very fast and deterministic.</td>
+              </tr>
+              <tr>
+                <td>Integration</td>
+                <td>That several modules cooperate: code, database, queue or API.</td>
+                <td>Fast or medium; somewhat more fragile.</td>
+              </tr>
+              <tr>
+                <td>End-to-end</td>
+                <td>A complete user flow through the interface.</td>
+                <td>Slow and more prone to intermittent failures.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            If the pyramid is inverted and almost everything is tested from the browser, each run
+            takes minutes, failures are hard to locate and the team stops trusting the result.
+            The practical rule is to check each behaviour at the lowest level that can truly
+            verify it.
+          </p>
+        </section>
+
+        <section id="unitarias" aria-labelledby="unitarias-titulo">
+          <h2 id="unitarias-titulo">Unit tests</h2>
+          <p>
+            A unit test exercises a small piece without starting the whole application. To be
+            stable, the piece must not depend on the current time, the network, a file or the order
+            in which other tests ran. If it does, replace that dependency with a double.
+          </p>
+          <pre><code>test('rejects a negative quantity', () => {
+  const cart = [{ price: 10, quantity: -1 }];
+
+  assert.throws(() => cartTotal(cart), /quantity/);
+});</code></pre>
+          <p>
+            The <strong>arrange, act, assert</strong> (AAA) pattern helps keep the structure: first
+            the data is prepared, then the function is called and finally
+            the assertions are made. It is worth leaving a blank line between the three parts so
+            the case can be read at a glance.
+          </p>
+          <p class="aviso">
+            You do not need a test for every function. A private function used only from another
+            one is covered by testing the public behaviour; testing it separately couples the test
+            to implementation details that will change.
+          </p>
+        </section>
+
+        <section id="integracion" aria-labelledby="integracion-titulo">
+          <h2 id="integracion-titulo">Integration tests</h2>
+          <p>
+            Integration tests answer a different question: «do these pieces work together?». They
+            check, for example, that a route calls the right service, that a SQL query returns what
+            was expected or that a published message reaches its consumer.
+          </p>
+          <p>
+            The boundaries of the system are the important ones here. You can use a real database
+            in a test environment, a local HTTP server or an in-memory repository with the same
+            contract. What you avoid is configuration shared between tests: each one should create
+            its own data and clean it up afterwards.
+          </p>
+          <pre><code>test('saves the user and returns their id', async () => {
+  const saved = [];
+  const repository = {
+    save: async (user) => {
+      saved.push(user);
+      return 'u-1';
+    }
+  };
+
+  const id = await registerUser('ana@example.com', repository);
+
+  assert.equal(id, 'u-1');
+  assert.equal(saved[0].email, 'ana@example.com');
+});</code></pre>
+          <p>
+            This test needs no database because it injects a fake repository with the same
+            contract. That makes it fast; a test with the real database would also check the query
+            and the constraints.
+          </p>
+        </section>
+
+        <section id="e2e" aria-labelledby="e2e-titulo">
+          <h2 id="e2e-titulo">End-to-end tests</h2>
+          <p>
+            An end-to-end test, or <em>E2E</em>, drives the real application through the interface:
+            it opens a page, fills in a form and checks the visible result. It is the one that most
+            resembles what a person does and the best at detecting integration problems between
+            frontend, backend and deployment.
+          </p>
+          <pre><code>test('the user can sign in', async ({ page }) =&gt; {
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('user@example.com');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+});</code></pre>
+          <p>
+            Browser tools such as Playwright or Cypress enable this style of test. A few decisions
+            make the difference:
+          </p>
+          <ul>
+            <li>Find elements by role, label or visible text, not by CSS classes that change with the design.</li>
+            <li>Wait for an observable condition instead of using fixed pauses.</li>
+            <li>Prepare data through the API or database before opening the page, rather than doing setup clicks in every test.</li>
+            <li>Save screenshots and traces on failure, to understand the browser state without reproducing it by hand.</li>
+          </ul>
+          <p class="nota">
+            An E2E flow does not replace unit tests: when it fails, it usually says «something
+            broke», not which specific function. That is why they are reserved for critical product
+            journeys: sign-up, checkout, publishing.
+          </p>
+        </section>
+
+        <section id="diseno" aria-labelledby="diseno-titulo">
+          <h2 id="diseno-titulo">How to write a good test</h2>
+          <p>
+            A useful test reads like an example. If its name does not tell you which behaviour it
+            describes, someone will have to read the code to understand it. A few simple rules
+            improve the suite a lot:
+          </p>
+          <ul>
+            <li><strong>Name the behaviour</strong>: «applies the discount to the total» says more than «test 2».</li>
+            <li><strong>One reason to fail</strong>: if a test checks three different things, a failure does not tell you which one broke.</li>
+            <li><strong>Assert on results</strong>, not on how they are computed: changing the algorithm should not break the test if the result is still correct.</li>
+            <li><strong>Independence</strong>: any test should be able to run on its own and in any order.</li>
+            <li><strong>Minimal, explicit data</strong>: only the fields that affect the result; the rest is built with factories or generators.</li>
+            <li><strong>No uncontrolled dates or random numbers</strong>: fix the clock or inject a deterministic generator.</li>
+          </ul>
+          <p>
+            When a test fails in continuous integration but not locally, it most likely depends on
+            something in the environment: time zone, language, file order or persistent state. Look
+            for that dependency before rerunning it hoping it passes.
+          </p>
+        </section>
+
+        <section id="dobles" aria-labelledby="dobles-titulo">
+          <h2 id="dobles-titulo">Test doubles</h2>
+          <p>
+            A <strong>double</strong> replaces a real dependency during a test. Names vary by
+            framework, but the ideas are these:
+          </p>
+          <ul>
+            <li><strong>Fake</strong>: a simple implementation of the same contract, such as an in-memory repository.</li>
+            <li><strong>Stub</strong>: returns prepared values and does not check how it is used.</li>
+            <li><strong>Spy</strong>: records calls so they can be reviewed afterwards.</li>
+            <li><strong>Mock</strong>: additionally requires certain calls to happen and usually fails if they do not.</li>
+          </ul>
+          <p>
+            Use the simplest double that does the job. If you only need a function to return a
+            value, a stub is enough. If you need to check that an email was sent, a spy or a mock
+            makes sense. Replacing too many pieces with mocks produces tests that pass even when the
+            application is broken: they check calls, not behaviour.
+          </p>
+          <p class="aviso">
+            It is not worth mocking what is not yours, such as the standard library or the
+            framework. Those libraries already have their own tests; mocking them only adds
+            fragility.
+          </p>
+        </section>
+
+        <section id="cobertura" aria-labelledby="cobertura-titulo">
+          <h2 id="cobertura-titulo">Coverage and quality</h2>
+          <p>
+            Coverage measures which part of the code ran during the tests: lines, branches,
+            functions or statements. It is a useful signal for finding untested areas, not a
+            measure of quality.
+          </p>
+          <pre><code>node --test --experimental-test-coverage
+npm test -- --coverage</code></pre>
+          <p>
+            100% line coverage can coexist with tests that check nothing: just call every function
+            without assertions. Conversely, an uncovered area is not always a problem, for example
+            defensive code that cannot be reached.
+          </p>
+          <p>
+            To judge a test suite properly you can use <em>mutation testing</em>: the tool changes a
+            condition or operator in the code and checks whether any test fails. If none fails, that
+            behaviour was not protected. It is slower than coverage but answers the right question.
+          </p>
+        </section>
+
+        <section id="interfaz" aria-labelledby="interfaz-titulo">
+          <h2 id="interfaz-titulo">Interface tests</h2>
+          <p>
+            In a web interface you can test a piece without a browser by mounting the DOM with a
+            testing library and checking what the user can see and do: a visible error message, a
+            disabled button, the focus after closing a dialog.
+          </p>
+          <p>
+            These tests resemble unit tests in speed and E2E tests in judgement: they interact with
+            labels and roles, not internal component details. For example, they check that typing
+            into a search field shows the filtered result and updates the counter, regardless of
+            which internal function computes it.
+          </p>
+          <p class="nota">
+            Accessibility and testing get along well: if a test finds a button by its accessible
+            name, that is the same name a screen reader uses. A selector that only works through a
+            CSS class does not provide that signal.
+          </p>
+        </section>
+
+        <section id="ci" aria-labelledby="ci-titulo">
+          <h2 id="ci-titulo">Tests in continuous integration</h2>
+          <p>
+            Tests nobody runs become outdated. Continuous integration runs them on every change and
+            turns the result into a condition for merging: if they fail, the change does not go in.
+          </p>
+          <pre><code>name: tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test</code></pre>
+          <p>
+            Order matters: fast checks come first to give feedback early, and the build or browser
+            tests run afterwards. It is worth pinning the runtime version and using a strict
+            dependency install so a failure does not depend on an accidental update.
+          </p>
+          <p>
+            Flaky tests deserve immediate attention. A test that fails once every twenty runs
+            trains the team to ignore the result and destroys the value of the whole suite. Isolate
+            it, fix it or remove it; do not leave it for later.
+          </p>
+        </section>
+
+        <section id="errores-comunes" aria-labelledby="errores-comunes-titulo">
+          <h2 id="errores-comunes-titulo">Common mistakes</h2>
+          <ul>
+            <li>Testing implementation details, such as the name of an internal variable or a specific call, instead of the observable result.</li>
+            <li>Writing tests that share state: one modifies a global variable and the next one fails only when run after it.</li>
+            <li>Using fixed pauses in browser tests instead of waiting for a condition.</li>
+            <li>Chasing a coverage percentage with empty assertions.</li>
+            <li>Mocking so many dependencies that the test stops resembling the real application.</li>
+            <li>Repeating the same long journey in dozens of E2E tests when a few unit tests cover it better.</li>
+            <li>Ignoring flaky tests until nobody trusts the result of continuous integration.</li>
+            <li>Not updating a test when the expected behaviour really changes: then the test is the one that is wrong.</li>
+          </ul>
+          <p class="aviso">
+            If a test fails after an intentional change, do not tweak it until it passes. First
+            check whether the new behaviour is what you want and write the assertion to match that
+            decision.
+          </p>
+        </section>
+
+        <section id="referencia" aria-labelledby="referencia-titulo">
+          <h2 id="referencia-titulo">Quick reference</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concept</th>
+                <th scope="col">What it is for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Assertion</td>
+                <td>Check that the result meets expectations.</td>
+              </tr>
+              <tr>
+                <td>Unit test</td>
+                <td>Verify an isolated, deterministic piece.</td>
+              </tr>
+              <tr>
+                <td>Integration test</td>
+                <td>Verify that several pieces cooperate.</td>
+              </tr>
+              <tr>
+                <td>E2E test</td>
+                <td>Walk through a complete flow from the interface.</td>
+              </tr>
+              <tr>
+                <td>Double</td>
+                <td>Replace a dependency to control the test.</td>
+              </tr>
+              <tr>
+                <td>AAA</td>
+                <td>Arrange, act and assert, in that order.</td>
+              </tr>
+              <tr>
+                <td>Coverage</td>
+                <td>Point out code not executed by the tests.</td>
+              </tr>
+              <tr>
+                <td>Regression</td>
+                <td>A failure in a feature that used to work.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../empaquetado-despliegue/index.en.html">Packaging and deployment</a>: tests as part of the build process.</li>
+            <li><a href="../ci-cd/index.html">GitHub Actions and CI/CD</a>: running tests automatically on every change.</li>
+            <li><a href="../git/index.en.html">Git</a>: associating each failure with the change that introduced it.</li>
+            <li><a href="../javascript/index.en.html">JavaScript</a>: asynchrony and modules, two common sources of fragile tests.</li>
+            <li><a href="../accesibilidad/index.html">Web accessibility</a>: finding elements by their accessible name.</li>
+            <li><a href="../editores-ides-depuracion/index.en.html">Editors, IDEs and debugging</a>: reproducing a failure before writing the test that prevents it.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

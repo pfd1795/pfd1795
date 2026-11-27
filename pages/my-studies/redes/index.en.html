@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Networks: fundamentals — Computer science studies</title>
+  <meta name="description" content="Networking fundamentals: layers, IP addresses, ports, DNS, HTTP and diagnostics.">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <link rel="stylesheet" href="../../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../../scripts/theme-init.js"></script>
+  <script src="../../../scripts/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Skip to content</a>
+
+  <nav class="navbar">
+    <a href="../../../index.html" class="logo-link" title="home" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Web Developer</h2>
+    </a>
+
+    <button type="button" class="btn" title="open menu" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menu</span>
+      <img src="../../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Networks</p>
+          <h1>Networks: fundamentals</h1>
+          <p class="entrada">
+            A network is a set of devices that exchange data following common protocols. Understanding
+            the layers, IP addresses, ports and DNS explains almost everything that happens when you
+            open a page or call an API.
+          </p>
+        </header>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contents</h2>
+          <ol>
+            <li><a href="#que-es">What is a network?</a></li>
+            <li><a href="#modelo-por-capas">Layered model</a></li>
+            <li><a href="#ip-y-puertos">IP addresses and ports</a></li>
+            <li><a href="#dns">DNS: from names to addresses</a></li>
+            <li><a href="#http">HTTP over TCP</a></li>
+            <li><a href="#diagnostico">Network diagnostics</a></li>
+            <li><a href="#buenas-practicas">Best practices</a></li>
+            <li><a href="#ver-tambien">See also</a></li>
+          </ol>
+        </nav>
+
+        <section id="que-es" aria-labelledby="que-es-titulo">
+          <h2 id="que-es-titulo">What is a network?</h2>
+          <p>
+            Two connected machines need <strong>addresses</strong> to identify themselves, <strong>routes</strong>
+            to reach each other and <strong>protocols</strong> to understand one another. The Internet is a
+            network of networks that uses the TCP/IP protocol suite.
+          </p>
+          <p class="nota">
+            A «protocol» is simply an agreement about the format of messages and the order of exchanges.
+            TCP and IP are two such agreements, and they complement each other.
+          </p>
+        </section>
+
+        <section id="modelo-por-capas" aria-labelledby="modelo-por-capas-titulo">
+          <h2 id="modelo-por-capas-titulo">Layered model</h2>
+          <p>
+            Networks are explained in layers, so that each one uses the services of the one below and
+            offers services to the one above. This is the idea behind the OSI model (7 layers) and
+            TCP/IP (4 layers).
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Layer (TCP/IP)</th>
+                <th scope="col">Handles</th>
+                <th scope="col">Examples</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Application</td><td>Services used by the program</td><td>HTTP, DNS, SMTP, SSH</td></tr>
+              <tr><td>Transport</td><td>End-to-end delivery</td><td>TCP, UDP</td></tr>
+              <tr><td>Internet</td><td>Addressing and routing</td><td>IP, ICMP</td></tr>
+              <tr><td>Network access</td><td>Physical link between devices</td><td>Ethernet, Wi-Fi</td></tr>
+            </tbody>
+          </table>
+          <p>
+            <strong>TCP</strong> guarantees that data arrives complete and in order (web, email, file
+            transfer). <strong>UDP</strong> does not guarantee delivery but is lighter and faster
+            (DNS, real-time video, games).
+          </p>
+        </section>
+
+        <section id="ip-y-puertos" aria-labelledby="ip-y-puertos-titulo">
+          <h2 id="ip-y-puertos-titulo">IP addresses and ports</h2>
+          <p>
+            The IP address identifies a <em>machine</em>; the port identifies the <em>service</em> inside
+            that machine. The combination <code>IP:port</code> is called a <em>socket</em>.
+          </p>
+          <pre><code>192.168.1.10:443      # private IP on your local network, HTTPS port
+  127.0.0.1:3000        # "localhost": your own machine, development server
+  ::1                   # localhost in IPv6
+
+  # Private ranges (do not route on the Internet)
+  10.0.0.0/8            172.16.0.0/12            192.168.0.0/16</code></pre>
+          <p>Well-known ports worth remembering:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Port</th>
+                <th scope="col">Service</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>22</td><td>SSH</td></tr>
+              <tr><td>53</td><td>DNS</td></tr>
+              <tr><td>80</td><td>HTTP</td></tr>
+              <tr><td>443</td><td>HTTPS</td></tr>
+              <tr><td>3000 / 5173 / 8000</td><td>Development servers</td></tr>
+              <tr><td>5432 / 3306</td><td>PostgreSQL / MySQL</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="dns" aria-labelledby="dns-titulo">
+          <h2 id="dns-titulo">DNS: from names to addresses</h2>
+          <p>
+            People remember names, not numbers. DNS (Domain Name System) translates <code>example.com</code>
+            into an IP. It is a hierarchical query that is usually resolved over UDP on port 53.
+          </p>
+          <pre><code># Look up the IP associated with a domain (the "dig" command)
+  dig example.com +short
+
+  # Resolve just the address, the simple way
+  nslookup example.com</code></pre>
+          <p>
+            The most common records: <strong>A</strong> (IPv4), <strong>AAAA</strong> (IPv6),
+            <strong>CNAME</strong> (alias), <strong>MX</strong> (mail) and <strong>TXT</strong>
+            (verifications).
+          </p>
+        </section>
+
+        <section id="http" aria-labelledby="http-titulo">
+          <h2 id="http-titulo">HTTP over TCP</h2>
+          <p>
+            HTTP is the protocol of the web: a client requests a resource with a <em>request</em> and the
+            server replies. HTTPS is HTTP encrypted with TLS.
+          </p>
+          <pre><code># Request
+  GET /index.html HTTP/1.1
+  Host: example.com
+  Accept: text/html
+  User-Agent: my-browser
+
+  # Response
+  HTTP/1.1 200 OK
+  Content-Type: text/html; charset=utf-8
+  Content-Length: 1024
+
+  &lt;!DOCTYPE html&gt; ...</code></pre>
+          <p>Most common status codes:</p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Code</th>
+                <th scope="col">Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>200 OK</td><td>Everything correct.</td></tr>
+              <tr><td>301 / 302</td><td>Permanent / temporary redirect.</td></tr>
+              <tr><td>304 Not Modified</td><td>The resource did not change: use the cache.</td></tr>
+              <tr><td>400 Bad Request</td><td>Malformed request.</td></tr>
+              <tr><td>401 / 403</td><td>Not authenticated / no permission.</td></tr>
+              <tr><td>404 Not Found</td><td>The resource does not exist.</td></tr>
+              <tr><td>500 Internal Server Error</td><td>Server failure.</td></tr>
+            </tbody>
+          </table>
+          <p class="nota">
+            <em>Methods</em> state the intent: <code>GET</code> reads, <code>POST</code> creates,
+            <code>PUT</code> or <code>PATCH</code> update and <code>DELETE</code> removes.
+          </p>
+        </section>
+
+        <section id="diagnostico" aria-labelledby="diagnostico-titulo">
+          <h2 id="diagnostico-titulo">Network diagnostics</h2>
+          <p>These tools are your first stop when facing a connectivity problem:</p>
+          <pre><code>ping example.com          # does the machine respond?
+  traceroute example.com    # which routers does the traffic pass through?
+  curl -I https://example.com   # headers of the HTTP response
+  curl -v https://example.com   # detail of the connection and headers
+  ss -tuln                  # ports listening on your machine
+  ip addr                   # addresses of your network interfaces</code></pre>
+          <p>
+            If <code>ping</code> fails by name but works by IP, the problem is in DNS. If the IP responds
+            but the port does not, it is usually a firewall or a down service. You will see these
+            commands in more detail in <a href="../terminal/index.en.html#referencia">Terminal · Quick reference</a>.
+          </p>
+        </section>
+
+        <section id="buenas-practicas" aria-labelledby="buenas-practicas-titulo">
+          <h2 id="buenas-practicas-titulo">Best practices</h2>
+          <ul>
+            <li>Always use HTTPS in production; never serve credentials over HTTP. <a href="../tls/index.en.html">Network security and TLS</a> explains why.</li>
+            <li>Do not expose databases or internal services to the Internet: keep them on the private network.</li>
+            <li>Return the correct HTTP status code: not everything is <code>200</code>.</li>
+            <li>Reuse connections and use caching (<code>Cache-Control</code>, <code>ETag</code>).</li>
+            <li>Name non-standard development ports to avoid conflicts with the well-known ones.</li>
+          </ul>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">See also</h2>
+          <ul class="ver-tambien">
+            <li><a href="../tls/index.en.html">Network security and TLS</a>: what happens when the connection is HTTPS.</li>
+            <li><a href="../seguridad-web/index.en.html">Web application security</a>: the threats that cross that channel.</li>
+            <li><a href="../terminal/index.en.html#referencia">Terminal · Quick reference</a>: <code>curl</code>, <code>ping</code> and other network commands.</li>
+            <li><a href="../javascript/index.en.html#asincronia">JavaScript · Asynchrony</a>: <code>fetch</code> requests over HTTP.</li>
+            <li><a href="../html/index.en.html#estructura">HTML · Minimum structure</a>: the document that travels in the HTTP response.</li>
+            <li><a href="../sistemas-numericos/index.en.html">Number systems and data representation</a>: bits, bytes and endianness on the network.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Back to index</a> · <a href="index.html">Versión en español</a></p>
+    </main>
+  </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Navigation menu">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menu</h2>
+
+      <button type="button" class="btn btn-close" title="close menu" data-i18n-title="closeMenu">
+        <span data-lang="close">Close</span>
+        <img src="../../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../../index.html#inicio">
+          <img src="../../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Home</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="show sections" aria-label="show sections" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#experiencia">
+          <img src="../../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Work Experience</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#estudios">
+          <img src="../../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Studies | Courses</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../../index.html#proyectos">
+          <img src="../../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Projects</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">My studies</span>
+      </a>
+
+      <a class="sidebar-item" href="../../my-games/index.html">
+        <img src="../../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Games</span>
+      </a>
+      <a class="sidebar-item" href="../../my-programs/index.html">
+        <img src="../../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programs</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Open settings" data-i18n-title="openSettings">
+        <span data-lang="settings">Settings</span>
+        <img src="../../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Close window (Esc)" aria-label="Close window" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>
