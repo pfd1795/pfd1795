@@ -1,3 +1,9 @@
 # Trabajo pendiente
 
 - Traducción al inglés de la enciclopedia: 13 artículos restantes (`ci-cd`, `docker`, `linux-servidores`, `typescript`, `accesibilidad`, `nosql`, `regex`, `fundamentos-ciberseguridad`, `phishing-ingenieria-social`, `malware-ransomware`, `identidad-y-mfa`, `antivirus-edr`, `respuesta-incidentes`). Convención: `pages/my-studies/<slug>/index.en.html`, paralelo al `index.html` en español; enlace de cambio de idioma en `.volver`; manifiesto sin duplicar slug.
+- Completar el roster «Artículos ya publicados» de `docs/prompts/crear-estudios.md` con los seis slugs ausentes (`fundamentos-ciberseguridad`, `phishing-ingenieria-social`, `malware-ransomware`, `identidad-y-mfa`, `antivirus-edr`, `respuesta-incidentes`) y su ruta `<slug>/index.html`.
+- Unificar la convención de slugs y rutas en `docs/prompts/crear-estudios.md`: `<slug>/index.html` en lugar de `<slug>.html`, `../../my-games/index.html` y `../../my-programs/index.html` en `:99,571,576` (tabla y esqueleto canónico) y ejemplos de slug sin extensión.
+- Alinear `docs/prompts/fichas-estudios.md` con el roster y el tracker: retirar las fichas de artículos publicados (8 no figuran en el tracker) o convertirlas en fichas de traducción para los 13 slugs pendientes, y corregir `./my-studies<slug>/index.html` a `./my-studies/<slug>/index.html`.
+- Ajustar la descripción de `docs/prompts/crear-videojuegos.md` en `docs/README.md` para reflejar su carácter genérico, o ampliar el prompt con el canon de integración de `pages/my-games/AGENTS.md`.
+- Actualizar las citas `archivo:línea` de `docs/INVARIANTES.md:25,31,37,43,49` a `docs/LIMITACIONES.md:44`, `pages/my-games/AGENTS.md:35-38`, `pages/my-games/AGENTS.md:21-23`, `AGENTS.md:375-397` (en `:31` y `:49`) y `AGENTS.md:482-488` (en `:43`).
+- Igualar la media query del esqueleto de `docs/prompts/crear-videojuegos.md:811` con la descrita en `:546`.
