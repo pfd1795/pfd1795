@@ -16,7 +16,7 @@ Reglas locales para agentes que trabajan en la enciclopedia de informática. Com
   Python, Patrones de diseño, Inteligencia artificial, Aprendizaje automático, Redes
   neuronales, Lógica digital y álgebra de Boole, C y gestión de memoria, Frameworks de
   front-end, Frameworks de back-end, Principios de diseño y SOLID, Editores, IDEs y
-  depuración, Empaquetado y despliegue, TypeScript, Accesibilidad web, Bases de datos NoSQL, Testing automatizado, GitHub Actions y CI/CD, Docker y contenedores, Linux y servidores, Expresiones regulares).
+  depuración, Empaquetado y despliegue, TypeScript, Accesibilidad web, Bases de datos NoSQL, Testing automatizado, GitHub Actions y CI/CD, Docker y contenedores, Linux y servidores, Expresiones regulares, Fundamentos de ciberseguridad, Phishing e ingeniería social, Malware y ransomware, Identidad, contraseñas y MFA, De antivirus a EDR/XDR, Respuesta a incidentes y forense básico).
   Las entradas `wip` del manifiesto se muestran con la etiqueta de UI `comingSoon` de
   `translations.page[lang]` («Próximamente» / «Coming soon»).
 - `data/articulos.json`: manifiesto de la grilla (mismo esquema que `juegos.json`:
@@ -57,8 +57,8 @@ y aquí solo se conserva el override de acento `--enc-accent`.
    (`/images/…`, `/stylesheets/…`).
 6. **Buscador**: el `js/buscador.js` compartido opera solo si existe `#buscador`; esta
    página lo configura con `data-buscador-tarjetas=".estudio-card"` y su texto de
-   placeholder. Filtra por término, actualiza el conteo del placeholder, oculta categorías
-   vacías y usa `#sin-resultados`. Los textos viven en `translations.page[lang]` (claves
+   placeholder. Filtra por término, oculta categorías vacías y usa `#sin-resultados`.
+   Los textos viven en `translations.page[lang]` (claves
    `searchStudies*`) y se actualizan con el evento `site:languagechange`. No acoplarlo a
    módulos ES.
 7. **Contenido educativo**: agregar un artículo es crear `articulos/<slug>.html`
@@ -94,9 +94,8 @@ Específico de esta carpeta, tras cualquier cambio:
    `http://localhost:8000/mis-estudios/`.
 2. El tema (modo, acento, fondo, escala) se pinta sin parpadeo y coincide con el del portafolio.
 3. El modal de Configuración funciona desde el footer del sidebar y persiste los cambios.
-4. La grilla renderiza desde `data/articulos.json`: 36 artículos publicados, agrupados en las categorías del manifiesto.
-5. El buscador filtra por término, actualiza el conteo del placeholder y muestra/oculta
-   `#sin-resultados`.
+4. La grilla renderiza desde `data/articulos.json`: 42 artículos publicados, agrupados en las categorías del manifiesto.
+5. El buscador filtra por término y muestra/oculta `#sin-resultados`.
 6. En `articulos/*.html`: enlaces de vuelta correctos (`../index.html`, `../../index.html`),
    el submenú del sidebar apunta a las secciones de la portada con la profundidad de rutas
    correcta y los enlaces entre artículos (`articulos/<slug>.html` relativos entre ellos)

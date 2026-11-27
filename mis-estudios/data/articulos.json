@@ -64,7 +64,7 @@
     {
       "id": "cat-seguridad",
       "label": {
-        "es": "Seguridad"
+        "es": "Seguridad y ciberseguridad"
       }
     },
     {
@@ -505,6 +505,78 @@
       },
       "keywords": "regex expresiones regulares patrones sintaxis grupos capturas cuantificadores anclas grep JavaScript RegExp Python re validacion redos rendimiento Busca valida y sustituye texto con expresiones regulares.",
       "category": "cat-herramientas",
+      "status": "published"
+    },
+    {
+      "slug": "fundamentos-ciberseguridad",
+      "title": {
+        "es": "Fundamentos de ciberseguridad"
+      },
+      "description": {
+        "es": "Confidencialidad, integridad, disponibilidad, riesgo, defensa en profundidad y marcos de referencia."
+      },
+      "keywords": "ciberseguridad seguridad informatica confidencialidad integridad disponibilidad cia amenaza vulnerabilidad riesgo superficie de ataque defensa en profundidad owasp mitre attack cis controls nist csf stride Fundamentos de ciberseguridad: conceptos, capas y marcos de referencia.",
+      "category": "cat-seguridad",
+      "status": "published"
+    },
+    {
+      "slug": "phishing-ingenieria-social",
+      "title": {
+        "es": "Phishing e ingeniería social"
+      },
+      "description": {
+        "es": "Señales del correo, suplantación, smishing, quishing, SPF, DKIM y DMARC."
+      },
+      "keywords": "phishing ingenieria social smishing quishing vishing bec suplantacion dominios enlaces spf dkim dmarc credenciales mfa reportar Phishing e ingeniería social: detectar el engaño y reaccionar tras el clic.",
+      "category": "cat-seguridad",
+      "status": "published"
+    },
+    {
+      "slug": "malware-ransomware",
+      "title": {
+        "es": "Malware y ransomware"
+      },
+      "description": {
+        "es": "Tipos de malware, cadena de infección, doble extorsión, copias 3-2-1 e indicadores."
+      },
+      "keywords": "malware ransomware virus gusano troyano rootkit fileless cifrado doble extorsion copias 3-2-1 hashes logs indicadores persistencia Malware y ransomware: fases de infección, defensas y análisis seguro.",
+      "category": "cat-seguridad",
+      "status": "published"
+    },
+    {
+      "slug": "identidad-y-mfa",
+      "title": {
+        "es": "Identidad, contraseñas y MFA"
+      },
+      "description": {
+        "es": "Gestores, TOTP, passkeys, OAuth2 y OIDC, sesiones, RBAC y privilegio mínimo."
+      },
+      "keywords": "identidad autenticacion autorizacion contrasenas gestor mfa totp passkeys webauthn oauth2 oidc jwt sesiones cookies rbac privilegio minimo Identidad, contraseñas y MFA: proteger accesos y permisos.",
+      "category": "cat-seguridad",
+      "status": "published"
+    },
+    {
+      "slug": "antivirus-edr",
+      "title": {
+        "es": "De antivirus a EDR/XDR"
+      },
+      "description": {
+        "es": "Firmas, heurística, sandbox, telemetría, EDR, XDR y SIEM."
+      },
+      "keywords": "antivirus edr xdr siem soar firmas heuristica reputacion sandbox telemetria deteccion comportamiento falsos positivos living off the land De antivirus a EDR/XDR: qué detecta cada capa y sus límites.",
+      "category": "cat-seguridad",
+      "status": "published"
+    },
+    {
+      "slug": "respuesta-incidentes",
+      "title": {
+        "es": "Respuesta a incidentes y forense básico"
+      },
+      "description": {
+        "es": "Ciclo de respuesta, evidencia, línea temporal, contención, recuperación y postmortem."
+      },
+      "keywords": "respuesta a incidentes forense evidencia logs journalctl linea temporal contencion erradicacion recuperacion postmortem playbook nist csf severidad hashes Respuesta a incidentes y forense básico: del aviso a las lecciones aprendidas.",
+      "category": "cat-seguridad",
       "status": "published"
     }
   ]

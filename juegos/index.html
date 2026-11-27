@@ -51,14 +51,8 @@
 
   <div class="main-content">
     <main id="contenido" class="juegos-main">
-      <header class="juegos-header">
+      <div class="encabezado">
         <h1 id="juegos-titulo" data-lang="gamesTitle">Juegos</h1>
-        <p class="juegos-intro" data-lang="gamesIntro">
-          Una pequeña colección de juegos arcade hechos con HTML, CSS y JavaScript vanilla.
-        </p>
-      </header>
-
-      <div class="juegos-controles">
         <input
           class="buscador__campo"
           type="search"
@@ -67,11 +61,10 @@
           aria-label="Buscar juegos"
           data-i18n-aria-label="searchGamesAria"
           data-buscador-tarjetas=".juego-card"
-          data-buscador-placeholder="buscador juegos: titulo, descripcion, tecnologia o genero ({visibles} de {total} juegos)"
+          data-buscador-placeholder="Buscar juegos"
           data-i18n-placeholder="searchGamesPlaceholder"
-          placeholder="buscador juegos: titulo, descripcion, tecnologia o genero"
-          autocomplete="off" />
-        <div id="filtros-juegos"></div>
+          placeholder="Buscar juegos"
+          autocomplete="off">
       </div>
       <p class="buscador__mensaje" id="sin-resultados" data-lang="searchGamesEmpty" hidden>
         No hay juegos que coincidan con tu búsqueda. Prueba con otra palabra o género.

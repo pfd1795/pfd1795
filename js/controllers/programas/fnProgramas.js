@@ -1,20 +1,3 @@
-/* ==========================================================================
-   fnProgramas.js — genera la grilla de programas y herramientas desde su
-   manifiesto (programas/data/herramientas.json).
-
-   El esquema es el mismo que el de juegos.json y articulos.json: raíz con
-   `version`, `categories` (id + label {es}) e `items` (slug, title,
-   description, keywords, category, icon, technologies, status). Las URLs de
-   las herramientas no van en el manifiesto: se construyen como
-   `herramientas/<slug>.html` y abren en pestaña nueva.
-
-   También genera los chips de filtro (.filtro) a partir de las categorías.
-   El contenido del manifiesto es solo en español (regla de la sección), pero
-   las etiquetas de UI se toman de `translations.page[lang]`. Solo se muestran
-   las entradas con slug válido; un error al editar el manifiesto no rompe la
-   página.
-   ========================================================================== */
-
 import data from '../../../programas/data/herramientas.json' with { type: 'json' };
 import translations from '../../lang/translations.json' with { type: 'json' };
 import { currentLanguage } from '../../lang/translations.config.js';
@@ -46,7 +29,7 @@ function filtrarItemsValidos() {
   });
 }
 
-function Card(item, lang, texts, etiquetaCategoria) {
+function Card(item, lang, texts) {
   const title = getText(item.title, lang);
   const description = getText(item.description, lang);
   const keywords = item.keywords ?? '';
@@ -57,7 +40,7 @@ function Card(item, lang, texts, etiquetaCategoria) {
   div.className = 'programa-card';
   div.setAttribute('data-titulo', title);
   div.setAttribute('data-descripcion', description);
-  div.setAttribute('data-claves', keywords);
+  div.setAttribute('data-claves', [keywords, ...technologies].filter(Boolean).join(' '));
   div.setAttribute('data-categoria', item.category ?? '');
 
   div.innerHTML = `
@@ -68,44 +51,12 @@ function Card(item, lang, texts, etiquetaCategoria) {
 
     <p class="programa-card__descripcion">${esc(description)}</p>
 
-    <div class="programa-card__meta">
-      <span class="programa-card__categoria">${esc(etiquetaCategoria)}</span>
-      ${technologies.length ? `
-        <div class="programa-card__tech">
-          ${technologies.map((tech) => `<span>${esc(tech)}</span>`).join('')}
-        </div>
-      ` : ''}
-    </div>
-
     ${item.status === 'published'
-      ? `
-        <a class="btn programa-card__abrir" href="./herramientas/${esc(item.slug)}.html" target="_blank" rel="noopener noreferrer"
-          title="${esc(title)} — ${esc(texts.openInNewTab)}">
-          <span>${esc(texts.openTool)}</span>
-          <img src="${ICONS_URL}arrow_right.svg" alt="" />
-        </a>
-        <p class="programa-card__nota">${esc(texts.openInNewTab)}</p>
-      `
+      ? `<a class="btn programa-card__abrir" href="./herramientas/${esc(item.slug)}.html" title="${esc(title)}">${esc(texts.openTool)}</a>`
       : `<p class="programa-card__estado">${esc(texts.comingSoon)}</p>`}
   `;
 
   return div;
-}
-
-function ChipsFiltro(categorias, lang, texts) {
-  const chips = document.createElement('div');
-
-  chips.className = 'filtros';
-  chips.setAttribute('role', 'group');
-  chips.setAttribute('aria-label', texts.filterByCategory);
-  chips.innerHTML = `
-    <button class="filtro active" type="button" data-categoria="todas" aria-pressed="true">${esc(texts.allCategories)}</button>
-    ${categorias.map((categoria) => `
-      <button class="filtro" type="button" data-categoria="${esc(categoria.id)}" aria-pressed="false">${esc(getText(categoria.label, lang))}</button>
-    `).join('')}
-  `;
-
-  return chips;
 }
 
 function Categoria(categoria, items, lang, texts) {
@@ -128,7 +79,7 @@ function Categoria(categoria, items, lang, texts) {
     .forEach((item) => {
       const li = document.createElement('li');
 
-      li.appendChild(Card(item, lang, texts, label));
+      li.appendChild(Card(item, lang, texts));
       lista.appendChild(li);
     });
 
@@ -144,18 +95,9 @@ export function GridProgramas() {
   const texts = translations.page[lang] ?? translations.page.es;
   const items = filtrarItemsValidos();
   const categorias = data.categories ?? [];
-  const categoriaActiva = grid.querySelector('.filtro.active')?.getAttribute('data-categoria') ?? 'todas';
 
   grid.innerHTML = '';
-  grid.appendChild(ChipsFiltro(categorias, lang, texts));
   categorias.forEach((categoria) => grid.appendChild(Categoria(categoria, items, lang, texts)));
-
-  if (categoriaActiva !== 'todas') {
-    const chipActivo = Array.from(grid.querySelectorAll('.filtro'))
-      .find((chip) => chip.getAttribute('data-categoria') === categoriaActiva);
-
-    (chipActivo ?? grid.querySelector('.filtro'))?.click();
-  }
 }
 
 export function reloadProgramasContent() {

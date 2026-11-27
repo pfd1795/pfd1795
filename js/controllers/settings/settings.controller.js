@@ -98,6 +98,14 @@ function buildSettingsContent() {
         </div>
       </div>
 
+      <div class="settings-row settings-row--font">
+        <img class="settings-icon" src="${ICONS_URL}format_size.svg" alt="" />
+        <span class="settings-label" data-lang="font-size"></span>
+        <div class="font-scale-options" role="group" aria-label="${texts["font-size"]}" data-i18n-aria-label="font-size">
+          ${buildFontScaleOptions(lang, savedFontScale)}
+        </div>
+      </div>
+
       <div class="settings-row">
         <img class="settings-icon mode-icon" src="${ICONS_URL}${savedMode === "dark" ? "dark_mode.svg" : "light_mode.svg"}" alt="" />
         <span class="settings-label mode-label">${texts[savedMode]}</span>
@@ -107,21 +115,17 @@ function buildSettingsContent() {
         </label>
       </div>
 
-      <div class="settings-row settings-row--colors">
-        <div class="settings-row-header">
-          <img class="settings-icon" src="${ICONS_URL}palette.svg" alt="" />
-          <span class="settings-label" data-lang="theme-color"></span>
-        </div>
+      <div class="settings-row settings-row--colors settings-row--theme-colors">
+        <img class="settings-icon" src="${ICONS_URL}palette.svg" alt="" />
+        <span class="settings-label" data-lang="theme-color"></span>
         <div class="color-options" role="group" aria-label="${texts["theme-color"]}" data-i18n-aria-label="theme-color">
           ${buildColorOptions(lang, savedColor)}
         </div>
       </div>
 
-      <div class="settings-row settings-row--colors settings-row--background">
-        <div class="settings-row-header">
-          <img class="settings-icon" src="${ICONS_URL}palette.svg" alt="" />
-          <span class="settings-label" data-lang="theme-background"></span>
-        </div>
+      <div class="settings-row settings-row--colors settings-row--background settings-row--background-themes">
+        <img class="settings-icon" src="${ICONS_URL}palette.svg" alt="" />
+        <span class="settings-label" data-lang="theme-background"></span>
         <div class="theme-options" role="group" aria-label="${texts["theme-background"]}" data-i18n-aria-label="theme-background">
           ${buildBackgroundOptions(lang, savedTheme)}
         </div>
@@ -140,14 +144,6 @@ function buildSettingsContent() {
         <span class="settings-label" data-lang="psychedelic-speed"></span>
         <div class="speed-options" role="group" aria-label="${texts["psychedelic-speed"]}" data-i18n-aria-label="psychedelic-speed">
           ${buildSpeedOptions(lang, savedSpeed)}
-        </div>
-      </div>
-
-      <div class="settings-row settings-row--font">
-        <img class="settings-icon" src="${ICONS_URL}format_size.svg" alt="" />
-        <span class="settings-label" data-lang="font-size"></span>
-        <div class="font-scale-options" role="group" aria-label="${texts["font-size"]}" data-i18n-aria-label="font-size">
-          ${buildFontScaleOptions(lang, savedFontScale)}
         </div>
       </div>
     </section>

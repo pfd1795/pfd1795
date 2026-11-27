@@ -9,8 +9,10 @@ raíz (arquitectura general, estilo de código y convenciones) y la guía comple
 - `index.html`: la grilla de juegos (chrome del portafolio). Se renderiza desde
   [`./data/juegos.json`](./data/juegos.json) con `controllers/juegos/`;
   se monta en `main.js` solo si existe `.juegos-grid`. El buscador es el
-  `js/buscador.js` compartido y los chips de género se generan en `fnJuegos.js`
-  desde el campo `genre` del manifiesto.
+  `js/buscador.js` compartido y las tarjetas se generan en `fnJuegos.js`
+  desde el manifiesto. El encabezado usa `.encabezado` (título a la izquierda y
+  buscador a la derecha en escritorio, apilados en móvil), igual que
+  `mis-estudios/` y `programas/`; la página no lleva texto introductorio.
 - `_template/`: plantilla para juegos nuevos (no aparece en la grilla).
 - `<slug>/`: un juego por carpeta, autocontenido en un único `index.html` (+ `README-juego.md`).
 
@@ -58,10 +60,12 @@ Ver el procedimiento general en el [`AGENTS.md` raíz](../AGENTS.md#verificació
 Específico de esta carpeta, tras cualquier cambio:
 
 1. `python -m http.server 8000` desde la raíz del repositorio y abrir `http://localhost:8000/juegos/`.
-2. La grilla muestra solo los juegos `published`, con portada, título, descripción y controles
-   traducidos según el idioma (`fnJuegos.js` re-renderiza al cambiar ES/EN).
-3. Cada tarjeta lanza su juego en pestaña nueva (`target="_blank" rel="noopener noreferrer"`) y el
-   juego arranca sin errores y guarda su récord con `<slug>_best_v1`.
+2. La grilla muestra solo los juegos `published`: título a la izquierda y botón **Jugar** a la
+   derecha en la misma fila, con la portada debajo. El título se toma del manifiesto y la etiqueta
+   del botón de `translations.page[lang]` (`fnJuegos.js` re-renderiza al cambiar ES/EN). Los demás
+   campos permanecen en los atributos `data-*` de la tarjeta para el buscador, pero no se muestran.
+3. Cada tarjeta abre su juego en la misma pestaña (sin `target="_blank"`) y el juego arranca sin
+   errores y guarda su récord con `<slug>_best_v1`; «Atrás» devuelve a la grilla.
 4. Si se tocó el tema o el modal, comprobar que la grilla comparte modo/acento con la portada.
 5. Si se tocó un juego, comprobar que sigue el canon visual: paleta neón oscura, `h1` verde con
    glow, botones cian transparente, modal `<dialog id="options">` (abre/cierra con ✕, ESC y clic
@@ -71,6 +75,5 @@ Específico de esta carpeta, tras cualquier cambio:
    scroll, que los controles táctiles siguen visibles y que el buffer del canvas iguala el
    tamaño visible × DPR (mínimo la resolución lógica; ver la sección "Dimensionado del canvas"
    del README).
-7. El buscador filtra por título, descripción, tecnología y género, actualiza el conteo del
-   placeholder y muestra/oculta `#sin-resultados`. Los chips de género filtran las tarjetas,
-   conservan `aria-pressed` y siguen activos tras cambiar ES/EN.
+7. El buscador filtra por título, descripción, tecnología y género y muestra/oculta
+   `#sin-resultados`.

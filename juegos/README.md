@@ -104,7 +104,7 @@ python3 -m http.server 8000
 Abre `http://localhost:8000/juegos/` y comprueba:
 
 - La tarjeta aparece en la grilla.
-- El botón **Jugar** abre `juegos/<slug>/index.html` en una pestaña nueva.
+- El botón **Jugar** abre `juegos/<slug>/index.html` en la misma pestaña; «Atrás» devuelve a la grilla.
 - El juego funciona con teclado y en móvil.
 - No hay errores en la consola ni peticiones 404.
 - El récord se guarda al recargar.
@@ -125,11 +125,11 @@ Es la **única fuente de verdad** de la grilla. La página no contiene tarjetas 
 | --- | --- | --- | --- |
 | `slug` | string | Sí | Nombre de la carpeta. Solo `a-z`, `0-9` y `-`. |
 | `title` | `{ es, en }` | Sí | Título visible en la tarjeta. |
-| `description` | `{ es, en }` | Sí | Descripción corta (1–2 frases). |
-| `genre` | `{ es, en }` | Sí | Género y categoría. |
-| `year` | number | No | Año de publicación; se muestra en la cabecera. |
-| `technologies` | string[] | No | Chips de tecnologías. |
-| `controls` | `{ es, en }` | No | Resumen de controles. |
+| `description` | `{ es, en }` | Sí | Descripción corta (1–2 frases); no se muestra en la grilla, se usa como metadato del buscador. |
+| `genre` | `{ es, en }` | Sí | Género y categoría; no se muestra en la grilla, se usa como metadato del buscador. |
+| `year` | number | No | Año de publicación; no se renderiza en la grilla. |
+| `technologies` | string[] | No | Tecnologías; no se muestran, se usan como metadato del buscador. |
+| `controls` | `{ es, en }` | No | Resumen de controles; no se renderiza en la grilla. |
 | `cover` | string | No | Ruta relativa a la portada (`../assets/images/games/<slug>/cover.jpg`). Si falta o está vacía, la tarjeta muestra un placeholder con degradado. |
 | `status` | `"published"` \| `"wip"` | Sí | Solo `published` aparece en la grilla. |
 | `updatedAt` | `string` \| `null` | Sí | Fecha ISO `YYYY-MM-DD` del último cambio; `null` si no hay fecha registrada. |

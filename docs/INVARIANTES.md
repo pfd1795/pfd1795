@@ -48,3 +48,17 @@
 - **Decisión:** las claves de tema/idioma/fondo/dirección/velocidad/escala son las del inventario de `AGENTS.md` § "Inventario de claves de localStorage". Una clave nueva debe reflejarse ahí, en `utils/storage.js` y en `theme-init.js`.
 - **Evidencia:** `AGENTS.md` § "Inventario de claves de localStorage" (líneas 374-396).
 - **Señal anti-regresión:** no añadir claves propias sin actualizar los tres sitios; los juegos usan el patrón `<slug>_best_v1` sin colisionar.
+
+## 8. Navegación de las grillas de juegos y programas
+
+- **Decisión:** las tarjetas de `juegos/` y `programas/` abren su contenido en la misma pestaña, sin `target="_blank"`; se vuelve a la grilla con el botón «Atrás» del navegador.
+- **Por qué:** se alinea con el comportamiento de `mis-estudios/` y evita la proliferación de pestañas. Los juegos siguen siendo autocontenidos y no se editan para añadir el chrome del portafolio (invariante 5).
+- **Evidencia:** `js/controllers/juegos/fnJuegos.js` (enlace `.juego-card__jugar`) y `js/controllers/programas/fnProgramas.js` (enlace `.programa-card__abrir`), sin `target="_blank"`.
+- **Señal anti-regresión:** no reintroducir `target="_blank"` ni `rel="noopener noreferrer"` en esas dos grillas; los enlaces que sí lo usan son externos (redes y créditos en `index.html`, y los generados en `js/controllers/home/fnHome.js`).
+
+## 9. Layout flex del modal solo con `[open]`
+
+- **Decisión:** `display: flex` y `flex-direction: column` se declaran en `.modal-dialog[open]`, nunca en `.modal-dialog` a secas.
+- **Por qué:** una regla de autor con `display: flex` anula el `display: none` que el navegador aplica a `dialog:not([open])`; el diálogo cerrado queda visible con el botón de cierre sobre el contenido.
+- **Evidencia:** `stylesheets/base.css` (bloque `.modal-dialog`).
+- **Señal anti-regresión:** no mover esas dos declaraciones al selector base del diálogo; la cabecera y el cuerpo flexibles solo existen mientras el modal está abierto.

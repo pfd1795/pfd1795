@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phishing e ingeniería social — Estudios de informática</title>
+  <meta name="description" content="Phishing e ingeniería social: señales del correo, suplantación, smishing y quishing, SPF, DKIM y DMARC, verificación de enlaces y respuesta ante un incidente.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Seguridad y ciberseguridad</p>
+          <h1>Phishing e ingeniería social</h1>
+          <p class="entrada">
+            El ataque más barato sigue siendo convencer a alguien de que haga clic. No necesita
+            explotar un buffer ni sortear un cortafuegos: basta con un correo urgente, una
+            copia razonable del logo y una página que pida credenciales. Entender el mecanismo
+            permite detectarlo antes de escribir la contraseña.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li>El gancho suele ser <strong>urgencia, curiosidad o autoridad</strong>, no un fallo técnico.</li>
+            <li>El remitente visible se puede falsificar; comprueba la dirección completa y el dominio real del enlace.</li>
+            <li>SPF, DKIM y DMARC verifican el correo, pero <strong>no garantizan</strong> que el remitente sea de confianza.</li>
+            <li>SMS, QR y llamadas (smishing, quishing, vishing) usan el mismo guion fuera del correo.</li>
+            <li>Si ya escribiste la contraseña: cambiarla y activar MFA importa más que borrar el correo.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#como-funciona">Cómo funciona un phishing</a></li>
+            <li><a href="#senales">Señales que delatan el correo</a></li>
+            <li><a href="#vectores">Más allá del correo: SMS, QR y voz</a></li>
+            <li><a href="#suplantacion">Suplantación de dominios y marcas</a></li>
+            <li><a href="#autenticacion-correo">SPF, DKIM y DMARC</a></li>
+            <li><a href="#verificar-enlaces">Verificar un enlace sin abrirlo</a></li>
+            <li><a href="#respuesta">Qué hacer si caíste</a></li>
+            <li><a href="#prevencion">Prevención y formación</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="como-funciona" aria-labelledby="como-funciona-titulo">
+          <h2 id="como-funciona-titulo">Cómo funciona un phishing</h2>
+          <p>
+            Un ataque de ingeniería social sigue casi siempre la misma secuencia: elegir un
+            objetivo, inventar un motivo para actuar, llevarlo a una página o conversación y
+            conseguir una credencial, un pago o una instalación. La técnica cambia; el guion no.
+          </p>
+          <figure class="diagrama" aria-labelledby="diagrama-phishing-titulo">
+            <figcaption id="diagrama-phishing-titulo">Del mensaje a la credencial y a la respuesta.</figcaption>
+            <svg viewBox="0 0 640 130" role="img" aria-labelledby="diagrama-phishing-titulo">
+              <rect class="caja-destacada" x="14" y="42" width="118" height="52" rx="8"></rect>
+              <text class="texto" x="73" y="66" text-anchor="middle">Mensaje</text>
+              <text class="texto-secundario" x="73" y="83" text-anchor="middle">urgencia</text>
+              <path class="flecha" d="M136 68 L180 68"></path>
+              <polygon class="flecha" points="180,68 170,62 170,74"></polygon>
+              <rect class="caja" x="184" y="42" width="118" height="52" rx="8"></rect>
+              <text class="texto" x="243" y="66" text-anchor="middle">Enlace</text>
+              <text class="texto-secundario" x="243" y="83" text-anchor="middle">dominio falso</text>
+              <path class="flecha" d="M306 68 L350 68"></path>
+              <polygon class="flecha" points="350,68 340,62 340,74"></polygon>
+              <rect class="caja" x="354" y="42" width="118" height="52" rx="8"></rect>
+              <text class="texto" x="413" y="66" text-anchor="middle">Formulario</text>
+              <text class="texto-secundario" x="413" y="83" text-anchor="middle">credencial</text>
+              <path class="flecha-acentuada" d="M476 68 L520 68"></path>
+              <polygon class="flecha-acentuada" points="520,68 510,62 510,74"></polygon>
+              <rect class="caja-destacada" x="524" y="42" width="102" height="52" rx="8"></rect>
+              <text class="texto" x="575" y="66" text-anchor="middle">Impacto</text>
+              <text class="texto-secundario" x="575" y="83" text-anchor="middle">acceso</text>
+            </svg>
+          </figure>
+          <p>
+            El correo apela a una emoción: «tu cuenta se cerrará en 24 horas», «factura adjunta»,
+            «el jefe necesita una transferencia ahora». El enlace apunta a una página que
+            imita el aspecto del servicio real y recoge lo que escribas. Con MFA activado, muchos
+            ataques cambian de objetivo: piden el código de un factor o aprueban una notificación
+            push (MFA fatigue).
+          </p>
+        </section>
+
+        <section id="senales" aria-labelledby="senales-titulo">
+          <h2 id="senales-titulo">Señales que delatan el correo</h2>
+          <ul>
+            <li>Urgencia o amenaza de consecuencias inmediatas.</li>
+            <li>Remitente con dominio parecido pero no idéntico, o una dirección completa rara.</li>
+            <li>Saludos genéricos y errores de ortografía, aunque cada vez hay menos.</li>
+            <li>Enlaces con <strong>texto bonito y destino distinto</strong>; pasa el ratón antes de pulsar.</li>
+            <li>Archivos adjuntos inesperados, especialmente ZIP, HTML o documentos con macros.</li>
+            <li>Peticiones de contraseña, código MFA, datos bancarios o compra de tarjetas regalo.</li>
+          </ul>
+          <p class="aviso">
+            Ninguna señal aislada es definitiva: un correo legítimo puede tener prisa y uno
+            falso puede estar bien escrito. La comprobación fiable es salir del mensaje y abrir
+            el servicio por tu propio enlace o aplicación.
+          </p>
+        </section>
+
+        <section id="vectores" aria-labelledby="vectores-titulo">
+          <h2 id="vectores-titulo">Más allá del correo: SMS, QR y voz</h2>
+          <p>
+            Los mismos guiones se adaptan al canal. Los informes de proveedores de seguridad
+            muestran cada año más variantes fuera de la bandeja de entrada; el nombre cambia,
+            la intención no.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Variante</th>
+                <th scope="col">Canal</th>
+                <th scope="col">Cómo reaccionar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Phishing</td><td>Correo</td><td>Comprobar dominio y abrir el servicio desde tu marcador.</td></tr>
+              <tr><td>Smishing</td><td>SMS o WhatsApp</td><td>No pulsar el enlace; consultar la app oficial del banco o mensajería.</td></tr>
+              <tr><td>Quishing</td><td>Código QR</td><td>Desconfiar de pegatinas y carteles; teclear la URL conocida.</td></tr>
+              <tr><td>Vishing</td><td>Llamada de voz</td><td>Colgar y llamar al número oficial; nadie serio pide código MFA por teléfono.</td></tr>
+              <tr><td>BEC</td><td>Correo corporativo</td><td>Verificar transferencias por otro canal, sin responder al hilo.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            La suplantación de ejecutivos (Business Email Compromise) no suele traer malware:
+            solo un correo bien redactado pidiendo un pago. Por eso importa un procedimiento
+            de verificación por segunda vía, no un filtro más.
+          </p>
+        </section>
+
+        <section id="suplantacion" aria-labelledby="suplantacion-titulo">
+          <h2 id="suplantacion-titulo">Suplantación de dominios y marcas</h2>
+          <p>
+            Un dominio falso puede parecer legítimo de varias formas. Conviene saber mirar la
+            dirección real en la barra del navegador y entender qué significa el prefijo
+            <code>xn--</code> que aparece en algunos dominios internacionalizados.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Truco</th>
+                <th scope="col">Ejemplo conceptual</th>
+                <th scope="col">Cómo se detecta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Sufijo engañoso</td><td><code>micuenta-ejemplo.com</code> frente a <code>ejemplo.com</code></td><td>El dominio termina en otro nombre; leer desde la derecha.</td></tr>
+              <tr><td>Subdominio que despista</td><td><code>ejemplo.com.otroDominio.net</code></td><td>El dominio real es el que precede al sufijo público.</td></tr>
+              <tr><td>Caracteres similares</td><td>una «o» por un cero, una «l» por una «i»</td><td>Copiar el texto y compararlo despacio; usar punycode.</td></tr>
+              <tr><td>Atajo acortado</td><td>Un enlace corto que esconde el destino</td><td>Expandir el acortador antes de abrir, o no abrirlo.</td></tr>
+            </tbody>
+          </table>
+          <pre><code>python3 -c "import idna; print(idna.decode('xn--ejmplo-9ua.com'))"
+printf '%s\n' 'https://ejemplo.com.otroDominio.net' | awk -F/ '{print $3}'</code></pre>
+          <p>
+            El primer comando traduce un dominio punycode a Unicode para hacer visibles los
+            caracteres similares; el segundo solo muestra la parte de la URL que contiene el
+            servidor. Son comprobaciones locales y seguras sobre texto, no sobre una página
+            maliciosa.
+          </p>
+        </section>
+
+        <section id="autenticacion-correo" aria-labelledby="autenticacion-correo-titulo">
+          <h2 id="autenticacion-correo-titulo">SPF, DKIM y DMARC</h2>
+          <p>
+            El correo electrónico nació sin verificación de remitente. Estas tres cabeceras
+            rellenan parte del hueco y explican por qué un mensaje llega a la carpeta de spam
+            —o por qué llega aunque parezca legítimo—:
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Mecanismo</th>
+                <th scope="col">Qué comprueba</th>
+                <th scope="col">Límite</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>SPF</strong></td><td>Que el servidor que envía está autorizado por el dominio.</td><td>Se pierde con reenvíos; no valida al usuario.</td></tr>
+              <tr><td><strong>DKIM</strong></td><td>Una firma criptográfica del mensaje y de parte de sus cabeceras.</td><td>El dominio firmante puede no ser el que ves en «De».</td></tr>
+              <tr><td><strong>DMARC</strong></td><td>Alineación entre SPF/DKIM y el dominio visible, más la política a aplicar.</td><td>Depende de que el receptor la aplique y de que el dominio publique la política.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            DMARC indica al receptor qué hacer con un mensaje que no pasa las comprobaciones:
+            <code>p=none</code> solo observa, <code>p=quarantine</code> lo aparta y
+            <code>p=reject</code> lo rechaza. La ruta habitual es empezar en observación, revisar
+            los informes y subir la política poco a poco. Más criptografía detrás de la firma en
+            <a href="criptografia.html">Criptografía básica</a>.
+          </p>
+          <pre><code>dig +short TXT _dmarc.ejemplo.com
+dig +short TXT ejemplo.com</code></pre>
+        </section>
+
+        <section id="verificar-enlaces" aria-labelledby="verificar-enlaces-titulo">
+          <h2 id="verificar-enlaces-titulo">Verificar un enlace sin abrirlo</h2>
+          <p>
+            Si tienes dudas, puedes inspeccionar la URL como texto antes de visitarla. Estas
+            comprobaciones funcionan sobre la cadena, no ejecutan la página:
+          </p>
+          <ol>
+            <li>Copia el enlace y pégalo en un editor de texto; lee el dominio desde la derecha.</li>
+            <li>Usa <code>urlscan</code>, <code>dig</code> o un acortador expandido para ver el destino y su antigüedad.</li>
+            <li>Descarga solo las cabeceras con <code>curl -I</code> si necesitas verificar una redirección; no descargues ni ejecutes archivos.</li>
+            <li>Compara el dominio con el de tu marcador oficial. Si no coincide, no introduzcas nada.</li>
+          </ol>
+          <pre><code>url='https://ejemplo.com.otroDominio.net'
+printf '%s\n' "$url" | sed -E 's#^https?://([^/]+).*#\1#'
+curl -sSI --max-time 5 "$url" | head -n 12</code></pre>
+          <p class="nota">
+            Las herramientas de análisis de URLs son útiles, pero no sustituyen al criterio:
+            una página recién creada puede ser legítima y una antigua puede haber sido
+            comprometida. Consulta <a href="http.html">HTTP y navegador web</a> para entender
+            cabeceras y redirecciones.
+          </p>
+        </section>
+
+        <section id="respuesta" aria-labelledby="respuesta-titulo">
+          <h2 id="respuesta-titulo">Qué hacer si caíste</h2>
+          <p>
+            El orden importa: primero cortar el acceso del atacante, después documentar y por
+            último analizar cómo ocurrió. Borrar el correo no revoca una contraseña.
+          </p>
+          <ol>
+            <li>Cambia la contraseña desde un lugar seguro y cierra las sesiones activas.</li>
+            <li>Activa o reconfigura MFA; revisa los factores y dispositivos de recuperación.</li>
+            <li>Si compartiste datos bancarios, contacta con la entidad por su canal oficial.</li>
+            <li>Si era una cuenta de trabajo, avisa al equipo de seguridad con el correo original.</li>
+            <li>Guarda el mensaje y la URL como evidencia; no los reenvíes a compañeros «para avisar».</li>
+          </ol>
+          <p>
+            El paso 1 funciona porque una contraseña cambiada invalida la que el atacante
+            escribió. Si el servicio permite ver sesiones, revócalas todas. El procedimiento
+            completo está en <a href="respuesta-incidentes.html">Respuesta a incidentes</a>.
+          </p>
+        </section>
+
+        <section id="prevencion" aria-labelledby="prevencion-titulo">
+          <h2 id="prevencion-titulo">Prevención y formación</h2>
+          <ul>
+            <li>Usa un gestor de contraseñas: facilita contraseñas únicas y detecta dominios falsos porque no coincide con la entrada guardada.</li>
+            <li>Activa MFA resistente a phishing (passkeys o claves de seguridad) donde exista; detalle en <a href="identidad-y-mfa.html">Identidad, contraseñas y MFA</a>.</li>
+            <li>Desactiva la carga automática de imágenes remotas en el correo: confirma lectura sin que tú lo sepas.</li>
+            <li>Separa el correo personal del corporativo y no reutilices contraseñas entre ellos.</li>
+            <li>En equipos, ensaya con simulaciones internas y un canal claro para reportar sin culpa.</li>
+          </ul>
+          <p class="aviso">
+            La formación funciona cuando el reporte es fácil y no penaliza al que cae. Un
+            botón de «reportar phishing» bien visible suele ser más eficaz que una política
+            larga de concienciación.
+          </p>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="fundamentos-ciberseguridad.html">Fundamentos de ciberseguridad</a>: dónde encaja el factor humano.</li>
+            <li><a href="identidad-y-mfa.html">Identidad, contraseñas y MFA</a>: segundo factor y passkeys.</li>
+            <li><a href="malware-ransomware.html">Malware y ransomware</a>: qué pasa si el adjunto se ejecuta.</li>
+            <li><a href="criptografia.html">Criptografía básica</a>: firmas y verificación de mensajes.</li>
+            <li><a href="tls.html">Seguridad en redes y TLS</a>: el candado del navegador y lo que significa.</li>
+            <li><a href="respuesta-incidentes.html">Respuesta a incidentes y forense básico</a>: cómo actuar tras el clic.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+      </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>

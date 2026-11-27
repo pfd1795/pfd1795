@@ -53,7 +53,7 @@ pfd1795/
 ├── mis-estudios/           # Enciclopedia de informática
 ├── juegos/                 # Juegos arcade
 └── programas/              # Programas y herramientas  ← aquí trabajas
-    ├── index.html          # Grilla con buscador y filtros (renderizada desde el manifiesto)
+    ├── index.html          # Grilla con buscador (renderizada desde el manifiesto)
     ├── programas.css       # Estilos específicos de la sección
     ├── herramientas/       # Un archivo <slug>.html por herramienta (tú creas uno)
     └── data/herramientas.json # Manifiesto de la grilla de herramientas
@@ -143,7 +143,7 @@ Clases compartidas más útiles:
 | Uso | Clases |
 | --- | --- |
 | Estructura | `.main-content`, `.contenedor`, `.saltar`, `.navbar`, `.logo-link`, `.btn`, `.btn-close`, `.btn-settings`, `.body-container`, `.sidebar-overlay`, `.sidebar`, `.sidebar-header`, `.sidebar-menu`, `.sidebar-item`, `.sidebar-item--group`, `.sidebar-expand`, `.sidebar-chevron`, `.sidebar-submenu`, `.sidebar-subitem`, `.sidebar-footer`, `.modal-dialog`, `.modal-close`, `.modal-dialog-body`, `.divider` |
-| Programas | `.encabezado`, `.buscador`, `.buscador__campo`, `.buscador__mensaje`, `.filtros`, `.filtro`, `.categoria`, `.lista-programas`, `.programa-card`, `.programa-card__cabecera`, `.programa-card__icono`, `.programa-card__titulo`, `.programa-card__descripcion`, `.programa-card__meta`, `.programa-card__categoria`, `.programa-card__tech`, `.programa-card__estado` |
+| Programas | `.encabezado`, `.buscador`, `.buscador__campo`, `.buscador__mensaje`, `.categoria`, `.lista-programas`, `.programa-card`, `.programa-card__cabecera`, `.programa-card__icono`, `.programa-card__titulo`, `.programa-card__descripcion`, `.programa-card__estado`, `.programa-card__abrir` |
 | Chrome | `.volver` |
 
 Cualquier otra clase (`.card`, `.box`, `.panel`…) **no existe en la base**: si la usas, no
@@ -321,8 +321,8 @@ contenido ya está en el HTML.
 El desarrollador integrará la herramienta añadiendo una entrada al manifiesto
 `programas/data/herramientas.json` (array `items`), con `slug`, `title {es}`,
 `description {es}`, `keywords`, `category` (un id del array `categories`), `icon` y
-`technologies`, y `status: "published"` solo si está probada. Los chips de filtro y las
-tarjetas de la grilla se generan solos desde el manifiesto: la tarjeta `published` se convierte
+`technologies`, y `status: "published"` solo si está probada. Las
+tarjetas de la grilla se generan solas desde el manifiesto: la tarjeta `published` se convierte
 en enlace (botón `Abrir`, que abre `herramientas/<slug>.html` en pestaña nueva) y la `wip`
 muestra "Próximamente". El desarrollador también actualizará el Service Worker y la
 documentación. Tú no generas esa entrada ni modificas otros archivos.

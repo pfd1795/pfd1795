@@ -9,12 +9,12 @@ Portafolio personal, enciclopedia de informática y colección de juegos arcade 
 - Portada con grillas de experiencia, estudios y proyectos generadas desde `js/lang/translations.json`.
 - Menú lateral con navegación por secciones, submenú desplegable y scrollspy.
 - Pie de página con las tecnologías que construyeron el sitio, la firma de los agentes de IA que colaboraron y los créditos de los iconos.
-- Modal de configuración con idioma (ES/EN), modo claro/oscuro, color de acento, tema de fondo, dirección del degradado, velocidad y tamaño de fuente.
+- Modal de configuración con idioma (ES/EN), tamaño de fuente, modo claro/oscuro, color de acento (seis colores en dos filas de tres, junto a la etiqueta), tema de fondo (diez opciones en tres columnas, junto a la etiqueta), dirección del degradado (siete iconos en tres columnas, junto a la etiqueta) y velocidad.
 - Preferencias de tema persistidas en `localStorage` y aplicadas antes del primer pintado; el idioma se restaura al cargar la página.
-- Enciclopedia de informática en `mis-estudios/`, con buscador y 36 artículos publicados; la grilla se genera desde `mis-estudios/data/articulos.json`.
-- Colección de 20 juegos arcade en `juegos/`, con buscador, filtro por género y una grilla generada desde `juegos/data/juegos.json`.
-- Sección de programas y herramientas en `programas/`, con grilla filtrable generada desde `programas/data/herramientas.json` y tarjetas de herramientas propias (web, Linux, Windows, CLI, DevOps).
-- Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en una pestaña nueva. La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
+- Enciclopedia de informática en `mis-estudios/`, con buscador y 42 artículos publicados; la grilla se genera desde `mis-estudios/data/articulos.json`.
+- Colección de 20 juegos arcade en `juegos/`, con buscador y una grilla generada desde `juegos/data/juegos.json`.
+- Sección de programas y herramientas en `programas/`, con buscador y grilla generada desde `programas/data/herramientas.json` y tarjetas de herramientas propias (web, Linux, Windows, CLI, DevOps).
+- Cada juego es una página autocontenida con Canvas 2D, controles táctiles y récord en `localStorage`; se abre en la misma pestaña y se vuelve a la grilla con «Atrás». La guía para agregar juegos está en [`juegos/README.md`](./juegos/README.md).
 - La enciclopedia comparte el tema, las traducciones de la interfaz y el modal de configuración con el portafolio.
 - Accesibilidad: salto al contenido, tarjetas de estudios operables por teclado, foco gestionado en el menú lateral y avisos anunciados a lectores de pantalla.
 - Aplicación instalable (PWA): el sitio puede instalarse como app y funciona offline gracias a un Service Worker que precachea el sitio publicado, incluidas las versiones en inglés de los artículos.
@@ -59,8 +59,8 @@ La documentación organizada del proyecto está en [`docs/README.md`](./docs/REA
 ## Juegos
 
 La página [`juegos/index.html`](./juegos/index.html) muestra una grilla con los juegos publicados. Cada tarjeta abre el
-juego en una pestaña nueva; los juegos son páginas independientes para no mezclar su Canvas y sus
-controles con el chrome del portafolio.
+juego en la misma pestaña; los juegos son páginas independientes para no mezclar su Canvas y sus
+controles con el chrome del portafolio. Se vuelve a la grilla con el botón «Atrás» del navegador.
 
 Para agregar un juego nuevo, sigue la guía [`juegos/README.md`](./juegos/README.md). El resumen es:
 

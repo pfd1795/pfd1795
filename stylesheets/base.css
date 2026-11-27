@@ -337,6 +337,9 @@ code {
   --color-text: hsl(0 0% 2%);
   --color-text-secondary: hsl(220 3% 41%);
   --color-text-disabled: hsl(220 5% 58%);
+  --modal-scrollbar-track: var(--n200);
+  --modal-scrollbar-thumb: var(--n400);
+  --modal-scrollbar-thumb-hover: var(--n500);
 
   /* --- Tipografía semántica --- */
   --text-caption: 0.75rem;
@@ -383,6 +386,9 @@ html.dark {
   --color-text: var(--dn900);
   --color-text-secondary: var(--dn700);
   --color-text-disabled: var(--dn600);
+  --modal-scrollbar-track: var(--dn100);
+  --modal-scrollbar-thumb: var(--dn600);
+  --modal-scrollbar-thumb-hover: var(--dn700);
   --footer-accent: var(--theme-color-soft);
   --neutral-background-soft: var(--dn100);
   --bg-theme-blue: var(--blue-oscuro);
@@ -670,15 +676,55 @@ body.modal-closed {
   max-height: 90vh;
   max-width: var(--size-2xl);
 
+  &[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
   &::backdrop {
     backdrop-filter: blur(.2em);
     background-color: var(--color-overlay-dark);
   }
 
+  .modal-dialog-header {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    gap: var(--space-4);
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-4) var(--space-2);
+  }
+
+  .modal-dialog-header #modal-title {
+    flex: 1;
+    margin: 0;
+    text-align: left;
+  }
+
   .modal-dialog-body {
-    max-height: calc(90vh - 3em);
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-color: var(--modal-scrollbar-thumb) var(--modal-scrollbar-track);
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      width: var(--space-2);
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--modal-scrollbar-track);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--modal-scrollbar-thumb);
+      border-radius: var(--radius-pill);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--modal-scrollbar-thumb-hover);
+    }
   }
 
   .modal-close {
@@ -687,11 +733,9 @@ body.modal-closed {
     border-color: var(--red-oscuro);
     color: var(--color-white);
     display: flex;
+    flex: 0 0 auto;
     height: var(--space-10);
     justify-content: center;
-    position: absolute;
-    right: var(--space-4);
-    top: var(--space-4);
     width: var(--space-10);
 
     &:hover {
@@ -766,8 +810,8 @@ body.modal-closed {
 .modal-dialog .settings .settings-title {
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
-  padding: 0 var(--space-8) var(--space-3);
-  text-align: center;
+  margin: 0;
+  text-align: left;
 }
 .modal-dialog .settings .settings-icon {
   flex-shrink: 0;
@@ -798,14 +842,6 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   flex-direction: column;
   gap: var(--space-3);
 }
-.modal-dialog .settings .settings-row-header {
-  align-items: center;
-  display: flex;
-  gap: var(--space-4);
-}
-.modal-dialog .settings .settings-row-header .settings-label {
-  flex: initial;
-}
 .modal-dialog .settings .color-options {
   display: grid;
   gap: var(--space-2);
@@ -813,6 +849,16 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   overflow: hidden;
   border-radius: var(--radius-md);
   padding: 6px;
+}
+.modal-dialog .settings .settings-row--theme-colors {
+  align-items: center;
+  flex-direction: row;
+}
+.modal-dialog .settings .settings-row--theme-colors .color-options {
+  flex: 0 0 auto;
+  grid-template-columns: repeat(3, 1fr);
+  margin-left: auto;
+  width: min(55%, 10em);
 }
 .modal-dialog .settings .color-option,
 .modal-dialog .settings .theme-option {
@@ -843,7 +889,16 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   border-radius: var(--radius-md);
   padding: 6px;
 }
-.modal-dialog .settings .settings-row--direction,
+.modal-dialog .settings .settings-row--background-themes {
+  align-items: center;
+  flex-direction: row;
+}
+.modal-dialog .settings .settings-row--background-themes .theme-options {
+  flex: 0 0 auto;
+  grid-template-columns: repeat(3, 1fr);
+  margin-left: auto;
+  width: min(55%, 10em);
+}
 .modal-dialog .settings .settings-row--speed,
 .modal-dialog .settings .settings-row--font {
   flex-wrap: wrap;
@@ -865,6 +920,14 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
   flex: 1;
   justify-content: flex-end;
   margin-left: 0;
+}
+.modal-dialog .settings .settings-row--direction .direction-options {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  margin-left: auto;
+  width: min(55%, 10em);
 }
 .modal-dialog .settings .direction-option,
 .modal-dialog .settings .speed-option,
@@ -1095,35 +1158,6 @@ html:not(.dark) .modal-dialog .settings .settings-icon {
 html.dark .buscador__mensaje {
   border-left-color: var(--amber-claro);
 }
-.filtros {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-block: var(--space-4);
-}
-.filtro {
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--color-text-secondary);
-  background-color: var(--color-surface);
-  border: var(--border-normal) solid var(--color-border);
-  border-radius: var(--radius-pill, var(--radius-sm));
-  cursor: pointer;
-  transition: color var(--transition-fast) var(--ease-in-out),
-    border-color var(--transition-fast) var(--ease-in-out),
-    background-color var(--transition-fast) var(--ease-in-out);
-}
-.filtro:hover {
-  color: var(--theme-color);
-  border-color: var(--theme-color);
-}
-.filtro.active {
-  color: var(--theme-color-contrast);
-  background-color: var(--theme-color);
-  border-color: var(--theme-color);
-}
-
 /* ===== 6. NAVBAR ===== */
 /* Barra superior compartida. */
 .navbar {

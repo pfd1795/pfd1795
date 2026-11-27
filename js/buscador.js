@@ -7,15 +7,11 @@
 
      - data-buscador-tarjetas    → selector de las tarjetas de la grilla
                                    (p. ej. ".estudio-card" o ".programa-card").
-     - data-buscador-placeholder → texto del placeholder con los contadores;
-                                   {visibles} y {total} se sustituyen al
-                                   filtrar (p. ej. "... (N de M estudios)").
+     - data-buscador-placeholder → texto del placeholder (p. ej. "Buscar estudios").
 
    Busca en los atributos data-titulo, data-descripcion, data-claves y
-   data-categoria de cada tarjeta (los que falten se ignoran). Si la página
-   define chips .filtro con data-categoria, filtra además por categoría vía
-   delegación sobre document, así sobreviven a los re-renders de la grilla.
-   Usa #sin-resultados como mensaje vacío. Un MutationObserver re-cuenta
+   data-categoria de cada tarjeta (los que falten se ignoran). Usa
+   #sin-resultados como mensaje vacío. Un MutationObserver vuelve a filtrar
    cuando la grilla se renderiza dinámicamente desde su manifiesto JSON.
    Si la página no tiene #buscador, no hace nada.
    ========================================================================== */
@@ -23,7 +19,6 @@
 (function () {
   'use strict';
 
-  var SELECTOR_FILTRO = '.filtro';
   var SELECTOR_CATEGORIA = '.categoria';
 
   /* Pasa a minúsculas y quita tildes para que "aplicacion" encuentre "aplicación". */
@@ -42,8 +37,6 @@
     }
 
     var selectorTarjetas = campo.getAttribute('data-buscador-tarjetas') || '.estudio-card';
-    var textoPlaceholder = campo.getAttribute('data-buscador-placeholder') ||
-      'buscador: titulo, descripcion o palabra clave ({visibles} de {total})';
     var mensaje = document.getElementById('sin-resultados');
 
     /* Evita que pulsar Intro recargue la página con ?q=... en la URL. */
@@ -52,8 +45,6 @@
         evento.preventDefault();
       });
     }
-
-    var categoriaActiva = 'todas';
 
     /* La grilla se llena desde el manifiesto después de DOMContentLoaded. Se
        observa solo su contenedor, derivado del prefijo del selector de
@@ -72,16 +63,13 @@
       var consulta = normalizar(campo.value);
       var tarjetas = Array.prototype.slice.call(document.querySelectorAll(selectorTarjetas));
 
-      /* Grilla aún vacía: es carga del manifiesto, no "sin resultados".
-         No se toca el placeholder para no mostrar un "0 de 0" transitorio. */
+      /* Grilla aún vacía: es carga del manifiesto, no "sin resultados". */
       if (tarjetas.length === 0) {
         if (mensaje) {
           mensaje.hidden = true;
         }
         return;
       }
-
-      var visibles = 0;
 
       tarjetas.forEach(function (tarjeta) {
         var texto = normalizar([
@@ -91,18 +79,11 @@
           tarjeta.getAttribute('data-categoria')
         ].join(' '));
 
-        var coincideTexto = consulta === '' || texto.indexOf(consulta) !== -1;
-        var coincideCategoria = categoriaActiva === 'todas' ||
-          tarjeta.getAttribute('data-categoria') === categoriaActiva;
+        var visible = consulta === '' || texto.indexOf(consulta) !== -1;
 
         /* Se oculta el <li> contenedor para que no quede hueco en la rejilla. */
         var item = tarjeta.closest('li') || tarjeta;
-        var visible = coincideTexto && coincideCategoria;
         item.hidden = !visible;
-
-        if (visible) {
-          visibles += 1;
-        }
       });
 
       /* Una categoría sin tarjetas visibles se oculta entera (título incluido).
@@ -120,46 +101,26 @@
         categoria.hidden = !visible;
       });
 
-      campo.placeholder = textoPlaceholder
-        .replace('{visibles}', String(visibles))
-        .replace('{total}', String(tarjetas.length));
+      var visibles = tarjetas.filter(function (tarjeta) {
+        var item = tarjeta.closest('li') || tarjeta;
+
+        return !item.hidden;
+      }).length;
 
       if (mensaje) {
         mensaje.hidden = visibles !== 0;
       }
     }
 
-    /* Chips de categoría por delegación sobre document: los listeners siguen
-       funcionando aunque la grilla (y sus chips) se re-rendericen. */
-    document.addEventListener('click', function (evento) {
-      if (!(evento.target instanceof Element)) {
-        return;
-      }
-
-      var filtro = evento.target.closest(SELECTOR_FILTRO);
-      if (!filtro) {
-        return;
-      }
-
-      categoriaActiva = filtro.getAttribute('data-categoria') || 'todas';
-      Array.prototype.forEach.call(document.querySelectorAll(SELECTOR_FILTRO), function (f) {
-        var activo = f === filtro;
-
-        f.classList.toggle('active', activo);
-        f.setAttribute('aria-pressed', String(activo));
-      });
-      filtrar();
-    });
-
     campo.addEventListener('input', filtrar);
 
     document.addEventListener('site:languagechange', function () {
-      textoPlaceholder = campo.getAttribute('data-buscador-placeholder') || textoPlaceholder;
+      campo.placeholder = campo.getAttribute('data-buscador-placeholder') || campo.placeholder;
       filtrar();
     });
 
     /* Las grillas renderizadas desde manifiestos rellenan el DOM después de
-       DOMContentLoaded; el observer dispara el primer conteo correcto. */
+       DOMContentLoaded; el observer dispara el primer filtrado. */
     if (window.MutationObserver) {
       var debounceTimer = null;
       new MutationObserver(function () {

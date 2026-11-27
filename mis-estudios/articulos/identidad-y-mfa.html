@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Identidad, contraseñas y MFA — Estudios de informática</title>
+  <meta name="description" content="Identidad, contraseñas y MFA: autenticación frente a autorización, gestores, TOTP, passkeys y WebAuthn, OAuth2 y OIDC, RBAC, privilegio mínimo y sesiones seguras.">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="stylesheet" href="../../stylesheets/base.css">
+  <link rel="stylesheet" href="../mis-estudios.css">
+  <script src="../../js/theme-init.js"></script>
+  <script src="../../js/main.js" defer type="module"></script>
+  <script src="../js/copiar.js" defer></script>
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="apple-touch-icon" href="../../assets/icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+</head>
+<body id="HomePage" class="body-container">
+  <a class="saltar" href="#contenido" data-lang="skipToContent">Saltar al contenido</a>
+
+  <nav class="navbar">
+    <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
+      <span class="navbar-name">Pablo Diaz</span>
+      <h2 data-lang="web-developer">Desarrollador Web</h2>
+    </a>
+
+    <button type="button" class="btn" title="abrir menú" aria-expanded="false" aria-controls="sidebar" data-i18n-title="openMenu">
+      <span data-lang="menu">Menú</span>
+      <img src="../../assets/icons/menu.svg" alt="" />
+    </button>
+  </nav>
+
+  <div class="main-content">
+    <main id="contenido" class="contenedor lectura">
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+
+      <article class="estudio">
+        <header class="estudio__cabecera">
+          <p class="estudio__categoria">Seguridad y ciberseguridad</p>
+          <h1>Identidad, contraseñas y MFA</h1>
+          <p class="entrada">
+            La identidad es la nueva frontera: cuando no hay servidor propio ni red perimetral
+            clara, lo que queda es saber quién eres y qué se te permite hacer. Este artículo
+            separa autenticar de autorizar, revisa los factores disponibles y explica por qué
+            una sesión bien gestionada importa tanto como una contraseña fuerte.
+          </p>
+        </header>
+
+        <aside class="tl-dr" aria-labelledby="tl-dr-titulo">
+          <h2 class="tl-dr__titulo" id="tl-dr-titulo">En 5 puntos</h2>
+          <ul>
+            <li><strong>Autenticación</strong> es demostrar quién eres; <strong>autorización</strong> es decidir qué puedes hacer.</li>
+            <li>Una contraseña larga y única dentro de un gestor vale más que una corta y complicada reutilizada.</li>
+            <li>MFA reduce mucho el riesgo, pero no todos los factores resisten phishing: SMS es el más débil.</li>
+            <li><strong>Passkeys/WebAuthn</strong> son el factor actual más resistente al phishing y además evitan contraseñas.</li>
+            <li>OAuth2 y OIDC resuelven accesos entre servicios; una sesión mal caducada puede anularlos todos.</li>
+          </ul>
+        </aside>
+
+        <nav class="tabla-contenido" aria-labelledby="toc-titulo">
+          <h2 id="toc-titulo">Contenido</h2>
+          <ol>
+            <li><a href="#identidad-autenticacion-autorizacion">Tres conceptos distintos</a></li>
+            <li><a href="#contrasenas">Contraseñas y gestores</a></li>
+            <li><a href="#almacenamiento">Cómo se guardan las contraseñas</a></li>
+            <li><a href="#mfa">Factores de autenticación</a></li>
+            <li><a href="#passkeys">Passkeys y WebAuthn</a></li>
+            <li><a href="#oauth">OAuth2, OIDC y sesiones</a></li>
+            <li><a href="#permisos">Permisos y privilegio mínimo</a></li>
+            <li><a href="#checklist">Comprobación rápida</a></li>
+            <li><a href="#ver-tambien">Ver también</a></li>
+          </ol>
+        </nav>
+
+        <section id="identidad-autenticacion-autorizacion" aria-labelledby="identidad-autenticacion-autorizacion-titulo">
+          <h2 id="identidad-autenticacion-autorizacion-titulo">Tres conceptos distintos</h2>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Concepto</th>
+                <th scope="col">Pregunta</th>
+                <th scope="col">Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Identificación</td><td>¿Quién dices ser?</td><td>Escribir tu correo o usuario.</td></tr>
+              <tr><td>Autenticación</td><td>¿Cómo demuestras que lo eres?</td><td>Contraseña, código MFA, huella, certificado.</td></tr>
+              <tr><td>Autorización</td><td>¿Qué se te permite hacer?</td><td>Leer un archivo, aprobar un pago, administrar usuarios.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Mezclarlos causa errores típicos: comprobar la identidad una vez al iniciar sesión y
+            no volver a verificar permisos en cada acción sensible, o conceder un rol de
+            administrador «para probar» y olvidarlo. Cada fase necesita su propio control.
+          </p>
+        </section>
+
+        <section id="contrasenas" aria-labelledby="contrasenas-titulo">
+          <h2 id="contrasenas-titulo">Contraseñas y gestores</h2>
+          <p>
+            La longitud y la unicidad pesan más que los símbolos. Una contraseña de 20 caracteres
+            generada por un gestor es difícil de recordar e imposible de reutilizar; una de 10
+            con sustituciones creativas es fácil de olvidar y se acaba compartiendo.
+          </p>
+          <ul>
+            <li>Una contraseña distinta por servicio: si uno se filtra, los demás siguen intactos.</li>
+            <li>Frases largas para lo que debas teclear a mano; generada aleatoriamente para el resto.</li>
+            <li>El gestor sincroniza y avisa cuando una dirección no coincide con la guardada: señal útil contra phishing.</li>
+            <li>La contraseña maestra del gestor sí debe ser memorable, larga y protegida con MFA.</li>
+          </ul>
+          <pre><code>openssl rand -base64 24
+pwgen -s 24 1</code></pre>
+          <p>
+            Estos comandos generan cadenas aleatorias locales para usar como contraseñas o
+            claves de API. No hace falta guardarlas en un archivo plano: pégalas directamente
+            en el gestor o en el sistema de secretos del proyecto.
+          </p>
+          <p class="nota">
+            Cambiar contraseñas periódicamente sin motivo no mejora mucho la seguridad; sí la
+            mejora hacerlo <strong>después de una filtración</strong> o al salir de un puesto.
+            La rotación obligatoria suele llevar a variantes predecibles.
+          </p>
+        </section>
+
+        <section id="almacenamiento" aria-labelledby="almacenamiento-titulo">
+          <h2 id="almacenamiento-titulo">Cómo se guardan las contraseñas</h2>
+          <p>
+            En una aplicación, la contraseña no se guarda: se guarda un hash lento con sal. Un
+            hash rápido como SHA-256 permite probar miles de millones de candidatos por segundo
+            con GPU; por eso existen bcrypt, scrypt y argon2id.
+          </p>
+          <pre><code>import argon2
+
+hash_guardado = argon2.hash(contrasena)
+argon2.verify(hash_guardado, contrasena)</code></pre>
+          <p>
+            La sal ya va incluida en el resultado y no hay que pedirla al usuario. Los detalles
+            están en <a href="criptografia.html">Criptografía básica</a>. Nunca registres la
+            contraseña en logs, mensajes de error ni correos de recuperación.
+          </p>
+        </section>
+
+        <section id="mfa" aria-labelledby="mfa-titulo">
+          <h2 id="mfa-titulo">Factores de autenticación</h2>
+          <p>
+            MFA combina algo que sabes (contraseña), algo que tienes (teléfono, clave física) y
+            algo que eres (biometría). Dos factores distintos son mejores que dos contraseñas.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Factor</th>
+                <th scope="col">Ventaja</th>
+                <th scope="col">Inconveniente</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>SMS o llamada</td><td>Fácil de activar en cualquier sitio.</td><td>Vulnerable a SIM swapping y phishing; evita usarlo si hay alternativa.</td></tr>
+              <tr><td>TOTP (app de autenticación)</td><td>Código local que caduca; funciona sin red.</td><td>Un phishing en tiempo real puede pedirlo; hay que vigilar la URL.</td></tr>
+              <tr><td>Notificación push</td><td>Cómodo y rápido.</td><td>Fatiga de MFA: el atacante insiste hasta que alguien aprueba.</td></tr>
+              <tr><td>Passkey / WebAuthn</td><td>Resiste phishing y suplanta a la contraseña.</td><td>Hay que gestionar el dispositivo y la recuperación.</td></tr>
+              <tr><td>Clave de seguridad física</td><td>El factor más fuerte; no exportable.</td><td>Hay que llevarla encima y tener una de respaldo.</td></tr>
+              <tr><td>Biometría</td><td>Rápida y ligada al dispositivo.</td><td>Es local: en servidor no sustituye a una credencial verificable.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Guarda siempre los códigos de recuperación en un lugar seguro. Un segundo factor
+            protege la cuenta, pero puede dejarte fuera si se pierde el teléfono; la
+            disponibilidad también es seguridad (ver
+            <a href="fundamentos-ciberseguridad.html">Fundamentos de ciberseguridad</a>).
+          </p>
+        </section>
+
+        <section id="passkeys" aria-labelledby="passkeys-titulo">
+          <h2 id="passkeys-titulo">Passkeys y WebAuthn</h2>
+          <p>
+            WebAuthn usa un par de claves asimétricas. El servicio guarda la clave pública; la
+            privada vive en tu dispositivo y nunca se envía. Durante el registro, el navegador
+            comprueba además el origen del sitio, así que una página falsa en otro dominio no
+            puede pedir una firma válida.
+          </p>
+          <ol>
+            <li>El sitio entrega un desafío aleatorio y su identificador de origen.</li>
+            <li>El dispositivo crea el par de claves y firma el desafío con la privada.</li>
+            <li>El servidor verifica la firma con la pública y guarda esa pública para el usuario.</li>
+            <li>En cada acceso se repite: desafío nuevo, firma nueva, verificación con la pública.</li>
+          </ol>
+          <pre><code>const credencial = await navigator.credentials.create({
+  publicKey: {
+    challenge: crypto.getRandomValues(new Uint8Array(32)),
+    rp: { name: 'Mi servicio' },
+    user: { id: new Uint8Array([1]), name: 'usuario', displayName: 'Usuario' },
+    pubKeyCredParams: [{ type: 'public-key', alg: -7 }]
+  }
+});</code></pre>
+          <p>
+            Es el mismo principio de firma digital explicado en
+            <a href="criptografia.html">Criptografía básica</a>, aplicado a la identidad. Por
+            eso una passkey no solo reemplaza a la contraseña: elimina el secreto compartido
+            que se podía robar en el servidor.
+          </p>
+        </section>
+
+        <section id="oauth" aria-labelledby="oauth-titulo">
+          <h2 id="oauth-titulo">OAuth2, OIDC y sesiones</h2>
+          <p>
+            OAuth2 es un marco de <strong>autorización</strong>: permite que una aplicación acceda
+            a un recurso en tu nombre sin conocer tu contraseña. OpenID Connect (OIDC) añade una
+            capa de <strong>autenticación</strong> con un token de identidad. El modelo general
+            está en <a href="apis.html">Cliente-servidor y APIs</a>.
+          </p>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Pieza</th>
+                <th scope="col">Qué es</th>
+                <th scope="col">Cuidado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Access token</td><td>Credencial de corta duración para llamar a una API.</td><td>No guardarlo en localStorage si puede evitarse; caduca rápido.</td></tr>
+              <tr><td>Refresh token</td><td>Permite obtener otro access token.</td><td>Rotarlo y vigilar su reutilización: es la joya para un atacante.</td></tr>
+              <tr><td>ID token</td><td>Prueba de autenticación en OIDC (JWT).</td><td>Verificar firma, emisor, audiencia y caducidad.</td></tr>
+              <tr><td>Sesión</td><td>Estado de usuario en el servidor o en una cookie.</td><td>Caducar, revocar y regenerar el identificador al entrar.</td></tr>
+            </tbody>
+          </table>
+          <p>
+            Las cookies de sesión deben ir con <code>HttpOnly</code> (JavaScript no las lee),
+            <code>Secure</code> (solo HTTPS) y <code>SameSite</code> adecuado. El atributo
+            <code>SameSite=Lax</code> reduce CSRF, pero no sustituye a los tokens anti-CSRF en
+            operaciones sensibles; ver
+            <a href="seguridad-web.html">Seguridad en aplicaciones web</a>.
+          </p>
+        </section>
+
+        <section id="permisos" aria-labelledby="permisos-titulo">
+          <h2 id="permisos-titulo">Permisos y privilegio mínimo</h2>
+          <p>
+            Dar el mínimo permiso necesario durante el mínimo tiempo posible limita el daño de
+            una cuenta comprometida. Es válido para usuarios, tokens de CI, claves de API y
+            contenedores.
+          </p>
+          <ul>
+            <li>Roles (RBAC) claros: lector, editor, administrador; evita roles «superusuario de prueba».</li>
+            <li>Cuentas personales para usar de día a día y cuentas administrativas separadas.</li>
+            <li>Acceso temporal con fecha de caducidad para incidencias o auditorías.</li>
+            <li>Revocación explícita al cambiar de equipo o de proyecto.</li>
+            <li>Revisión periódica de quién tiene acceso a qué, con evidencia en el pipeline.</li>
+          </ul>
+          <p>
+            En servidores, el equivalente es no usar <code>root</code> para todo; en contenedores,
+            ejecutar como usuario no privilegiado. Contexto en
+            <a href="linux-servidores.html">Linux y servidores</a> y
+            <a href="docker.html">Docker y contenedores</a>.
+          </p>
+        </section>
+
+        <section id="checklist" aria-labelledby="checklist-titulo">
+          <h2 id="checklist-titulo">Comprobación rápida</h2>
+          <ul>
+            <li>¿Cada servicio tiene una contraseña única y larga?</li>
+            <li>¿MFA activado en correo, gestor, repositorio y despliegue?</li>
+            <li>¿Hay códigos de recuperación guardados y probados?</li>
+            <li>¿Se han revocado sesiones y tokens antiguos?</li>
+            <li>¿Los permisos de administración están justificados y caducan?</li>
+            <li>¿Las cookies llevan <code>HttpOnly</code>, <code>Secure</code> y <code>SameSite</code>?</li>
+          </ul>
+          <p class="aviso">
+            Un segundo factor no arregla una contraseña compartida con un compañero ni un token
+            de administrador publicado en un repositorio. La identidad se protege en conjunto.
+          </p>
+        </section>
+
+        <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
+          <h2 id="ver-tambien-titulo">Ver también</h2>
+          <ul class="ver-tambien">
+            <li><a href="criptografia.html">Criptografía básica</a>: hash de contraseñas, firmas y claves públicas.</li>
+            <li><a href="apis.html">Cliente-servidor y APIs</a>: sesiones, JWT y OAuth2 paso a paso.</li>
+            <li><a href="phishing-ingenieria-social.html">Phishing e ingeniería social</a>: cómo se roban credenciales y códigos.</li>
+            <li><a href="seguridad-web.html">Seguridad en aplicaciones web</a>: cookies, sesiones y CSRF.</li>
+            <li><a href="fundamentos-ciberseguridad.html">Fundamentos de ciberseguridad</a>: privilegio mínimo y defensa en profundidad.</li>
+            <li><a href="ci-cd.html">GitHub Actions y CI/CD</a>: secretos y permisos en pipelines.</li>
+          </ul>
+        </section>
+      </article>
+
+      <p class="volver"><a href="../index.html">← Volver al índice</a></p>
+    </main>
+
+      </div>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar" aria-label="Menú de navegación">
+    <header class="sidebar-header">
+      <h2 data-lang="menu">Menú</h2>
+
+      <button type="button" class="btn btn-close" title="cerrar menú" data-i18n-title="closeMenu">
+        <span data-lang="close">Cerrar</span>
+        <img src="../../assets/icons/close.svg" alt="" />
+      </button>
+    </header>
+
+    <nav class="sidebar-menu">
+      <div class="sidebar-item--group">
+        <a class="sidebar-item" href="../../index.html#inicio">
+          <img src="../../assets/icons/home.svg" alt="" />
+          <span data-lang="home">Inicio</span>
+        </a>
+
+        <button class="sidebar-expand" type="button" aria-expanded="false" aria-controls="sidebar-secciones"
+          title="mostrar secciones" aria-label="mostrar secciones" data-i18n-title="showSections" data-i18n-aria-label="showSections">
+          <img class="sidebar-chevron" src="../../assets/icons/chevron_down.svg" alt="" />
+        </button>
+      </div>
+
+      <div class="sidebar-submenu" id="sidebar-secciones">
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#experiencia">
+          <img src="../../assets/icons/docs.svg" alt="" />
+          <span data-lang="experienceTitle">Experiencia Laboral</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#estudios">
+          <img src="../../assets/icons/school.svg" alt="" />
+          <span data-lang="studiesTitle">Estudios | Cursos</span>
+        </a>
+
+        <a class="sidebar-item sidebar-subitem" href="../../index.html#proyectos">
+          <img src="../../assets/icons/code.svg" alt="" />
+          <span data-lang="projects">Proyectos</span>
+        </a>
+      </div>
+
+      <a class="sidebar-item active" href="../index.html" aria-current="page">
+        <img src="../../assets/icons/menu_book.svg" alt="" />
+        <span data-lang="my-studies">Mis estudios</span>
+      </a>
+
+      <a class="sidebar-item" href="../../juegos/index.html">
+        <img src="../../assets/icons/gamepad.svg" alt="" />
+        <span data-lang="games">Juegos</span>
+      </a>
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <button type="button" class="btn btn-settings" title="Abrir configuración" data-i18n-title="openSettings">
+        <span data-lang="settings">Configuración</span>
+        <img src="../../assets/icons/setting.svg" alt="" />
+      </button>
+    </footer>
+  </aside>
+
+  <dialog class="modal-dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="btn modal-close" title="Cerrar ventana (Esc)" aria-label="Cerrar ventana" data-i18n-title="closeWindowHint" data-i18n-aria-label="closeWindow">&times;</button>
+    <div class="modal-dialog-body"></div>
+  </dialog>
+</body>
+
+</html>
