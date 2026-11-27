@@ -609,7 +609,7 @@ El código generado debe cumplir:
 - Variables descriptivas
 - Código legible
 - Arquitectura mantenible
-- Comentarios útiles
+- Código sin comentarios
 
 ---
 
@@ -666,6 +666,9 @@ Ideas para futuras versiones.
 ---
 
 ## Esqueleto canónico (copiar y adaptar)
+
+En `loop()`, añade la actualización de la lógica dentro de un
+`if (game.state === STATE.PLAYING)` antes de `draw()`.
 
 ```html
 <!DOCTYPE html>
@@ -931,7 +934,7 @@ Ideas para futuras versiones.
         try {
           localStorage.setItem(BEST_KEY, String(value));
         } catch (error) {
-          /* Almacenamiento no disponible. */
+          return;
         }
       }
 
@@ -1035,8 +1038,6 @@ Ideas para futuras versiones.
       function loop(timestamp) {
         const dt = Math.max(0, Math.min(0.05, (timestamp - game.lastTime) / 1000 || 0));
         game.lastTime = timestamp;
-
-        // Actualizar lógica aquí cuando game.state === STATE.PLAYING
 
         draw();
         requestAnimationFrame(loop);

@@ -335,6 +335,7 @@
       const stateLabel = document.getElementById('state-label');
       const btnPlay = document.getElementById('btn-play');
       const optionsDialog = document.getElementById('options');
+      let modalWasPlaying = false;
 
       let renderScale = 1;
 
@@ -651,6 +652,7 @@
         game.newRecord = false;
         game.state = STATE.PLAYING;
         releaseAll();
+        refillQueue();
         spawnNext();
         updateHud();
       }
@@ -846,7 +848,8 @@
       // Modal de opciones y pausa automática
       // ============================================================
       document.getElementById('btn-options').addEventListener('click', () => {
-        if (game.state === STATE.PLAYING) togglePause();
+        modalWasPlaying = game.state === STATE.PLAYING;
+        if (modalWasPlaying) togglePause();
         optionsDialog.showModal();
       });
       document.getElementById('btn-close-options').addEventListener('click', () => optionsDialog.close());
@@ -854,7 +857,8 @@
         if (event.target === optionsDialog) optionsDialog.close();
       });
       optionsDialog.addEventListener('close', () => {
-        if (game.state === STATE.PAUSED) togglePause();
+        if (modalWasPlaying && game.state === STATE.PAUSED) togglePause();
+        modalWasPlaying = false;
       });
 
       document.addEventListener('visibilitychange', () => {

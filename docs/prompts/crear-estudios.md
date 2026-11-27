@@ -147,7 +147,12 @@ Si necesitas un matiz visual, exprésalo con `.nota` o `.aviso`.
 - El chrome compartido se traduce solo (ES/EN) mediante sus atributos `data-lang`,
   `data-i18n-title` y `data-i18n-aria-label`. **No inventes claves nuevas**: usa exactamente las
   del esqueleto.
-- No traduzcas el artículo al inglés ni añadas alternativas por idioma.
+- El contenido del artículo va solo en español por defecto. La versión en inglés es opcional y se
+  añade solo si se pide: `articulos/<slug>.en.html`, paralela al `<slug>.html`, con el mismo chrome
+  y solo el contenido traducido, según la regla 8 de
+  [`mis-estudios/AGENTS.md`](../../mis-estudios/AGENTS.md). «Ver también» apunta a `.en.html`
+  cuando exista, ambas versiones enlazan entre sí desde `.volver` y el manifiesto mantiene una sola
+  entrada por slug.
 
 ### Categorías válidas
 
@@ -207,9 +212,14 @@ Solo puedes enlazar a estos desde «Ver también». No inventes nombres de archi
 | TypeScript | `typescript.html` |
 | Accesibilidad web | `accesibilidad.html` |
 | Bases de datos NoSQL | `nosql.html` |
+| Testing automatizado | `testing.html` |
+| GitHub Actions y CI/CD | `ci-cd.html` |
+| Docker y contenedores | `docker.html` |
+| Linux y servidores | `linux-servidores.html` |
+| Expresiones regulares | `regex.html` |
 
 Si un tema relacionado **todavía no existe**, menciónalo como texto plano («el artículo de
-Docker se forthcoming» no: mejor «todavía no hay un artículo sobre Docker en esta enciclopedia»)
+Kubernetes se forthcoming» no: mejor «todavía no hay un artículo sobre Kubernetes en esta enciclopedia»)
 o enlaza al artículo existente más cercano del roster. Un enlace roto es un error.
 
 ---
@@ -322,8 +332,9 @@ En este orden, dentro de `<article class="estudio">`:
 - Español claro y directo. Evita la jerga innecesaria y define cada término la primera vez.
 - Explica con ejemplos del mundo real antes de entrar en la sintaxis.
 - `<strong>` para conceptos clave, `<em>` para énfasis, `<code>` para términos técnicos.
-- **Un solo `<h1>` dentro del `<article>`**: el del navbar (`Pablo Diaz`) pertenece al chrome y no
-  cuenta. Jerarquía sin saltos: `<h2>` por sección, `<h3>` solo dentro de una sección.
+- **Un solo `<h1>` en la página**: es el del título del artículo, dentro del `<article>`. El navbar
+  lleva `<span class="navbar-name">Pablo Diaz</span>`, que no es un encabezado. Jerarquía sin
+  saltos: `<h2>` por sección, `<h3>` solo dentro de una sección.
 - Cada `<section>` va con `id` en kebab-case y único en el documento, y su `<h2>` con el mismo
   `id` terminado en `-titulo`, enlazado por `aria-labelledby`.
 - Nada de «en este artículo veremos…» vacío: la entrada ya cumple esa función.
@@ -334,10 +345,9 @@ En este orden, dentro de `<article class="estudio">`:
 
 - Siempre `<pre><code>…</code></pre>`; el botón «Copiar» lo inyecta `copiar.js` solo.
 - Usa entidades HTML (`&lt;`, `&gt;`, `&amp;`) en el contenido del bloque.
-- Código real y correcto, con indentación coherente y comentarios breves cuando ayuden.
-- No inventes APIs ni funciones que no existan: si el ejemplo es ilustrativo, dilo.
-- No incluyas salidas de consola ni comentarios dentro del bloque salvo que sean parte de la
-  explicación.
+- Código real y correcto, con indentación coherente y sin comentarios.
+- No inventes APIs ni funciones que no existan: si el ejemplo es ilustrativo, dilo fuera del bloque.
+- No incluyas salidas de consola ni comentarios dentro del bloque.
 
 ### Tablas
 
@@ -360,7 +370,8 @@ En este orden, dentro de `<article class="estudio">`:
 ### Enlaces internos
 
 - Rutas relativas: `css.html`, `javascript.html#dom`.
-- «Ver también» solo con artículos del roster.
+- «Ver también» solo con artículos del roster; el `href` es el nombre exacto del archivo y el
+  texto, el título del artículo.
 
 ---
 
@@ -391,7 +402,7 @@ En este orden, dentro de `<article class="estudio">`:
 
   <nav class="navbar">
     <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
-      <h1>Pablo Diaz</h1>
+      <span class="navbar-name">Pablo Diaz</span>
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
@@ -455,8 +466,7 @@ En este orden, dentro de `<article class="estudio">`:
         <section id="ejemplos" aria-labelledby="ejemplos-titulo">
           <h2 id="ejemplos-titulo">Ejemplos</h2>
           <p>Explicación del ejemplo.</p>
-          <pre><code>// Ejemplo de código
-const ejemplo = 'hola';
+          <pre><code>const ejemplo = 'hola';
 console.log(ejemplo);</code></pre>
         </section>
 
@@ -506,8 +516,6 @@ console.log(ejemplo);</code></pre>
         <section id="ver-tambien" aria-labelledby="ver-tambien-titulo">
           <h2 id="ver-tambien-titulo">Ver también</h2>
           <ul class="ver-tambien">
-            <!-- Sustituye estos enlaces por artículos reales del roster: el href es el nombre
-                 exacto del archivo y el texto, el título del artículo. -->
             <li><a href="javascript.html">JavaScript</a>: relación con este artículo.</li>
           </ul>
         </section>
@@ -563,6 +571,11 @@ console.log(ejemplo);</code></pre>
       <a class="sidebar-item" href="../../juegos/index.html">
         <img src="../../assets/icons/gamepad.svg" alt="" />
         <span data-lang="games">Juegos</span>
+      </a>
+
+      <a class="sidebar-item" href="../../programas/index.html">
+        <img src="../../assets/icons/build.svg" alt="" />
+        <span data-lang="programs">Programas</span>
       </a>
     </nav>
 
@@ -626,7 +639,8 @@ los datos de tu artículo:
      y sube CACHE_NAME un nivel respecto al valor actual de service-worker.js
      (`pwa-cache-vN`) para forzar el refresco del precache.
 
-2.3) Actualiza el número de artículos publicados en mis-estudios/AGENTS.md y en AGENTS.md (raíz).
+2.3) Actualiza el número de artículos publicados en README.md y docs/LIMITACIONES.md; el listado
+     de temas está en mis-estudios/AGENTS.md (no en el AGENTS.md de la raíz).
 2.4) Añade el artículo nuevo al roster de «Artículos ya publicados» de este prompt
      con su título y su archivo `<slug>.html`.
 ```

@@ -664,6 +664,10 @@ let state='menu';               // menu | playing | paused | gameover
 let mode='1p',difficulty='normal',playerColor=W,aiColor=B;
 let selection=-1,seqProgress=null,currentLegal=[];
 let lastMove=null,anim=null,thinking=false;
+let aiTimerId=null,aiGeneration=0;
+function cancelAI(){
+  if(aiTimerId!==null){clearTimeout(aiTimerId);aiTimerId=null;}
+}
 
 const $=id=>document.getElementById(id);
 const overlay=$('overlay'),panelMenu=$('panelMenu'),
@@ -712,6 +716,7 @@ function colorName(c){return c===W?'Blancas':'Negras';}
 
 /* ---------- Inicio / pausa / fin ---------- */
 function startGame(){
+  aiGeneration++;cancelAI();
   mode=store.data.settings.mode;
   difficulty=store.data.settings.diff;
   playerColor=store.data.settings.color;
@@ -730,6 +735,7 @@ function pauseGame(){
   if(state!=='playing')return;
   // No se toca `anim`: el bucle sigue corriendo en pausa y `afterResolve()`
   // resuelve el movimiento en curso una sola vez (fin de partida, currentLegal y IA al día)
+  cancelAI();
   state='paused';
   showPanel(panelPause);updateHUD();
 }
@@ -739,6 +745,7 @@ function resumeGame(){
   if(mode==='1p'&&engine.turn===aiColor)scheduleAI();
 }
 function toMenu(){
+  aiGeneration++;cancelAI();
   state='menu';
   setupInitial(engine);
   selection=-1;seqProgress=null;lastMove=null;anim=null;thinking=false;
@@ -801,8 +808,10 @@ function setStatusForTurn(){
 function scheduleAI(){
   if(state!=='playing'||engine.turn!==aiColor)return;
   thinking=true;setHudStatus('Pensando…',true);updateHUD();
-  setTimeout(()=>{
-    if(state!=='playing'){thinking=false;return;}
+  const generacion=aiGeneration;
+  aiTimerId=setTimeout(()=>{
+    aiTimerId=null;
+    if(generacion!==aiGeneration||state!=='playing'||engine.turn!==aiColor)return;
     const mv=aiBestMove(DEPTHS[difficulty],difficulty==='easy');
     thinking=false;
     if(state!=='playing'||!mv){updateHUD();return;}
@@ -811,6 +820,7 @@ function scheduleAI(){
 }
 function undo(){
   if(state!=='playing'||thinking||!engine.history.length||anim)return;
+  aiGeneration++;cancelAI();
   unmakeMove(engine);
   if(mode==='1p')
     while(engine.history.length&&engine.turn!==playerColor)unmakeMove(engine);

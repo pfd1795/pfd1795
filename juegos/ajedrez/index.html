@@ -815,6 +815,10 @@ let state='menu';               // menu | playing | paused | gameover
 let mode='1p', difficulty='normal', playerColor=W, aiColor=B;
 let selection=-1, currentLegal=[], cursorCell=-1;
 let lastMove=null, anim=null, thinking=false, promoPending=null;
+let aiTimerId=null, aiGeneration=0;
+function cancelAI(){
+  if(aiTimerId!==null){clearTimeout(aiTimerId);aiTimerId=null;}
+}
 
 const $=id=>document.getElementById(id);
 const overlay=$('overlay'), panelMenu=$('panelMenu'), panelPause=$('panelPause'),
@@ -862,6 +866,7 @@ function colorName(c){return c===W?'Blancas':'Negras';}
 
 /* ---------- Inicio / pausa / fin ---------- */
 function startGame(){
+  aiGeneration++;cancelAI();
   mode=store.data.settings.mode;
   difficulty=store.data.settings.diff;
   playerColor=store.data.settings.color;
@@ -880,6 +885,7 @@ function pauseGame(){
   if(state!=='playing'||promoPending)return; // con la coronación abierta no se pausa: ocultaría el panel y bloquearía la entrada
   // No se toca `anim`: el bucle sigue corriendo en pausa y `afterResolve()`
   // resuelve el movimiento en curso una sola vez (fin de partida, currentLegal y IA al día)
+  cancelAI();
   state='paused';
   showPanel(panelPause);updateHUD();
 }
@@ -889,6 +895,7 @@ function resumeGame(){
   if(mode==='1p'&&engine.turn===aiColor)scheduleAI();
 }
 function toMenu(){
+  aiGeneration++;cancelAI();
   state='menu';
   setupInitial(engine); // tablero de fondo
   selection=-1;lastMove=null;anim=null;thinking=false;cursorCell=-1;
@@ -946,8 +953,10 @@ function afterResolve(){
 function scheduleAI(){
   if(state!=='playing'||engine.turn!==aiColor)return;
   thinking=true;setHudStatus('Pensando…',true);updateHUD();
-  setTimeout(()=>{
-    if(state!=='playing'){thinking=false;return;}
+  const generacion=aiGeneration;
+  aiTimerId=setTimeout(()=>{
+    aiTimerId=null;
+    if(generacion!==aiGeneration||state!=='playing'||engine.turn!==aiColor)return;
     const mv=aiBestMove(DEPTHS[difficulty],difficulty==='easy');
     thinking=false;
     if(state!=='playing'||!mv){updateHUD();return;}
@@ -956,6 +965,7 @@ function scheduleAI(){
 }
 function undo(){
   if(state!=='playing'||thinking||!engine.history.length||anim||promoPending)return; // con la coronación abierta no se deshace: perdería la jugada en curso
+  aiGeneration++;cancelAI();
   unmake(engine);
   if(mode==='1p')
     while(engine.history.length&&engine.turn!==playerColor)unmake(engine);

@@ -532,10 +532,10 @@ function renderPauseOverlay(){
 function drawMiniRack(){
   let k=0;
   for(let row=0;row<5;row++)for(let c=0;c<=row;c++){
-    const x=240+(c-row/2)*18,y=436-row*15.5,n=[1,2,3,4,5,6,7,9,10,11,12,13,14,15][k];k++;
-    const col=k===5?'#34344a':BALL_COLORS[n>8?n-8:n];
-    circle(x,y,8,isStripe(n)&&k!==5?'#ffffff':col);
-    if(isStripe(n)&&k!==5){g.save();g.beginPath();g.arc(x,y,8,0,TAU);g.clip();
+    const x=240+(c-row/2)*18,y=436-row*15.5,n=[1,2,3,4,8,5,6,7,9,10,11,12,13,14,15][k];k++;
+    const col=ballColor(n);
+    circle(x,y,8,isStripe(n)?'#ffffff':col);
+    if(isStripe(n)){g.save();g.beginPath();g.arc(x,y,8,0,TAU);g.clip();
       g.fillStyle=col;g.fillRect(x-8,y-3.6,16,7.2);g.restore();}
   }
   circle(240,505,9,COL.white);
@@ -596,8 +596,9 @@ function updateHUD(){
 
 /* ===================== 12. ENTRADA ===================== */
 const optionsDialog=$('#options');
+let modalWasPlaying=false;
 const inside=(x,y,b)=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h;
-function openModal(){if(game.state==='playing')pauseGame();optionsDialog.showModal();}
+function openModal(){modalWasPlaying=game.state==='playing';if(modalWasPlaying)pauseGame();optionsDialog.showModal();}
 function closeModal(){if(optionsDialog.open)optionsDialog.close();}
 
 window.addEventListener('keydown',e=>{
@@ -606,11 +607,11 @@ window.addEventListener('keydown',e=>{
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(code))e.preventDefault();
   ensureAudio();
   if(optionsDialog.open){
-    if(code==='Enter'){closeModal();if(game.state==='paused')resumeGame();}
+    if(code==='Enter'){closeModal();}
     return; // ESC cierra el dialog de forma nativa
   }
   switch(game.state){
-    case 'title':if(code==='Enter'||code==='Space')startGame();break;
+    case 'title':if(e.key.length===1||code==='Enter'||code==='Space')startGame();break;
     case 'playing':
       if(code==='Escape'||code==='KeyP')pauseGame();
       break;
@@ -668,7 +669,7 @@ $('#mRestart').addEventListener('click',startGame);
 $('#mExit').addEventListener('click',()=>{closeModal();goTitle();});
 $('#mClose').addEventListener('click',closeModal);
 optionsDialog.addEventListener('click',e=>{if(e.target===optionsDialog)closeModal();}); // clic en el backdrop
-optionsDialog.addEventListener('close',()=>{if(game.state==='paused')resumeGame();});
+optionsDialog.addEventListener('close',()=>{if(modalWasPlaying&&game.state==='paused')resumeGame();modalWasPlaying=false;});
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden&&game.state==='playing')pauseGame();
 });

@@ -988,15 +988,18 @@
         const aviso = document.getElementById('aviso-portapapeles');
         if (!lienzoActual) return;
         try {
-          if (window.ClipboardItem && navigator.clipboard?.write) {
-            lienzoActual.toBlob(async (blob) => {
-              if (!blob) throw new Error('Blob no disponible');
-              await navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]);
-              if (aviso) aviso.textContent = 'Imagen copiada al portapapeles.';
-            }, 'image/png');
-          } else {
+          if (!window.ClipboardItem || !navigator.clipboard?.write) {
             if (aviso) aviso.textContent = 'Tu navegador no admite copiar imágenes directamente; usa el botón de descarga.';
+            return;
           }
+          const blob = await new Promise((resolve, reject) => {
+            lienzoActual.toBlob((resultado) => {
+              if (resultado) resolve(resultado);
+              else reject(new Error('Blob no disponible'));
+            }, 'image/png');
+          });
+          await navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]);
+          if (aviso) aviso.textContent = 'Imagen copiada al portapapeles.';
         } catch (error) {
           if (aviso) aviso.textContent = 'No se pudo copiar al portapapeles. Puedes descargar la imagen con el botón correspondiente.';
         }

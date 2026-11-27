@@ -209,7 +209,8 @@ HTML.
 ### Estructura de la página
 
 - La herramienta vive dentro de `<main id="contenido" class="contenedor">`.
-- Usa un `<h1>` para el título de la herramienta (solo uno en la página, dentro del main).
+- Usa un `<h1>` para el título de la herramienta (solo uno en la página, dentro del main); el
+  navbar lleva `<span class="navbar-name">Pablo Diaz</span>`, que no es un encabezado.
 - Agrupa la interfaz en secciones lógicas con `<section>` y `<h2>`.
 - Formularios con `<form>` y `submit` manejado con `preventDefault`.
 - Resultados en una región con `aria-live="polite"` cuando cambien dinámicamente.
@@ -342,7 +343,6 @@ documentación. Tú no generas esa entrada ni modificas otros archivos.
   <link rel="stylesheet" href="../../stylesheets/base.css">
   <link rel="stylesheet" href="../programas.css">
   <style>
-    /* Estilos propios de la herramienta. Usa los tokens de base.css. */
     .herramienta__campo {
       width: 100%;
       padding: var(--space-2) var(--space-3);
@@ -373,7 +373,7 @@ documentación. Tú no generas esa entrada ni modificas otros archivos.
 
   <nav class="navbar">
     <a href="../../index.html" class="logo-link" title="inicio" data-i18n-title="homeTitle">
-      <h1>Pablo Diaz</h1>
+      <span class="navbar-name">Pablo Diaz</span>
       <h2 data-lang="web-developer">Desarrollador Web</h2>
     </a>
 
@@ -401,9 +401,7 @@ documentación. Tú no generas esa entrada ni modificas otros archivos.
 
       <section aria-labelledby="resultado-titulo" aria-live="polite">
         <h2 id="resultado-titulo">Resultado</h2>
-        <div id="resultado" class="herramienta__resultado" role="status">
-          <!-- El resultado se inyecta aquí -->
-        </div>
+        <div id="resultado" class="herramienta__resultado" role="status"></div>
       </section>
 
       <p class="volver"><a href="../index.html">← Volver al índice</a></p>
@@ -482,7 +480,6 @@ documentación. Tú no generas esa entrada ni modificas otros archivos.
   </dialog>
 
   <script>
-    // Lógica de la herramienta. Encapsulada, sin console.log de depuración.
     (function () {
       'use strict';
 
@@ -497,7 +494,6 @@ documentación. Tú no generas esa entrada ni modificas otros archivos.
           resultado.innerHTML = '<p role="alert">Ingresa un valor válido.</p>';
           return;
         }
-        // Procesar y mostrar resultado.
         resultado.textContent = valor;
       });
     })();

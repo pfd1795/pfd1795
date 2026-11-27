@@ -1,11 +1,3 @@
 # Trabajo pendiente
 
-- Traducción al inglés de la enciclopedia: 7 artículos restantes (`ci-cd`, `docker`, `linux-servidores`, `typescript`, `accesibilidad`, `nosql`, `regex`). Convención: `mis-estudios/articulos/<slug>.en.html`, paralelo al `<slug>.html` en español; enlace de cambio de idioma en `.volver`; manifiesto sin duplicar slug. Realizados: `sistemas-numericos`, `logica-booleana`, `terminal`, `html`, `css`, `redes`, `javascript`, `tls`, `modelado-datos`, `criptografia`, `inteligencia-artificial`, `patrones`, `paradigmas`, `seguridad-web`, `apis`, `git`, `sistemas-operativos`, `aprendizaje-automatico`, `redes-neuronales`, `http`, `python`, `c-memoria`, `frameworks-frontend`, `frameworks-backend`, `solid`, `editores-ides-depuracion`, `empaquetado-despliegue`, `sql`, `testing`.
-- Precachear en `service-worker.js` las otras 28 versiones en inglés de los artículos: solo `testing.en.html` figura en `PRECACHE_URLS`, así que el resto de las páginas `.en.html` no están disponibles offline.
-- `docs/prompts/crear-estudios.md`: añadir al roster `ci-cd`, `docker`, `linux-servidores`, `regex` y `testing`.
-- `docs/prompts/crear-estudios.md`: alinear la regla de traducción con la convención `<slug>.en.html` de `mis-estudios/AGENTS.md`.
-- `docs/prompts/fichas-estudios.md`: corregir el número de temas pendientes o remitir al tracker sin fijar una cifra.
-- `docs/prompts/crear-estudios.md:629` y `docs/prompts/fichas-estudios.md:330-331`: alinear la actualización de documentación con las ubicaciones reales; el conteo de artículos publicados está en `README.md` y `docs/LIMITACIONES.md`, y el listado de temas solo en `mis-estudios/AGENTS.md`. El `AGENTS.md` raíz no publica esas cifras.
-- `docs/informes/trabajo-pendiente.md:3`: quitar la lista de slugs ya traducidos; conservar los 7 slugs pendientes y la convención de traducción.
-- `docs/INVARIANTES.md:4`: ajustar la exigencia de evidencia a «archivo y, cuando aplica, línea», o completar las citas sin línea de las entradas 1, 4, 6 y 7.
-- `docs/prompts/crear-videojuegos.md:612`: aclarar que el código generado para este repositorio no incluye comentarios, o retirar el requisito «Comentarios útiles»; la excepción de plantillas no autoriza comentarios en juegos integrados.
+- Traducción al inglés de la enciclopedia: 7 artículos restantes (`ci-cd`, `docker`, `linux-servidores`, `typescript`, `accesibilidad`, `nosql`, `regex`). Convención: `mis-estudios/articulos/<slug>.en.html`, paralelo al `<slug>.html` en español; enlace de cambio de idioma en `.volver`; manifiesto sin duplicar slug.

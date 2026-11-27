@@ -15,7 +15,7 @@
    integración y las notas.
 4. Repite con la siguiente ficha. No hace falta cerrar la conversación.
 
-Las fichas cubren quince temas de la enciclopedia. Los ocho temas pendientes se gestionan en
+Las fichas cubren quince temas de la enciclopedia. Los temas pendientes se gestionan en
 [`docs/informes/trabajo-pendiente.md`](../informes/trabajo-pendiente.md).
 
 > Las fichas solo enlazan a artículos **ya publicados** (los que figuran en el roster del
@@ -327,5 +327,5 @@ Cuando hayas publicado los artículos, el proyecto necesita estos tres ajustes:
    (`./mis-estudios/articulos/<slug>.html`) a `PRECACHE_URLS` y subir `CACHE_NAME`
    un nivel respecto al valor actual de `service-worker.js` (`pwa-cache-vN`) para
    forzar el refresco del precache.
-3. **Documentación**: actualizar el número de artículos publicados y el listado de temas en
-   `mis-estudios/AGENTS.md` y en el `AGENTS.md` de la raíz.
+3. **Documentación**: actualizar el número de artículos publicados en `README.md` y
+   `docs/LIMITACIONES.md`, y el listado de temas en `mis-estudios/AGENTS.md`.

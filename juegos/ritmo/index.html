@@ -617,7 +617,8 @@ function render(ts){
 
 /* ===================== 11. ENTRADA ===================== */
 const optionsDialog=$('#options');
-function openModal(){if(game.state==='playing')pauseGame();optionsDialog.showModal();}
+let modalWasPlaying=false;
+function openModal(){modalWasPlaying=game.state==='playing';if(modalWasPlaying)pauseGame();optionsDialog.showModal();}
 function closeModal(){if(optionsDialog.open)optionsDialog.close();}
 
 window.addEventListener('keydown',e=>{
@@ -626,14 +627,14 @@ window.addEventListener('keydown',e=>{
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(code))e.preventDefault();
   ensureAudio();
   if(optionsDialog.open){
-    if(code==='Enter'){closeModal();if(game.state==='paused')resumeGame();}
+    if(code==='Enter'){closeModal();}
     return; // ESC cierra el dialog de forma nativa
   }
   switch(game.state){
     case 'title':
       /* Lista blanca: solo teclas imprimibles, Espacio o Enter avanzan de
          pantalla. F5, F12, Alt+Tab, etc. no tocan el estado del juego. */
-      if(code.length===1||code==='Enter'||code==='Space')goSelect();
+      if(e.key.length===1||code==='Enter'||code==='Space')goSelect();
       break;
     case 'select':
       if(code==='ArrowUp'||code==='KeyW'){game.sel=(game.sel+SONGS.length-1)%SONGS.length;audio.tick();}
@@ -696,7 +697,7 @@ $('#mRestart').addEventListener('click',()=>startSong(game.songIndex));
 $('#mExit').addEventListener('click',()=>{closeModal();exitToMenu();});
 $('#mClose').addEventListener('click',closeModal);
 optionsDialog.addEventListener('click',e=>{if(e.target===optionsDialog)closeModal();}); // clic en el backdrop
-optionsDialog.addEventListener('close',()=>{if(game.state==='paused')resumeGame();});
+optionsDialog.addEventListener('close',()=>{if(modalWasPlaying&&game.state==='paused')resumeGame();modalWasPlaying=false;});
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden&&game.state==='playing')pauseGame();
 });

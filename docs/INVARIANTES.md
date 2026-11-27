@@ -1,14 +1,15 @@
 # INVARIANTES.md — Decisiones técnicas no deducibles del código
 
 > 📌 **Decisiones que un agente sin historial podría revertir por error.**
-> Cada entrada lleva evidencia `archivo:línea`. No borrar sin decisión formal.
+> Cada entrada lleva evidencia `archivo:línea` cuando es aplicable; los archivos binarios se citan
+> por ruta. No borrar sin decisión formal.
 > Los agentes deben leer este archivo antes de tocar las áreas afectadas.
 
 ## 1. Paleta de arcoíris duplicada a propósito
 
 - **Decisión:** la paleta del modo `multicolor` está duplicada en dos sitios y **debe mantenerse así**.
 - **Por qué:** `js/theme-init.js` es un script clásico que no puede importar módulos ES.
-- **Evidencia:** `js/utils/themeBackgrounds.js` (`RAINBOW_GRADIENT`) y `js/theme-init.js` (`ARCOIRIS`). Cualquier cambio de paleta se hace en **ambos** sitios.
+- **Evidencia:** `js/utils/themeBackgrounds.js:74` (`RAINBOW_GRADIENT`) y `js/theme-init.js:41` (`ARCOIRIS`). Cualquier cambio de paleta se hace en **ambos** sitios.
 - **Señal anti-regresión:** no unificar en un solo módulo; no borrar la duplicación.
 
 ## 2. Excepción `dj.html` (autocontenida)
@@ -21,7 +22,7 @@
 ## 3. CV PDF sin enlazar por decisión del desarrollador
 
 - **Decisión:** `assets/files/PabloDiazCV.pdf` (238 KB) se mantiene en el repositorio **sin enlazar**. Es material para reenlazar si se recupera el botón de descarga.
-- **Evidencia:** `docs/LIMITACIONES.md:43` y `assets/files/PabloDiazCV.pdf` (238116 bytes), sin referencias en HTML, JS ni CSS.
+- **Evidencia:** `docs/LIMITACIONES.md:42` y `assets/files/PabloDiazCV.pdf` (238116 bytes), sin referencias en HTML, JS ni CSS.
 - **Señal anti-regresión:** no borrar el PDF; no añadir enlaces a él sin petición explícita.
 
 ## 4. Claves de récord `<slug>_best_v1` y migración
@@ -39,7 +40,7 @@
 ## 6. Canon visual retro-arcade y dimensionado de canvas
 
 - **Decisión:** todos los juegos comparten paleta neón oscura, modal `<dialog id="options">`, overlay `.scanlines` y marco máximo de 900×900 px CSS (`--game-max`/`--game-chrome`, buffer nítido vía `renderScale`).
-- **Evidencia:** `juegos/AGENTS.md:22-32`; `AGENTS.md` § "Arquitectura" (dimensionado del escenario).
+- **Evidencia:** `juegos/AGENTS.md:22-32`; `AGENTS.md:481-487` (dimensionado del escenario).
 - **Señal anti-regresión:** un juego nuevo copia el chrome; no introduce paletas ni modales propios ni cambia la resolución lógica para achicar/agrandar el marco.
 
 ## 7. Claves de `localStorage` del sitio

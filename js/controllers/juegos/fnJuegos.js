@@ -80,7 +80,7 @@ function CardGame(game, lang, texts) {
   article.className = 'juego-card';
   article.setAttribute('data-titulo', title);
   article.setAttribute('data-descripcion', description);
-  article.setAttribute('data-claves', technologies.join(' '));
+  article.setAttribute('data-claves', [...technologies, genre].filter(Boolean).join(' '));
   article.setAttribute('data-categoria', genreKey(game));
 
   article.innerHTML = `

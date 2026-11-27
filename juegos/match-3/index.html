@@ -444,7 +444,7 @@ function startGame(){level=1;totalScore=0;resetRound();}
 function nextLevel(){totalScore+=score;level++;bestLevel=Math.max(bestLevel,level);saveStore();resetRound();}
 const restartLevel=()=>resetRound();
 function endState(s){state=s;phase='idle';lockT=RESTART_LOCK;saveStore();updateHUD();beep(s==='victory'?880:120,.4,s==='victory'?'triangle':'sawtooth');
-  srStatus.textContent=s==='victory'?('¡Victoria! Nivel '+level+' completado con '+totalScore+' puntos.'):('Game over. Puntuación total: '+(totalScore+score)+' (récord '+record+').');}
+  srStatus.textContent=s==='victory'?('¡Victoria! Nivel '+level+' completado con '+(totalScore+score)+' puntos.'):('Game over. Puntuación total: '+(totalScore+score)+' (récord '+record+').');}
 const doVictory=()=>endState('victory'),doGameOver=()=>endState('over');
 function goMenu(){tweens.length=0;view.boardAlpha=1;needsRealign=false;state='start';phase='idle';selected=null;hint=null;drag=null;updateHUD();}
 const pauseGame=()=>{if(state==='playing')state='paused';};
